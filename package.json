@@ -1,0 +1,31 @@
+{
+  "name": "api-backend-lpl",
+  "version": "1.0.0",
+  "description": "API para backend da LPL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rodrigonesko/api-backend-lpl.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rodrigonesko/api-backend-lpl/issues"
+  },
+  "homepage": "https://github.com/Rodrigonesko/api-backend-lpl#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.4"
+  }
+}
