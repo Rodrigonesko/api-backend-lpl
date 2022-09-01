@@ -3,19 +3,19 @@ const User = mongoose.model('User')
 const bcrypt = require('bcrypt')
 
 module.exports = {
-    create: async (req, res)=>{
+    create: async (req, res) => {
         try {
 
-            const {email, name, password, confirmPassword, accessLevel} = req.body
+            const { email, name, password, confirmPassword, accessLevel } = req.body
 
-            const user = await User.findOne({email})
+            const user = await User.findOne({ email })
 
-            if(user){
-                return res.status(422).json({message: `O email ${email} ja foi registrado`})
+            if (user) {
+                return res.status(422).json({ message: `O email ${email} ja foi registrado` })
             }
 
-            if(password !== confirmPassword){
-                return res.status(401).json({message: `As senhas não conferem`})
+            if (password !== confirmPassword) {
+                return res.status(401).json({ message: `As senhas não conferem` })
             }
 
             const encryptedPassword = await bcrypt.hash(password, 8)
@@ -29,6 +29,17 @@ module.exports = {
 
             return res.status(201).json(newUser)
 
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    index: async (req, res) => {
+        try {
+            const users = await User.find()
+            return res.json(users)
         } catch (error) {
             console.error(error);
             return res.status(500).json({
