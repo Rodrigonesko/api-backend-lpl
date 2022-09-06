@@ -6,6 +6,7 @@ const auth = (req, res, next) => {
     try {
         const data = jwt.verify(token, secret)
         req.user = data.username
+        console.log(token, secret);
         next()
     } catch (error) {
         return res.status(400).json({message: error})
