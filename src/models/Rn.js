@@ -18,11 +18,20 @@ const rnScheema = mongoose.Schema({
     prc: String,
     telefones: String,
     email: String,
-    contato1: String,
-    contato2: String,
-    contato3: String,
-    observacoes: String
-
+    contato1: {
+        data: String,
+        horario: String
+    },
+    contato2: {
+        data: String,
+        horario: String
+    },
+    contato3: {
+        data: String,
+        horario: String
+    },
+    observacoes: String,
+    status: String
 })
 
 module.exports = mongoose.model('Rn', rnScheema)

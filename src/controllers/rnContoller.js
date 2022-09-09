@@ -1,35 +1,33 @@
 const mongoose = require('mongoose')
 const Rn = mongoose.model('Rn')
-
+const moment = require('moment')
 
 module.exports = {
     upload: async (req, res) => {
         try {
-            
+
             const result = req.body
 
             // console.log(result.result);
 
             let quantidade = 0
 
-            result.result.forEach(async e=>{
-                let dia = ExcelDateToJSDate(e.DATA).getDate() + 1
-                let mes = ExcelDateToJSDate(e.DATA).getMonth() + 1
-                let ano = ExcelDateToJSDate(e.DATA).getFullYear()
-                
-                const data = `${dia}/${mes}/${ano}`
-                
+            for (const e of result.result) {
+                let data = ExcelDateToJSDate(e.DATA)
+                data.setDate(data.getDate() + 1)
+
+                data = moment(data).format('DD/MM/YYYY')
+
                 const beneficiario = e['BENFICIÁRIO'];
 
                 const mo = e.MO
 
                 const proposta = e.PROPOSTA
 
-                dia = ExcelDateToJSDate(e.VIGENCIA).getDate() + 1
-                mes = ExcelDateToJSDate(e.VIGENCIA).getMonth() + 1
-                ano = ExcelDateToJSDate(e.VIGENCIA).getFullYear()
+                let vigencia = ExcelDateToJSDate(e.VIGENCIA)
+                vigencia.setDate(vigencia.getDate() + 1)
 
-                const vigencia =  `${dia}/${mes}/${ano}`
+                vigencia = moment(vigencia).format('DD/MM/YYYY')
 
                 const pedido = e['PEDIDO/PROPOSTA']
 
@@ -39,11 +37,10 @@ module.exports = {
 
                 const idade = e.IDADE
 
-                dia = ExcelDateToJSDate(e['DATA RECEBIMENTO DO PEDIDO']).getDate() 
-                mes = ExcelDateToJSDate(e['DATA RECEBIMENTO DO PEDIDO']).getMonth()
-                ano = ExcelDateToJSDate(e['DATA RECEBIMENTO DO PEDIDO']).getFullYear()
+                let dataRecebimento = ExcelDateToJSDate(e['DATA RECEBIMENTO DO PEDIDO'])
+                dataRecebimento.setDate(dataRecebimento.getDate() + 1)
 
-                const dataRecebimento = `${dia}/${mes}/${ano}`
+                dataRecebimento = moment(dataRecebimento).format('DD/MM/YYYY')
 
                 const procedimento = e.PROCEDIMENTO
 
@@ -86,16 +83,63 @@ module.exports = {
                 quantidade++
 
                 console.log(newRn);
+            }
 
-            })
-
-
-
-            return res.status(200).json({message: `Foram inseridos ${quantidade} novas`})
+            return res.status(200).json({ message: `Foram inseridas ${quantidade} novas Rns` })
         } catch (error) {
             console.log(error);
         }
+    },
+
+    show: async (req, res) => {
+
+        try {
+            const rns = await Rn.find()
+
+            return res.json(rns)
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+
+
+    },
+
+    search: async (req, res) => {
+        try {
+
+            const proposta = req.params
+
+            const rn = await Rn.findOne(proposta)
+
+            return res.json(rn)
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    update: async (req, res) => {
+        try {
+            const data = req.body
+
+            console.log(data);
+
+            const rn = await Rn.findOneAndUpdate()
+
+            return res.status(200).json(data)
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
+
+
 }
 
 function ExcelDateToJSDate(serial) {
