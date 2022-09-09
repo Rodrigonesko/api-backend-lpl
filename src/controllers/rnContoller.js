@@ -128,7 +128,7 @@ module.exports = {
 
             console.log(data);
 
-            const rn = await Rn.findOneAndUpdate()
+            // const rn = await Rn.findOneAndUpdate()
 
             return res.status(200).json(data)
 

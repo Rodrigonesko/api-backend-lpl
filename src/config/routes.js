@@ -21,6 +21,6 @@ router.get('/users', auth,userController.index)
 router.post('/rn/upload', auth, rnContoller.upload)
 router.get('/rn/rns', auth, rnContoller.show)
 router.get('/rn/rns/:proposta', auth, rnContoller.search)
-
+router.put('rn/rns/update', auth, rnContoller.update)
 
 module.exports = router
