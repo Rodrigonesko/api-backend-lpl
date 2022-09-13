@@ -18,18 +18,12 @@ const rnScheema = mongoose.Schema({
     prc: String,
     telefones: String,
     email: String,
-    contato1: {
-        data: String,
-        horario: String
-    },
-    contato2: {
-        data: String,
-        horario: String
-    },
-    contato3: {
-        data: String,
-        horario: String
-    },
+    dataContato1: String,
+    dataContato2: String,
+    dataContato3: String,
+    horarioContato1: String,
+    horarioContato2: String,
+    horarioContato3: String,
     observacoes: String,
     status: String
 })

@@ -56,6 +56,9 @@ module.exports = {
 
                 const email = e['EMAIL BENEFICIARIO']
 
+
+                const status = 'Em andamento'
+
                 const resultado = {
                     data,
                     beneficiario,
@@ -73,7 +76,9 @@ module.exports = {
                     periodo,
                     prc,
                     telefones,
-                    email
+                    email,
+                    status
+
                 }
 
                 console.log(resultado);
@@ -126,12 +131,51 @@ module.exports = {
         try {
             const data = req.body
 
-            console.log(data);
+            // console.log(data);
 
-            // const rn = await Rn.findOneAndUpdate()
+            const rn = await Rn.findOneAndUpdate({
+                proposta: data.proposta
+            }, {
+                dataContato1: data.dataContato1,
+                dataContato2: data.dataContato2,
+                dataContato3: data.dataContato3,
+                horarioContato1: data.horarioContato1,
+                horarioContato2: data.horarioContato2,
+                horarioContato3: data.horarioContato3,
+                observacoes: data.observacoes,
+                email: data.email
+            })
 
-            return res.status(200).json(data)
+            return res.status(200).json(rn)
 
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    concluir: async (req, res) => {
+        try {
+            const data = req.body
+
+            // console.log(data);
+
+            const rn = await Rn.findOneAndUpdate({
+                proposta: data.proposta
+            }, {
+                dataContato1: data.dataContato1,
+                dataContato2: data.dataContato2,
+                dataContato3: data.dataContato3,
+                horarioContato1: data.horarioContato1,
+                horarioContato2: data.horarioContato2,
+                horarioContato3: data.horarioContato3,
+                observacoes: data.observacoes,
+                email: data.email,
+                status: 'Concluido'
+            })
+
+            return res.status(200).json(rn)
         } catch (error) {
             return res.status(500).json({
                 error: "Internal server error."
