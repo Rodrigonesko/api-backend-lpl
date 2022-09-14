@@ -101,6 +101,7 @@ module.exports = {
         try {
             const rns = await Rn.find()
 
+
             return res.json(rns)
         } catch (error) {
             return res.status(500).json({
@@ -181,8 +182,35 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
 
+    report: async (req, res) => {
+        try {
+            const rns = await Rn.find()
+
+            const date = new Date()
+            let hoje = moment(date).format('DD/MM/YYYY')
+
+            const resp = []
+
+            for (const e of rns) {
+                if (e.createdAt !== undefined) {
+                    let data = moment(e.createdAt).format('DD/MM/YYYY')
+                    console.log(`data: ${data} - hoje: ${hoje}`);
+                    if (data === hoje) {
+                        resp.push(e)
+                    }
+                }
+            }
+
+
+            return res.json(resp)
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    }
 
 }
 

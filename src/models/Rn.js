@@ -26,6 +26,8 @@ const rnScheema = mongoose.Schema({
     horarioContato3: String,
     observacoes: String,
     status: String
+}, {
+    timestamps: true
 })
 
 module.exports = mongoose.model('Rn', rnScheema)
