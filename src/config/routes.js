@@ -15,12 +15,15 @@ router.get('/verifyToken', auth, verifyToken.verify)
 //Rest
 router.post('/users', auth,userController.create)
 router.get('/users', auth,userController.index)
+router.get('/infoUser', auth, userController.infoUser)
+router.put('/users/updatePassword', auth ,userController.firstAccess)
 
 //Rns
 
 router.post('/rn/upload', auth, rnContoller.upload)
 router.get('/rn/rns', auth, rnContoller.show)
 router.get('/rn/rns/:proposta', auth, rnContoller.search)
+router.get('/rn/pedido/:pedido', auth, rnContoller.searchPedido)
 router.get('/rn/report', auth, rnContoller.report)
 router.put('/rn/rns/update', auth, rnContoller.update)
 router.put('/rn/rns/concluir', auth, rnContoller.concluir)

@@ -210,7 +210,22 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    searchPedido: async (req, res) => {
+        try {
+
+            const pedido = req.params
+            
+            return res.status(200).json(pedido)
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
+
 
 }
 

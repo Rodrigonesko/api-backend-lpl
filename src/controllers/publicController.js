@@ -28,7 +28,7 @@ module.exports = {
 
 
             //Criando token de autenticação
-            const token = jwt.sign({username: user.name}, secret, {expiresIn: '12h'})
+            const token = jwt.sign({username: user.name, email: email, accessLevel: user.accessLevel}, secret, {expiresIn: '12h'})
 
             //Setando o token para o cookie
 
