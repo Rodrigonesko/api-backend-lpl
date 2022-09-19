@@ -72,7 +72,6 @@ module.exports = {
             })
         }
     },
-
     infoUser: async (req, res) => {
         try {
 
@@ -89,7 +88,6 @@ module.exports = {
             })
         }
     },
-
     firstAccess: async (req, res) => {
         try {
             
