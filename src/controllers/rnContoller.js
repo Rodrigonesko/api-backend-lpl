@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Rn = mongoose.model('Rn')
 const moment = require('moment')
-const User = require('../models/User')
 
 module.exports = {
     upload: async (req, res) => {
@@ -218,12 +217,45 @@ module.exports = {
 
             const proposta = req.params.proposta
 
-            const result = await Rn.find({proposta: {'$regex': proposta}})
+            const result = await Rn.find({ proposta: { '$regex': proposta } })
 
             return res.status(200).json(result)
 
         } catch (error) {
 
+            console.log(error);
+
+            return res.status(500).json({
+                error: "Internal server error.",
+                error
+            })
+        }
+    },
+
+    updateConfirmadas: async (req, res) => {
+        try {
+
+            const {sendData} = req.body
+
+            for (const item of sendData) {
+            
+                if(item.respostaBeneficiario === 'AG/REEMB'){
+                    item.respostaBeneficiario = 'Não'
+                }
+
+                const result = await Rn.findOneAndUpdate({
+                    proposta: item.proposta
+                }, {
+                    respostaBeneficiario: item.respostaBeneficiario 
+                })
+
+            }
+
+            return res.status(200).json({
+                sendData
+            })
+
+        } catch (error) {
             console.log(error);
 
             return res.status(500).json({
