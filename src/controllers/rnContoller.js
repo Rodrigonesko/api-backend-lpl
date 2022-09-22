@@ -81,18 +81,18 @@ module.exports = {
 
                 }
 
-                console.log(resultado);
 
                 const newRn = await Rn.create(resultado)
 
                 quantidade++
 
-                console.log(newRn);
             }
 
             return res.status(200).json({ message: `Foram inseridas ${quantidade} novas Rns` })
         } catch (error) {
-            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 
@@ -235,18 +235,18 @@ module.exports = {
     updateConfirmadas: async (req, res) => {
         try {
 
-            const {sendData} = req.body
+            const { sendData } = req.body
 
             for (const item of sendData) {
-            
-                if(item.respostaBeneficiario === 'AG/REEMB'){
+
+                if (item.respostaBeneficiario === 'AG/REEMB') {
                     item.respostaBeneficiario = 'Não'
                 }
 
                 const result = await Rn.findOneAndUpdate({
                     proposta: item.proposta
                 }, {
-                    respostaBeneficiario: item.respostaBeneficiario 
+                    respostaBeneficiario: item.respostaBeneficiario
                 })
 
             }

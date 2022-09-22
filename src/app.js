@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGODB_URL)
 const User = require('./models/User')
 const Rn = require('./models/Rn')
 const Proposta = require("./models/PropostaEntrevista")
+const Liminar = require("./models/Liminar")
 
 const routes = require('./config/routes')
 

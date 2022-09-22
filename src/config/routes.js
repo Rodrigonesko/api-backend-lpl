@@ -5,6 +5,7 @@ const verifyToken = require('../middlewares/verifyToken')
 const auth = require('../middlewares/auth')
 const rnContoller = require('../controllers/rnContoller')
 const propostaEntrevistaController = require('../controllers/propostaEntrevistaController')
+const liminarController = require('../controllers/liminarController')
 const router = express.Router()
 
 //Public routes
@@ -33,6 +34,11 @@ router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
 //Tele Entrevistas
 
 router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
+
+//Liminar
+
+router.post('/liminares/upload', auth, liminarController.upload)
+router.get('/liminares/show', auth, liminarController.show)
 
 
 module.exports = router
