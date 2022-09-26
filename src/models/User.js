@@ -5,10 +5,14 @@ const userScheema = mongoose.Schema({
     email: String,
     password: String,
     accessLevel: String,
-    firstAccess: String
+    firstAccess: String,
+    liminares: String,
+    liminaresAj: String,
+    enfermeiro: String,
+    elegibilidade: String
 },
-{
-    versionKey: false
-})
+    {
+        versionKey: false
+    })
 
 module.exports = mongoose.model('User', userScheema)

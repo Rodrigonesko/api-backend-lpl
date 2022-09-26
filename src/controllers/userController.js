@@ -75,8 +75,8 @@ module.exports = {
     infoUser: async (req, res) => {
         try {
 
-            const user = await User.findOne({email: req.email})
-            
+            const user = await User.findOne({ email: req.email })
+
             return res.status(200).json({
                 user
             })
@@ -90,8 +90,8 @@ module.exports = {
     },
     firstAccess: async (req, res) => {
         try {
-            
-            const {password, confirmPassword} = req.body
+
+            const { password, confirmPassword } = req.body
 
             if (password !== confirmPassword) {
                 return res.status(401).json({ message: `As senhas não conferem` })
@@ -116,6 +116,47 @@ module.exports = {
 
         } catch (error) {
             console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    searchEmail: async (req, res) => {
+        try {
+            const {email} = req.params
+
+            console.log(email);
+
+            const user = await User.findOne({ email: email })
+
+            return res.status(200).json({
+                user
+            })
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error.",
+                error
+            })
+        }
+    },
+    modules: async (req, res) => {
+        try {
+
+            const { email, liminares, liminaresAj, enfermeiro, elegibilidade } = req.body
+
+            const result = await User.findOneAndUpdate({email: email}, {
+                liminares: liminares,
+                liminaresAj: liminaresAj,
+                enfermeiro: enfermeiro,
+                elegibilidade: elegibilidade
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+
+        } catch (error) {
             return res.status(500).json({
                 error: "Internal server error."
             })

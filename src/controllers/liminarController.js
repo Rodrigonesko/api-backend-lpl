@@ -80,5 +80,52 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+    concluir: async (req, res) => {
+        try {
+
+            const { analista, id } = req.body
+
+            const result = await Liminar.findByIdAndUpdate({ _id: id }, {
+                analista: analista,
+                situacao: 'Concluido'
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    change: async (req, res) => {
+        try {
+            let {analista} = req.body
+
+            let arrAux = analista.split(',')
+            analista = arrAux[0]
+            const _id = arrAux[1]
+
+            console.log(`Analista: ${analista} -> ID: ${_id}`);
+
+            const result = await Liminar.findByIdAndUpdate({_id}, {
+                analista: analista
+            })
+            
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }

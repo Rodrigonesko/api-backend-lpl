@@ -18,7 +18,9 @@ router.get('/verifyToken', auth, verifyToken.verify)
 router.post('/users', auth,userController.create)
 router.get('/users', auth,userController.index)
 router.get('/infoUser', auth, userController.infoUser)
+router.get('/infoUser/:email', auth, userController.searchEmail)
 router.put('/users/updatePassword', auth ,userController.firstAccess)
+router.put('/users/modules', auth, userController.modules)
 
 //Rns
 
@@ -39,6 +41,8 @@ router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
 
 router.post('/liminares/upload', auth, liminarController.upload)
 router.get('/liminares/show', auth, liminarController.show)
+router.put('/liminares/concluir', auth, liminarController.concluir)
+router.put('/liminares/change', auth, liminarController.change)
 
 
 module.exports = router
