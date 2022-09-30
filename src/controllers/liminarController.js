@@ -68,7 +68,7 @@ module.exports = {
     },
     show: async (req, res) => {
         try {
-            const liminares = await Liminar.find()
+            const liminares = await Liminar.find().sort('dataVigencia')
 
             return res.status(200).json({
                 liminares
@@ -88,7 +88,8 @@ module.exports = {
 
             const result = await Liminar.findByIdAndUpdate({ _id: id }, {
                 analista: analista,
-                situacao: 'Concluido'
+                situacao: 'Concluido',
+                dataConclusao: new Date()
             })
 
             return res.status(200).json({
