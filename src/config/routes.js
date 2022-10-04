@@ -6,6 +6,7 @@ const auth = require('../middlewares/auth')
 const rnContoller = require('../controllers/rnContoller')
 const propostaEntrevistaController = require('../controllers/propostaEntrevistaController')
 const liminarController = require('../controllers/liminarController')
+const projetoAjController = require('../controllers/projetoAjController')
 const router = express.Router()
 
 //Public routes
@@ -43,6 +44,13 @@ router.post('/liminares/upload', auth, liminarController.upload)
 router.get('/liminares/show', auth, liminarController.show)
 router.put('/liminares/concluir', auth, liminarController.concluir)
 router.put('/liminares/change', auth, liminarController.change)
+
+//Projeto Aj
+
+router.post('/projetoAj/upload', auth, projetoAjController.upload)
+router.get('/projetoAj/show', auth, projetoAjController.show)
+router.put('/projetoAj/concluir', auth, projetoAjController.concluir)
+router.put('/projetoAj/change', auth, projetoAjController.change)
 
 
 module.exports = router
