@@ -44,7 +44,8 @@ const propostaScheema = mongoose.Schema({
     cid1: String,
     cid1: String,
     cid1: String,
-    tipoAssociado: String
+    tipoAssociado: String,
+    tipoContrato: String
 }, {
     timestamps: true
 })

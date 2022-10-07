@@ -161,6 +161,25 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    enfermeiros: async (req, res) => {
+        try {
+            
+            const enfermeiros = await User.find({
+                enfermeiro: 'true'
+            })
+
+            return res.status(200).json({
+                enfermeiros
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 
 }

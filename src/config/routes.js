@@ -7,6 +7,7 @@ const rnContoller = require('../controllers/rnContoller')
 const propostaEntrevistaController = require('../controllers/propostaEntrevistaController')
 const liminarController = require('../controllers/liminarController')
 const projetoAjController = require('../controllers/projetoAjController')
+const horarioController = require('../controllers/horarioController')
 const router = express.Router()
 
 //Public routes
@@ -20,8 +21,10 @@ router.post('/users', auth,userController.create)
 router.get('/users', auth,userController.index)
 router.get('/infoUser', auth, userController.infoUser)
 router.get('/infoUser/:email', auth, userController.searchEmail)
+router.get('/users/enfermeiros', auth, userController.enfermeiros)
 router.put('/users/updatePassword', auth ,userController.firstAccess)
 router.put('/users/modules', auth, userController.modules)
+
 
 //Rns
 
@@ -37,6 +40,9 @@ router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
 //Tele Entrevistas
 
 router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
+router.get('/entrevistas/propostas', auth, propostaEntrevistaController.show)
+
+router.post('/entrevistas/gerarHorarios', auth, horarioController.gerar)
 
 //Liminar
 

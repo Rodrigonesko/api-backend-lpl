@@ -46,6 +46,8 @@ module.exports = {
 
                 const tipoAssociado = item.TIPO_ASSOCIADO
 
+                const tipoContrato = item.TIPO_CONTRATO
+
                 const grupoCarencia = item.GRUPO_CARENCIA
 
 
@@ -121,7 +123,8 @@ module.exports = {
                     cid1,
                     cid2,
                     cid3,
-                    tipoAssociado
+                    tipoAssociado,
+                    tipoContrato
                 }
 
                 console.log(resultado);
@@ -131,10 +134,10 @@ module.exports = {
                 quantidade++
 
                 console.log(newPropostaEntrevista);
- 
+
             }
 
-            return res.status(200).json({message: `Foram inseridas ${quantidade} novas propostas!`})
+            return res.status(200).json({ message: `Foram inseridas ${quantidade} novas propostas!` })
 
         } catch (error) {
             console.log(error);
@@ -143,6 +146,20 @@ module.exports = {
             })
         }
 
+    },
+    show: async (req, res) => {
+        try {
+            const propostas = await PropostaEntrevista.find()
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }
 
@@ -166,46 +183,46 @@ function ExcelDateToJSDate(serial) {
 }
 
 function calcularIdade(data) {
-	var now = new Date();
-	var today = new Date(now.getYear(),now.getMonth(),now.getDate());
+    var now = new Date();
+    var today = new Date(now.getYear(), now.getMonth(), now.getDate());
 
-	var yearNow = now.getYear();
-	var monthNow = now.getMonth();
-	var dateNow = now.getDate();
-	var dob = new Date(data.substring(6,10),
-			data.substring(3,5)-1,                    
-			 data.substring(0,2)                
-			);
+    var yearNow = now.getYear();
+    var monthNow = now.getMonth();
+    var dateNow = now.getDate();
+    var dob = new Date(data.substring(6, 10),
+        data.substring(3, 5) - 1,
+        data.substring(0, 2)
+    );
 
-	var yearDob = dob.getYear();
-	var monthDob = dob.getMonth();
-	var dateDob = dob.getDate();
-	var age = {};
-	yearAge = yearNow - yearDob;
+    var yearDob = dob.getYear();
+    var monthDob = dob.getMonth();
+    var dateDob = dob.getDate();
+    var age = {};
+    yearAge = yearNow - yearDob;
 
-	if (monthNow >= monthDob)
-		var monthAge = monthNow - monthDob;
-	else {
-		yearAge--;
-		var monthAge = 12 + monthNow -monthDob;
-	}
+    if (monthNow >= monthDob)
+        var monthAge = monthNow - monthDob;
+    else {
+        yearAge--;
+        var monthAge = 12 + monthNow - monthDob;
+    }
 
-	if (dateNow >= dateDob)
-		var dateAge = dateNow - dateDob;
-	else {
-		monthAge--;
-	    var dateAge = 31 + dateNow - dateDob;
+    if (dateNow >= dateDob)
+        var dateAge = dateNow - dateDob;
+    else {
+        monthAge--;
+        var dateAge = 31 + dateNow - dateDob;
 
-	    if (monthAge < 0) {
-	      monthAge = 11;
-	      yearAge--;
-	    }
-	  }
+        if (monthAge < 0) {
+            monthAge = 11;
+            yearAge--;
+        }
+    }
 
-	age = {
-			years: yearAge,
-			months: monthAge,
-			days: dateAge
-		};
-	return age.years;
+    age = {
+        years: yearAge,
+        months: monthAge,
+        days: dateAge
+    };
+    return age.years;
 }

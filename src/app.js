@@ -22,6 +22,8 @@ const Rn = require('./models/Rn')
 const Proposta = require("./models/PropostaEntrevista")
 const Liminar = require("./models/Liminar")
 const ProjetoAj = require('./models/ProjetoAj')
+const Pergunta = require('./models/Pergunta')
+const Horario = require('./models/Horario')
 
 const routes = require('./config/routes')
 
