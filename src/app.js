@@ -4,8 +4,8 @@ const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const corsOptions = {
-    origin: 'http://10.0.121.55:3000',
-    credentials: true 
+    origin: `${process.env.FRONT_END_ADDRESS}`,
+    credentials: true
 }
 
 //JWT Related
@@ -33,7 +33,7 @@ app.use(cors(corsOptions))
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://10.0.121.55:3000');
+    res.setHeader('Access-Control-Allow-Origin', `${process.env.FRONT_END_ADDRESS}`);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();

@@ -9,7 +9,11 @@ const userScheema = mongoose.Schema({
     liminares: String,
     liminaresAj: String,
     enfermeiro: String,
-    elegibilidade: String
+    elegibilidade: String,
+    horarioEntrada1: String,
+    horarioSaida1: String,
+    horarioEntrada2: String,
+    horarioSaida2: String,
 },
     {
         versionKey: false

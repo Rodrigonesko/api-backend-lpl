@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const horariosSCheema = mongoose.Schema({
-    enfermeira: String,
+    enfermeiro: String,
     dia: Date,
     horario: String,
     agendado: String,

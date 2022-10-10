@@ -123,7 +123,7 @@ module.exports = {
     },
     searchEmail: async (req, res) => {
         try {
-            const {email} = req.params
+            const { email } = req.params
 
             console.log(email);
 
@@ -142,13 +142,19 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, liminares, liminaresAj, enfermeiro, elegibilidade } = req.body
+            const { email, liminares, liminaresAj, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2 } = req.body
 
-            const result = await User.findOneAndUpdate({email: email}, {
+            console.log(entrada1, saida1, entrada2, saida2);
+
+            const result = await User.findOneAndUpdate({ email: email }, {
                 liminares: liminares,
                 liminaresAj: liminaresAj,
                 enfermeiro: enfermeiro,
-                elegibilidade: elegibilidade
+                elegibilidade: elegibilidade,
+                horarioEntrada1: entrada1,
+                horarioSaida1: saida1,
+                horarioEntrada2: entrada2,
+                horarioSaida2: saida2,
             })
 
             return res.status(200).json({
@@ -165,7 +171,6 @@ module.exports = {
 
     enfermeiros: async (req, res) => {
         try {
-            
             const enfermeiros = await User.find({
                 enfermeiro: 'true'
             })
@@ -173,7 +178,6 @@ module.exports = {
             return res.status(200).json({
                 enfermeiros
             })
-
         } catch (error) {
             console.log(error);
             return res.status(500).json({
