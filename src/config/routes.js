@@ -41,11 +41,13 @@ router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
 
 router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
 router.get('/entrevistas/propostas', auth, propostaEntrevistaController.show)
+router.put('/entrevistas/reagendar', auth, propostaEntrevistaController.reagendar)
 
 router.post('/entrevistas/gerarHorarios', auth, horarioController.gerar)
 router.get('/entrevistas/buscarDiasDisponiveis/:enfermeiro', auth, horarioController.search)
 router.get('/entrevistas/buscarHorariosDisponiveis/:enfermeiro/:data', auth, horarioController.searchHorarios)
 router.put('/entrevistas/agendar', auth, horarioController.agendar)
+
 
 //Liminar
 

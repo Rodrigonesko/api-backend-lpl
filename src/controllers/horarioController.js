@@ -2,7 +2,9 @@ const mongoose = require('mongoose')
 const Horario = mongoose.model('Horario')
 const User = mongoose.model('User')
 const PropostaEntrevista = mongoose.model('PropostaEntrevista')
-moment = require('moment')
+const moment = require('moment')
+const timezone = require('moment-timezone')
+
 
 module.exports = {
     gerar: async (req, res) => {
@@ -110,7 +112,16 @@ module.exports = {
             })
 
             const arr = result.map(e => {
-                return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
+
+                const today = new Date()
+
+                if (moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).add(1, 'days').tz('America/Sao_Paulo').format('YYYY-MM-DD')) {
+                    //console.log();
+                    //return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
+                    console.log(moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD'));
+                    return moment(e.dia).add(1, 'days').tz('America/Sao_Paulo').format('DD/MM/YYYY')
+                }
+
             })
 
             const dias = arr.filter((el, i) => {
@@ -139,11 +150,11 @@ module.exports = {
                 dia: data
             })
 
-            const horarios = result.map(e => {
-                if (e.agendado == undefined) {
-                    return e.horario
-                }
+            const horariosObj = result.filter(e => {
+                return e.agendado == undefined
             })
+
+            const horarios = horariosObj.map(e => e.horario)
 
             console.log(horarios);
 
@@ -181,7 +192,8 @@ module.exports = {
                 nome: beneficiario
             }, {
                 dataEntrevista: dataEHora,
-                agendado: 'agendado'
+                agendado: 'agendado',
+                enfermeiro:  enfermeiro
             })
 
             return res.status(200).json({
@@ -199,7 +211,7 @@ module.exports = {
 
 }
 
-function ajustarData (data) {
+function ajustarData(data) {
     const arr = data.split('/')
 
     return `${arr[2]}-${arr[1]}-${arr[0]}`

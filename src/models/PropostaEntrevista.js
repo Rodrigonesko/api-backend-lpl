@@ -35,7 +35,7 @@ const propostaScheema = mongoose.Schema({
     sinistContr: String,
     corretor: String,
     corretora: String,
-    enfermeira: String,
+    enfermeiro: String,
     dataEntrevista: String,
     grupoCarencia: String,
     peso: String,

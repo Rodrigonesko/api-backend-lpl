@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const PropostaEntrevista = mongoose.model('PropostaEntrevista')
+const Horario = mongoose.model('Horario')
 const moment = require('moment')
 
 module.exports = {
@@ -153,6 +154,35 @@ module.exports = {
 
             return res.status(200).json({
                 propostas
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    reagendar: async (req, res) => {
+        try {
+            const { proposta, nome } = req.body
+
+            return res.status(200).json({
+                msg: 'oii'
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    alterarTelefone: async (req, res) => {
+        try {
+            const {proposta, nome, telefone} = req.body
+
+            return res.status(200).json({
+                msg: 'oiii'
             })
 
         } catch (error) {
