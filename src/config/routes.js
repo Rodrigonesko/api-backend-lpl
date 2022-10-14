@@ -30,7 +30,7 @@ router.put('/users/modules', auth, userController.modules)
 
 router.post('/rn/upload', auth, rnContoller.upload)
 router.get('/rn/rns', auth, rnContoller.show)
-router.get('/rn/rns/:proposta', auth, rnContoller.search)
+router.get('/rn/rns/:id', auth, rnContoller.search)
 router.get('/rn/pedido/:proposta', auth, rnContoller.searchProposta)
 router.get('/rn/report', auth, rnContoller.report)
 router.put('/rn/rns/update', auth, rnContoller.update)

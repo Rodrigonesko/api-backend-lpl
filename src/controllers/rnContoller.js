@@ -29,7 +29,7 @@ module.exports = {
 
                 vigencia = moment(vigencia).format('DD/MM/YYYY')
 
-                const pedido = e['PEDIDO/PROPOSTA']
+                const pedido = e.PEDIDO
 
                 const tipo = e.TIPO
 
@@ -115,9 +115,13 @@ module.exports = {
     search: async (req, res) => {
         try {
 
-            const proposta = req.params
+            const { id } = req.params
 
-            const rn = await Rn.findOne(proposta)
+            console.log(id);
+
+            const rn = await Rn.findById({
+                _id: id
+            })
 
             return res.json(rn)
 
@@ -134,8 +138,8 @@ module.exports = {
 
             // console.log(data);
 
-            const rn = await Rn.findOneAndUpdate({
-                proposta: data.proposta
+            const rn = await Rn.findByIdAndUpdate({
+                _id: data.id
             }, {
                 dataContato1: data.dataContato1,
                 dataContato2: data.dataContato2,
@@ -162,8 +166,8 @@ module.exports = {
 
             // console.log(data);
 
-            const rn = await Rn.findOneAndUpdate({
-                proposta: data.proposta
+            const rn = await Rn.findByIdAndUpdate({
+                _id: data.id
             }, {
                 dataContato1: data.dataContato1,
                 dataContato2: data.dataContato2,
