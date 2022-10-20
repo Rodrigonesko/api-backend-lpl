@@ -24,7 +24,7 @@ module.exports = {
 
                 console.log(req.file.originalname);
 
-                let file = fs.readFileSync(req.file.path, 'utf-8')
+                let file = fs.readFileSync(req.file.path)
 
                 const workbook = xlsx.read(file, { type: 'array' })
 
@@ -34,12 +34,11 @@ module.exports = {
 
                 const result = xlsx.utils.sheet_to_json(worksheet)
 
-
-
                 if (req.file.originalname.indexOf('PF') === 10) {
                     console.log('fila pf');
 
-                    let arrCpfs = []
+                    let mapCpfs = new Map()
+                    let arrPedidos = []
 
                     result.forEach(e => {
 
@@ -50,13 +49,67 @@ module.exports = {
                             e['Situação'] == 'Aguardando documento original' ||
                             e['Situação'] == 'Em Análise Técnica'
                         ) {
-                            //arrCpfs.push([e['CPF do Favorecido'], e['Valor Apresentado']])
-                            console.log(e['Valor Apresentado']);
-                        }
 
+                            let rep = e['Beneficiário'].replace(' - ', '-')
+                            let split = rep.split('-')
+                            let mo = split[0]
+                            let beneficiario = split[1]
+
+                            arrPedidos.push([
+                                e[' Reembolso'],
+                                e['Situação'],
+                                e['Data do Pedido'],
+                                e['Data Prevista Pagamento'],
+                                e['Data Pagamento'],
+                                e['Número do Titulo'],
+                                e['CPF do Favorecido'],
+                                mo,
+                                beneficiario,
+                                e['Valor Apresentado'],
+                                e['Valor Reembolsado'],
+                                e.Protocolo,
+                            ])
+
+                            if (mapCpfs.has(e['CPF do Favorecido'])) {
+                                mapCpfs.set(e['CPF do Favorecido'], mapCpfs.get(e['CPF do Favorecido']) + e['Valor Apresentado'])
+                            } else {
+                                mapCpfs.set(e['CPF do Favorecido'], e['Valor Apresentado'])
+                            }
+                        }
                     })
 
-                    //console.log(arrCpfs);
+                    let arr = []
+
+                    arrPedidos.forEach(val => {
+                        for (const [cpf, value] of mapCpfs) {
+                            if (value >= 20000) {
+                                if (val[6] == cpf) {
+                                    arr.push(val)
+                                    break
+                                }
+                            }
+                        }
+                    })
+
+
+                    // pedidosBanco.forEach(e => {
+                    //     console.log(e.numero);
+                    // })
+
+                    let teste = 0
+
+                    arr.forEach(e => {
+                        pedidosBanco.forEach(item => {
+                            if (e[0] == item.numero) {
+                                teste++
+                                return
+                            }
+                        })
+                    })
+
+
+                    console.log(teste);
+
 
                 } else {
                     console.log('fila pj');

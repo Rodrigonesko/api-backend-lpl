@@ -2,12 +2,16 @@ const mongoose = require('mongoose')
 
 const pedidoScheema = mongoose.Schema({
     numero: String,
-    idProtocolo: String,
+    protocolo: String,
     valorApresentado: String,
     valorReembolsado: String,
     dataSla: String,
     ativo: Boolean,
-    idStatus: String,
+    status: String,
+    formaPagamento: String,
+    irregular: Boolean,
+    reconhece: Boolean,
+    statusFinalizacao: String,
     cnpj: String,
     clinica: String,
     profissional: String,
@@ -16,7 +20,6 @@ const pedidoScheema = mongoose.Schema({
     reapresentado: Boolean,
     semRetornoContato: Boolean,
     comprovanteNaoRecebido: Boolean,
-    dataCadastro: Date,
     dataConclusao: Date
 }, {
     timestamps: true
