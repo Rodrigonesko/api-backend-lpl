@@ -8,7 +8,13 @@ const propostaEntrevistaController = require('../controllers/propostaEntrevistaC
 const liminarController = require('../controllers/liminarController')
 const projetoAjController = require('../controllers/projetoAjController')
 const horarioController = require('../controllers/horarioController')
+const rsdController = require('../controllers/rsdController')
 const router = express.Router()
+
+const fs = require('fs')
+const multer = require('multer')
+
+const uploadRsd = multer({dest: '/tmp'})
 
 //Public routes
 router.get('/', publicController.index)
@@ -62,6 +68,10 @@ router.post('/projetoAj/upload', auth, projetoAjController.upload)
 router.get('/projetoAj/show', auth, projetoAjController.show)
 router.put('/projetoAj/concluir', auth, projetoAjController.concluir)
 router.put('/projetoAj/change', auth, projetoAjController.change)
+
+//RSD
+
+router.post('/rsd/upload', auth, rsdController.upload)
 
 
 module.exports = router

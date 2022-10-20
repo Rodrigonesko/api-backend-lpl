@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const fileupload = require('express-fileupload')
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
@@ -25,9 +26,25 @@ const ProjetoAj = require('./models/ProjetoAj')
 const Pergunta = require('./models/Pergunta')
 const Horario = require('./models/Horario')
 
+//Models RSD
+
+const Agenda = require('./models/Rsd/Agenda')
+const Clinica = require('./models/Rsd/Clinica')
+const FormaPagamento = require('./models/Rsd/FormaPagamento')
+const Gravacao = require('./models/Rsd/Gravacao')
+const Operador = require('./models/Rsd/Operador')
+const Pacote = require('./models/Rsd/Pacote')
+const Pedido = require('./models/Rsd/Pedido')
+const Pessoa = require('./models/Rsd/Pessoa')
+const Protocolo = require('./models/Rsd/Protocolo')
+const StatusFinalizacao = require('./models/Rsd/StatusFinalizacao')
+const StatusPacote = require('./models/Rsd/StatusPacote')
+const StatusPedido = require('./models/Rsd/StatusPedido')
+const StatusProtocolo = require('./models/Rsd/StatusProtocolo')
+
 const routes = require('./config/routes')
 
-app.use(express.json())
+app.use(express.json({limit: '100mb'}))
 app.use(cookieParser())
 app.use(cors(corsOptions))
 app.use(function (req, res, next) {

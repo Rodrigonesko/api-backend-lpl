@@ -8,5 +8,19 @@ const pedidoScheema = mongoose.Schema({
     dataSla: String,
     ativo: Boolean,
     idStatus: String,
-    
+    cnpj: String,
+    clinica: String,
+    profissional: String,
+    crm: String,
+    nf: String,
+    reapresentado: Boolean,
+    semRetornoContato: Boolean,
+    comprovanteNaoRecebido: Boolean,
+    dataCadastro: Date,
+    dataConclusao: Date
+}, {
+    timestamps: true
 })
+
+module.exports = mongoose.model('Pedido', pedidoScheema)
+
