@@ -20,11 +20,19 @@ module.exports = {
 
             const pedidosBanco = await Pedido.find()
 
+            console.log('pedidos banco ok');
+
+            let pedidos = []
+
             uploadRsd(req, res, async (err) => {
 
                 console.log(req.file.originalname);
 
                 let file = fs.readFileSync(req.file.path)
+
+                const valorCorte = req.body['valor-corte']
+
+                console.log(valorCorte);
 
                 const workbook = xlsx.read(file, { type: 'array' })
 
@@ -32,8 +40,10 @@ module.exports = {
 
                 const worksheet = workbook.Sheets[firstSheetName]
 
-                const result = xlsx.utils.sheet_to_json(worksheet)
+                let result = xlsx.utils.sheet_to_json(worksheet)
 
+                console.log(result.length);
+ 
                 if (req.file.originalname.indexOf('PF') === 10) {
                     console.log('fila pf');
 
@@ -80,9 +90,11 @@ module.exports = {
 
                     let arr = []
 
+                    console.log('filtrando por valor');
+
                     arrPedidos.forEach(val => {
                         for (const [cpf, value] of mapCpfs) {
-                            if (value >= 20000) {
+                            if (value >= valorCorte) {
                                 if (val[6] == cpf) {
                                     arr.push(val)
                                     break
@@ -91,32 +103,31 @@ module.exports = {
                         }
                     })
 
-
-                    // pedidosBanco.forEach(e => {
-                    //     console.log(e.numero);
-                    // })
-
-                    let teste = 0
+                    console.log('verificando se existe na lpl');
 
                     arr.forEach(e => {
+                        let flag = 0
                         pedidosBanco.forEach(item => {
-                            if (e[0] == item.numero) {
-                                teste++
+                            if (e[0] == item.numero || e[8] == 'LUZIA LOPES MAURI CARDOSO') {
+                                flag++
                                 return
                             }
                         })
+
+                        if(flag==0){
+                            pedidos.push(e)
+                        }
+
                     })
 
-
-                    console.log(teste);
-
+                    console.log(pedidos.length);
 
                 } else {
                     console.log('fila pj');
                 }
 
                 return res.status(200).json({
-                    msg: 'ola'
+                    pedidos
                 })
             })
         } catch (error) {
