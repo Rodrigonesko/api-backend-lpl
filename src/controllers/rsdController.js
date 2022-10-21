@@ -30,7 +30,7 @@ module.exports = {
 
                 let file = fs.readFileSync(req.file.path)
 
-                const valorCorte = req.body['valor-corte']
+                const valorCorte = req.body.corte
 
                 console.log(valorCorte);
 
@@ -43,7 +43,7 @@ module.exports = {
                 let result = xlsx.utils.sheet_to_json(worksheet)
 
                 console.log(result.length);
- 
+
                 if (req.file.originalname.indexOf('PF') === 10) {
                     console.log('fila pf');
 
@@ -78,6 +78,7 @@ module.exports = {
                                 e['Valor Apresentado'],
                                 e['Valor Reembolsado'],
                                 e.Protocolo,
+                                'pf'
                             ])
 
                             if (mapCpfs.has(e['CPF do Favorecido'])) {
@@ -114,7 +115,7 @@ module.exports = {
                             }
                         })
 
-                        if(flag==0){
+                        if (flag == 0) {
                             pedidos.push(e)
                         }
 
@@ -136,5 +137,37 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    subir: async (req, res) => {
+        try {
+
+            const { pedidos } = req.body
+
+            const addPessoas = await Promise.all(pedidos.map(async item => {
+                return await Pessoa.findOneAndUpdate({
+                    cpf: item[7]
+                }, {
+                    cpf: item[7],
+                    nome: item[8]
+                }, {
+                    upsert: true
+                })
+            }))
+
+            console.log(addPessoas);
+
+            return res.status(200).json({
+                pedidos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
+
+
 }
