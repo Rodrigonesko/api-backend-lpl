@@ -16,7 +16,8 @@ const protocoloScheema = mongoose.Schema({
     operadorId: String,
     dataStatus: Date,
     idUsuario: String,
-    dataInclusao: Date
+    dataInclusao: Date,
+    pessoa: String
 }, {
     timestamps: true
 })

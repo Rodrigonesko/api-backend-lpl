@@ -146,16 +146,74 @@ module.exports = {
 
             const addPessoas = await Promise.all(pedidos.map(async item => {
                 return await Pessoa.findOneAndUpdate({
-                    cpf: item[7]
+                    mo: item[7]
                 }, {
-                    cpf: item[7],
-                    nome: item[8]
+                    mo: item[7],
+                    nome: item[8],
+                    mo: item[7]
                 }, {
                     upsert: true
                 })
             }))
 
-            console.log(addPessoas);
+            const addPedidos = await Promise.all(pedidos.map(async item => {
+
+                if (item[12] == 'pf') {
+                    let numero = item[0]
+                    let protocolo = item[11]
+                    let valorApresentado = item[9]
+                    let valorReembolsado = item[10]
+
+                    let dataSla = moment(new Date()).add(1, 'days').toDate()
+
+                    return await Pedido.create({
+                        numero: numero,
+                        protocolo: protocolo,
+                        valorApresentado: valorApresentado,
+                        valorReembolsado: valorReembolsado,
+                        dataSla: dataSla,
+                        ativo: true,
+                        status: 'A iniciar'
+                    })
+                }
+            }))
+
+            const addProtocolo = await Promise.all(pedidos.map(async item => {
+
+                if (item[12] == 'pf') {
+                    let dataSolicitacao = ExcelDateToJSDate(item[2])
+                    dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
+                    dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
+
+                    let dataPagamento = ExcelDateToJSDate(item[3])
+                    dataPagamento.setDate(dataPagamento.getDate() + 1)
+                    dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
+
+                    let dataSla = moment(new Date()).add(1, 'days').toDate()
+
+                    let protocolo = item[11]
+                    let mo = item[7]
+                    let nome = item[8]
+
+                    return await Protocolo.findOneAndUpdate({
+                        numero: protocolo
+                    }, {
+                        numero: protocolo,
+                        mo: mo,
+                        dataSolicitacao: dataSolicitacao,
+                        dataPagamento: dataPagamento,
+                        dataSla: dataSla,
+                        ativo: true,
+                        status: 'Pedido Cadastrado',
+                        idStatus: 'A iniciar',
+                        pessoa: nome
+                    }, {
+                        upsert: true
+                    })
+
+                }
+
+            }))
 
             return res.status(200).json({
                 pedidos
@@ -167,7 +225,63 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    show: async (req, res) => {
+        try {
+            const protocolos = await Protocolo.find()
+
+            return res.status(200).json({
+                protocolos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    mostrarPessoa: async (req, res) => {
+        try {
+            const { mo } = req.params
+
+            console.log(mo);
+
+            const pessoa = await Pessoa.findOne({
+                mo: mo
+            })
+
+            return res.status(200).json({
+                pessoa 
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 
+}
 
+function ExcelDateToJSDate(serial) {
+    var utc_days = Math.floor(serial - 25569);
+    var utc_value = utc_days * 86400;
+    var date_info = new Date(utc_value * 1000);
+
+    var fractional_day = serial - Math.floor(serial) + 0.0000001;
+
+    var total_seconds = Math.floor(86400 * fractional_day);
+
+    var seconds = total_seconds % 60;
+
+    total_seconds -= seconds;
+
+    var hours = Math.floor(total_seconds / (60 * 60));
+    var minutes = Math.floor(total_seconds / 60) % 60;
+
+    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
 }

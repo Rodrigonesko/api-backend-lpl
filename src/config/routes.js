@@ -73,6 +73,8 @@ router.put('/projetoAj/change', auth, projetoAjController.change)
 
 router.post('/rsd/upload', auth, rsdController.upload)
 router.post('/rsd/subir', auth, rsdController.subir)
+router.get('/rsd/protocolos', auth, rsdController.show)
+router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
 
 
 module.exports = router

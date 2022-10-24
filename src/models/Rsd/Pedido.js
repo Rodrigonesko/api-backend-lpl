@@ -5,7 +5,7 @@ const pedidoScheema = mongoose.Schema({
     protocolo: String,
     valorApresentado: String,
     valorReembolsado: String,
-    dataSla: String,
+    dataSla: Date,
     ativo: Boolean,
     status: String,
     formaPagamento: String,
