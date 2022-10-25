@@ -75,6 +75,8 @@ router.post('/rsd/upload', auth, rsdController.upload)
 router.post('/rsd/subir', auth, rsdController.subir)
 router.get('/rsd/protocolos', auth, rsdController.show)
 router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
-
+router.put('/rsd/pessoas/editar', auth, rsdController.atualizarInformacoes)
+router.get('/rsd/protocolos/:mo', auth, rsdController.mostrarProtocolos)
+router.get('/rsd/pedidos/:protocolo', auth, rsdController.mostrarPedidos)
 
 module.exports = router

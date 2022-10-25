@@ -148,7 +148,7 @@ module.exports = {
                 return await Pessoa.findOneAndUpdate({
                     mo: item[7]
                 }, {
-                    mo: item[7],
+                    cpf: item[6],
                     nome: item[8],
                     mo: item[7]
                 }, {
@@ -254,7 +254,82 @@ module.exports = {
             })
 
             return res.status(200).json({
-                pessoa 
+                pessoa
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    atualizarInformacoes: async (req, res) => {
+        try {
+
+            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo } = req.body
+
+            const pessoa = await Pessoa.findOneAndUpdate({
+                mo: mo
+            }, {
+                dataNascimento,
+                email,
+                fone1,
+                fone2,
+                fone3,
+                contratoEmpresa
+            })
+
+            return res.status(200).json({
+                pessoa
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    mostrarProtocolos: async (req, res) => {
+        try {
+
+            const { mo } = req.params
+
+            const protocolos = await Protocolo.find({
+                mo: mo
+            })
+
+            console.log(protocolos);
+
+            return res.status(200).json({
+                protocolos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    mostrarPedidos: async (req, res) => {
+        try {
+            const {protocolo} = req.params
+
+            console.log(protocolo);
+
+            const pedidos = await Pedido.find({
+                protocolo: protocolo
+            })
+
+            console.log(pedidos);
+
+            return res.status(200).json({
+                pedidos
             })
 
         } catch (error) {

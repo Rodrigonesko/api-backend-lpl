@@ -11,7 +11,8 @@ const pessoaScheema = mongoose.Schema({
     ativo: Boolean,
     plano: String,
     atualizarDados: Boolean,
-    contratoEmpresa: String
+    contratoEmpresa: String,
+    mo: String
 }, {
     timestamps: true
 })
