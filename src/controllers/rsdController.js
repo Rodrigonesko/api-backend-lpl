@@ -50,6 +50,12 @@ module.exports = {
                     let mapCpfs = new Map()
                     let arrPedidos = []
 
+                    result = result.filter((item) => {
+                        return !this[JSON.stringify(item[' Reembolso'])] && (this[JSON.stringify(item[' Reembolso'])] = true)
+                    }, Object.create(null))
+
+                    console.log(result.length);
+
                     result.forEach(e => {
 
                         if (e['Situação'] == 'Aguardando documentação' ||
@@ -318,7 +324,7 @@ module.exports = {
 
     mostrarPedidos: async (req, res) => {
         try {
-            const {protocolo} = req.params
+            const { protocolo } = req.params
 
             console.log(protocolo);
 
@@ -331,6 +337,81 @@ module.exports = {
             return res.status(200).json({
                 pedidos
             })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarPedido: async (req, res) => {
+        try {
+            const { pedido } = req.params
+
+            const result = await Pedido.findOne({
+                numero: pedido
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    assumirProtocolo: async (req, res) => {
+        try {
+
+            const { analista, protocolo } = req.body
+
+            const result = await Protocolo.findOneAndUpdate({
+                numero: protocolo
+            }, {
+                analista: analista
+            })
+
+            console.log(result);
+
+            return res.status(200).json({
+                msg: 'ola'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarClinica: async (req, res) => {
+        try {
+
+            const { cnpj } = req.params
+
+            const clinica = Clinica.findOne({
+                cnpj: cnpj
+            })
+
+            if (clinica) {
+                return res.status(200).json({
+                    clinica
+                })
+            } else {
+                return res.status(201).json({
+                    msg: 'Não foi achado'
+                })
+            }
+
+
 
         } catch (error) {
             console.log(error);

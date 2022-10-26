@@ -20,7 +20,8 @@ const pedidoScheema = mongoose.Schema({
     reapresentado: Boolean,
     semRetornoContato: Boolean,
     comprovanteNaoRecebido: Boolean,
-    dataConclusao: Date
+    dataConclusao: Date,
+    analista: String
 }, {
     timestamps: true
 })

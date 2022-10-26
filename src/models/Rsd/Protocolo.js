@@ -15,7 +15,7 @@ const protocoloScheema = mongoose.Schema({
     status: String,
     operadorId: String,
     dataStatus: Date,
-    idUsuario: String,
+    analista: String,
     dataInclusao: Date,
     pessoa: String
 }, {

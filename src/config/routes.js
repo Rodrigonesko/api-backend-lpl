@@ -78,5 +78,8 @@ router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
 router.put('/rsd/pessoas/editar', auth, rsdController.atualizarInformacoes)
 router.get('/rsd/protocolos/:mo', auth, rsdController.mostrarProtocolos)
 router.get('/rsd/pedidos/:protocolo', auth, rsdController.mostrarPedidos)
+router.put('/rsd/protocolos/assumir', auth, rsdController.assumirProtocolo)
+router.get('/rsd/pedido/:pedido', auth, rsdController.buscarPedido)
+router.get('/rsd/clinica/:cnpj', auth, rsdController.buscarClinica)
 
 module.exports = router
