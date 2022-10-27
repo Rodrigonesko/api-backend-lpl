@@ -13,7 +13,7 @@ const protocoloScheema = mongoose.Schema({
     dataSla: String,
     ativo: Boolean,
     status: String,
-    operadorId: String,
+    operador: String,
     dataStatus: Date,
     analista: String,
     dataInclusao: Date,

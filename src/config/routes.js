@@ -54,7 +54,6 @@ router.get('/entrevistas/buscarDiasDisponiveis/:enfermeiro', auth, horarioContro
 router.get('/entrevistas/buscarHorariosDisponiveis/:enfermeiro/:data', auth, horarioController.searchHorarios)
 router.put('/entrevistas/agendar', auth, horarioController.agendar)
 
-
 //Liminar
 
 router.post('/liminares/upload', auth, liminarController.upload)
@@ -77,9 +76,13 @@ router.get('/rsd/protocolos', auth, rsdController.show)
 router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
 router.put('/rsd/pessoas/editar', auth, rsdController.atualizarInformacoes)
 router.get('/rsd/protocolos/:mo', auth, rsdController.mostrarProtocolos)
+router.get('/rsd/protocolo/:protocolo', auth, rsdController.mostrarProtocolo)
 router.get('/rsd/pedidos/:protocolo', auth, rsdController.mostrarPedidos)
 router.put('/rsd/protocolos/assumir', auth, rsdController.assumirProtocolo)
 router.get('/rsd/pedido/:pedido', auth, rsdController.buscarPedido)
-router.get('/rsd/clinica/:cnpj', auth, rsdController.buscarClinica)
+router.put('/rsd/clinica/busca', auth, rsdController.buscarClinica)
+router.put('/rsd/pedido/editar', auth, rsdController.editarPedido)
+router.post('/rsd/pedido/criar', auth, rsdController.criarPedido)
+router.post('/rsd/protocolo/criar', auth, rsdController.criarProtocolo)
 
 module.exports = router

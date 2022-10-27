@@ -322,6 +322,27 @@ module.exports = {
         }
     },
 
+    mostrarProtocolo: async (req, res) => {
+        try {
+
+            const { protocolo } = req.params
+
+            const result = await Protocolo.findOne({
+                numero: protocolo
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     mostrarPedidos: async (req, res) => {
         try {
             const { protocolo } = req.params
@@ -381,7 +402,7 @@ module.exports = {
             console.log(result);
 
             return res.status(200).json({
-                msg: 'ola'
+                result
             })
 
         } catch (error) {
@@ -395,23 +416,130 @@ module.exports = {
     buscarClinica: async (req, res) => {
         try {
 
-            const { cnpj } = req.params
+            const { cnpj } = req.body
 
-            const clinica = Clinica.findOne({
-                cnpj: cnpj
+            const clinica = await Clinica.findOne({
+                cnpj
             })
 
-            if (clinica) {
-                return res.status(200).json({
-                    clinica
-                })
-            } else {
-                return res.status(201).json({
-                    msg: 'Não foi achado'
+            console.log(clinica);
+
+            if (!clinica) {
+                return res.status(501).json({
+                    msg: 'Não foi encontrado clinica'
                 })
             }
 
+            return res.status(200).json({
+                clinica
+            })
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    editarPedido: async (req, res) => {
+        try {
+
+            const { pedido, valorApresentado, valorReembolsado, cnpj, clinica, nf } = req.body
+
+            const updatePedido = await Pedido.findOneAndUpdate({
+                numero: pedido
+            }, {
+                valorApresentado: valorApresentado,
+                valorReembolsado: valorReembolsado,
+                cnpj: cnpj,
+                clinica: clinica,
+                nf: nf
+            })
+
+            const updateClinica = await Clinica.findOneAndUpdate({
+                cnpj: cnpj
+            }, {
+                descricao: clinica
+            }, {
+                upsert: true
+            })
+
+            return res.status(200).json({
+                updateClinica, updatePedido
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    criarPedido: async (req, res) => {
+        try {
+
+            const { pedido, protocolo, valorApresentado, valorReembolsado, cnpj, clinica, nf } = req.body
+
+            const create = await Pedido.create({
+                numero: pedido,
+                protocolo,
+                valorApresentado,
+                valorReembolsado,
+                cnpj,
+                clinica,
+                nf,
+                ativo: true,
+                status: 'A iniciar'
+            })
+
+            const updateClinica = await Clinica.findOneAndUpdate({
+                cnpj: cnpj
+            }, {
+                descricao: clinica
+            }, {
+                upsert: true
+            })
+
+            console.log(create, updateClinica);
+
+            return res.status(200).json({
+                create,
+                updateClinica
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    criarProtocolo: async (req, res) => {
+        try {
+            const {protocolo, dataSolicitacao, dataPagamento, operador, mo} = req.body
+
+            const pessoa = await Pessoa.findOne({
+                mo: mo
+            })
+
+            console.log(pessoa);
+
+            const result = await Protocolo.create({
+                numero: protocolo,
+                dataSolicitacao,
+                dataPagamento,
+                status: 'A iniciar',
+                ativo: true,
+                pessoa: pessoa.nome
+            })
+
+            return res.status(200).json({
+                result
+            })
 
         } catch (error) {
             console.log(error);
