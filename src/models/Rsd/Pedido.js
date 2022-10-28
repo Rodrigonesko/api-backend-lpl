@@ -3,8 +3,11 @@ const mongoose = require('mongoose')
 const pedidoScheema = mongoose.Schema({
     numero: String,
     protocolo: String,
+    pacote: String,
     valorApresentado: String,
     valorReembolsado: String,
+    dataSolicitacao: Date,
+    dataPagamento: Date,
     dataSla: Date,
     ativo: Boolean,
     status: String,
@@ -21,7 +24,12 @@ const pedidoScheema = mongoose.Schema({
     semRetornoContato: Boolean,
     comprovanteNaoRecebido: Boolean,
     dataConclusao: Date,
-    analista: String
+    analista: String,
+    operador: String,
+    dataStatus: String,
+    pessoa: String,
+    mo: String
+
 }, {
     timestamps: true
 })

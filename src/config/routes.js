@@ -84,5 +84,7 @@ router.put('/rsd/clinica/busca', auth, rsdController.buscarClinica)
 router.put('/rsd/pedido/editar', auth, rsdController.editarPedido)
 router.post('/rsd/pedido/criar', auth, rsdController.criarPedido)
 router.post('/rsd/protocolo/criar', auth, rsdController.criarProtocolo)
+router.post('/rsd/pacote/criar', auth, rsdController.criarPacote)
+router.get('/rsd/pedidos/mo/:mo', auth, rsdController.buscarPedidosMo)
 
 module.exports = router

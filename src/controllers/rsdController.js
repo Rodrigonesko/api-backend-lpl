@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Pedido = mongoose.model('Pedido')
 const Pessoa = mongoose.model('Pessoa')
 const Protocolo = mongoose.model('Protocolo')
+const Pacote = mongoose.model('Pacote')
 const Operador = mongoose.model('Operador')
 const Clinica = mongoose.model('Clinica')
 
@@ -170,7 +171,18 @@ module.exports = {
                     let valorApresentado = item[9]
                     let valorReembolsado = item[10]
 
+                    let dataSolicitacao = ExcelDateToJSDate(item[2])
+                    dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
+                    dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
+
+                    let dataPagamento = ExcelDateToJSDate(item[3])
+                    dataPagamento.setDate(dataPagamento.getDate() + 1)
+                    dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
+
                     let dataSla = moment(new Date()).add(1, 'days').toDate()
+
+                    let mo = item[7]
+                    let nome = item[8]
 
                     return await Pedido.create({
                         numero: numero,
@@ -179,7 +191,11 @@ module.exports = {
                         valorReembolsado: valorReembolsado,
                         dataSla: dataSla,
                         ativo: true,
-                        status: 'A iniciar'
+                        status: 'A iniciar',
+                        dataSolicitacao,
+                        dataPagamento,
+                        mo,
+                        pessoa: nome
                     })
                 }
             }))
@@ -520,7 +536,7 @@ module.exports = {
 
     criarProtocolo: async (req, res) => {
         try {
-            const {protocolo, dataSolicitacao, dataPagamento, operador, mo} = req.body
+            const { protocolo, dataSolicitacao, dataPagamento, operador, mo } = req.body
 
             const pessoa = await Pessoa.findOne({
                 mo: mo
@@ -532,13 +548,74 @@ module.exports = {
                 numero: protocolo,
                 dataSolicitacao,
                 dataPagamento,
-                status: 'A iniciar',
+                idStatus: 'A iniciar',
+                status: 'Pedido cadastrado',
                 ativo: true,
-                pessoa: pessoa.nome
+                pessoa: pessoa.nome,
+                mo
             })
 
             return res.status(200).json({
                 result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    criarPacote: async (req, res) => {
+        try {
+
+            const { pedidos } = req.body
+
+            console.log(pedidos);
+
+            const pacote = await Pacote.create({
+                ativo: true,
+                status: 'A iniciar'
+            })
+
+            const idPacote = pacote._id
+
+            const updatePedidos = await Promise.all(pedidos.map(async item => {
+
+                return await Pedido.findOneAndUpdate({
+                    numero: item
+                }, {
+                    pacote: idPacote,
+                    status: 'Agendado'
+                })
+            }))
+
+            return res.status(200).json({
+                updatePedidos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarPedidosMo: async (req, res) => {
+        try {
+
+            const {mo} = req.params
+
+            const pacotes = await Pedido.find({
+                mo: mo
+            })           
+
+            console.log(pacotes);
+
+            return res.status(200).json({
+                pacotes
             })
 
         } catch (error) {
