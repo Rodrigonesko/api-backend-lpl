@@ -11,6 +11,7 @@ const pedidoScheema = mongoose.Schema({
     dataSla: Date,
     ativo: Boolean,
     status: String,
+    statusPacote: String,
     formaPagamento: String,
     irregular: Boolean,
     reconhece: Boolean,

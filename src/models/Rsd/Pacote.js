@@ -7,7 +7,8 @@ const pacoteScheema = mongoose.Schema({
     status: String,
     processando: Boolean,
     etapa: String,
-    dossie: String
+    dossie: String,
+    analista: String
 })
 
 module.exports = mongoose.model('Pacote', pacoteScheema)

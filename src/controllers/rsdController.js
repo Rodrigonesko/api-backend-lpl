@@ -192,6 +192,7 @@ module.exports = {
                         dataSla: dataSla,
                         ativo: true,
                         status: 'A iniciar',
+                        statusPacote: 'Não iniciado',
                         dataSolicitacao,
                         dataPagamento,
                         mo,
@@ -570,9 +571,15 @@ module.exports = {
     criarPacote: async (req, res) => {
         try {
 
-            const { pedidos } = req.body
+            const { arrPedidos } = req.body
 
-            console.log(pedidos);
+            console.log(arrPedidos);
+
+            if (arrPedidos.length === 0) {
+                return res.status(500).json({
+                    msg: 'Nenhum pedido selecionado!'
+                })
+            }
 
             const pacote = await Pacote.create({
                 ativo: true,
@@ -581,18 +588,19 @@ module.exports = {
 
             const idPacote = pacote._id
 
-            const updatePedidos = await Promise.all(pedidos.map(async item => {
+            const updatePedidos = await Promise.all(arrPedidos.map(async item => {
 
                 return await Pedido.findOneAndUpdate({
                     numero: item
                 }, {
                     pacote: idPacote,
-                    status: 'Agendado'
+                    status: 'Agendado',
+                    statusPacote: 'A iniciar'
                 })
             }))
 
             return res.status(200).json({
-                updatePedidos
+                idPacote, updatePedidos
             })
 
         } catch (error) {
@@ -606,16 +614,76 @@ module.exports = {
     buscarPedidosMo: async (req, res) => {
         try {
 
-            const {mo} = req.params
+            const { mo } = req.params
 
-            const pacotes = await Pedido.find({
+            const pedidos = await Pedido.find({
                 mo: mo
-            })           
+            })
 
-            console.log(pacotes);
+            console.log(pedidos);
 
             return res.status(200).json({
-                pacotes
+                pedidos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    assumirPacote: async (req, res) => {
+        try {
+            const { name, pacote } = req.body
+
+            console.log(name, pacote);
+
+            const pedidos = await Pedido.find({
+                pacote: pacote
+            })
+
+            for (const item of pedidos) {
+                const updatePedido = await Pedido.findByIdAndUpdate({
+                    _id: item._id
+                }, {
+                    analista: name
+                })
+            }
+
+            const updatePacote = await Pacote.findByIdAndUpdate({
+                _id: pacote
+            }, {
+                analista: name
+            })
+
+
+            return res.status(200).json({
+                msg: 'Assumido com sucesso!'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarPedidosPacote: async (req, res) => {
+        try {
+
+            const { pacote } = req.params
+
+            console.log(pacote);
+
+            const pedidos = await Pedido.find({
+                pacote: pacote
+            })
+
+            return res.status(200).json({
+                pedidos
             })
 
         } catch (error) {

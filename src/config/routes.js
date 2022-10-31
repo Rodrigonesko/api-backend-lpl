@@ -86,5 +86,7 @@ router.post('/rsd/pedido/criar', auth, rsdController.criarPedido)
 router.post('/rsd/protocolo/criar', auth, rsdController.criarProtocolo)
 router.post('/rsd/pacote/criar', auth, rsdController.criarPacote)
 router.get('/rsd/pedidos/mo/:mo', auth, rsdController.buscarPedidosMo)
+router.put('/rsd/pacote/assumir', auth, rsdController.assumirPacote)
+router.get('/rsd/pedidos/pacote/:pacote', auth, rsdController.buscarPedidosPacote)
 
 module.exports = router
