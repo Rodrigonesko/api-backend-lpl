@@ -5,15 +5,56 @@ const Protocolo = mongoose.model('Protocolo')
 const Pacote = mongoose.model('Pacote')
 const Operador = mongoose.model('Operador')
 const Clinica = mongoose.model('Clinica')
+const Gravacao = mongoose.model('Gravacao')
 
+const path = require('path')
 const moment = require('moment')
 const fs = require('fs')
 const multer = require('multer')
 const os = require('os')
 
+const storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        const { pacote } = req.params
+        const dir = `./uploads/rsd/gravacoes/${pacote}/`
+        if (!fs.existsSync(dir)) {
+            //Efetua a criação do diretório
+            fs.mkdir(dir, (err) => {
+                if (err) {
+                    console.log("Deu ruim...");
+                    return
+                }
+                console.log("Diretório criado!")
+            });
+        }
+
+        const usuario = req.user
+        const arquivo = file.originalname
+        const tipo = "gravação"
+
+        await Gravacao.create({
+            caminho: dir,
+            usuario: usuario,
+            arquivo: arquivo,
+            tipo: tipo,
+            pacote: pacote
+        })
+
+        console.log(usuario, arquivo, tipo);
+
+        cb(null, dir)
+    },
+    filename: (req, file, cb) => {
+        const { name, ext } = path.parse(file.originalname)
+
+        cb(null, `${name}${ext}`)
+    }
+})
+
 const xlsx = require('xlsx')
 
 const uploadRsd = multer({ dest: os.tmpdir() }).single('file')
+const uploadGravacao = multer({ storage }).single('file')
 
 module.exports = {
     upload: async (req, res) => {
@@ -692,8 +733,77 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
 
+    anexarGravacao: async (req, res) => {
+        try {
+
+            uploadGravacao(req, res, async (err) => {
+                //console.log(req);
+                console.log(res.file);
+            })
+
+            const { pacote } = req.params
+
+            const caminho = `./uploads/rsd/gravacoes/${pacote}`
+            const usuario = req.user
+
+            return res.status(200).json({
+                msg: 'Anexado com sucesso'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarArquivos: async (req, res) => {
+        try {
+
+            const { pacote } = req.params
+
+            const arquivos = await Gravacao.find({
+                pacote: pacote
+            })
+
+            return res.status(200).json({
+                arquivos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    baixarArquivo: async (req, res) => {
+        try {
+
+            const {arquivo, pacote} = req.params
+        
+            res.setHeader("Access-Control-Allow-Origin", "*");
+
+            const path = `./uploads/rsd/gravacoes/${pacote}/${arquivo}`
+
+            res.download(path)
+
+            // const filePath = fs.createWriteStream(path)
+
+            // return res.status(200).json({
+
+            // })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    }
 }
 
 function ExcelDateToJSDate(serial) {

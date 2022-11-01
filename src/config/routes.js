@@ -11,7 +11,6 @@ const horarioController = require('../controllers/horarioController')
 const rsdController = require('../controllers/rsdController')
 const router = express.Router()
 
-const fs = require('fs')
 const multer = require('multer')
 
 const uploadRsd = multer({dest: '/tmp'})
@@ -88,5 +87,7 @@ router.post('/rsd/pacote/criar', auth, rsdController.criarPacote)
 router.get('/rsd/pedidos/mo/:mo', auth, rsdController.buscarPedidosMo)
 router.put('/rsd/pacote/assumir', auth, rsdController.assumirPacote)
 router.get('/rsd/pedidos/pacote/:pacote', auth, rsdController.buscarPedidosPacote)
-
+router.post('/rsd/gravacao/anexar/:pacote', auth, rsdController.anexarGravacao)
+router.get('/rsd/arquivos/:pacote', auth, rsdController.buscarArquivos)
+router.get('/rsd/arquivos/download/:pacote/:arquivo', auth, rsdController.baixarArquivo)
 module.exports = router

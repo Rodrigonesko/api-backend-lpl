@@ -2,11 +2,10 @@ const mongoose = require('mongoose')
 
 const gravacaoScheema = mongoose.Schema({
     caminho: String,
-    idUsuario: String,
-    dataHora: String,
+    usuario: String,
     arquivo: String,
     tipo: String,
-    idPacote: String
+    pacote: String
 }, {
     timestamps: true
 })
