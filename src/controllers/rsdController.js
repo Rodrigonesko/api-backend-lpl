@@ -6,6 +6,8 @@ const Pacote = mongoose.model('Pacote')
 const Operador = mongoose.model('Operador')
 const Clinica = mongoose.model('Clinica')
 const Gravacao = mongoose.model('Gravacao')
+const FormaPagamento = mongoose.model('FormaPagamento')
+const StatusFinalizacao = mongoose.model('StatusFinalizacao')
 
 const path = require('path')
 const moment = require('moment')
@@ -780,22 +782,50 @@ module.exports = {
         }
     },
 
-    baixarArquivo: async (req, res) => {
+    buscarFormasPagamento: async (req, res) => {
         try {
 
-            const {arquivo, pacote} = req.params
-        
-            res.setHeader("Access-Control-Allow-Origin", "*");
+            const formasPagamento = await FormaPagamento.find()
 
-            const path = `./uploads/rsd/gravacoes/${pacote}/${arquivo}`
+            return res.status(200).json({
+                formasPagamento
+            })
 
-            res.download(path)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
 
-            // const filePath = fs.createWriteStream(path)
+    buscarStatusFinalizacao: async (req, res) => {
+        try {
 
-            // return res.status(200).json({
+            const statusFinalizacoes = await StatusFinalizacao.find()
 
-            // })
+            return res.status(200).json({
+                statusFinalizacoes
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    atualizarPedido: async (req, res) => {
+        try {
+
+            const {pacote, sucesso} = req.body
+
+            console.log(pacote, sucesso);
+
+            return res.status(200).json({
+                msg: 'oi'
+            })
 
         } catch (error) {
             console.log(error);

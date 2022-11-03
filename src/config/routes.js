@@ -89,5 +89,8 @@ router.put('/rsd/pacote/assumir', auth, rsdController.assumirPacote)
 router.get('/rsd/pedidos/pacote/:pacote', auth, rsdController.buscarPedidosPacote)
 router.post('/rsd/gravacao/anexar/:pacote', auth, rsdController.anexarGravacao)
 router.get('/rsd/arquivos/:pacote', auth, rsdController.buscarArquivos)
-router.get('/rsd/arquivos/download/:pacote/:arquivo', auth, rsdController.baixarArquivo)
+router.get('/rsd/formasPagamento', auth, rsdController.buscarFormasPagamento)
+router.get('/rsd/statusFinalizacoes', auth, rsdController.buscarStatusFinalizacao)
+router.put('/rsd/pedido/atualizar', auth, rsdController.atualizarPedido)
+
 module.exports = router
