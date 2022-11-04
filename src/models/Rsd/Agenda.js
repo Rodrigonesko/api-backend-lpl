@@ -2,8 +2,7 @@ const mongoose = require('mongoose')
 
 const AgendaScheema = mongoose.Schema({
     idPacote: String,
-    dataParecer: String,
-    idUsuario: String,
+    usuario: String,
     tipo: String,
     parecer: String
 }, {

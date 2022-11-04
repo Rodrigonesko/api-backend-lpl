@@ -92,5 +92,6 @@ router.get('/rsd/arquivos/:pacote', auth, rsdController.buscarArquivos)
 router.get('/rsd/formasPagamento', auth, rsdController.buscarFormasPagamento)
 router.get('/rsd/statusFinalizacoes', auth, rsdController.buscarStatusFinalizacao)
 router.put('/rsd/pedido/atualizar', auth, rsdController.atualizarPedido)
+router.get('/rsd/agenda/:pacote', auth, rsdController.buscarAgenda)
 
 module.exports = router

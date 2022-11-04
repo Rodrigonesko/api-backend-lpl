@@ -8,6 +8,7 @@ const Clinica = mongoose.model('Clinica')
 const Gravacao = mongoose.model('Gravacao')
 const FormaPagamento = mongoose.model('FormaPagamento')
 const StatusFinalizacao = mongoose.model('StatusFinalizacao')
+const Agenda = mongoose.model('AgendaRsd')
 
 const path = require('path')
 const moment = require('moment')
@@ -18,6 +19,7 @@ const os = require('os')
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
         const { pacote } = req.params
+        const { name, ext } = path.parse(file.originalname)
         const dir = `./uploads/rsd/gravacoes/${pacote}/`
         if (!fs.existsSync(dir)) {
             //Efetua a criação do diretório
@@ -32,7 +34,14 @@ const storage = multer.diskStorage({
 
         const usuario = req.user
         const arquivo = file.originalname
-        const tipo = "gravação"
+
+        let tipo
+
+        if (ext === '.wav') {
+            tipo = "gravação"
+        } else {
+            tipo = "Arquivo"
+        }
 
         await Gravacao.create({
             caminho: dir,
@@ -819,12 +828,190 @@ module.exports = {
     atualizarPedido: async (req, res) => {
         try {
 
-            const {pacote, sucesso} = req.body
+            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao } = req.body
 
-            console.log(pacote, sucesso);
+            const pacoteBanco = await Pedido.findOne({
+                pacote: pacote
+            })
+
+
+            if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: 1° Tentativa)"
+                })
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    statusPacote: '2° Tentativa'
+                })
+
+
+            }
+
+            if (pacoteBanco.statusPacote === '2° Tentativa' && sucesso === 'Não') {
+
+                console.log('3° tentativa');
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    statusPacote: '3° Tentativa'
+                })
+            }
+
+            if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Não') {
+
+                console.log('Aguardando Retorno Contato');
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    statusPacote: 'Aguardando Retorno Contato'
+                })
+            }
+
+            if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Sim') {
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: 1° Tentativa)"
+                })
+
+            }
+
+            if (pacoteBanco.statusPacote === '2° Tentativa' && sucesso === 'Sim') {
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: 2° Tentativa)"
+                })
+
+            }
+
+            if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Sim') {
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: 3° Tentativa)"
+                })
+
+            }
+
+            if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Sim') {
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: Aguardando Retorno Contato)"
+                })
+
+            }
+
+            for (const item of motivoContato) {
+
+                let reconhece = false
+
+                if (item[1] == 'Sim') {
+                    reconhece = true
+                }
+                const updatePedido = await Pedido.findOneAndUpdate({
+                    numero: item[0]
+                }, {
+                    reconhece: reconhece
+                })
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: `Beneficiário reconhece pedido: ${item[0]}?, ${item[1]}`
+                })
+
+            }
+
+            for (const item of confirmacaoServico) {
+
+                const updatePedido = await Pedido.findOneAndUpdate({
+                    numero: item[0]
+                }, {
+                    formaPagamento: item[1]
+                })
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: `Pedido: ${item[0]}, Forma de Pagamento: ${item[1]}`
+                })
+
+            }
+
+            for (const item of finalizacao) {
+                const updatePedido = await Pedido.findOneAndUpdate({
+                    numero: item[0]
+                }, {
+                    statusFinalizacao: item[1],
+                    status: item[1]
+                })
+
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: `Pedido: ${item[0]}, finalização: ${item[1]}`
+                })
+
+            }
+
+            const buscarPedidos = await Pedido.find({
+                pacote: pacote
+            })
+
+            let flag = 0
+
+            for (const item of buscarPedidos) {
+                if(item.statusFinalizacao){
+                    flag++
+                }
+
+                if(buscarPedidos.length === flag){
+                    await Pedido.updateMany({
+                        pacote: pacote
+                    }, {
+                        statusPacote: 'Concluído'
+                    })
+                }
+
+            }
+            
 
             return res.status(200).json({
                 msg: 'oi'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarAgenda: async (req, res) => {
+        try {
+
+            const { pacote } = req.params
+
+            const agenda = await Agenda.find({
+                idPacote: pacote
+            })
+
+            return res.status(200).json({
+                agenda
             })
 
         } catch (error) {
