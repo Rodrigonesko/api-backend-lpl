@@ -97,7 +97,7 @@ module.exports = {
 
                 console.log(result.length);
 
-                if (req.file.originalname.indexOf('PF') === 10) {
+                if (req.file.originalname.indexOf('PF') === 10 || req.file.originalname.indexOf('PF') === 5) {
                     console.log('fila pf');
 
                     let mapCpfs = new Map()
@@ -106,8 +106,6 @@ module.exports = {
                     result = result.filter((item) => {
                         return !this[JSON.stringify(item[' Reembolso'])] && (this[JSON.stringify(item[' Reembolso'])] = true)
                     }, Object.create(null))
-
-                    console.log(result.length);
 
                     result.forEach(e => {
 
@@ -184,6 +182,46 @@ module.exports = {
 
                 } else {
                     console.log('fila pj');
+
+                    result.forEach((e, key) => {
+                        let conc = `${e[' Valor Apresentado'].replace('R$ ', '').replace('.', '').replace(',', '.')}`
+                        conc = +conc
+                        conc = `${e['Número do Protocolo'].replace(/[^0-9]/g, '')}${conc}`
+                        let flag = 0
+
+                        console.log(conc);
+
+                        pedidosBanco.forEach(item => {
+                            let concBanco = `${item?.protocolo?.replace(/[^0-9]/g, '')}${Number(item.valorApresentado)}`
+                            if (concBanco == conc) {
+                                flag++
+                                return
+                            }
+                        })
+
+                        let split = e[' Beneficiário'].split(' ')
+                        let mo = split[1]
+                        let beneficiario = split[2]
+
+                        if (flag == 0) {
+                            pedidos.push([
+                                undefined,
+                                undefined,
+                                e['Data Solicitação'],
+                                undefined,
+                                e['Data Pagamento'],
+                                undefined,
+                                undefined,
+                                mo,
+                                beneficiario,
+                                e[' Valor Apresentado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
+                                e[' Valor Reembolsado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
+                                e['Número do Protocolo'].replace(/[^0-9]/g, ''),
+                                e['Operadora Beneficiário'].replace(' ', ' ')
+                            ])
+                        }
+                    })
+
                 }
 
                 return res.status(200).json({
@@ -215,42 +253,55 @@ module.exports = {
                 })
             }))
 
+
             const addPedidos = await Promise.all(pedidos.map(async item => {
+                let numero = item[0]
+                let protocolo = item[11]
+                let valorApresentado = item[9]
+                let valorReembolsado = item[10]
+
+                let dataSolicitacao = ExcelDateToJSDate(item[2])
+                dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
+                dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
+
+                let dataPagamento = ExcelDateToJSDate(item[3])
+                dataPagamento.setDate(dataPagamento.getDate() + 1)
+                dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
+
+                let dataSla
 
                 if (item[12] == 'pf') {
-                    let numero = item[0]
-                    let protocolo = item[11]
-                    let valorApresentado = item[9]
-                    let valorReembolsado = item[10]
+                    dataSla = moment(new Date()).add(1, 'days').toDate()
+                } else {
+                    const operadores = await Operador.find()
 
-                    let dataSolicitacao = ExcelDateToJSDate(item[2])
-                    dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
-                    dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
-
-                    let dataPagamento = ExcelDateToJSDate(item[3])
-                    dataPagamento.setDate(dataPagamento.getDate() + 1)
-                    dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
-
-                    let dataSla = moment(new Date()).add(1, 'days').toDate()
-
-                    let mo = item[7]
-                    let nome = item[8]
-
-                    return await Pedido.create({
-                        numero: numero,
-                        protocolo: protocolo,
-                        valorApresentado: valorApresentado,
-                        valorReembolsado: valorReembolsado,
-                        dataSla: dataSla,
-                        ativo: true,
-                        status: 'A iniciar',
-                        statusPacote: 'Não iniciado',
-                        dataSolicitacao,
-                        dataPagamento,
-                        mo,
-                        pessoa: nome
+                    operadores.forEach(e => {
+                        console.log(item[12]);
+                        if (item[12] == e.descricao) {
+                            dataSla = moment(new Date()).add(e.sla, 'days').toDate()
+                            return
+                        }
                     })
                 }
+
+                let mo = item[7]
+                let nome = item[8]
+
+                return await Pedido.create({
+                    numero: numero,
+                    protocolo: protocolo,
+                    valorApresentado: valorApresentado,
+                    valorReembolsado: valorReembolsado,
+                    dataSla: dataSla,
+                    ativo: true,
+                    status: 'A iniciar',
+                    statusPacote: 'Não iniciado',
+                    dataSolicitacao,
+                    dataPagamento,
+                    mo,
+                    pessoa: nome
+                })
+
             }))
 
             const addProtocolo = await Promise.all(pedidos.map(async item => {
@@ -440,8 +491,8 @@ module.exports = {
         try {
             const { pedido } = req.params
 
-            const result = await Pedido.findOne({
-                numero: pedido
+            const result = await Pedido.findById({
+                _id: pedido
             })
 
             return res.status(200).json({
@@ -514,16 +565,17 @@ module.exports = {
     editarPedido: async (req, res) => {
         try {
 
-            const { pedido, valorApresentado, valorReembolsado, cnpj, clinica, nf } = req.body
+            const { pedido, valorApresentado, valorReembolsado, cnpj, clinica, nf, pedidoEditado } = req.body
 
-            const updatePedido = await Pedido.findOneAndUpdate({
-                numero: pedido
+            const updatePedido = await Pedido.findByIdAndUpdate({
+                _id: pedido
             }, {
                 valorApresentado: valorApresentado,
                 valorReembolsado: valorReembolsado,
                 cnpj: cnpj,
                 clinica: clinica,
-                nf: nf
+                nf: nf,
+                numero: pedidoEditado
             })
 
             const updateClinica = await Clinica.findOneAndUpdate({
@@ -834,7 +886,6 @@ module.exports = {
                 pacote: pacote
             })
 
-
             if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {
 
                 await Agenda.create({
@@ -854,7 +905,11 @@ module.exports = {
 
             if (pacoteBanco.statusPacote === '2° Tentativa' && sucesso === 'Não') {
 
-                console.log('3° tentativa');
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: 2° Tentativa)"
+                })
 
                 await Pedido.updateMany({
                     pacote: pacote
@@ -865,12 +920,17 @@ module.exports = {
 
             if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Não') {
 
-                console.log('Aguardando Retorno Contato');
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Iniciado Processamento (etapa: 3° Tentativa)"
+                })
 
                 await Pedido.updateMany({
                     pacote: pacote
                 }, {
-                    statusPacote: 'Aguardando Retorno Contato'
+                    statusPacote: 'Aguardando Retorno Contato',
+                    status: 'Aguardando Retorno Contato'
                 })
             }
 
@@ -940,7 +1000,8 @@ module.exports = {
                 const updatePedido = await Pedido.findOneAndUpdate({
                     numero: item[0]
                 }, {
-                    formaPagamento: item[1]
+                    formaPagamento: item[1],
+                    status: 'Aguardando Documento Original',
                 })
 
                 await Agenda.create({
@@ -974,11 +1035,11 @@ module.exports = {
             let flag = 0
 
             for (const item of buscarPedidos) {
-                if(item.statusFinalizacao){
+                if (item.statusFinalizacao) {
                     flag++
                 }
 
-                if(buscarPedidos.length === flag){
+                if (buscarPedidos.length === flag) {
                     await Pedido.updateMany({
                         pacote: pacote
                     }, {
@@ -987,7 +1048,7 @@ module.exports = {
                 }
 
             }
-            
+
 
             return res.status(200).json({
                 msg: 'oi'
@@ -1012,6 +1073,29 @@ module.exports = {
 
             return res.status(200).json({
                 agenda
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarPedidosNaoFinalizados: async (req, res) => {
+        try {
+
+            const pedidos = await Pedido.find({
+                status: {
+                    $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
+                }
+            })
+
+            console.log(pedidos);
+
+            return res.status(200).json({
+                pedidos
             })
 
         } catch (error) {

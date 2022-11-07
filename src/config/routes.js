@@ -13,7 +13,7 @@ const router = express.Router()
 
 const multer = require('multer')
 
-const uploadRsd = multer({dest: '/tmp'})
+const uploadRsd = multer({ dest: '/tmp' })
 
 //Public routes
 router.get('/', publicController.index)
@@ -22,12 +22,12 @@ router.post('/login', publicController.login)
 router.get('/verifyToken', auth, verifyToken.verify)
 
 //Rest
-router.post('/users', auth,userController.create)
-router.get('/users', auth,userController.index)
+router.post('/users', auth, userController.create)
+router.get('/users', auth, userController.index)
 router.get('/infoUser', auth, userController.infoUser)
 router.get('/infoUser/:email', auth, userController.searchEmail)
 router.get('/users/enfermeiros', auth, userController.enfermeiros)
-router.put('/users/updatePassword', auth ,userController.firstAccess)
+router.put('/users/updatePassword', auth, userController.firstAccess)
 router.put('/users/modules', auth, userController.modules)
 
 
@@ -93,5 +93,6 @@ router.get('/rsd/formasPagamento', auth, rsdController.buscarFormasPagamento)
 router.get('/rsd/statusFinalizacoes', auth, rsdController.buscarStatusFinalizacao)
 router.put('/rsd/pedido/atualizar', auth, rsdController.atualizarPedido)
 router.get('/rsd/agenda/:pacote', auth, rsdController.buscarAgenda)
+router.get('/rsd/pedidos/naoFinalizados/naoFinalizados', auth, rsdController.buscarPedidosNaoFinalizados)
 
 module.exports = router
