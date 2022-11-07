@@ -94,5 +94,12 @@ router.get('/rsd/statusFinalizacoes', auth, rsdController.buscarStatusFinalizaca
 router.put('/rsd/pedido/atualizar', auth, rsdController.atualizarPedido)
 router.get('/rsd/agenda/:pacote', auth, rsdController.buscarAgenda)
 router.get('/rsd/pedidos/naoFinalizados/naoFinalizados', auth, rsdController.buscarPedidosNaoFinalizados)
+router.get('/rsd/pedidos/naoFinalizados/filtro/:pesquisa', auth, rsdController.filtroPedidosNaoFinalizados)
+router.get('/rsd/operadoras', auth, rsdController.buscarOperadoras)
+router.post('/rsd/pedido/criar/individual', auth, rsdController.criarPedidoIndividual)
+router.post('/rsd/operadoras/criar', auth, rsdController.criarOperadora)
+router.put('/rsd/operadoras/editar', auth, rsdController.editarOperadora)
+router.get('/rsd/operadora/:id', auth, rsdController.buscarOperadora)
+router.get('/rsd/concluidos/:pesquisa', auth, rsdController.buscarPedidosFinalizados)
 
 module.exports = router

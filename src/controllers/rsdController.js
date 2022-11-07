@@ -35,12 +35,10 @@ const storage = multer.diskStorage({
         const usuario = req.user
         const arquivo = file.originalname
 
-        let tipo
+        let tipo = "Arquivo"
 
         if (ext === '.wav') {
-            tipo = "gravação"
-        } else {
-            tipo = "Arquivo"
+            tipo = "Gravação"
         }
 
         await Gravacao.create({
@@ -1090,6 +1088,238 @@ module.exports = {
                 status: {
                     $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
                 }
+            })
+
+            return res.status(200).json({
+                pedidos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    filtroPedidosNaoFinalizados: async (req, res) => {
+        try {
+
+            const { pesquisa } = req.params
+
+            const pedidos = await Pedido.find({
+                $or: [
+                    {
+                        mo: pesquisa,
+                        status: {
+                            $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
+                        }
+                    },
+                    {
+                        pessoa: pesquisa,
+                        status: {
+                            $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
+                        }
+                    }
+                ]
+            })
+
+            console.log(pedidos);
+
+            return res.status(200).json({
+                pedidos
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarOperadoras: async (req, res) => {
+        try {
+
+            const operadoras = await Operador.find()
+
+            return res.status(200).json({
+                operadoras
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    criarPedidoIndividual: async (req, res) => {
+        try {
+
+            const {
+                mo,
+                nome,
+                dataNascimento,
+                email,
+                fone1,
+                fone2,
+                fone3,
+                cpf,
+                operadoraBeneficiario,
+                protocolo,
+                dataSolicitacao,
+                dataPagamento,
+                pedido
+            } = req.body
+
+            const operadores = await Operador.find()
+
+            let sla = 3
+
+            operadores.forEach(e => {
+                if (e.descricao == operadoraBeneficiario) {
+                    sla = e.sla
+                }
+            })
+
+            dataSla = moment(new Date()).add(sla, 'days').toDate()
+
+            const pessoa = await Pessoa.findOneAndUpdate({
+                mo: mo
+            }, {
+                nome,
+                dataNascimento,
+                email,
+                fone1,
+                fone2,
+                fone3,
+                ativo: true,
+                cpf
+            }, {
+                upsert: true
+            })
+
+            const novoPedido = await Pedido.create({
+                mo: mo,
+                pessoa: nome,
+                protocolo,
+                operador: operadoraBeneficiario,
+                dataSolicitacao,
+                dataPagamento,
+                numero: pedido,
+                ativo: true,
+                status: 'A iniciar',
+                statusPacote: 'Não iniciado',
+                dataSla
+
+            })
+
+            return res.status(200).json({
+                novoPedido
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    criarOperadora: async (req, res) => {
+        try {
+
+            const { descricao, sla } = req.body
+
+            const operadora = await Operador.create({
+                descricao,
+                sla
+            })
+
+            return res.status(200).json({
+                operadora
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    editarOperadora: async (req, res) => {
+        try {
+            const { descricao, sla, id } = req.body
+
+            const operadora = await Operador.findByIdAndUpdate({
+                _id: id
+            }, {
+                descricao,
+                sla
+            })
+
+            return res.status(200).json({
+                operadora
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarOperadora: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            const operadora = await Operador.findById({
+                _id: id
+            })
+
+            return res.status(200).json({
+                operadora
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    buscarPedidosFinalizados: async (req, res) => {
+        try {
+
+            const { pesquisa } = req.params
+
+            const pedidos = await Pedido.find({
+                $or: [
+                    {
+                        mo: pesquisa,
+                        statusFinalizacao: {
+                            $in: ['Sem Contato', 'Comprovante Não Recebido', 'Comprovante Correto', 'Pagamento Não Realizado', 'Pago pela Amil sem Comprovante']
+                        }
+                    },
+                    {
+                        numero: pesquisa,
+                        statusFinalizacao: {
+                            $in: ['Sem Contato', 'Comprovante Não Recebido', 'Comprovante Correto', 'Pagamento Não Realizado', 'Pago pela Amil sem Comprovante']
+                        }
+                    }, 
+                    {
+                        protocolo: pesquisa,
+                        statusFinalizacao: {
+                            $in: ['Sem Contato', 'Comprovante Não Recebido', 'Comprovante Correto', 'Pagamento Não Realizado', 'Pago pela Amil sem Comprovante']
+                        }
+                    }
+                ]
             })
 
             console.log(pedidos);
