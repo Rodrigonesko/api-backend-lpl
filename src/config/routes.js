@@ -71,7 +71,7 @@ router.put('/projetoAj/change', auth, projetoAjController.change)
 
 router.post('/rsd/upload', auth, rsdController.upload)
 router.post('/rsd/subir', auth, rsdController.subir)
-router.get('/rsd/protocolos', auth, rsdController.show)
+router.get('/rsd/pedidos/todos', auth, rsdController.show)
 router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
 router.put('/rsd/pessoas/editar', auth, rsdController.atualizarInformacoes)
 router.get('/rsd/protocolos/:mo', auth, rsdController.mostrarProtocolos)
@@ -101,5 +101,7 @@ router.post('/rsd/operadoras/criar', auth, rsdController.criarOperadora)
 router.put('/rsd/operadoras/editar', auth, rsdController.editarOperadora)
 router.get('/rsd/operadora/:id', auth, rsdController.buscarOperadora)
 router.get('/rsd/concluidos/:pesquisa', auth, rsdController.buscarPedidosFinalizados)
+router.put('/rsd/pedido/devolverAmil', auth, rsdController.devolverAmil)
+router.post('/rsd/agenda/novoParecer', auth, rsdController.escrevarAgenda)
 
 module.exports = router

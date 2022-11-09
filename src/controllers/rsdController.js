@@ -266,7 +266,7 @@ module.exports = {
                 dataPagamento.setDate(dataPagamento.getDate() + 1)
                 dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
 
-                let dataSla
+                let dataSla = moment(new Date()).add(3, 'days').toDate()
 
                 if (item[12] == 'pf') {
                     dataSla = moment(new Date()).add(1, 'days').toDate()
@@ -297,7 +297,10 @@ module.exports = {
                     dataSolicitacao,
                     dataPagamento,
                     mo,
-                    pessoa: nome
+                    pessoa: nome,
+                    fase: 'A iniciar',
+                    statusGerencial: 'A iniciar',
+                    statusPadraoAmil: 'A iniciar'
                 })
 
             }))
@@ -353,10 +356,10 @@ module.exports = {
 
     show: async (req, res) => {
         try {
-            const protocolos = await Protocolo.find()
+            const pedidos = await Pedido.find()
 
             return res.status(200).json({
-                protocolos
+                pedidos
             })
 
         } catch (error) {
@@ -370,8 +373,6 @@ module.exports = {
     mostrarPessoa: async (req, res) => {
         try {
             const { mo } = req.params
-
-            console.log(mo);
 
             const pessoa = await Pessoa.findOne({
                 mo: mo
@@ -611,7 +612,11 @@ module.exports = {
                 clinica,
                 nf,
                 ativo: true,
-                status: 'A iniciar'
+                status: 'A iniciar',
+                statusPacote: 'Não iniciado',
+                fase: 'A iniciar',
+                statusGerencial: 'A iniciar',
+                statusPadraoAmil: 'A iniciar'
             })
 
             const updateClinica = await Clinica.findOneAndUpdate({
@@ -639,13 +644,26 @@ module.exports = {
 
     criarProtocolo: async (req, res) => {
         try {
-            const { protocolo, dataSolicitacao, dataPagamento, operador, mo } = req.body
+            const { protocolo, dataSolicitacao, dataPagamento, operadora, mo, pedido } = req.body
 
             const pessoa = await Pessoa.findOne({
                 mo: mo
             })
 
             console.log(pessoa);
+
+            const operadores = await Operador.find()
+
+            let sla = 3
+
+            operadores.forEach(e => {
+                if (e.descricao == operadora) {
+                    sla = e.sla
+                }
+            })
+
+            dataSla = moment(new Date()).add(sla, 'days').toDate()
+
 
             const result = await Protocolo.create({
                 numero: protocolo,
@@ -658,8 +676,25 @@ module.exports = {
                 mo
             })
 
+            const criarProtocolo = await Pedido.create({
+                numero: pedido,
+                protocolo,
+                dataSolicitacao,
+                dataPagamento,
+                ativo: true,
+                pessoa: pessoa.nome,
+                mo,
+                status: 'A iniciar',
+                statusPacote: 'Não iniciado',
+                fase: 'A iniciar',
+                statusGerencial: 'A iniciar',
+                statusPadraoAmil: 'A iniciar',
+                dataSla,
+                operador: operadora
+            })
+
             return res.status(200).json({
-                result
+                criarProtocolo
             })
 
         } catch (error) {
@@ -696,7 +731,7 @@ module.exports = {
                     numero: item
                 }, {
                     pacote: idPacote,
-                    status: 'Agendado',
+                    status: 'Em andamento',
                     statusPacote: 'A iniciar'
                 })
             }))
@@ -884,6 +919,26 @@ module.exports = {
                 pacote: pacote
             })
 
+            if (sucesso === 'Sem Retorno de Contato') {
+                await Agenda.create({
+                    idPacote: pacote,
+                    usuario: req.user,
+                    parecer: "Cancelando o pacote por falta de contato"
+                })
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    status: 'Finalizado',
+                    statusPacote: 'Finalizado',
+                    fase: 'Finalizado',
+                    statusGerencial: 'Protocolo Cancelado',
+                    statusPadraoAmil: 'CANCELAMENTO - Sem retorno pós 5 dias úteis',
+                    dataConclusao: new Date()
+                })
+
+            }
+
             if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {
 
                 await Agenda.create({
@@ -897,7 +952,6 @@ module.exports = {
                 }, {
                     statusPacote: '2° Tentativa'
                 })
-
 
             }
 
@@ -928,7 +982,10 @@ module.exports = {
                     pacote: pacote
                 }, {
                     statusPacote: 'Aguardando Retorno Contato',
-                    status: 'Aguardando Retorno Contato'
+                    status: 'Aguardando Retorno Contato',
+                    fase: 'Em andamento',
+                    statusGerencial: 'Aguardando Retorno Contato',
+                    statusPadraoAmil: 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno'
                 })
             }
 
@@ -979,44 +1036,164 @@ module.exports = {
                 if (item[1] == 'Sim') {
                     reconhece = true
                 }
-                const updatePedido = await Pedido.findOneAndUpdate({
-                    numero: item[0]
-                }, {
-                    reconhece: reconhece
-                })
 
-                await Agenda.create({
-                    idPacote: pacote,
-                    usuario: req.user,
-                    parecer: `Beneficiário reconhece pedido: ${item[0]}?, ${item[1]}`
-                })
+
+                if (reconhece === false) {
+
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        reconhece: reconhece,
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Protocolo Cancelado',
+                        statusPadraoAmil: 'CANCELAMENTO - Não reconhece Procedimento/Consulta',
+                        dataConclusao: new Date()
+                    })
+
+                    await Agenda.create({
+                        idPacote: pacote,
+                        usuario: req.user,
+                        parecer: `Beneficiário não reconhece pedido: ${item[0]}, finalizando pedido`
+                    })
+
+                } else {
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        reconhece: reconhece
+                    })
+
+                    await Agenda.create({
+                        idPacote: pacote,
+                        usuario: req.user,
+                        parecer: `Beneficiário reconhece pedido: ${item[0]}`
+                    })
+                }
 
             }
 
             for (const item of confirmacaoServico) {
 
-                const updatePedido = await Pedido.findOneAndUpdate({
-                    numero: item[0]
-                }, {
-                    formaPagamento: item[1],
-                    status: 'Aguardando Documento Original',
-                })
+                if (item[1] === 'Pagamento não realizado') {
 
-                await Agenda.create({
-                    idPacote: pacote,
-                    usuario: req.user,
-                    parecer: `Pedido: ${item[0]}, Forma de Pagamento: ${item[1]}`
-                })
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        formaPagamento: item[1],
+                        status: 'Pagamento Não Realizado',
+                        statusPacote: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Pagamento Não Realizado',
+                        statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento',
+                        dataConclusao: new Date()
+                    })
+
+                    await Agenda.create({
+                        idPacote: pacote,
+                        usuario: req.user,
+                        parecer: `Pedido: ${item[0]}, pagamento não realizado`
+                    })
+
+                } else {
+
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        formaPagamento: item[1],
+                        status: 'Aguardando Docs',
+                        fase: 'Em Andamento',
+                        statusGerencial: 'Aguardando Comprovante',
+                        statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante'
+                    })
+
+                    if (item[1] === 'Dinheiro') {
+                        const updatePedido = await Pedido.findOneAndUpdate({
+                            numero: item[0]
+                        }, {
+                            formaPagamento: item[1],
+                            status: 'Aguardando Docs',
+                            fase: 'Em Andamento',
+                            statusGerencial: 'Aguardando Comprovante',
+                            statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação'
+                        })
+                    }
+
+                    await Agenda.create({
+                        idPacote: pacote,
+                        usuario: req.user,
+                        parecer: `Pedido: ${item[0]}, Forma de Pagamento: ${item[1]}, Aguardando Comprovante`
+                    })
+                }
 
             }
 
             for (const item of finalizacao) {
-                const updatePedido = await Pedido.findOneAndUpdate({
-                    numero: item[0]
-                }, {
-                    statusFinalizacao: item[1],
-                    status: item[1]
-                })
+
+                if (item[1] === 'Comprovante Correto') {
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        statusFinalizacao: 'Finalizado',
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Comprovante Correto',
+                        statusPadraoAmil: 'PAGAMENTO LIBERADO',
+                        dataConclusao: new Date()
+                    })
+                }
+
+                if (item[1] === 'Pago pela Amil sem Comprovante') {
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        statusFinalizacao: 'Finalizado',
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Pago pela Amil sem Comprovante',
+                        statusPadraoAmil: 'PAGAMENTO LIBERADO',
+                        dataConclusao: new Date()
+                    })
+                }
+
+                if (item[1] === 'Pagamento Não Realizado') {
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        statusFinalizacao: 'Finalizado',
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Pagamento Não Realizado',
+                        statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento',
+                        dataConclusao: new Date()
+                    })
+                }
+
+                if (item[1] === 'Comprovante Não Recebido') {
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        statusFinalizacao: 'Finalizado',
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Protocolo Cancelado',
+                        statusPadraoAmil: 'CANCELAMENTO - Comprovante não Recebido',
+                        dataConclusao: new Date()
+                    })
+                }
+
+                if (item[1] === 'Reapresentação de Protocolo Indeferido') {
+                    const updatePedido = await Pedido.findOneAndUpdate({
+                        numero: item[0]
+                    }, {
+                        statusFinalizacao: 'Finalizado',
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Protocolo Cancelado',
+                        statusPadraoAmil: 'INDEFERIR - Reapresentação de Protocolo Indeferido',
+                        dataConclusao: new Date()
+                    })
+                }
 
                 await Agenda.create({
                     idPacote: pacote,
@@ -1033,7 +1210,8 @@ module.exports = {
             let flag = 0
 
             for (const item of buscarPedidos) {
-                if (item.statusFinalizacao) {
+
+                if (item.fase === 'Finalizado') {
                     flag++
                 }
 
@@ -1041,12 +1219,11 @@ module.exports = {
                     await Pedido.updateMany({
                         pacote: pacote
                     }, {
-                        statusPacote: 'Concluído'
+                        statusPacote: 'Finalizado'
                     })
                 }
 
             }
-
 
             return res.status(200).json({
                 msg: 'oi'
@@ -1086,7 +1263,7 @@ module.exports = {
 
             const pedidos = await Pedido.find({
                 status: {
-                    $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
+                    $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Comprovante']
                 }
             })
 
@@ -1112,19 +1289,17 @@ module.exports = {
                     {
                         mo: pesquisa,
                         status: {
-                            $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
+                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Comprovante']
                         }
                     },
                     {
                         pessoa: pesquisa,
                         status: {
-                            $in: ['A iniciar', 'Agendado', 'Aguardando Retorno Contato', 'Aguardando Documento Original']
+                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Comprovante']
                         }
                     }
                 ]
             })
-
-            console.log(pedidos);
 
             return res.status(200).json({
                 pedidos
@@ -1213,8 +1388,10 @@ module.exports = {
                 ativo: true,
                 status: 'A iniciar',
                 statusPacote: 'Não iniciado',
-                dataSla
-
+                dataSla,
+                fase: 'A iniciar',
+                statusGerencial: 'A iniciar',
+                statusPadraoAmil: 'A iniciar'
             })
 
             return res.status(200).json({
@@ -1303,26 +1480,18 @@ module.exports = {
                 $or: [
                     {
                         mo: pesquisa,
-                        statusFinalizacao: {
-                            $in: ['Sem Contato', 'Comprovante Não Recebido', 'Comprovante Correto', 'Pagamento Não Realizado', 'Pago pela Amil sem Comprovante']
-                        }
+                        fase: 'Finalizado'
                     },
                     {
                         numero: pesquisa,
-                        statusFinalizacao: {
-                            $in: ['Sem Contato', 'Comprovante Não Recebido', 'Comprovante Correto', 'Pagamento Não Realizado', 'Pago pela Amil sem Comprovante']
-                        }
-                    }, 
+                        fase: 'Finalizado'
+                    },
                     {
                         protocolo: pesquisa,
-                        statusFinalizacao: {
-                            $in: ['Sem Contato', 'Comprovante Não Recebido', 'Comprovante Correto', 'Pagamento Não Realizado', 'Pago pela Amil sem Comprovante']
-                        }
+                        fase: 'Finalizado'
                     }
                 ]
             })
-
-            console.log(pedidos);
 
             return res.status(200).json({
                 pedidos
@@ -1332,6 +1501,57 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
+            })
+        }
+    },
+
+    devolverAmil: async (req, res) => {
+        try {
+
+            const { pedido } = req.body
+
+            console.log(pedido);
+
+            const update = await Pedido.findOneAndUpdate({
+                numero: pedido
+            }, {
+                status: 'Finalizado',
+                fase: 'Finalizado',
+                statusGerencial: 'Devolvido Amil',
+                statusPadraoAmil: 'Devolvido Amil'
+            })
+
+            return res.status(200).json({
+                update
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    escrevarAgenda: async (req, res) => {
+        try {
+
+            const { pacote, parecer } = req.body
+
+            const comentario = await Agenda.create({
+                idPacote: pacote,
+                usuario: req.user,
+                parecer
+            })
+
+            return res.status(200).json({
+                comentario
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
             })
         }
     }

@@ -177,7 +177,8 @@ module.exports = {
                 horarioContato3: data.horarioContato3,
                 observacoes: data.observacoes,
                 email: data.email,
-                status: 'Concluido'
+                status: 'Concluido',
+                dataConclusao: new Date()
             })
 
             return res.status(200).json(rn)
