@@ -63,6 +63,7 @@ const storage = multer.diskStorage({
 const xlsx = require('xlsx')
 
 const uploadRsd = multer({ dest: os.tmpdir() }).single('file')
+const uploadPedidosAntigos = multer({ dest: os.tmpdir() }).single('file')
 const uploadGravacao = multer({ storage }).single('file')
 
 module.exports = {
@@ -197,9 +198,16 @@ module.exports = {
                             }
                         })
 
-                        let split = e[' Beneficiário'].split(' ')
-                        let mo = split[1]
-                        let beneficiario = split[2]
+                        let mo
+                        let beneficiario
+
+                        if (!e[' Beneficiário']) {
+
+                        } else {
+                            let split = e[' Beneficiário']?.split(' ')
+                            mo = split[1]
+                            beneficiario = split[2]
+                        }
 
                         if (flag == 0) {
                             pedidos.push([
@@ -269,13 +277,14 @@ module.exports = {
                 let dataSla = moment(new Date()).add(3, 'days').toDate()
 
                 if (item[12] == 'pf') {
-                    dataSla = moment(new Date()).add(1, 'days').toDate()
+                    dataSla = moment(new Date()).toDate()
                 } else {
                     const operadores = await Operador.find()
 
                     operadores.forEach(e => {
-                        console.log(item[12]);
+                        console.log(`Arquivo: ${item[12]} - Banco: ${e.descricao}`);
                         if (item[12] == e.descricao) {
+                            console.log('igual!');
                             dataSla = moment(new Date()).add(e.sla, 'days').toDate()
                             return
                         }
@@ -393,7 +402,7 @@ module.exports = {
     atualizarInformacoes: async (req, res) => {
         try {
 
-            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo } = req.body
+            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo, cpf } = req.body
 
             const pessoa = await Pessoa.findOneAndUpdate({
                 mo: mo
@@ -403,7 +412,8 @@ module.exports = {
                 fone1,
                 fone2,
                 fone3,
-                contratoEmpresa
+                contratoEmpresa,
+                cpf
             })
 
             return res.status(200).json({
@@ -934,7 +944,8 @@ module.exports = {
                     fase: 'Finalizado',
                     statusGerencial: 'Protocolo Cancelado',
                     statusPadraoAmil: 'CANCELAMENTO - Sem retorno pós 5 dias úteis',
-                    dataConclusao: new Date()
+                    dataConclusao: new Date(),
+                    analista: req.user
                 })
 
             }
@@ -950,7 +961,8 @@ module.exports = {
                 await Pedido.updateMany({
                     pacote: pacote
                 }, {
-                    statusPacote: '2° Tentativa'
+                    statusPacote: '2° Tentativa',
+                    analista: req.user
                 })
 
             }
@@ -966,7 +978,8 @@ module.exports = {
                 await Pedido.updateMany({
                     pacote: pacote
                 }, {
-                    statusPacote: '3° Tentativa'
+                    statusPacote: '3° Tentativa',
+                    analista: req.user
                 })
             }
 
@@ -985,7 +998,8 @@ module.exports = {
                     status: 'Aguardando Retorno Contato',
                     fase: 'Em andamento',
                     statusGerencial: 'Aguardando Retorno Contato',
-                    statusPadraoAmil: 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno'
+                    statusPadraoAmil: 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno',
+                    analista: req.user
                 })
             }
 
@@ -1048,7 +1062,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Protocolo Cancelado',
                         statusPadraoAmil: 'CANCELAMENTO - Não reconhece Procedimento/Consulta',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
 
                     await Agenda.create({
@@ -1061,7 +1076,8 @@ module.exports = {
                     const updatePedido = await Pedido.findOneAndUpdate({
                         numero: item[0]
                     }, {
-                        reconhece: reconhece
+                        reconhece: reconhece,
+                        analista: req.user
                     })
 
                     await Agenda.create({
@@ -1086,7 +1102,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Pagamento Não Realizado',
                         statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
 
                     await Agenda.create({
@@ -1104,7 +1121,8 @@ module.exports = {
                         status: 'Aguardando Docs',
                         fase: 'Em Andamento',
                         statusGerencial: 'Aguardando Comprovante',
-                        statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante'
+                        statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
+                        analista: req.user
                     })
 
                     if (item[1] === 'Dinheiro') {
@@ -1115,7 +1133,8 @@ module.exports = {
                             status: 'Aguardando Docs',
                             fase: 'Em Andamento',
                             statusGerencial: 'Aguardando Comprovante',
-                            statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação'
+                            statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação',
+                            analista: req.user
                         })
                     }
 
@@ -1139,7 +1158,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Comprovante Correto',
                         statusPadraoAmil: 'PAGAMENTO LIBERADO',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
                 }
 
@@ -1152,7 +1172,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Pago pela Amil sem Comprovante',
                         statusPadraoAmil: 'PAGAMENTO LIBERADO',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
                 }
 
@@ -1165,7 +1186,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Pagamento Não Realizado',
                         statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
                 }
 
@@ -1178,7 +1200,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Protocolo Cancelado',
                         statusPadraoAmil: 'CANCELAMENTO - Comprovante não Recebido',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
                 }
 
@@ -1191,7 +1214,8 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Protocolo Cancelado',
                         statusPadraoAmil: 'INDEFERIR - Reapresentação de Protocolo Indeferido',
-                        dataConclusao: new Date()
+                        dataConclusao: new Date(),
+                        analista: req.user
                     })
                 }
 
@@ -1546,6 +1570,69 @@ module.exports = {
 
             return res.status(200).json({
                 comentario
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    subirPedidosAntigos: async (req, res) => {
+        try {
+            uploadPedidosAntigos(req, res, async (err) => {
+
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                for (const item of result) {
+
+                    if (item.dataConclusao === 'NULL') {
+                        item.dataConclusao = new Date('2021-01-01')
+                    }
+
+                    if (item.dataSla === 'NULL') {
+                        item.dataSla = new Date()
+                    }
+
+                    await Pedido.create({
+                        numero: item?.numero,
+                        pacote: item?.codigo,
+                        fase: item?.fase,
+                        statusPadraoAmil: item?.statusPadraoAmil,
+                        statusGerencial: item?.statusGerencial,
+                        dataConclusao: item?.dataConclusao,
+                        createdAt: item?.createdAt,
+                        operador: item?.operador,
+                        protocolo: item?.protocolo,
+                        numero: item?.numero,
+                        pessoa: item?.pessoa,
+                        dataSolicitacao: item?.dataSolicitacao,
+                        valorApresentado: item?.valorApresentado,
+                        cnpj: item?.cnpj,
+                        clinica: item?.clinica,
+                        formaPagamento: item?.formaPagamento,
+                        mo: item?.mo,
+                        contratoEmpresa: item?.contratoEmpresa,
+                        status: item.status,
+                        statusPacote: item.statusPacote,
+                        dataSla: item.dataSla
+                    })
+                }
+
+            })
+
+            return res.status(200).json({
+                msg: 'oi'
             })
 
         } catch (error) {

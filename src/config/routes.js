@@ -103,5 +103,6 @@ router.get('/rsd/operadora/:id', auth, rsdController.buscarOperadora)
 router.get('/rsd/concluidos/:pesquisa', auth, rsdController.buscarPedidosFinalizados)
 router.put('/rsd/pedido/devolverAmil', auth, rsdController.devolverAmil)
 router.post('/rsd/agenda/novoParecer', auth, rsdController.escrevarAgenda)
+router.post('/rsd/pedidosAntigos', auth, rsdController.subirPedidosAntigos)
 
 module.exports = router

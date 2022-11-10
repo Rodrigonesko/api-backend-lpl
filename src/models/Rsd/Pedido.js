@@ -32,7 +32,8 @@ const pedidoScheema = mongoose.Schema({
     mo: String,
     statusPadraoAmil: String,
     statusGerencial: String,
-    fase: String
+    fase: String,
+    contratoEmpresa: String
 
 }, {
     timestamps: true
