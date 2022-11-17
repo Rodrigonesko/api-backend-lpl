@@ -42,6 +42,10 @@ const StatusPacote = require('./models/Rsd/StatusPacote')
 const StatusPedido = require('./models/Rsd/StatusPedido')
 const StatusProtocolo = require('./models/Rsd/StatusProtocolo')
 
+//Models Elegibilidade
+
+const PropostasElegiblidade = require('./models/Elegibilidade/PropostasElegiblidade')
+
 const routes = require('./config/routes')
 
 app.use(express.json({limit: '100mb'}))

@@ -268,7 +268,7 @@ module.exports = {
                 error
             })
         }
-    }
+    },
 
 
 }

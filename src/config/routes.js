@@ -9,6 +9,7 @@ const liminarController = require('../controllers/liminarController')
 const projetoAjController = require('../controllers/projetoAjController')
 const horarioController = require('../controllers/horarioController')
 const rsdController = require('../controllers/rsdController')
+const elegibilidadeController = require('../controllers/elegibilidadeController')
 const router = express.Router()
 
 const multer = require('multer')
@@ -74,14 +75,11 @@ router.post('/rsd/subir', auth, rsdController.subir)
 router.get('/rsd/pedidos/todos', auth, rsdController.show)
 router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
 router.put('/rsd/pessoas/editar', auth, rsdController.atualizarInformacoes)
-router.get('/rsd/protocolos/:mo', auth, rsdController.mostrarProtocolos)
-router.get('/rsd/protocolo/:protocolo', auth, rsdController.mostrarProtocolo)
-router.get('/rsd/pedidos/:protocolo', auth, rsdController.mostrarPedidos)
-router.put('/rsd/protocolos/assumir', auth, rsdController.assumirProtocolo)
 router.get('/rsd/pedido/:pedido', auth, rsdController.buscarPedido)
 router.put('/rsd/clinica/busca', auth, rsdController.buscarClinica)
 router.put('/rsd/pedido/editar', auth, rsdController.editarPedido)
 router.post('/rsd/pedido/criar', auth, rsdController.criarPedido)
+router.get('/rsd/mo/:protocolo', auth, rsdController.buscarMoProtocolo)
 router.post('/rsd/protocolo/criar', auth, rsdController.criarProtocolo)
 router.post('/rsd/pacote/criar', auth, rsdController.criarPacote)
 router.get('/rsd/pedidos/mo/:mo', auth, rsdController.buscarPedidosMo)
@@ -104,5 +102,12 @@ router.get('/rsd/concluidos/:pesquisa', auth, rsdController.buscarPedidosFinaliz
 router.put('/rsd/pedido/devolverAmil', auth, rsdController.devolverAmil)
 router.post('/rsd/agenda/novoParecer', auth, rsdController.escrevarAgenda)
 router.post('/rsd/pedidosAntigos', auth, rsdController.subirPedidosAntigos)
+router.put('/rsd/pacote/voltarFase', auth, rsdController.voltarFase)
+router.put('/rsd/agd/upload', auth, rsdController.agd)
+
+//Rotas Elegibilidade
+
+router.post('/elegibilidade/upload', auth, elegibilidadeController.upload)
+
 
 module.exports = router

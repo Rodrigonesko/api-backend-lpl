@@ -60,87 +60,125 @@ const storage = multer.diskStorage({
     }
 })
 
+const storageAgd = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = './uploads/rsd/agds/'
+        if (!fs.existsSync(dir)) {
+            //Efetua a criação do diretório
+            fs.mkdir(dir, (err) => {
+                if (err) {
+                    console.log("Deu ruim...");
+                    return
+                }
+                console.log("Diretório criado!")
+            });
+        }
+
+        cb(null, dir)
+    },
+    filename: (req, file, cb) => {
+        const { name, ext } = path.parse(file.originalname)
+
+        cb(null, `agd.csv`)
+    }
+})
+
 const xlsx = require('xlsx')
 
 const uploadRsd = multer({ dest: os.tmpdir() }).single('file')
 const uploadPedidosAntigos = multer({ dest: os.tmpdir() }).single('file')
 const uploadGravacao = multer({ storage }).single('file')
+const uploadAgd = multer({ storage: storageAgd }).single('file')
 
 module.exports = {
     upload: async (req, res) => {
         try {
 
-            const pedidosBanco = await Pedido.find()
-
-            console.log('pedidos banco ok');
-
-            let pedidos = []
-
             uploadRsd(req, res, async (err) => {
 
-                console.log(req.file.originalname);
+                const pedidosBanco = await Pedido.find()
 
-                let file = fs.readFileSync(req.file.path)
+                console.log('pedidos banco ok');
+
+                let pedidos = []
+
+                console.log(req.file.originalname);
 
                 const valorCorte = req.body.corte
 
                 console.log(valorCorte);
 
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                console.log(result.length);
-
                 if (req.file.originalname.indexOf('PF') === 10 || req.file.originalname.indexOf('PF') === 5) {
+
+                    let file = fs.readFileSync(req.file.path, { encoding: 'utf-8' })
+
+                    let listaArr = file.split('\n')
+                    let result = listaArr.map(e => {
+                        return e.split(';')
+                    })
+
+                    console.log(`antes do filtro: ${result.length}`);
+
                     console.log('fila pf');
 
                     let mapCpfs = new Map()
                     let arrPedidos = []
 
+                    let setResult = new Set()
+
                     result = result.filter((item) => {
-                        return !this[JSON.stringify(item[' Reembolso'])] && (this[JSON.stringify(item[' Reembolso'])] = true)
-                    }, Object.create(null))
+                        const pedidoDuplicado = setResult.has(item[0])
+                        setResult.add(item[0])
+                        return !pedidoDuplicado
+                    })
+
+                    console.log(`pós filtro: ${result.length}`);
 
                     result.forEach(e => {
 
-                        if (e['Situação'] == 'Aguardando documentação' ||
-                            e['Situação'] == 'Documento recebido na Amil' ||
-                            e['Situação'] == 'Em processamento' ||
-                            e['Situação'] == 'Pedido Cadastrado' ||
-                            e['Situação'] == 'Aguardando documento original' ||
-                            e['Situação'] == 'Em Análise Técnica'
+                        if (e[1] == 'Aguardando documentação' ||
+                            e[1] == 'Documento recebido na Amil' ||
+                            e[1] == 'Em processamento' ||
+                            e[1] == 'Pedido Cadastrado' ||
+                            e[1] == 'Aguardando documento original' ||
+                            e[1] == 'Em Análise Técnica'
                         ) {
 
-                            let rep = e['Beneficiário'].replace(' - ', '-')
+                            let rep = e[13].replace(' - ', '-')
                             let split = rep.split('-')
                             let mo = split[0]
                             let beneficiario = split[1]
 
+                            if (beneficiario.indexOf('&apos') == 10 || beneficiario.indexOf('&apos') == 5) {
+                                beneficiario = `${beneficiario}${e[14]}`
+                                e[14] = e[15]
+                                e[15] = e['Tipo Envelope']
+                                console.log(beneficiario, e[14], e[15]);
+                            }
+
+                            e[14] = brToAmerican(e[14])
+                            e[15] = brToAmerican(e[15])
+
                             arrPedidos.push([
-                                e[' Reembolso'],
-                                e['Situação'],
-                                e['Data do Pedido'],
-                                e['Data Prevista Pagamento'],
-                                e['Data Pagamento'],
-                                e['Número do Titulo'],
-                                e['CPF do Favorecido'],
+                                e[0],
+                                e[1],
+                                e[3],
+                                e[4],
+                                e[5],
+                                e[6],
+                                e[12],
                                 mo,
                                 beneficiario,
-                                e['Valor Apresentado'],
-                                e['Valor Reembolsado'],
-                                e.Protocolo,
+                                e[14],
+                                e[15],
+                                e[20],
                                 'pf'
                             ])
 
-                            if (mapCpfs.has(e['CPF do Favorecido'])) {
-                                mapCpfs.set(e['CPF do Favorecido'], mapCpfs.get(e['CPF do Favorecido']) + e['Valor Apresentado'])
+                            if (mapCpfs.has(e[12])) {
+                                mapCpfs.set(e[12], mapCpfs.get(e[12]) + e[14])
                             } else {
-                                mapCpfs.set(e['CPF do Favorecido'], e['Valor Apresentado'])
+                                mapCpfs.set(e[12], e[14])
                             }
                         }
                     })
@@ -148,6 +186,10 @@ module.exports = {
                     let arr = []
 
                     console.log('filtrando por valor');
+
+                    console.log(`Numero de pedidos filtrado sem repetir e apenas com status que tratamos: ${arrPedidos.length}`);
+
+                    console.log(mapCpfs);
 
                     arrPedidos.forEach(val => {
                         for (const [cpf, value] of mapCpfs) {
@@ -161,6 +203,8 @@ module.exports = {
                     })
 
                     console.log('verificando se existe na lpl');
+
+                    console.log(arr.length);
 
                     arr.forEach(e => {
                         let flag = 0
@@ -182,13 +226,22 @@ module.exports = {
                 } else {
                     console.log('fila pj');
 
+                    let file = fs.readFileSync(req.file.path)
+
+                    const workbook = xlsx.read(file, { type: 'array' })
+
+                    const firstSheetName = workbook.SheetNames[0]
+
+                    const worksheet = workbook.Sheets[firstSheetName]
+
+                    let result = xlsx.utils.sheet_to_json(worksheet)
+
                     result.forEach((e, key) => {
+
                         let conc = `${e[' Valor Apresentado'].replace('R$ ', '').replace('.', '').replace(',', '.')}`
                         conc = +conc
                         conc = `${e['Número do Protocolo'].replace(/[^0-9]/g, '')}${conc}`
                         let flag = 0
-
-                        console.log(conc);
 
                         pedidosBanco.forEach(item => {
                             let concBanco = `${item?.protocolo?.replace(/[^0-9]/g, '')}${Number(item.valorApresentado)}`
@@ -259,6 +312,8 @@ module.exports = {
                 })
             }))
 
+            console.log(pedidos);
+
 
             const addPedidos = await Promise.all(pedidos.map(async item => {
                 let numero = item[0]
@@ -266,29 +321,37 @@ module.exports = {
                 let valorApresentado = item[9]
                 let valorReembolsado = item[10]
 
-                let dataSolicitacao = ExcelDateToJSDate(item[2])
-                dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
-                dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
-
-                let dataPagamento = ExcelDateToJSDate(item[3])
-                dataPagamento.setDate(dataPagamento.getDate() + 1)
-                dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
+                let dataSolicitacao = item[2]
+                let dataPagamento = item[3]
 
                 let dataSla = moment(new Date()).add(3, 'days').toDate()
 
                 if (item[12] == 'pf') {
                     dataSla = moment(new Date()).toDate()
-                } else {
-                    const operadores = await Operador.find()
 
+                    dataSolicitacao = ajustarDataPadraoAmericano(dataSolicitacao)
+                    dataPagamento = ajustarDataPadraoAmericano(dataPagamento)
+
+                } else {
+
+                    dataSolicitacao = ExcelDateToJSDate(item[2])
+                    dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
+                    dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
+
+                    dataPagamento = ExcelDateToJSDate(item[5])
+                    dataPagamento.setDate(dataPagamento.getDate() + 1)
+                    dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
+
+                    const operadores = await Operador.find()
                     operadores.forEach(e => {
-                        console.log(`Arquivo: ${item[12]} - Banco: ${e.descricao}`);
-                        if (item[12] == e.descricao) {
-                            console.log('igual!');
+
+                        if (item[12].replace(/[^0-9]/g, '') == e.descricao.replace(/[^0-9]/g, '')) {
+
                             dataSla = moment(new Date()).add(e.sla, 'days').toDate()
                             return
                         }
                     })
+
                 }
 
                 let mo = item[7]
@@ -311,43 +374,6 @@ module.exports = {
                     statusGerencial: 'A iniciar',
                     statusPadraoAmil: 'A iniciar'
                 })
-
-            }))
-
-            const addProtocolo = await Promise.all(pedidos.map(async item => {
-
-                if (item[12] == 'pf') {
-                    let dataSolicitacao = ExcelDateToJSDate(item[2])
-                    dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
-                    dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
-
-                    let dataPagamento = ExcelDateToJSDate(item[3])
-                    dataPagamento.setDate(dataPagamento.getDate() + 1)
-                    dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
-
-                    let dataSla = moment(new Date()).add(1, 'days').toDate()
-
-                    let protocolo = item[11]
-                    let mo = item[7]
-                    let nome = item[8]
-
-                    return await Protocolo.findOneAndUpdate({
-                        numero: protocolo
-                    }, {
-                        numero: protocolo,
-                        mo: mo,
-                        dataSolicitacao: dataSolicitacao,
-                        dataPagamento: dataPagamento,
-                        dataSla: dataSla,
-                        ativo: true,
-                        status: 'Pedido Cadastrado',
-                        idStatus: 'A iniciar',
-                        pessoa: nome
-                    }, {
-                        upsert: true
-                    })
-
-                }
 
             }))
 
@@ -428,74 +454,6 @@ module.exports = {
         }
     },
 
-    mostrarProtocolos: async (req, res) => {
-        try {
-
-            const { mo } = req.params
-
-            const protocolos = await Protocolo.find({
-                mo: mo
-            })
-
-            console.log(protocolos);
-
-            return res.status(200).json({
-                protocolos
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
-
-    mostrarProtocolo: async (req, res) => {
-        try {
-
-            const { protocolo } = req.params
-
-            const result = await Protocolo.findOne({
-                numero: protocolo
-            })
-
-            return res.status(200).json({
-                result
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
-
-    mostrarPedidos: async (req, res) => {
-        try {
-            const { protocolo } = req.params
-
-            console.log(protocolo);
-
-            const pedidos = await Pedido.find({
-                protocolo: protocolo
-            })
-
-            console.log(pedidos);
-
-            return res.status(200).json({
-                pedidos
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
-
     buscarPedido: async (req, res) => {
         try {
             const { pedido } = req.params
@@ -508,31 +466,6 @@ module.exports = {
                 result
             })
 
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
-
-    assumirProtocolo: async (req, res) => {
-        try {
-
-            const { analista, protocolo } = req.body
-
-            const result = await Protocolo.findOneAndUpdate({
-                numero: protocolo
-            }, {
-                analista: analista
-            })
-
-            console.log(result);
-
-            return res.status(200).json({
-                result
-            })
 
         } catch (error) {
             console.log(error);
@@ -608,10 +541,35 @@ module.exports = {
         }
     },
 
+    buscarMoProtocolo: async (req, res) => {
+        try {
+            
+            const {protocolo} = req.params
+
+            console.log(protocolo);
+
+            const pedido = await Pedido.findOne({
+                protocolo
+            })
+
+            console.log(pedido);
+
+            return res.status(200).json({
+                pedido
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     criarPedido: async (req, res) => {
         try {
 
-            const { pedido, protocolo, valorApresentado, valorReembolsado, cnpj, clinica, nf } = req.body
+            const { pedido, protocolo, valorApresentado, valorReembolsado, cnpj, clinica, nf, mo } = req.body
 
             const create = await Pedido.create({
                 numero: pedido,
@@ -626,7 +584,8 @@ module.exports = {
                 statusPacote: 'Não iniciado',
                 fase: 'A iniciar',
                 statusGerencial: 'A iniciar',
-                statusPadraoAmil: 'A iniciar'
+                statusPadraoAmil: 'A iniciar',
+                mo
             })
 
             const updateClinica = await Clinica.findOneAndUpdate({
@@ -673,18 +632,6 @@ module.exports = {
             })
 
             dataSla = moment(new Date()).add(sla, 'days').toDate()
-
-
-            const result = await Protocolo.create({
-                numero: protocolo,
-                dataSolicitacao,
-                dataPagamento,
-                idStatus: 'A iniciar',
-                status: 'Pedido cadastrado',
-                ativo: true,
-                pessoa: pessoa.nome,
-                mo
-            })
 
             const criarProtocolo = await Pedido.create({
                 numero: pedido,
@@ -765,7 +712,7 @@ module.exports = {
 
             const pedidos = await Pedido.find({
                 mo: mo
-            })
+            }).sort([['createdAt', -1]])
 
             console.log(pedidos);
 
@@ -1582,7 +1529,10 @@ module.exports = {
 
     subirPedidosAntigos: async (req, res) => {
         try {
+
             uploadPedidosAntigos(req, res, async (err) => {
+
+                console.log('oi?');
 
                 let file = fs.readFileSync(req.file.path)
 
@@ -1641,6 +1591,71 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    voltarFase: async (req, res) => {
+        try {
+            const { pacote } = req.body
+
+            const atualizar = await Pedido.updateMany({
+                pacote: pacote
+            }, {
+                status: 'Aguardando Docs',
+                fase: 'Em andamento',
+                statusGerencial: 'Aguardando Comprovante',
+                statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
+                statusPacote: 'Aguardando Docs'
+            })
+
+            console.log(pacote);
+
+            return res.status(200).json({
+                atualizar
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    agd: async (req, res) => {
+        try {
+
+            console.log('entrou no agd');
+
+            uploadAgd(req, res, async (err) => {
+
+                console.log('recebeu arquivo');
+
+                let data = fs.readFileSync(req.file.path, { encoding: 'utf-8' })
+
+                console.log('leu o arquivo');
+
+                let listaArr = data.split('\n')
+
+                console.log('deu o split');
+
+                let arrAux = listaArr.map(e => {
+                    return e.split(';')
+                })
+
+                console.log(arrAux.length);
+
+            })
+
+            return res.status(200).json({
+                msg: 'ola'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 
@@ -1661,4 +1676,30 @@ function ExcelDateToJSDate(serial) {
     var minutes = Math.floor(total_seconds / 60) % 60;
 
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+}
+
+function brToAmerican(valor) {
+
+    let valorCorreto = valor
+
+    if (valor?.match(/./)) {
+        valorCorreto = valor.replace('.', '')
+    }
+
+    if (valor?.match(/,/)) {
+        valorCorreto = valorCorreto.replace(',', '.')
+    }
+
+    return Number(valorCorreto)
+}
+
+function ajustarDataPadraoAmericano(data) {
+
+    let split = data.split('/')
+    let dia = split[0]
+    let mes = split[1]
+    let ano = split[2]
+
+    return `${ano}-${mes}-${dia}`
+
 }
