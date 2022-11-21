@@ -33,7 +33,11 @@ const pedidoScheema = mongoose.Schema({
     statusPadraoAmil: String,
     statusGerencial: String,
     fase: String,
-    contratoEmpresa: String
+    contratoEmpresa: String,
+    justificativa: String,
+    dataSelo: Date,
+    contato: String,
+    prioridadeDossie: Boolean
 
 }, {
     timestamps: true

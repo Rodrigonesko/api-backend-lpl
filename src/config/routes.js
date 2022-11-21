@@ -103,7 +103,8 @@ router.put('/rsd/pedido/devolverAmil', auth, rsdController.devolverAmil)
 router.post('/rsd/agenda/novoParecer', auth, rsdController.escrevarAgenda)
 router.post('/rsd/pedidosAntigos', auth, rsdController.subirPedidosAntigos)
 router.put('/rsd/pacote/voltarFase', auth, rsdController.voltarFase)
-router.put('/rsd/agd/upload', auth, rsdController.agd)
+router.put('/rsd/pedido/voltarFase', auth, rsdController.voltarFasePedido)
+router.put('/rsd/pedido/prioridadeDossie', auth, rsdController.adicionarPrioridadeDossie)
 
 //Rotas Elegibilidade
 

@@ -332,6 +332,8 @@ module.exports = {
                     dataSolicitacao = ajustarDataPadraoAmericano(dataSolicitacao)
                     dataPagamento = ajustarDataPadraoAmericano(dataPagamento)
 
+                    item[12] = '19 - AMIL Ind (Célula PF)'
+
                 } else {
 
                     dataSolicitacao = ExcelDateToJSDate(item[2])
@@ -372,7 +374,8 @@ module.exports = {
                     pessoa: nome,
                     fase: 'A iniciar',
                     statusGerencial: 'A iniciar',
-                    statusPadraoAmil: 'A iniciar'
+                    statusPadraoAmil: 'A iniciar',
+                    operador: item[12]
                 })
 
             }))
@@ -543,8 +546,8 @@ module.exports = {
 
     buscarMoProtocolo: async (req, res) => {
         try {
-            
-            const {protocolo} = req.params
+
+            const { protocolo } = req.params
 
             console.log(protocolo);
 
@@ -571,6 +574,16 @@ module.exports = {
 
             const { pedido, protocolo, valorApresentado, valorReembolsado, cnpj, clinica, nf, mo } = req.body
 
+            const pessoa = await Pessoa.findOne({
+                mo
+            })
+
+            const protocoloBanco = await Pedido.findOne({
+                protocolo
+            })
+
+
+
             const create = await Pedido.create({
                 numero: pedido,
                 protocolo,
@@ -585,7 +598,10 @@ module.exports = {
                 fase: 'A iniciar',
                 statusGerencial: 'A iniciar',
                 statusPadraoAmil: 'A iniciar',
-                mo
+                mo,
+                pessoa: pessoa.nome,
+                dataSla: protocoloBanco.dataSla,
+                operador: protocoloBanco.operador
             })
 
             const updateClinica = await Clinica.findOneAndUpdate({
@@ -870,11 +886,21 @@ module.exports = {
     atualizarPedido: async (req, res) => {
         try {
 
-            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao } = req.body
+            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
 
             const pacoteBanco = await Pedido.findOne({
                 pacote: pacote
             })
+
+            if (sucesso === 'Sim') {
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    analista: req.user,
+                    contato: sucesso
+                })
+            }
 
             if (sucesso === 'Sem Retorno de Contato') {
                 await Agenda.create({
@@ -892,7 +918,8 @@ module.exports = {
                     statusGerencial: 'Protocolo Cancelado',
                     statusPadraoAmil: 'CANCELAMENTO - Sem retorno pós 5 dias úteis',
                     dataConclusao: new Date(),
-                    analista: req.user
+                    analista: req.user,
+                    contato: sucesso
                 })
 
             }
@@ -909,7 +936,8 @@ module.exports = {
                     pacote: pacote
                 }, {
                     statusPacote: '2° Tentativa',
-                    analista: req.user
+                    analista: req.user,
+                    contato: sucesso
                 })
 
             }
@@ -926,7 +954,8 @@ module.exports = {
                     pacote: pacote
                 }, {
                     statusPacote: '3° Tentativa',
-                    analista: req.user
+                    analista: req.user,
+                    contato: sucesso
                 })
             }
 
@@ -946,7 +975,8 @@ module.exports = {
                     fase: 'Em andamento',
                     statusGerencial: 'Aguardando Retorno Contato',
                     statusPadraoAmil: 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno',
-                    analista: req.user
+                    analista: req.user,
+                    contato: sucesso
                 })
             }
 
@@ -956,6 +986,14 @@ module.exports = {
                     idPacote: pacote,
                     usuario: req.user,
                     parecer: "Iniciado Processamento (etapa: 1° Tentativa)"
+                })
+
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    analista: req.user,
+                    contato: sucesso
                 })
 
             }
@@ -968,6 +1006,13 @@ module.exports = {
                     parecer: "Iniciado Processamento (etapa: 2° Tentativa)"
                 })
 
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    analista: req.user,
+                    contato: sucesso
+                })
+
             }
 
             if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Sim') {
@@ -976,6 +1021,13 @@ module.exports = {
                     idPacote: pacote,
                     usuario: req.user,
                     parecer: "Iniciado Processamento (etapa: 3° Tentativa)"
+                })
+
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    analista: req.user,
+                    contato: sucesso
                 })
 
             }
@@ -988,6 +1040,30 @@ module.exports = {
                     parecer: "Iniciado Processamento (etapa: Aguardando Retorno Contato)"
                 })
 
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    analista: req.user,
+                    contato: sucesso
+                })
+
+            }
+
+            if (sucesso === 'Não foi entrado em contato') {
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    justificativa,
+                    contato: sucesso
+                })
+            }
+
+            if (dataSelo) {
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    dataSelo
+                })
             }
 
             for (const item of motivoContato) {
@@ -1621,33 +1697,59 @@ module.exports = {
         }
     },
 
-    agd: async (req, res) => {
+    voltarFasePedido: async (req, res) => {
         try {
+            const { pedido } = req.body
 
-            console.log('entrou no agd');
-
-            uploadAgd(req, res, async (err) => {
-
-                console.log('recebeu arquivo');
-
-                let data = fs.readFileSync(req.file.path, { encoding: 'utf-8' })
-
-                console.log('leu o arquivo');
-
-                let listaArr = data.split('\n')
-
-                console.log('deu o split');
-
-                let arrAux = listaArr.map(e => {
-                    return e.split(';')
-                })
-
-                console.log(arrAux.length);
-
+            const pacote = await Pedido.findOne({
+                numero: pedido
             })
 
+            const atualizarPacote = await Pedido.updateMany({
+                pacote: pacote.pacote
+            }, {
+                statusPacote: 'Aguardando Docs'
+            })
+
+            const atualizar = await Pedido.findOneAndUpdate({
+                numero: pedido
+            }, {
+                status: 'Aguardando Docs',
+                fase: 'Em andamento',
+                statusGerencial: 'Aguardando Comprovante',
+                statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
+                statusPacote: 'Aguardando Docs'
+            })
+
+            console.log(pedido);
+
             return res.status(200).json({
-                msg: 'ola'
+                atualizar
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarPrioridadeDossie: async (req, res) => {
+        try {
+            
+            const {pedido, prioridade} = req.body
+
+            console.log(pedido, !prioridade);
+
+            const update = await Pedido.findOneAndUpdate({
+                numero: pedido
+            }, {
+                prioridadeDossie: prioridade
+            })
+            
+            return res.status(200).json({
+                update
             })
 
         } catch (error) {
