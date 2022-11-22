@@ -13,6 +13,7 @@ const elegibilidadeController = require('../controllers/elegibilidadeController'
 const router = express.Router()
 
 const multer = require('multer')
+const TeleEntrevistaController = require('../controllers/TeleEntrevistaController')
 
 const uploadRsd = multer({ dest: '/tmp' })
 
@@ -53,6 +54,9 @@ router.post('/entrevistas/gerarHorarios', auth, horarioController.gerar)
 router.get('/entrevistas/buscarDiasDisponiveis/:enfermeiro', auth, horarioController.search)
 router.get('/entrevistas/buscarHorariosDisponiveis/:enfermeiro/:data', auth, horarioController.searchHorarios)
 router.put('/entrevistas/agendar', auth, horarioController.agendar)
+
+router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
+router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
 
 //Liminar
 
