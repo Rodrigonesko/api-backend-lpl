@@ -57,6 +57,7 @@ router.put('/entrevistas/agendar', auth, horarioController.agendar)
 
 router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
 router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
+router.post('/entrevistas/formulario', auth, TeleEntrevistaController.enviarDadosFormulario)
 
 //Liminar
 

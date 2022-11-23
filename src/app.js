@@ -20,12 +20,13 @@ const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL)
 const User = require('./models/User')
 const Rn = require('./models/Rn')
-const Proposta = require("./models/PropostaEntrevista")
+
 const Liminar = require("./models/Liminar")
 const ProjetoAj = require('./models/ProjetoAj')
 
 //Models Entrevista
 
+const Proposta = require("./models/PropostaEntrevista")
 const Pergunta = require('./models/Pergunta')
 const Horario = require('./models/Horario')
 

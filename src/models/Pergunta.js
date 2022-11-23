@@ -5,8 +5,11 @@ const perguntasScheema = mongoose.Schema({
     formulario: String,
     categoria: String,
     divergencia: String,
-    subPergunta: Boolean,
-    subPerguntaQual: String
+    existeSub: Boolean,
+    subPerguntasSim: [],
+    subPerguntasNao: [],
+    name: String
+
 })
 
 module.exports = mongoose.model('Pergunta', perguntasScheema)
