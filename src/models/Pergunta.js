@@ -8,7 +8,8 @@ const perguntasScheema = mongoose.Schema({
     existeSub: Boolean,
     subPerguntasSim: [],
     subPerguntasNao: [],
-    name: String
+    name: String,
+    sexo: String
 
 })
 

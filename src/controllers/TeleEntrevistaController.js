@@ -1,6 +1,17 @@
 mongoose = require('mongoose')
 const Pergunta = mongoose.model('Pergunta')
 const Propostas = mongoose.model('PropostaEntrevista')
+const Cid = mongoose.model('Cid')
+const DadosEntrevista = mongoose.model('DadosEntrevista')
+
+const path = require('path')
+const moment = require('moment')
+const fs = require('fs')
+const multer = require('multer')
+const os = require('os')
+const xlsx = require('xlsx')
+
+const uploadCid = multer({ dest: os.tmpdir() }).single('file')
 
 module.exports = {
     mostrarPerguntas: async (req, res) => {
@@ -44,21 +55,13 @@ module.exports = {
     enviarDadosFormulario: async (req, res) => {
         try {
 
-            const { respostas, subRespostas, pessoa, simOuNao } = req.body
-
-            // let subRespostasArr = Object.keys(subRespostas).map(key => {
-            //     return [key, subRespostas[key]]
-            // })
-
-            // console.log(subRespostasArr);
+            const { respostas, subRespostas, pessoa, simOuNao, cids } = req.body
 
             console.log(simOuNao);
 
             let respostasConc = {
 
             }
-
-            console.log(respostas, subRespostas);
 
             Object.keys(simOuNao).forEach(key => {
                 respostasConc[`${key}`] += `\n ${simOuNao[key]}`
@@ -73,10 +76,18 @@ module.exports = {
             })
 
             Object.keys(respostas).forEach(key => {
-                respostasConc[`${key}`] += `\n Observações: ${respostas[key]}`
+                respostasConc[`${key}`] += `\n ${respostas[key]}`
             })
 
-            console.log(respostasConc);
+            const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc)).map(async key => {
+                return await DadosEntrevista.findOneAndUpdate({
+                    
+                }, {
+                    key: respostasConc[key]
+                }, {
+                    upsert: true
+                })
+            })
 
             return res.status(200).json({
                 msg: 'oi'
@@ -88,6 +99,72 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    subirCids: async (req, res) => {
+        try {
+
+            uploadCid(req, res, async (err) => {
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                for (const item of result) {
+                    const create = await Cid.create({
+                        subCategoria: item.subcategoria,
+                        descricao: item.descricao
+                    })
+                }
+
+                return res.status(200).json({
+                    msg: 'oii'
+                })
+
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'rror'
+            })
+        }
+    },
+
+    buscarCids: async (req, res) => {
+        try {
+
+            const { pesquisa } = req.params
+
+            const cids = await Cid.find({
+                $or: [
+                    {
+                        "subCategoria": { $regex: pesquisa, $options: 'i' },
+                    },
+                    {
+                        "descricao": { $regex: pesquisa, $options: 'i' },
+                    },
+
+                ]
+            })
+
+            return res.status(200).json({
+                cids
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+
 
 }

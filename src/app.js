@@ -29,6 +29,8 @@ const ProjetoAj = require('./models/ProjetoAj')
 const Proposta = require("./models/PropostaEntrevista")
 const Pergunta = require('./models/Pergunta')
 const Horario = require('./models/Horario')
+const DadosEntrevista = require('./models/TeleEntrevista/DadosEntrevista')
+const Cid = require("./models/TeleEntrevista/Cid")
 
 //Models RSD
 

@@ -58,6 +58,8 @@ router.put('/entrevistas/agendar', auth, horarioController.agendar)
 router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
 router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
 router.post('/entrevistas/formulario', auth, TeleEntrevistaController.enviarDadosFormulario)
+router.post('/entrevistas/upload/cids', auth, TeleEntrevistaController.subirCids)
+router.get('/entrevistas/cids/pesquisa/:pesquisa', auth, TeleEntrevistaController.buscarCids)
 
 //Liminar
 

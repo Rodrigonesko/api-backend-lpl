@@ -72,8 +72,8 @@ module.exports = {
                 const cid3 = item.CID_PI_ANT_3
 
                 const observacao = item['OBSERVAÇÕES']
-                const ddd = item.__EMPTY_1
-                const numero = item.__EMPTY_2
+                const ddd = item.NUM_DDD_CEL
+                const numero = item.NUM_CEL
                 const telefone = `${ddd}${numero}`
 
                 let dataNascimento
@@ -86,6 +86,20 @@ module.exports = {
                 } else {
                     dataNascimento = item.DT_NASC
                     idade = calcularIdade(dataNascimento)
+                }
+
+                let formulario
+
+                if (idade <= 2) {
+                    formulario = '0-2 anos'
+                }
+
+                if (idade >= 3 && idade <= 8) {
+                    formulario = '2-8 anos'
+                }
+
+                if (idade >= 9) {
+                    formulario = 'adulto'
                 }
 
                 const resultado = {
@@ -125,7 +139,8 @@ module.exports = {
                     cid2,
                     cid3,
                     tipoAssociado,
-                    tipoContrato
+                    tipoContrato,
+                    formulario
                 }
 
                 console.log(resultado);
@@ -179,7 +194,7 @@ module.exports = {
 
     alterarTelefone: async (req, res) => {
         try {
-            const {proposta, nome, telefone} = req.body
+            const { proposta, nome, telefone } = req.body
 
             return res.status(200).json({
                 msg: 'oiii'
