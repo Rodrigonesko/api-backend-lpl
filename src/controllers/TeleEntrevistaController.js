@@ -57,7 +57,7 @@ module.exports = {
 
             const { respostas, subRespostas, pessoa, simOuNao, cids } = req.body
 
-            console.log(simOuNao);
+            console.log(pessoa);
 
             let respostasConc = {
 
@@ -79,15 +79,15 @@ module.exports = {
                 respostasConc[`${key}`] += `\n ${respostas[key]}`
             })
 
-            const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc)).map(async key => {
-                return await DadosEntrevista.findOneAndUpdate({
-                    
-                }, {
-                    key: respostasConc[key]
-                }, {
-                    upsert: true
-                })
-            })
+            // const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc)).map(async key => {
+            //     return await DadosEntrevista.findOneAndUpdate({
+
+            //     }, {
+            //         key: respostasConc[key]
+            //     }, {
+            //         upsert: true
+            //     })
+            // })
 
             return res.status(200).json({
                 msg: 'oi'
