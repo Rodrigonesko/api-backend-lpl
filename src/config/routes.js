@@ -60,6 +60,11 @@ router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPess
 router.post('/entrevistas/formulario', auth, TeleEntrevistaController.enviarDadosFormulario)
 router.post('/entrevistas/upload/cids', auth, TeleEntrevistaController.subirCids)
 router.get('/entrevistas/cids/pesquisa/:pesquisa', auth, TeleEntrevistaController.buscarCids)
+router.get('/entrevistas/dadosEntrevista/:proposta/:nome', auth, TeleEntrevistaController.mostrarDadosEntrevista)
+router.get('/entrevistas/dadosEntrevista', auth, TeleEntrevistaController.mostrarDadosEntrevistas)
+router.get('/entrevistas/buscar/dadosEntrevista/:id', auth, TeleEntrevistaController.mostrarDadosEntrevistaId)
+router.put('/entrevistas/editar/dadosEntrevista', auth, TeleEntrevistaController.salvarDadosEditados)
+
 
 //Liminar
 

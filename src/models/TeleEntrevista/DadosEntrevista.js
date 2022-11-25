@@ -45,7 +45,19 @@ const dadosEntrevistaScheema = mongoose.Schema({
     cigarro: String,
     substanciasIlicitas: String,
     bebida: String,
-    doencaHereditaria: String
+    doencaHereditaria: String,
+    parto: String,
+    audicao: String,
+    internacao: String,
+    creche: String,
+    tempoGestacao: String,
+    faturado: Boolean,
+    anexadoSisAmil: Boolean,
+    tipoContrato: String,
+    sexo: String,
+    divergencia: String
+}, {
+    timestamps: true
 })
 
 module.exports = mongoose.model('DadosEntrevista', dadosEntrevistaScheema)

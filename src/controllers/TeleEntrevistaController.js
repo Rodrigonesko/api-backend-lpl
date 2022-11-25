@@ -57,37 +57,70 @@ module.exports = {
 
             const { respostas, subRespostas, pessoa, simOuNao, cids } = req.body
 
-            console.log(pessoa);
+            console.log(subRespostas);
+
+            console.log(cids);
 
             let respostasConc = {
 
             }
 
             Object.keys(simOuNao).forEach(key => {
-                respostasConc[`${key}`] += `\n ${simOuNao[key]}`
+                respostasConc[`${key}`] += `${simOuNao[key]} \n `
             })
 
 
             Object.keys(subRespostas).forEach(key => {
                 let split = key.split('-')
 
-                respostasConc[`${split[0]}`] += ` \n ${split[1]} ${subRespostas[key]}`
+                respostasConc[`${split[0]}`] += `${split[1]} ${subRespostas[key]} \n `
 
             })
 
             Object.keys(respostas).forEach(key => {
-                respostasConc[`${key}`] += `\n ${respostas[key]}`
+                respostasConc[`${key}`] += `${respostas[key]} \n `
             })
 
-            // const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc)).map(async key => {
-            //     return await DadosEntrevista.findOneAndUpdate({
+            const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc).map(async key => {
 
-            //     }, {
-            //         key: respostasConc[key]
-            //     }, {
-            //         upsert: true
-            //     })
-            // })
+                return await DadosEntrevista.findOneAndUpdate({
+                    $and: [
+                        {
+                            nome: pessoa.nome
+                        }, {
+                            proposta: pessoa.proposta
+                        }
+                    ]
+                }, {
+                    [key]: respostasConc[key].replace('undefined', '')
+                }, {
+                    upsert: true
+                })
+            }))
+
+            // console.log(addDadosEntrevistas);
+
+            const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
+                $and: [
+                    {
+                        nome: pessoa.nome
+                    }, {
+                        proposta: pessoa.proposta
+                    }
+                ]
+            }, {
+                tipoFormulario: pessoa.formulario,
+                cpf: pessoa.cpf,
+                // dataNascimento: pessoa.dataNascimento,
+                responsavel: req.user,
+                tipoContrato: pessoa.tipoContrato,
+                sexo: pessoa.sexo
+            }, {
+                upsert: true
+            })
+
+            // console.log(pessoa);
+            // console.log(updateDadosEntrevista);
 
             return res.status(200).json({
                 msg: 'oi'
@@ -165,6 +198,93 @@ module.exports = {
         }
     },
 
+    mostrarDadosEntrevista: async (req, res) => {
+        try {
+
+            const { nome, proposta } = req.params
+
+            const result = await DadosEntrevista.find({
+                nome,
+                proposta
+            })
+
+            console.log(result);
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    mostrarDadosEntrevistas: async (req, res) => {
+        try {
+
+            const entrevistas = await DadosEntrevista.find()
+
+            return res.status(200).json({
+                entrevistas
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    mostrarDadosEntrevistaId: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            console.log(id);
+
+            const proposta = await DadosEntrevista.findById({
+                _id: id
+            })
+
+            return res.status(200).json({
+                proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Interal Server Error'
+            })
+        }
+    },
+
+    salvarDadosEditados: async (req, res) => {
+        try {
+
+            const { dados, id } = req.body
+
+            const update = await Promise.all(Object.keys(dados).map(async key => {
+                return await DadosEntrevista.findOneAndUpdate({
+                    _id: id
+                }, {
+                    [key]: dados[key]
+                })
+            }))
+
+            return res.status(200).json({
+                msg: 'oii'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Interal Server Error'
+            })
+        }
+    }
 
 
 }
