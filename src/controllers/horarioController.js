@@ -143,20 +143,16 @@ module.exports = {
         try {
             const { data, enfermeiro } = req.params
 
-            console.log(data, enfermeiro);
-
             const result = await Horario.find({
                 enfermeiro: enfermeiro,
                 dia: data
             })
 
             const horariosObj = result.filter(e => {
-                return e.agendado == undefined
+                return e.agendado != 'Agendado'
             })
 
             const horarios = horariosObj.map(e => e.horario)
-
-            console.log(horarios);
 
             return res.status(200).json({
                 horarios
@@ -193,7 +189,7 @@ module.exports = {
             }, {
                 dataEntrevista: dataEHora,
                 agendado: 'agendado',
-                enfermeiro:  enfermeiro
+                enfermeiro: enfermeiro
             })
 
             return res.status(200).json({
@@ -208,6 +204,163 @@ module.exports = {
             })
         }
     },
+    fecharDia: async (req, res) => {
+        try {
+
+            const { data, responsavel } = req.body
+
+            let date = new Date(data)
+
+            console.log(data, responsavel, date);
+
+            const update = await Horario.updateMany({
+                $and: [
+                    {
+                        dia: date
+                    }, {
+                        enfermeiro: responsavel
+                    }
+                ]
+            }, {
+                agendado: 'Agendado',
+                nome: 'Fechado'
+            })
+
+            console.log(update);
+
+            return res.status(200).json({
+                msg: 'oi'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    fecharHorarios: async (req, res) => {
+        try {
+
+            const { responsavel, data, horarios } = req.body
+
+            console.log(responsavel, horarios, data);
+
+            const date = new Date(data)
+
+            let horariosFiltrados = horarios.filter(e => {
+                return e != null
+            })
+
+            const result = await Promise.all(horariosFiltrados.map(async e => {
+                return await Horario.findOneAndUpdate({
+                    $and: [
+                        {
+                            dia: date
+                        }, {
+                            enfermeiro: responsavel
+                        }, {
+                            horario: e
+                        }
+                    ]
+                }, {
+                    agendado: 'Agendado',
+                    nome: 'Fechado'
+                })
+            }))
+
+            console.log(result);
+
+            return res.status(200).json({
+                msg: 'oii'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    reabrirHorarios: async (req, res) => {
+        try {
+
+            const { horarios, data, responsavel } = req.body
+
+            const date = new Date(data)
+
+            let horariosFiltrados = horarios.filter(e => {
+                return e != null
+            })
+
+            console.log(horariosFiltrados, date, responsavel);
+
+            const result = await Promise.all(horariosFiltrados.map(async e => {
+                return await Horario.findOneAndUpdate({
+                    $and: [
+                        {
+                            dia: date
+                        }, {
+                            enfermeiro: responsavel
+                        }, {
+                            horario: e
+                        }
+                    ]
+                }, {
+                    agendado: 'Reaberto',
+                    nome: ''
+                })
+            }))
+
+            console.log(result);
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+    buscarHorariosNaoDisponiveis: async (req, res) => {
+        try {
+
+            const { responsavel, data } = req.params
+
+            const date = new Date(data)
+
+            const result = await Horario.find({
+                $and: [
+                    {
+                        enfermeiro: responsavel
+                    }, {
+                        dia: date
+                    }
+                ]
+            })
+
+            const horariosObj = result.filter(e => {
+                return e.agendado == 'Agendado'
+            })
+
+            const horarios = horariosObj.map(e => e.horario)
+
+            console.log(horarios);
+
+            return res.status(200).json({
+                horarios
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 
 }
 

@@ -46,7 +46,10 @@ const propostaScheema = mongoose.Schema({
     cid1: String,
     tipoAssociado: String,
     tipoContrato: String,
-    formulario: String
+    formulario: String,
+    anexadoSisAmil: String,
+    cids: String,
+    houveDivergencia: String
 }, {
     timestamps: true
 })

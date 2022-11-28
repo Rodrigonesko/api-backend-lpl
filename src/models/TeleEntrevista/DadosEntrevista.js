@@ -51,11 +51,11 @@ const dadosEntrevistaScheema = mongoose.Schema({
     internacao: String,
     creche: String,
     tempoGestacao: String,
-    faturado: Boolean,
-    anexadoSisAmil: Boolean,
+    faturado: String,
     tipoContrato: String,
     sexo: String,
-    divergencia: String
+    divergencia: String,
+    cids: String
 }, {
     timestamps: true
 })

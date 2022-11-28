@@ -48,12 +48,15 @@ router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
 
 router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
 router.get('/entrevistas/propostas', auth, propostaEntrevistaController.show)
-router.put('/entrevistas/reagendar', auth, propostaEntrevistaController.reagendar)
 
 router.post('/entrevistas/gerarHorarios', auth, horarioController.gerar)
 router.get('/entrevistas/buscarDiasDisponiveis/:enfermeiro', auth, horarioController.search)
 router.get('/entrevistas/buscarHorariosDisponiveis/:enfermeiro/:data', auth, horarioController.searchHorarios)
+router.get('/entrevistas/buscarHorariosNaoDisponiveis/:responsavel/:data', auth, horarioController.buscarHorariosNaoDisponiveis)
 router.put('/entrevistas/agendar', auth, horarioController.agendar)
+router.put('/entrevistas/fecharDia', auth, horarioController.fecharDia)
+router.put('/entrevistas/fecharHorarios', auth, horarioController.fecharHorarios)
+router.put('/entrevistas/reabrirHorarios', auth, horarioController.reabrirHorarios)
 
 router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
 router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
@@ -64,7 +67,9 @@ router.get('/entrevistas/dadosEntrevista/:proposta/:nome', auth, TeleEntrevistaC
 router.get('/entrevistas/dadosEntrevista', auth, TeleEntrevistaController.mostrarDadosEntrevistas)
 router.get('/entrevistas/buscar/dadosEntrevista/:id', auth, TeleEntrevistaController.mostrarDadosEntrevistaId)
 router.put('/entrevistas/editar/dadosEntrevista', auth, TeleEntrevistaController.salvarDadosEditados)
-
+router.get('/entrevistas/propostas/anexar', auth, TeleEntrevistaController.buscarPropostasNaoAnexadas)
+router.put('/entrevistas/propostas/anexar', auth, TeleEntrevistaController.anexarSisAmil)
+router.put('/entrevistas/reagendar', auth, TeleEntrevistaController.reagendar)
 
 //Liminar
 

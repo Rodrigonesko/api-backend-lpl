@@ -10,6 +10,7 @@ const fs = require('fs')
 const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')
+const Horario = require('../models/Horario')
 
 const uploadCid = multer({ dest: os.tmpdir() }).single('file')
 
@@ -55,9 +56,15 @@ module.exports = {
     enviarDadosFormulario: async (req, res) => {
         try {
 
-            const { respostas, subRespostas, pessoa, simOuNao, cids } = req.body
+            const { respostas, subRespostas, pessoa, simOuNao, cids, divergencia } = req.body
 
-            console.log(subRespostas);
+            let divBanco
+
+            if (divergencia === true) {
+                divBanco = 'Sim'
+            } else {
+                divBanco = 'Não'
+            }
 
             console.log(cids);
 
@@ -117,6 +124,51 @@ module.exports = {
                 sexo: pessoa.sexo
             }, {
                 upsert: true
+            })
+
+            const updateProposta = await Propostas.findOneAndUpdate({
+                _id: pessoa._id
+            }, {
+                status: 'Concluído',
+                anexadoSisAmil: 'Anexar',
+                houveDivergencia: divBanco,
+                divergencia: respostasConc['divergencia']
+            })
+
+            const updateFaturamento = await DadosEntrevista.findOneAndUpdate({
+                $and: [
+                    {
+                        nome: pessoa.nome
+                    }, {
+                        proposta: pessoa.proposta
+                    }
+                ]
+            }, {
+                faturado: 'Não faturado'
+            })
+
+            const adicionarCidsEntrevista = await DadosEntrevista.findOneAndUpdate({
+                $and: [
+                    {
+                        nome: pessoa.nome
+                    }, {
+                        proposta: pessoa.proposta
+                    }
+                ]
+            }, {
+                cids: cids.toString()
+            })
+
+            const adicionarCidsProposta = await Propostas.findOneAndUpdate({
+                $and: [
+                    {
+                        nome: pessoa.nome
+                    }, {
+                        proposta: pessoa.proposta
+                    }
+                ]
+            }, {
+                cids: cids.toString()
             })
 
             // console.log(pessoa);
@@ -282,6 +334,94 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Interal Server Error'
+            })
+        }
+    },
+
+    buscarPropostasNaoAnexadas: async (req, res) => {
+        try {
+
+            const propostas = await Propostas.find({
+                anexadoSisAmil: 'Anexar'
+            })
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    anexarSisAmil: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const update = await Propostas.findOneAndUpdate({
+                _id: id
+            }, {
+                anexadoSisAmil: 'Anexado'
+            })
+
+            return res.status(200).json(
+                update
+            )
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    reagendar: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            // const result = await Propostas.findOneAndUpdate({
+            //     _id: id
+            // }, {
+            //     horario: '',
+            //     agendado: ''
+            // })
+
+            const dadosProposta = await Propostas.findById({
+                _id: id
+            })
+
+            let split = dadosProposta.dataEntrevista.split(' ')
+            let dataEntrevista = split[0]
+            dataEntrevista = new Date(dataEntrevista)
+            const horario = split[1]
+
+            const atualizarHorarios = await Horario.findOneAndUpdate({
+                $and: [
+                    {
+                        dia: dataEntrevista
+                    }, {
+                        enfermeiro: dadosProposta.enfermeiro
+                    }, {
+                        horario: horario
+                    }
+                ]
+            }, {
+                agendado: 'Reaberto',
+                nome: ''
+            })
+
+            console.log(atualizarHorarios);
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
             })
         }
     }
