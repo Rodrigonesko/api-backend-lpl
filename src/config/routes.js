@@ -73,6 +73,9 @@ router.put('/entrevistas/reagendar', auth, TeleEntrevistaController.reagendar)
 router.put('/entrevistas/cancelar', auth, TeleEntrevistaController.cancelarProposta)
 router.put('/entrevistas/proposta/excluir', auth, TeleEntrevistaController.excluirProposta)
 router.put('/entrevistas/alterarTelefone', auth, TeleEntrevistaController.alterarTelefone)
+router.get('/entrevistas/naoFaturadas', auth, TeleEntrevistaController.buscarNaoFaturados)
+router.put('/entrevistas/faturar', auth, TeleEntrevistaController.realizarFaturamento)
+router.get('/entrevistas/faturamento/filtros/:status/:data', auth, TeleEntrevistaController.filtrosFaturamento)
 
 //Liminar
 

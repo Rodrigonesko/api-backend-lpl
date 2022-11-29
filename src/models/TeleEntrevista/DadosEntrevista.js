@@ -56,7 +56,10 @@ const dadosEntrevistaScheema = mongoose.Schema({
     sexo: String,
     divergencia: String,
     cids: String,
-    cancelado: Boolean
+    cancelado: Boolean,
+    nf: String,
+    dataFaturamento: Date,
+    idade: Number
 }, {
     timestamps: true
 })

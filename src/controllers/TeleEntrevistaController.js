@@ -431,6 +431,8 @@ module.exports = {
 
             const { id } = req.body
 
+            console.log(id);
+
             const proposta = await Propostas.findOneAndUpdate({
                 _id: id
             }, {
@@ -460,8 +462,10 @@ module.exports = {
 
     excluirProposta: async (req, res) => {
         try {
-            
-            const {id} = req.body
+
+            const { id } = req.body
+
+            console.log(id);
 
             const remove = await Propostas.deleteOne({
                 _id: id
@@ -472,7 +476,7 @@ module.exports = {
             })
 
         } catch (error) {
-            console.log(error);            
+            console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
@@ -481,7 +485,7 @@ module.exports = {
 
     alterarTelefone: async (req, res) => {
         try {
-            const {id, telefone } = req.body
+            const { id, telefone } = req.body
 
             const result = await Propostas.findOneAndUpdate({
                 _id: id
@@ -494,11 +498,125 @@ module.exports = {
             })
 
         } catch (error) {
+            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
         }
     },
 
+    buscarNaoFaturados: async (req, res) => {
+        try {
 
+            const entrevistas = await DadosEntrevista.find({
+                faturado: 'Não faturado'
+            })
+
+            return res.status(200).json({
+                entrevistas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    filtrosFaturamento: async (req, res) => {
+        try {
+
+            const { status, data } = req.params
+
+            const split = data.split('-')
+            const month = split[0]
+            const year = split[1]
+
+            if (status == 'todos' && data == 'todos') {
+                console.log('pesquisa tudo');
+                const entrevistas = await DadosEntrevista.find()
+                return res.status(200).json({
+                    entrevistas
+                })
+            }
+
+            if (status != 'todos' && data == 'todos') {
+                console.log('status independente da data');
+                const entrevistas = await DadosEntrevista.find({
+                    faturado: status
+                })
+                return res.status(200).json({
+                    entrevistas
+                })
+            }
+
+            if (status == 'todos' && data != 'todos') {
+                console.log('tudo de tal data');
+                const entrevistasBanco = await DadosEntrevista.find()
+
+                const entrevistas = entrevistasBanco.filter(e => {
+                    return moment(e.createdAt).format('MM-YYYY') == data && e.cancelado == undefined
+                })
+
+                return res.status(200).json({
+                    entrevistas
+                })
+            }
+
+            if (status != 'todos' && data != 'todos') {
+                console.log('status e data filtrado');
+                console.log(status);
+                const entrevistasBanco = await DadosEntrevista.find({
+                    faturado: status
+                })
+
+                const entrevistas = entrevistasBanco.filter(e => {
+                    return moment(e.createdAt).format('MM-YYYY') == data && e.cancelado == undefined
+                })
+
+                return res.status(200).json({
+                    entrevistas
+                })
+            }
+
+            return res.status(200).json({
+                msg: 'oi'
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    realizarFaturamento: async (req, res) => {
+        try {
+
+            const { entrevistas } = req.body
+
+            const update = await Promise.all(entrevistas.map(async (e) => {
+                return await DadosEntrevista.findOneAndUpdate({
+                    _id: e[1]
+                }, {
+                    faturado: 'Faturado',
+                    nf: e[0],
+                    dataFaturamento: new Date()
+                })
+            }))
+
+            return res.status(200).json({
+                update
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    }
 }
