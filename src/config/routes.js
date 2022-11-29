@@ -70,6 +70,9 @@ router.put('/entrevistas/editar/dadosEntrevista', auth, TeleEntrevistaController
 router.get('/entrevistas/propostas/anexar', auth, TeleEntrevistaController.buscarPropostasNaoAnexadas)
 router.put('/entrevistas/propostas/anexar', auth, TeleEntrevistaController.anexarSisAmil)
 router.put('/entrevistas/reagendar', auth, TeleEntrevistaController.reagendar)
+router.put('/entrevistas/cancelar', auth, TeleEntrevistaController.cancelarProposta)
+router.put('/entrevistas/proposta/excluir', auth, TeleEntrevistaController.excluirProposta)
+router.put('/entrevistas/alterarTelefone', auth, TeleEntrevistaController.alterarTelefone)
 
 //Liminar
 

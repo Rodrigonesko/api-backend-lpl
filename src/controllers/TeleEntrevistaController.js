@@ -424,7 +424,81 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    cancelarProposta: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const proposta = await Propostas.findOneAndUpdate({
+                _id: id
+            }, {
+                status: 'Cancelado'
+            })
+
+            const create = await DadosEntrevista.create({
+                nome: proposta.nome,
+                cpf: proposta.cpf,
+                dataNascimento: proposta.dataNascimento,
+                dataEntrevista: null,
+                proposta: proposta.proposta,
+                cancelado: true
+            })
+
+            return res.status(200).json({
+                msg: 'oii'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    excluirProposta: async (req, res) => {
+        try {
+            
+            const {id} = req.body
+
+            const remove = await Propostas.deleteOne({
+                _id: id
+            })
+
+            return res.status(200).json({
+                remove
+            })
+
+        } catch (error) {
+            console.log(error);            
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    alterarTelefone: async (req, res) => {
+        try {
+            const {id, telefone } = req.body
+
+            const result = await Propostas.findOneAndUpdate({
+                _id: id
+            }, {
+                telefone: telefone
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
 
 
 }
