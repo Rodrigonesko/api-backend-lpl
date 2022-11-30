@@ -60,13 +60,13 @@ module.exports = {
 
             let divBanco
 
+            //console.log(respostas, subRespostas);
+
             if (divergencia === true) {
                 divBanco = 'Sim'
             } else {
                 divBanco = 'Não'
             }
-
-            console.log(cids);
 
             let respostasConc = {
 
@@ -88,9 +88,10 @@ module.exports = {
                 respostasConc[`${key}`] += `${respostas[key]} \n `
             })
 
-            const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc).map(async key => {
+            console.log(respostasConc);
 
-                return await DadosEntrevista.findOneAndUpdate({
+            for (const key of Object.keys(respostasConc)) {
+                await DadosEntrevista.findOneAndUpdate({
                     $and: [
                         {
                             nome: pessoa.nome
@@ -103,9 +104,24 @@ module.exports = {
                 }, {
                     upsert: true
                 })
-            }))
+            }
 
-            // console.log(addDadosEntrevistas);
+            // const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc).map(async key => {
+
+            //     return await DadosEntrevista.findOneAndUpdate({
+            //         $and: [
+            //             {
+            //                 nome: pessoa.nome
+            //             }, {
+            //                 proposta: pessoa.proposta
+            //             }
+            //         ]
+            //     }, {
+            //         [key]: respostasConc[key].replace('undefined', '')
+            //     }, {
+            //         upsert: true
+            //     })
+            // }))
 
             const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
                 $and: [
@@ -118,10 +134,11 @@ module.exports = {
             }, {
                 tipoFormulario: pessoa.formulario,
                 cpf: pessoa.cpf,
-                // dataNascimento: pessoa.dataNascimento,
+                dataNascimento: pessoa.dataNascimento,
                 responsavel: req.user,
                 tipoContrato: pessoa.tipoContrato,
-                sexo: pessoa.sexo
+                sexo: pessoa.sexo,
+                idade: pessoa.idade
             }, {
                 upsert: true
             })
@@ -168,11 +185,9 @@ module.exports = {
                     }
                 ]
             }, {
-                cids: cids.toString()
-            })
+                cids: cids.toString(),
 
-            // console.log(pessoa);
-            // console.log(updateDadosEntrevista);
+            })
 
             return res.status(200).json({
                 msg: 'oi'
@@ -385,12 +400,7 @@ module.exports = {
 
             const { id } = req.body
 
-            // const result = await Propostas.findOneAndUpdate({
-            //     _id: id
-            // }, {
-            //     horario: '',
-            //     agendado: ''
-            // })
+
 
             const dadosProposta = await Propostas.findById({
                 _id: id
@@ -400,6 +410,8 @@ module.exports = {
             let dataEntrevista = split[0]
             dataEntrevista = new Date(dataEntrevista)
             const horario = split[1]
+
+            console.log(dataEntrevista);
 
             const atualizarHorarios = await Horario.findOneAndUpdate({
                 $and: [
@@ -417,6 +429,20 @@ module.exports = {
             })
 
             console.log(atualizarHorarios);
+
+            const result = await Propostas.findOneAndUpdate({
+                _id: id
+            }, {
+                dataEntrevista: '',
+                agendado: '',
+                enfermeiro: ''
+            })
+
+            return res.status(200).json({
+                msg: 'Ok'
+            })
+
+
 
         } catch (error) {
             console.log(error);

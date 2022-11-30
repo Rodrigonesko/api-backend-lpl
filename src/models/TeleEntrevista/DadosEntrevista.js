@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const dadosEntrevistaScheema = mongoose.Schema({
     nome: String,
     cpf: String,
-    dataNascimento: Date,
+    dataNascimento: String,
     dataEntrevista: Date,
     proposta: String,
     tipoFormulario: String,
@@ -59,7 +59,7 @@ const dadosEntrevistaScheema = mongoose.Schema({
     cancelado: Boolean,
     nf: String,
     dataFaturamento: Date,
-    idade: Number
+    idade: Number,
 }, {
     timestamps: true
 })

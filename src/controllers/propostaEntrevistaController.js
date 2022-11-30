@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const PropostaEntrevista = mongoose.model('PropostaEntrevista')
 const Horario = mongoose.model('Horario')
 const moment = require('moment')
+const momentBusiness = require('moment-business-days')
 
 module.exports = {
     upload: async (req, res) => {
@@ -18,6 +19,8 @@ module.exports = {
                 let vigencia = ExcelDateToJSDate(item.DT_VENDA)
                 vigencia.setDate(vigencia.getDate() + 1)
                 vigencia = moment(vigencia).format('DD/MM/YYYY')
+
+                //console.log(vigencia);
 
                 const filial = item.FILIAL
 
@@ -49,9 +52,11 @@ module.exports = {
 
                 const tipoContrato = item.TIPO_CONTRATO
 
+                if (tipoContrato !== 'Coletivo por Adesão com Administradora') {
+                    vigencia = moment().businessAdd(2).format('DD/MM/YYYY')
+                }
+
                 const grupoCarencia = item.GRUPO_CARENCIA
-
-
 
                 const d1 = item.DS_1
                 const d2 = item.DS_2
@@ -74,7 +79,7 @@ module.exports = {
                 const observacao = item['OBSERVAÇÕES']
                 const ddd = item.NUM_DDD_CEL
                 const numero = item.NUM_CEL
-                const telefone = `${ddd}${numero}`
+                const telefone = `(${ddd}) ${numero}`
 
                 let dataNascimento
 
@@ -143,13 +148,16 @@ module.exports = {
                     formulario
                 }
 
-                console.log(resultado);
+                const existeProposta = await PropostaEntrevista.findOne({
+                    proposta,
+                    nome
+                })
 
-                const newPropostaEntrevista = await PropostaEntrevista.create(resultado)
 
-                quantidade++
-
-                console.log(newPropostaEntrevista);
+                if (!existeProposta) {
+                    const newPropostaEntrevista = await PropostaEntrevista.create(resultado)
+                    quantidade++
+                }
 
             }
 
