@@ -644,5 +644,26 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    buscarPropostasNaoRealizadas: async (req, res) => {
+        try {
+
+            const result = await Propostas.find()
+
+            const propostas = result.filter(e => {
+                return e.status != 'Concluído' && e.status != 'Cancelado'
+            })
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
