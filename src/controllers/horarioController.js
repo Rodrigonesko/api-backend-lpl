@@ -189,7 +189,8 @@ module.exports = {
             }, {
                 dataEntrevista: dataEHora,
                 agendado: 'agendado',
-                enfermeiro: enfermeiro
+                enfermeiro: enfermeiro,
+                quemAgendou: req.user
             })
 
             return res.status(200).json({

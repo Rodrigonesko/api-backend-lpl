@@ -13,6 +13,9 @@ const xlsx = require('xlsx')
 const Horario = require('../models/Horario')
 
 const uploadCid = multer({ dest: os.tmpdir() }).single('file')
+const uploadPerguntas = multer({ dest: os.tmpdir() }).single('file')
+const uploadDadosEntrevista = multer({ dest: os.tmpdir() }).single('file')
+const uploadPropostas = multer({ dest: os.tmpdir() }).single('file')
 
 module.exports = {
     mostrarPerguntas: async (req, res) => {
@@ -380,7 +383,8 @@ module.exports = {
             const update = await Propostas.findOneAndUpdate({
                 _id: id
             }, {
-                anexadoSisAmil: 'Anexado'
+                anexadoSisAmil: 'Anexado',
+                quemAnexou: req.user
             })
 
             return res.status(200).json(
@@ -659,6 +663,108 @@ module.exports = {
                 propostas
             })
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    subirPerguntas: async (req, res) => {
+        try {
+
+            uploadPerguntas(req, res, async (err) => {
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                for (const item of result) {
+
+                    let subPerguntasNao = item.subPerguntasNao?.split(',')
+                    let subPerguntasSim = item.subPerguntasSim?.split(',')
+
+                    if (subPerguntasNao == undefined && subPerguntasSim == undefined) {
+                        console.log('nao insere subPergunta');
+                        const create = await Pergunta.create({
+                            pergunta: item.pergunta,
+                            formulario: item.formulario,
+                            categoria: item.categoria,
+                            existeSub: item.existeSub,
+                            name: item.name,
+                            sexo: item.sexo
+                        })
+                    } else {
+                        const create = await Pergunta.create({
+                            pergunta: item.pergunta,
+                            formulario: item.formulario,
+                            categoria: item.categoria,
+                            existeSub: item.existeSub,
+                            subPerguntasSim: subPerguntasSim,
+                            name: item.name,
+                            sexo: item.sexo
+                        })
+                    }
+                }
+
+                return res.status(200).json({
+                    msg: 'oii'
+                })
+
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    subirDadosEntrevista: async (req, res) => {
+        try {
+            uploadPerguntas(req, res, async (err) => {
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                for (const item of result) {
+                    for (const e of (Object.keys(item))) {
+                        await DadosEntrevista.findOneAndUpdate({
+                            $and: [
+                                {
+                                    nome: item.nome
+                                }, {
+                                    proposta: item.proposta
+                                }
+                            ]
+                        }, {
+                            [e]: item[e]
+                        }, {
+                            upsert: true
+                        })
+                    }
+                    // const teste = await Promise.all(Object.keys(item).map(async e => {
+    
+                    // }))
+                }
+
+                return res.status(200).json({
+                    msg: 'oii'
+                })
+
+            })
         } catch (error) {
             console.log(error);
             return res.status(500).json({

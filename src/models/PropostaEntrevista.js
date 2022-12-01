@@ -49,7 +49,9 @@ const propostaScheema = mongoose.Schema({
     formulario: String,
     anexadoSisAmil: String,
     cids: String,
-    houveDivergencia: String
+    houveDivergencia: String,
+    quemAnexou: String,
+    quemAgendou: String
 }, {
     timestamps: true
 })

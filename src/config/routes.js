@@ -77,6 +77,8 @@ router.get('/entrevistas/naoFaturadas', auth, TeleEntrevistaController.buscarNao
 router.put('/entrevistas/faturar', auth, TeleEntrevistaController.realizarFaturamento)
 router.get('/entrevistas/faturamento/filtros/:status/:data', auth, TeleEntrevistaController.filtrosFaturamento)
 router.get('/entrevistas/propostas/naoRealizadas', auth, TeleEntrevistaController.buscarPropostasNaoRealizadas)
+router.post('/entrevistas/upload/perguntas', auth, TeleEntrevistaController.subirPerguntas)
+router.post('/entrevistas/upload/dadosEntrevista', auth, TeleEntrevistaController.subirDadosEntrevista)
 
 //Liminar
 
