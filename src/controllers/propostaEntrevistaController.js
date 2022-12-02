@@ -173,7 +173,7 @@ module.exports = {
     },
     show: async (req, res) => {
         try {
-            const propostas = await PropostaEntrevista.find()
+            const propostas = await PropostaEntrevista.find().sort('vigencia')
 
             return res.status(200).json({
                 propostas

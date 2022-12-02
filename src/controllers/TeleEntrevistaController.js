@@ -810,7 +810,7 @@ module.exports = {
                             item[e].setDate(item[e].getDate() + 1)
                             item[e] = moment(item[e]).format('DD/MM/YYYY')
                         }
-                        if(e === 'dataEntrevista'){
+                        if (e === 'dataEntrevista') {
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
                             item[e] = moment(item[e]).format('YYYY-MM-DD')
@@ -845,6 +845,65 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    mostrarDadosProducao: async (req, res) => {
+        try {
+
+            const entrevistas = await DadosEntrevista.find()
+
+            let mapQuantidadeMesAno = new Map()
+            let quantidadeMesAno = {}
+
+            let quantidadeAnalistaMesAno = {}
+            let quantidadeAnalistaDia = {}
+
+            entrevistas.forEach(e => {
+                if (mapQuantidadeMesAno.has(moment(e.dataEntrevista).format('MM/YYYY'))) {
+                    mapQuantidadeMesAno.set(moment(e.dataEntrevista).format('MM/YYYY'), mapQuantidadeMesAno.get(moment(e.dataEntrevista).format('MM/YYYY')) + 1)
+                } else {
+                    mapQuantidadeMesAno.set(moment(e.dataEntrevista).format('MM/YYYY'), 1)
+                }
+
+                if (!quantidadeAnalistaMesAno.hasOwnProperty(e.responsavel)) {
+                    quantidadeAnalistaMesAno[e.responsavel] = {}
+                } else {
+                    if (!quantidadeAnalistaMesAno[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('MM/YYYY'))) {
+                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = 1
+                    } else {
+                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] + 1
+                    }
+                }
+
+                if (!quantidadeAnalistaDia.hasOwnProperty(e.responsavel)) {
+                    quantidadeAnalistaDia[e.responsavel] = {}
+                } else {
+                    if (!quantidadeAnalistaDia[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('YYYY-MM-DD'))) {
+                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = 1
+                    } else {
+                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] + 1
+                    }
+                }
+
+            })
+
+            mapQuantidadeMesAno.forEach((e, key) => {
+                quantidadeMesAno[key] = e
+            })
+
+            console.log(quantidadeAnalistaDia);
+
+            return res.status(200).json({
+                quantidadeMesAno,
+                quantidadeAnalistaMesAno
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
             })
         }
     }

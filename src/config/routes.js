@@ -81,6 +81,8 @@ router.post('/entrevistas/upload/perguntas', auth, TeleEntrevistaController.subi
 router.post('/entrevistas/upload/dadosEntrevista', auth, TeleEntrevistaController.subirDadosEntrevista)
 router.post('/entrevistas/upload/propostas', auth, TeleEntrevistaController.subirPropostas)
 
+router.get('/entrevistas/producao/dados', auth, TeleEntrevistaController.mostrarDadosProducao)
+
 //Liminar
 
 router.post('/liminares/upload', auth, liminarController.upload)
