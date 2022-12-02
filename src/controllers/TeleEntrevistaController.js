@@ -739,8 +739,19 @@ module.exports = {
 
                 let result = xlsx.utils.sheet_to_json(worksheet)
 
-                for (const item of result) {
+                for (let item of result) {
                     for (const e of (Object.keys(item))) {
+                        if (e === 'dataFaturamento' || e === 'dataEntrevista') {
+
+                            item[e] = ExcelDateToJSDate(item[e])
+                            item[e].setDate(item[e].getDate() + 1)
+                            item[e] = moment(item[e]).format('YYYY-MM-DD')
+
+                        } else if (e === 'dataNascimento') {
+                            item[e] = ExcelDateToJSDate(item[e])
+                            item[e].setDate(item[e].getDate() + 1)
+                            item[e] = moment(item[e]).format('DD/MM/YYYY')
+                        }
                         await DadosEntrevista.findOneAndUpdate({
                             $and: [
                                 {
@@ -756,7 +767,72 @@ module.exports = {
                         })
                     }
                     // const teste = await Promise.all(Object.keys(item).map(async e => {
-    
+
+                    // }))
+                }
+
+                return res.status(200).json({
+                    msg: 'oii'
+                })
+
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    subirPropostas: async (req, res) => {
+        try {
+            uploadPerguntas(req, res, async (err) => {
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                for (let item of result) {
+                    for (const e of (Object.keys(item))) {
+
+                        if (e === 'createdAt' || e === 'vigencia') {
+                            item[e] = ExcelDateToJSDate(item[e])
+                            item[e].setDate(item[e].getDate() + 1)
+                            item[e] = moment(item[e]).format('YYYY-MM-DD')
+                        }
+                        if (e === 'dataNascimento') {
+                            item[e] = ExcelDateToJSDate(item[e])
+                            item[e].setDate(item[e].getDate() + 1)
+                            item[e] = moment(item[e]).format('DD/MM/YYYY')
+                        }
+                        if(e === 'dataEntrevista'){
+                            item[e] = ExcelDateToJSDate(item[e])
+                            item[e].setDate(item[e].getDate() + 1)
+                            item[e] = moment(item[e]).format('YYYY-MM-DD')
+                            item[e] += ` ${ExcelDateToJSDate(item['horario'])}`
+                        }
+
+                        await Propostas.findOneAndUpdate({
+                            $and: [
+                                {
+                                    nome: item.nome
+                                }, {
+                                    proposta: item.proposta
+                                }
+                            ]
+                        }, {
+                            [e]: item[e]
+                        }, {
+                            upsert: true
+                        })
+                    }
+                    // const teste = await Promise.all(Object.keys(item).map(async e => {
+
                     // }))
                 }
 
@@ -772,4 +848,23 @@ module.exports = {
             })
         }
     }
+}
+
+function ExcelDateToJSDate(serial) {
+    var utc_days = Math.floor(serial - 25569);
+    var utc_value = utc_days * 86400;
+    var date_info = new Date(utc_value * 1000);
+
+    var fractional_day = serial - Math.floor(serial) + 0.0000001;
+
+    var total_seconds = Math.floor(86400 * fractional_day);
+
+    var seconds = total_seconds % 60;
+
+    total_seconds -= seconds;
+
+    var hours = Math.floor(total_seconds / (60 * 60));
+    var minutes = Math.floor(total_seconds / 60) % 60;
+
+    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
 }
