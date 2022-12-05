@@ -178,7 +178,8 @@ module.exports = {
                 observacoes: data.observacoes,
                 email: data.email,
                 status: 'Concluido',
-                dataConclusao: new Date()
+                dataConclusao: new Date(),
+                responsavel: req.user
             })
 
             return res.status(200).json(rn)

@@ -897,7 +897,8 @@ module.exports = {
 
             return res.status(200).json({
                 quantidadeMesAno,
-                quantidadeAnalistaMesAno
+                quantidadeAnalistaMesAno,
+                quantidadeAnalistaDia
             })
 
         } catch (error) {

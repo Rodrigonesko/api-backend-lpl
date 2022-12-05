@@ -27,7 +27,8 @@ const rnScheema = mongoose.Schema({
     observacoes: String,
     status: String,
     respostaBeneficiario: String,
-    dataConclusao: Date
+    dataConclusao: Date,
+    responsavel: String
 }, {
     timestamps: true
 })
