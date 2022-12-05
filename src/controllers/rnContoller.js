@@ -271,6 +271,80 @@ module.exports = {
         }
     },
 
+    updateDataConclusao: async (req, res) => {
+        try {
+            
+            const rns = await Rn.find({
+                dataConclusao: undefined
+            })
+
+            console.log(rns.length);
+
+            for (const item of rns) {
+
+                let dataConclusao = item.updatedAt
+
+                await Rn.findByIdAndUpdate({
+                    _id: item._id
+                }, {
+                    dataConclusao: dataConclusao
+                })
+            }
+
+            return res.status(200).json({
+                rns: rns.length
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    updateResponsavel: async (req, res) => {
+        try {
+            
+            const rns = await Rn.find({
+                responsavel: undefined
+            })
+
+            console.log(rns.length);
+
+            for (const item of rns) {
+
+                console.log(moment(item.dataConclusao).format('MM/YYYY'));
+
+                if(moment(item.dataConclusao).format('MM/YYYY') === '09/2022'){
+                    await Rn.findByIdAndUpdate({
+                        _id: item._id
+                    }, {
+                        responsavel: 'Cristiane Antonioli'
+                    })
+                }
+
+                if(moment(item.dataConclusao).format('MM/YYYY') === '11/2022' || moment(item.dataConclusao).format('MM/YYYY') === '12/2022' ){
+                    await Rn.findByIdAndUpdate({
+                        _id: item._id
+                    }, {
+                        responsavel: 'Allana Silva'
+                    })
+                }
+            }
+
+            return res.status(200).json({
+                rns: rns.length
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
+
 
 }
 

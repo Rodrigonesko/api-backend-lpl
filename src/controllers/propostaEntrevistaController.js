@@ -107,6 +107,8 @@ module.exports = {
                     formulario = 'adulto'
                 }
 
+                console.log(formulario);
+
                 const resultado = {
                     proposta,
                     filial,

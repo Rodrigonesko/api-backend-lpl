@@ -1,8 +1,9 @@
-mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const Pergunta = mongoose.model('Pergunta')
 const Propostas = mongoose.model('PropostaEntrevista')
 const Cid = mongoose.model('Cid')
 const DadosEntrevista = mongoose.model('DadosEntrevista')
+const Rn = mongoose.model('Rn')
 
 const path = require('path')
 const moment = require('moment')
@@ -861,14 +862,24 @@ module.exports = {
             let quantidadeAnalistaDia = {}
 
             entrevistas.forEach(e => {
+
+                /* Logica para verificar se ja existe array com chave no map das entrevistas */
+
                 if (mapQuantidadeMesAno.has(moment(e.dataEntrevista).format('MM/YYYY'))) {
                     mapQuantidadeMesAno.set(moment(e.dataEntrevista).format('MM/YYYY'), mapQuantidadeMesAno.get(moment(e.dataEntrevista).format('MM/YYYY')) + 1)
                 } else {
                     mapQuantidadeMesAno.set(moment(e.dataEntrevista).format('MM/YYYY'), 1)
                 }
 
+                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por mes */
+
                 if (!quantidadeAnalistaMesAno.hasOwnProperty(e.responsavel)) {
                     quantidadeAnalistaMesAno[e.responsavel] = {}
+                    if (!quantidadeAnalistaMesAno[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('MM/YYYY'))) {
+                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = 1
+                    } else {
+                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] + 1
+                    }
                 } else {
                     if (!quantidadeAnalistaMesAno[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('MM/YYYY'))) {
                         quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = 1
@@ -876,14 +887,69 @@ module.exports = {
                         quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] + 1
                     }
                 }
+                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por dia */
 
                 if (!quantidadeAnalistaDia.hasOwnProperty(e.responsavel)) {
                     quantidadeAnalistaDia[e.responsavel] = {}
+                    if (!quantidadeAnalistaDia[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('YYYY-MM-DD'))) {
+                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = 1
+                    } else {
+                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] + 1
+                    }
                 } else {
                     if (!quantidadeAnalistaDia[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('YYYY-MM-DD'))) {
                         quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = 1
                     } else {
                         quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] + 1
+                    }
+                }
+            })
+
+            const rns = await Rn.find()
+
+            let mapQuantidadeMesAnoRn = new Map()
+            let quantidadeMesAnoRn = {}
+
+            let quantidadeAnalistaMesAnoRn = {}
+            let quantidadeAnalistaDiaRn = {}
+
+            rns.forEach(e => {
+                if (mapQuantidadeMesAnoRn.has(moment(e.dataConclusao).format('MM/YYYY'))) {
+                    mapQuantidadeMesAnoRn.set(moment(e.dataConclusao).format('MM/YYYY'), mapQuantidadeMesAnoRn.get(moment(e.dataConclusao).format('MM/YYYY')) + 1)
+                } else {
+                    mapQuantidadeMesAnoRn.set(moment(e.dataConclusao).format('MM/YYYY'), 1)
+                }
+
+                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por mes */
+
+                if (!quantidadeAnalistaMesAnoRn.hasOwnProperty(e.responsavel)) {
+                    quantidadeAnalistaMesAnoRn[e.responsavel] = {}
+                    if (!quantidadeAnalistaMesAnoRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('MM/YYYY'))) {
+                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = 1
+                    } else {
+                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] + 1
+                    }
+                } else {
+                    if (!quantidadeAnalistaMesAnoRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('MM/YYYY'))) {
+                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = 1
+                    } else {
+                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] + 1
+                    }
+                }
+                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por dia */
+
+                if (!quantidadeAnalistaDiaRn.hasOwnProperty(e.responsavel)) {
+                    quantidadeAnalistaDiaRn[e.responsavel] = {}
+                    if (!quantidadeAnalistaDiaRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('YYYY-MM-DD'))) {
+                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = 1
+                    } else {
+                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] + 1
+                    }
+                } else {
+                    if (!quantidadeAnalistaDiaRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('YYYY-MM-DD'))) {
+                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = 1
+                    } else {
+                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] + 1
                     }
                 }
 
@@ -893,12 +959,19 @@ module.exports = {
                 quantidadeMesAno[key] = e
             })
 
-            console.log(quantidadeAnalistaDia);
+            mapQuantidadeMesAnoRn.forEach((e, key) => {
+                quantidadeMesAnoRn[key] = e
+            })
+
+            console.log(quantidadeMesAnoRn, quantidadeAnalistaMesAnoRn, quantidadeAnalistaDiaRn);
 
             return res.status(200).json({
                 quantidadeMesAno,
                 quantidadeAnalistaMesAno,
-                quantidadeAnalistaDia
+                quantidadeAnalistaDia,
+                quantidadeMesAnoRn,
+                quantidadeAnalistaMesAnoRn,
+                quantidadeAnalistaDiaRn
             })
 
         } catch (error) {
