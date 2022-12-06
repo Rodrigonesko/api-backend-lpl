@@ -361,6 +361,46 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+    buscarHorarioDisponiveis: async (req, res) => {
+        try {
+
+            let horarios = await Horario.find()
+
+            horarios = horarios.filter(e => {
+                return e.agendado == 'Reaberto' || e.agendado == undefined
+            })
+
+            horarios = horarios.filter(e => {
+
+                const today = new Date()
+
+                return moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).add(1, 'days').tz('America/Sao_Paulo').format('YYYY-MM-DD') === true
+            })
+
+            let obj = {}
+
+            horarios.forEach(e => {
+                if(!obj.hasOwnProperty(moment(e.dia).format('DD/MM/YYYY'))){
+                    obj[moment(e.dia).format('DD/MM/YYYY')] = []
+                    obj[moment(e.dia).format('DD/MM/YYYY')].push(e.horario)
+                } else {
+                    obj[moment(e.dia).format('DD/MM/YYYY')].push(e.horario)
+                }
+            })
+
+            console.log(obj);
+
+            return res.status(200).json({
+                horarios
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 
 }

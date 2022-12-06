@@ -59,6 +59,7 @@ router.put('/entrevistas/agendar', auth, horarioController.agendar)
 router.put('/entrevistas/fecharDia', auth, horarioController.fecharDia)
 router.put('/entrevistas/fecharHorarios', auth, horarioController.fecharHorarios)
 router.put('/entrevistas/reabrirHorarios', auth, horarioController.reabrirHorarios)
+router.get('/entrevistas/horarios/disponiveis', auth, horarioController.buscarHorarioDisponiveis)
 
 router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
 router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
