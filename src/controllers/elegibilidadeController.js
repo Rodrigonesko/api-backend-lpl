@@ -13,20 +13,20 @@ module.exports = {
     upload: async (req, res) => {
         try {
 
+            let qtd = 0
+
             uploadPropostas(req, res, async (err) => {
 
                 const { name, ext } = path.parse(req.file.originalname)
 
+
                 if (ext == '.txt') {
+
                     let data = fs.readFileSync(req.file.path, { encoding: 'latin1' })
                     let listaArr = data.split('\n');
                     let arrAux = listaArr.map(e => {
                         return e.split('#')
                     })
-
-                    console.log('oii');
-
-                    let propostasBanco = await Proposta.find()
 
                     for (const item of arrAux) {
                         let vigencia = item[36]
@@ -76,31 +76,40 @@ module.exports = {
                         }
 
                         if (situacao == 'Pronta para análise') {
-                            await Proposta.findOneAndUpdate({
+
+                            const find = await Proposta.findOne({
                                 proposta
-                            }, {
-                                proposta,
-                                vigencia,
-                                produto,
-                                produtor,
-                                uf,
-                                administradora,
-                                codCorretor,
-                                corretor,
-                                entidade,
-                                tipoVinculo,
-                                nome,
-                                idade,
-                                numeroVidas,
-                                valorMedico,
-                                valorDental,
-                                valorTotal,
-                                status: 'Análise de Documentos',
-                                supervisor,
-                                plano
-                            }, {
-                                upsert: true
                             })
+
+                            console.log(find);
+
+                            if (!find) {
+                                console.log('oii');
+                                await Proposta.create({
+                                    proposta,
+                                    vigencia,
+                                    produto,
+                                    produtor,
+                                    uf,
+                                    administradora,
+                                    codCorretor,
+                                    corretor,
+                                    entidade,
+                                    tipoVinculo,
+                                    nome,
+                                    idade,
+                                    numeroVidas,
+                                    valorMedico,
+                                    valorDental,
+                                    valorTotal,
+                                    status: 'Análise de Documentos',
+                                    supervisor,
+                                    plano,
+                                    dataImportacao: moment(new Date).format('YYYY-MM-DD')
+                                })
+
+                                qtd++
+                            }
                         }
                     }
                 } else {
@@ -109,8 +118,10 @@ module.exports = {
 
             })
 
+            console.log(qtd);
+
             return res.status(200).json({
-                message: 'oii'
+                qtd
             })
 
         } catch (error) {
@@ -119,5 +130,30 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    mostrarAnaliseDoc: async (req, res) => {
+        try {
+
+            const propostas = await Proposta.find({
+                status: 'Análise de Documentos'
+            })
+
+            console.log(propostas);
+
+            return res.status(200).json({
+                propostas,
+                total: propostas.length
+            })
+
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
+
 }

@@ -111,23 +111,6 @@ module.exports = {
                 })
             }
 
-            // const addDadosEntrevistas = await Promise.all(Object.keys(respostasConc).map(async key => {
-
-            //     return await DadosEntrevista.findOneAndUpdate({
-            //         $and: [
-            //             {
-            //                 nome: pessoa.nome
-            //             }, {
-            //                 proposta: pessoa.proposta
-            //             }
-            //         ]
-            //     }, {
-            //         [key]: respostasConc[key].replace('undefined', '')
-            //     }, {
-            //         upsert: true
-            //     })
-            // }))
-
             const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
                 $and: [
                     {
@@ -143,7 +126,10 @@ module.exports = {
                 responsavel: req.user,
                 tipoContrato: pessoa.tipoContrato,
                 sexo: pessoa.sexo,
-                idade: pessoa.idade
+                idade: pessoa.idade,
+                faturado: 'Não faturado',
+                cids: cids.toString(),
+                dataEntrevista: moment(new Date).format('YYYY-MM-DD')
             }, {
                 upsert: true
             })
@@ -157,29 +143,29 @@ module.exports = {
                 divergencia: respostasConc['divergencia']
             })
 
-            const updateFaturamento = await DadosEntrevista.findOneAndUpdate({
-                $and: [
-                    {
-                        nome: pessoa.nome
-                    }, {
-                        proposta: pessoa.proposta
-                    }
-                ]
-            }, {
-                faturado: 'Não faturado'
-            })
+            // const updateFaturamento = await DadosEntrevista.findOneAndUpdate({
+            //     $and: [
+            //         {
+            //             nome: pessoa.nome
+            //         }, {
+            //             proposta: pessoa.proposta
+            //         }
+            //     ]
+            // }, {
+            //     faturado: 'Não faturado'
+            // })
 
-            const adicionarCidsEntrevista = await DadosEntrevista.findOneAndUpdate({
-                $and: [
-                    {
-                        nome: pessoa.nome
-                    }, {
-                        proposta: pessoa.proposta
-                    }
-                ]
-            }, {
-                cids: cids.toString()
-            })
+            // const adicionarCidsEntrevista = await DadosEntrevista.findOneAndUpdate({
+            //     $and: [
+            //         {
+            //             nome: pessoa.nome
+            //         }, {
+            //             proposta: pessoa.proposta
+            //         }
+            //     ]
+            // }, {
+            //     cids: cids.toString()
+            // })
 
             const adicionarCidsProposta = await Propostas.findOneAndUpdate({
                 $and: [
@@ -1047,14 +1033,14 @@ module.exports = {
 
     atualizarVigencia: async (req, res) => {
         try {
-            
-            const {vigencia, id} = req.body
+
+            const { vigencia, id } = req.body
 
             const user = await User.findOne({
                 name: req.user
             })
 
-            if(user.accessLevel == 'false'){
+            if (user.accessLevel == 'false') {
                 return res.status(200).json({
                     msg: 'Você não tem permissão para alterar a vigencia'
                 })
@@ -1074,6 +1060,97 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: "Internal Server Error"
+            })
+        }
+    },
+
+    producaoDiaria: async (req, res) => {
+        try {
+
+            const { data } = req.params
+
+            console.log(data);
+
+            const analistas = await User.find({
+                enfermeiro: true
+            })
+
+            let producao = []
+
+            for (const item of analistas) {
+                const count = await DadosEntrevista.find({
+                    responsavel: item.name,
+                    dataEntrevista: data
+                }).count()
+
+                producao.push({
+                    analista: item.name,
+                    quantidade: count
+                })
+            }
+
+            const total = await DadosEntrevista.find({
+                dataEntrevista: data
+            }).count()
+
+            return res.status(200).json({
+                producao,
+                total
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    alterarFormulario: async (req, res) => {
+        try {
+
+            const { id, formulario } = req.body
+
+            const proposta = await Propostas.findByIdAndUpdate({
+                _id: id
+            }, {
+                formulario
+            })
+
+            return res.status(200).json({
+                proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarCid: async (req, res) => {
+        try {
+            
+            const {cid, descricao} = req.body
+
+            console.log(cid, descricao);
+
+            const result = await Cid.create({
+                subCategoria: cid,
+                descricao: descricao
+            })
+
+            console.log(result);
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
             })
         }
     }

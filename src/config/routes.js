@@ -85,8 +85,10 @@ router.post('/entrevistas/upload/dadosEntrevista', auth, TeleEntrevistaControlle
 router.post('/entrevistas/upload/propostas', auth, TeleEntrevistaController.subirPropostas)
 router.get('/entrevistas/report/agendadas', auth, TeleEntrevistaController.reportAgendadas)
 router.put('/entrevistas/propostas/vigencia/update', auth, TeleEntrevistaController.atualizarVigencia)
-
 router.get('/entrevistas/producao/dados', auth, TeleEntrevistaController.mostrarDadosProducao)
+router.get('/entrevistas/producao/diaria/:data', auth, TeleEntrevistaController.producaoDiaria)
+router.put('/entrevistas/propostas/alterarFormulario', auth, TeleEntrevistaController.alterarFormulario)
+router.post('/entrevistas/cid/adicionar', auth, TeleEntrevistaController.adicionarCid)
 
 //Liminar
 
@@ -143,6 +145,6 @@ router.put('/rsd/pedido/prioridadeDossie', auth, rsdController.adicionarPriorida
 //Rotas Elegibilidade
 
 router.post('/elegibilidade/upload', auth, elegibilidadeController.upload)
-
+router.get('/elegibilidade/propostas/analiseDoc', auth, elegibilidadeController.mostrarAnaliseDoc)
 
 module.exports = router

@@ -4,7 +4,7 @@ const dadosEntrevistaScheema = mongoose.Schema({
     nome: String,
     cpf: String,
     dataNascimento: String,
-    dataEntrevista: Date,
+    dataEntrevista: String,
     proposta: String,
     tipoFormulario: String,
     profissao: String,

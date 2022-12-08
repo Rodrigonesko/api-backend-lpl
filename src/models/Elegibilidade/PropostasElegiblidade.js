@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 
 const propostaScheema = mongoose.Schema({
-    vigencia: Date,
+    dataImportacao: String,
+    vigencia: String,
     proposta: String,
     statusMotor: String,
     status: String,
@@ -34,7 +35,7 @@ const propostaScheema = mongoose.Schema({
     segundoReprotocolo3: String,
     observacoesDevolucao: String,
     analista: String,
-    dataConclusao: Date,
+    dataConclusao: String,
     ligacao: Boolean,
     prc: String,
     motivoCancelamento: String,
@@ -46,8 +47,8 @@ const propostaScheema = mongoose.Schema({
     telefoneSupervisor: String,
     cpf: String,
     planoAmil: Boolean,
-    dataInicioPlanoAmil: Date,
-    dataFimPlanoAmil: Date,
+    dataInicioPlanoAmil: String,
+    dataFimPlanoAmil: String,
     custoPlanoAmil: String,
     documentoIdentificacao: Boolean,
     declaracaoAssociado: Boolean,
@@ -58,7 +59,7 @@ const propostaScheema = mongoose.Schema({
     contrato: String,
     site: Boolean,
     analistaPreProcessamento: String,
-    dataConclusaoPre: Date,
+    dataConclusaoPre: String,
     observacoes: String,
     categoriaCancelamento: String
 
