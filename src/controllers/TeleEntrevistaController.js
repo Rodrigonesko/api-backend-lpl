@@ -4,6 +4,7 @@ const Propostas = mongoose.model('PropostaEntrevista')
 const Cid = mongoose.model('Cid')
 const DadosEntrevista = mongoose.model('DadosEntrevista')
 const Rn = mongoose.model('Rn')
+const User = mongoose.model('User')
 
 const path = require('path')
 const moment = require('moment')
@@ -460,9 +461,7 @@ module.exports = {
     cancelarProposta: async (req, res) => {
         try {
 
-            const { id } = req.body
-
-            console.log(id);
+            const { id, motivoCancelamento } = req.body
 
             const proposta = await Propostas.findOneAndUpdate({
                 _id: id
@@ -476,7 +475,8 @@ module.exports = {
                 dataNascimento: proposta.dataNascimento,
                 dataEntrevista: null,
                 proposta: proposta.proposta,
-                cancelado: true
+                cancelado: true,
+                divergencia: motivoCancelamento
             })
 
             return res.status(200).json({
@@ -972,6 +972,102 @@ module.exports = {
                 quantidadeMesAnoRn,
                 quantidadeAnalistaMesAnoRn,
                 quantidadeAnalistaDiaRn
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    },
+
+    reportAgendadas: async (req, res) => {
+        try {
+
+            const propostas = await Propostas.find({
+                agendado: 'agendado',
+                status: undefined
+            })
+
+            const analistas = await User.find({
+                enfermeiro: true
+            })
+
+            let report = {}
+            let qtdAnalistas = {}
+
+            analistas.forEach(e => {
+                qtdAnalistas[e.name] = []
+            })
+
+            propostas.forEach(obj => {
+
+                let split = obj.dataEntrevista.split(' ')
+                let data = split[0]
+                data = moment(data).format('DD/MM/YYYY')
+                if (!report.hasOwnProperty(data)) {
+                    report[data] = {}
+                    console.log(obj.enfermeiro);
+                    if (!report[data].hasOwnProperty(obj.enfermeiro)) {
+                        report[data][obj.enfermeiro] = 0
+                    } else {
+                        report[data][obj.enfermeiro] = 0
+                    }
+                } else {
+                    report[data][obj.enfermeiro] = 0
+                }
+            })
+
+            Object.keys(report).forEach(dia => {
+                Object.keys(report[dia]).forEach(analista => {
+                    propostas.forEach(proposta => {
+                        let split = proposta.dataEntrevista.split(' ')
+                        let data = split[0]
+                        data = moment(data).format('DD/MM/YYYY')
+                        if (proposta.enfermeiro == analista && data == dia) {
+                            report[dia][analista]++
+                        }
+                    })
+                })
+
+            })
+
+            return res.status(200).json({
+                report
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server"
+            })
+        }
+    },
+
+    atualizarVigencia: async (req, res) => {
+        try {
+            
+            const {vigencia, id} = req.body
+
+            const user = await User.findOne({
+                name: req.user
+            })
+
+            if(user.accessLevel == 'false'){
+                return res.status(200).json({
+                    msg: 'Você não tem permissão para alterar a vigencia'
+                })
+            }
+
+            const proposta = await Propostas.findByIdAndUpdate({
+                _id: id
+            }, {
+                vigencia
+            })
+
+            return res.status(200).json({
+                proposta
             })
 
         } catch (error) {

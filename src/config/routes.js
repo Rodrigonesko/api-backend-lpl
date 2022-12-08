@@ -83,6 +83,8 @@ router.get('/entrevistas/propostas/naoRealizadas', auth, TeleEntrevistaControlle
 router.post('/entrevistas/upload/perguntas', auth, TeleEntrevistaController.subirPerguntas)
 router.post('/entrevistas/upload/dadosEntrevista', auth, TeleEntrevistaController.subirDadosEntrevista)
 router.post('/entrevistas/upload/propostas', auth, TeleEntrevistaController.subirPropostas)
+router.get('/entrevistas/report/agendadas', auth, TeleEntrevistaController.reportAgendadas)
+router.put('/entrevistas/propostas/vigencia/update', auth, TeleEntrevistaController.atualizarVigencia)
 
 router.get('/entrevistas/producao/dados', auth, TeleEntrevistaController.mostrarDadosProducao)
 

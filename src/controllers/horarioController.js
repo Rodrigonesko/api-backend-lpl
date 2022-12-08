@@ -79,10 +79,12 @@ module.exports = {
                             break
                         }
 
+                        //console.log(moment(data).toDate());
+
                         const insert = await Horario.create({
                             enfermeiro: item.name,
                             horario: horario,
-                            dia: data
+                            dia: moment(data).toDate()
                         })
                     }
                 }
@@ -105,8 +107,6 @@ module.exports = {
 
             const { enfermeiro } = req.params
 
-            console.log(enfermeiro);
-
             const result = await Horario.find({
                 enfermeiro: enfermeiro
             })
@@ -119,7 +119,7 @@ module.exports = {
                     //console.log();
                     //return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
                     console.log(moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD'));
-                    return moment(e.dia).add(1, 'days').tz('America/Sao_Paulo').format('DD/MM/YYYY')
+                    return moment(e.dia).tz('America/Sao_Paulo').format('DD/MM/YYYY')
                 }
 
             })
@@ -143,10 +143,14 @@ module.exports = {
         try {
             const { data, enfermeiro } = req.params
 
+            console.log(data, enfermeiro);
+
             const result = await Horario.find({
                 enfermeiro: enfermeiro,
-                dia: data
+                dia: moment(data).toDate()
             })
+
+            console.log(result);
 
             const horariosObj = result.filter(e => {
                 return e.agendado != 'Agendado'
@@ -371,17 +375,17 @@ module.exports = {
                 return e.agendado == 'Reaberto' || e.agendado == undefined
             })
 
+            const today = new Date()
+
             horarios = horarios.filter(e => {
 
-                const today = new Date()
-
-                return moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).add(1, 'days').tz('America/Sao_Paulo').format('YYYY-MM-DD') === true
+                return moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD') === true
             })
 
             let obj = {}
 
             horarios.forEach(e => {
-                if(!obj.hasOwnProperty(moment(e.dia).format('DD/MM/YYYY'))){
+                if (!obj.hasOwnProperty(moment(e.dia).format('DD/MM/YYYY'))) {
                     obj[moment(e.dia).format('DD/MM/YYYY')] = []
                     obj[moment(e.dia).format('DD/MM/YYYY')].push(e.horario)
                 } else {
@@ -389,10 +393,34 @@ module.exports = {
                 }
             })
 
+            Object.keys(obj).forEach(e => {
+                obj[e] = obj[e].filter((el, i) => {
+                    return obj[e].indexOf(el) === i
+                })
+            })
+
+            Object.keys(obj).forEach(e => {
+                obj[e] = obj[e].map((el) => {
+                    if (e === moment(today).format('DD/MM/YYYY')) {
+                        if (el >= moment(today).format('H:m')) {
+                            return el
+                        }
+                    } else {
+                        return el
+                    }
+                })
+            })
+
+            Object.keys(obj).forEach(e => {
+                obj[e] = obj[e].filter((el) => {
+                    return el != undefined
+                })
+            })
+
             console.log(obj);
 
             return res.status(200).json({
-                horarios
+                obj
             })
 
         } catch (error) {
@@ -409,4 +437,8 @@ function ajustarData(data) {
     const arr = data.split('/')
 
     return `${arr[2]}-${arr[1]}-${arr[0]}`
+}
+
+function retirarHorariosAnteriores() {
+
 }
