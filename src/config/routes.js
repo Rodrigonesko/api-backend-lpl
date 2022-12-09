@@ -31,6 +31,7 @@ router.get('/infoUser/:email', auth, userController.searchEmail)
 router.get('/users/enfermeiros', auth, userController.enfermeiros)
 router.put('/users/updatePassword', auth, userController.firstAccess)
 router.put('/users/modules', auth, userController.modules)
+router.get('/users/elegibilidade', auth, userController.analistasElegi)
 
 
 //Rns
@@ -146,5 +147,9 @@ router.put('/rsd/pedido/prioridadeDossie', auth, rsdController.adicionarPriorida
 
 router.post('/elegibilidade/upload', auth, elegibilidadeController.upload)
 router.get('/elegibilidade/propostas/analiseDoc', auth, elegibilidadeController.mostrarAnaliseDoc)
+router.put('/elegibilidade/atribuir/preProcessamento', auth, elegibilidadeController.atribuirAnalistaPre)
+router.get('/elegibilidade/propostas/preProcessamento/:analista', auth, elegibilidadeController.mostrarPreProcessamento)
+router.get('/elegibilidade/propostas/preProcessamento/proposta/:proposta', auth, elegibilidadeController.mostrarPropostaFiltradaPreProcessamento)
+router.get('/elegibilidade/infoProposta/:id', auth, elegibilidadeController.mostrarInfoPropostaId)
 
 module.exports = router

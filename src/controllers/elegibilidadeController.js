@@ -30,6 +30,7 @@ module.exports = {
 
                     for (const item of arrAux) {
                         let vigencia = item[36]
+                        vigencia = ajustarData(vigencia)
                         let proposta = item[22]
                         let produto = item[6]
                         let plano = item[48]
@@ -139,15 +140,129 @@ module.exports = {
                 status: 'Análise de Documentos'
             })
 
-            console.log(propostas);
+            return res.status(200).json({
+                propostas,
+                total: propostas.length
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    atribuirAnalistaPre: async (req, res) => {
+        try {
+
+            const { id, analista } = req.body
+
+            if(req.userAcessLevel != 1){
+                
+                console.log(req.userAcessLevel);
+
+                return res.status(500).json({
+                    msg: 'O usuário não tem permissão para trocar de Analista'
+                })
+    
+            }
+
+            const proposta = await Proposta.findByIdAndUpdate({
+                _id: id
+            }, {
+                analistaPreProcessamento: analista,
+                status: 'Pre Processamento'
+            })
+
+            return res.status(200).json({
+                proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    mostrarPreProcessamento: async (req, res) => {
+        try {
+
+            const { analista } = req.params
+
+            if (analista === 'Todos' || analista === '') {
+                const propostas = await Proposta.find({
+                    status: 'Pre Processamento'
+                })
+
+                return res.status(200).json({
+                    propostas,
+                    total: propostas.length
+                })
+
+            }
+
+            const propostas = await Proposta.find({
+                $and: [
+                    { status: 'Pre Processamento' },
+                    { analistaPreProcessamento: analista }
+                ]
+            })
 
             return res.status(200).json({
                 propostas,
                 total: propostas.length
             })
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
 
+    mostrarPropostaFiltradaPreProcessamento: async (req, res) => {
+        try {
 
+            const { proposta } = req.params
+
+            const result = await Proposta.find({
+                $and: [
+                    { status: 'Pre Processamento' },
+                    { proposta: { $regex: proposta } }
+                ]
+            })
+
+            console.log(result);
+
+            return res.status(200).json({
+                proposta: result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    mostrarInfoPropostaId: async (req, res) => {
+        try {
+
+            const {id} = req.params
+
+            const proposta = await Proposta.findById({
+                _id: id
+            })
+
+            return res.status(200).json({
+                proposta
+            })
+            
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -156,4 +271,13 @@ module.exports = {
         }
     }
 
+}
+
+function ajustarData(data) {
+    let split = data.split('/')
+    let dia = split[0]
+    let mes = split[1]
+    let ano = split[2]
+
+    return `${ano}-${mes}-${dia}`
 }

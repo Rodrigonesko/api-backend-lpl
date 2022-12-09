@@ -168,7 +168,6 @@ module.exports = {
             })
         }
     },
-
     enfermeiros: async (req, res) => {
         try {
             const enfermeiros = await User.find({
@@ -177,6 +176,22 @@ module.exports = {
 
             return res.status(200).json({
                 enfermeiros
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+    analistasElegi: async (req, res) => {
+        try {
+            const analistas = await User.find({
+                elegibilidade: 'true'
+            })
+
+            return res.status(200).json({
+                analistas
             })
         } catch (error) {
             console.log(error);
