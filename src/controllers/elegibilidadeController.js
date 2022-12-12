@@ -30,7 +30,10 @@ module.exports = {
 
                     for (const item of arrAux) {
                         let vigencia = item[36]
-                        vigencia = ajustarData(vigencia)
+
+                        if (vigencia) {
+                            vigencia = ajustarData(vigencia)
+                        }
                         let proposta = item[22]
                         let produto = item[6]
                         let plano = item[48]
@@ -82,10 +85,7 @@ module.exports = {
                                 proposta
                             })
 
-                            console.log(find);
-
                             if (!find) {
-                                console.log('oii');
                                 await Proposta.create({
                                     proposta,
                                     vigencia,
@@ -158,14 +158,14 @@ module.exports = {
 
             const { id, analista } = req.body
 
-            if(req.userAcessLevel != 1){
-                
+            if (req.userAcessLevel != 1) {
+
                 console.log(req.userAcessLevel);
 
                 return res.status(500).json({
                     msg: 'O usuário não tem permissão para trocar de Analista'
                 })
-    
+
             }
 
             const proposta = await Proposta.findByIdAndUpdate({
@@ -253,7 +253,7 @@ module.exports = {
     mostrarInfoPropostaId: async (req, res) => {
         try {
 
-            const {id} = req.params
+            const { id } = req.params
 
             const proposta = await Proposta.findById({
                 _id: id
@@ -262,7 +262,68 @@ module.exports = {
             return res.status(200).json({
                 proposta
             })
-            
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    salvarDadosPreProcessamento: async (req, res) => {
+        try {
+
+            const { dados, id, proxFase } = req.body
+
+            for (const item of Object.keys(dados)) {
+                await Proposta.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    [item]: dados[item]
+                })
+            }
+
+            if (proxFase) {
+
+                if (!dados.planoAmil) {
+                    return res.status(500).json({
+                        msg: 'Campo Plano Amil não foi marcado'
+                    })
+                }
+
+                if (!dados.documentoIdentificacao) {
+                    return res.status(500).json({
+                        msg: 'Campo Documento Identificação não foi marcado'
+                    })
+                }
+                if (!dados.declaracaoAssociado) {
+                    return res.status(500).json({
+                        msg: 'Campo Declaração de Associado ou Carteirinha não foi marcado'
+                    })
+                }
+                if (!dados.vinculadosSimNao) {
+                    return res.status(500).json({
+                        msg: 'Campo Vinculados não foi marcado'
+                    })
+                }
+                if (!dados.planoAnterior) {
+                    return res.status(500).json({
+                        msg: 'Campo Plano Anterior não foi marcado'
+                    })
+                }
+
+                await Proposta.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    status: 'Analise'
+                })
+            }
+
+            return res.status(200).json({
+                msg: 'OIi'
+            })
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({
