@@ -129,7 +129,8 @@ module.exports = {
                 idade: pessoa.idade,
                 faturado: 'Não faturado',
                 cids: cids.toString(),
-                dataEntrevista: moment(new Date).format('YYYY-MM-DD')
+                dataEntrevista: moment(new Date).format('YYYY-MM-DD'),
+                houveDivergencia: divBanco
             }, {
                 upsert: true
             })
@@ -140,7 +141,8 @@ module.exports = {
                 status: 'Concluído',
                 anexadoSisAmil: 'Anexar',
                 houveDivergencia: divBanco,
-                divergencia: respostasConc['divergencia']
+                divergencia: respostasConc['divergencia'],
+                cids: cids.toString()
             })
 
             // const updateFaturamento = await DadosEntrevista.findOneAndUpdate({
@@ -167,18 +169,18 @@ module.exports = {
             //     cids: cids.toString()
             // })
 
-            const adicionarCidsProposta = await Propostas.findOneAndUpdate({
-                $and: [
-                    {
-                        nome: pessoa.nome
-                    }, {
-                        proposta: pessoa.proposta
-                    }
-                ]
-            }, {
-                cids: cids.toString(),
+            // const adicionarCidsProposta = await Propostas.findOneAndUpdate({
+            //     $and: [
+            //         {
+            //             nome: pessoa.nome
+            //         }, {
+            //             proposta: pessoa.proposta
+            //         }
+            //     ]
+            // }, {
+            //     cids: cids.toString(),
 
-            })
+            // })
 
             return res.status(200).json({
                 msg: 'oi'
@@ -208,7 +210,7 @@ module.exports = {
 
                 for (const item of result) {
                     const create = await Cid.create({
-                        subCategoria: item.subcategoria,
+                        subCategoria: item.subCategoria,
                         descricao: item.descricao
                     })
                 }
@@ -737,7 +739,7 @@ module.exports = {
                         } else if (e === 'dataNascimento') {
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('DD/MM/YYYY')
+                            item[e] = moment(item[e]).format('YYYY-MM-DD')
                         }
                         await DadosEntrevista.findOneAndUpdate({
                             $and: [
@@ -753,9 +755,6 @@ module.exports = {
                             upsert: true
                         })
                     }
-                    // const teste = await Promise.all(Object.keys(item).map(async e => {
-
-                    // }))
                 }
 
                 return res.status(200).json({
@@ -787,7 +786,7 @@ module.exports = {
                 for (let item of result) {
                     for (const e of (Object.keys(item))) {
 
-                        if (e === 'createdAt' || e === 'vigencia') {
+                        if (e === 'dataRecebimento' || e === 'vigencia') {
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
                             item[e] = moment(item[e]).format('YYYY-MM-DD')
@@ -795,13 +794,12 @@ module.exports = {
                         if (e === 'dataNascimento') {
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('DD/MM/YYYY')
+                            item[e] = moment(item[e]).format('YYYY-MM-DD')
                         }
                         if (e === 'dataEntrevista') {
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
                             item[e] = moment(item[e]).format('YYYY-MM-DD')
-                            item[e] += ` ${ExcelDateToJSDate(item['horario'])}`
                         }
 
                         await Propostas.findOneAndUpdate({
@@ -818,9 +816,6 @@ module.exports = {
                             upsert: true
                         })
                     }
-                    // const teste = await Promise.all(Object.keys(item).map(async e => {
-
-                    // }))
                 }
 
                 return res.status(200).json({

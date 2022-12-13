@@ -52,6 +52,9 @@ router.put('/rn/updateResponsavel', rnContoller.updateResponsavel)
 router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
 router.get('/entrevistas/propostas', auth, propostaEntrevistaController.show)
 
+router.get('/entrevistas/propostas/agendadas', auth, propostaEntrevistaController.mostrarPropostasAgendadas)
+router.get('/entrevistas/propostas/naoAgendadas', auth, propostaEntrevistaController.mostrarPropostasNaoAgendadas)
+
 router.post('/entrevistas/gerarHorarios', auth, horarioController.gerar)
 router.get('/entrevistas/buscarDiasDisponiveis/:enfermeiro', auth, horarioController.search)
 router.get('/entrevistas/buscarHorariosDisponiveis/:enfermeiro/:data', auth, horarioController.searchHorarios)
@@ -153,5 +156,9 @@ router.get('/elegibilidade/propostas/preProcessamento/proposta/:proposta', auth,
 router.get('/elegibilidade/infoProposta/:id', auth, elegibilidadeController.mostrarInfoPropostaId)
 router.put('/elegibilidade/preProcessamento/salvar', auth, elegibilidadeController.salvarDadosPreProcessamento)
 router.get('/elegibilidade/propostas/analise/:analista', auth, elegibilidadeController.mostrarAnalise)
+router.get('/elegibilidade/proposta/teste', auth, elegibilidadeController.filtroAnalise)
+router.get('/elegibilidade/entidades/andamento', auth, elegibilidadeController.entidades)
+router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atribuirAnalista)
+router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
 
 module.exports = router

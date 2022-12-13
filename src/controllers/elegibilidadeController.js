@@ -400,6 +400,8 @@ module.exports = {
                 ]
             })
 
+            console.log(propostas);
+
             return res.status(200).json({
                 propostas,
                 total: propostas.length
@@ -411,7 +413,115 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    entidades: async (req, res) => {
+        try {
+
+            const entidades = await Proposta.find({
+                $or: [
+                    { status: 'A iniciar' },
+                    { status: 'Em andamento' }
+                ]
+            }).distinct('entidade')
+
+
+
+            return res.status(200).json({
+                entidades
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    filtroAnalise: async (req, res) => {
+        try {
+
+            const { analista, entidade, status } = req.query
+
+            let propostas = await Proposta.find({
+                analista: { $regex: analista },
+                entidade: { $regex: entidade },
+                status: { $regex: status },
+            })
+
+            propostas = propostas.filter(e => {
+                return e.status === 'A iniciar' || e.status === 'Em andamento'
+            })
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    fitroPropostaAnalise: async (req, res) => {
+        try {
+            const { proposta } = req.params
+
+            const propostas = await Proposta.find({
+                $or: [
+                    {
+                        proposta: { $regex: proposta },
+                        status: 'A iniciar'
+                    }, {
+                        proposta: { $regex: proposta },
+                        status: 'Em andamento'
+                    }
+                ]
+            })
+
+            console.log(propostas);
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    atribuirAnalista: async (req, res) => {
+        try {
+
+            const { analista, id } = req.body
+
+            if (req.userAcessLevel == 1) {
+                await Proposta.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    analista
+                })
+            }
+
+            return res.status(200).json({
+                msg: 'oiii'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+
 }
 
 function ajustarData(data) {

@@ -110,6 +110,7 @@ module.exports = {
                 console.log(formulario);
 
                 const resultado = {
+                    dataRecebimento: moment(new Date()).format('YYYY-MM-DD'),
                     proposta,
                     filial,
                     riscoBeneficiario,
@@ -188,20 +189,53 @@ module.exports = {
         }
     },
 
-    alterarTelefone: async (req, res) => {
+    mostrarPropostasAgendadas: async (req, res) => {
         try {
-            const { proposta, nome, telefone } = req.body
+            const propostas = await PropostaEntrevista.find({
+                $and: [
+                    { agendado: 'agendado' },
+                    { status: { $ne: 'Concluído' } },
+                    { status: { $ne: 'Cancelado' } }
+                ]
+            }).sort('dataEntrevista')
+
+            console.log(propostas);
 
             return res.status(200).json({
-                msg: 'oiii'
+                propostas
             })
 
         } catch (error) {
+            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
         }
-    }
+    },
+
+    mostrarPropostasNaoAgendadas: async (req, res) => {
+        try {
+            const propostas = await PropostaEntrevista.find({
+                $and: [
+                    { agendado: {$ne: 'Agendado'} },
+                    { status: { $ne: 'Concluído' } },
+                    { status: { $ne: 'Cancelado' } }
+                ]
+            }).sort('vigencia')
+
+            return res.status(200).json({
+                propostas,
+                total: propostas.length
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
 }
 
 function ExcelDateToJSDate(serial) {

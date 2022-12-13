@@ -54,6 +54,7 @@ const dadosEntrevistaScheema = mongoose.Schema({
     faturado: String,
     tipoContrato: String,
     sexo: String,
+    houveDivergencia: String,
     divergencia: String,
     cids: String,
     cancelado: Boolean,

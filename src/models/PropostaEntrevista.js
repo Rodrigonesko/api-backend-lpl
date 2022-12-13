@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const propostaScheema = mongoose.Schema({
+    dataRecebimento: String,
     proposta: String,
     administradora: String,
     divergencia: String,
