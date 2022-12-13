@@ -152,5 +152,6 @@ router.get('/elegibilidade/propostas/preProcessamento/:analista', auth, elegibil
 router.get('/elegibilidade/propostas/preProcessamento/proposta/:proposta', auth, elegibilidadeController.mostrarPropostaFiltradaPreProcessamento)
 router.get('/elegibilidade/infoProposta/:id', auth, elegibilidadeController.mostrarInfoPropostaId)
 router.put('/elegibilidade/preProcessamento/salvar', auth, elegibilidadeController.salvarDadosPreProcessamento)
+router.get('/elegibilidade/propostas/analise/:analista', auth, elegibilidadeController.mostrarAnalise)
 
 module.exports = router

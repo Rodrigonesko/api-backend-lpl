@@ -18,9 +18,9 @@ module.exports = {
 
                 let vigencia = ExcelDateToJSDate(item.DT_VENDA)
                 vigencia.setDate(vigencia.getDate() + 1)
-                vigencia = moment(vigencia).format('DD/MM/YYYY')
+                vigencia = moment(vigencia).format('YYYY-MM-DD')
 
-                //console.log(vigencia);
+                console.log(vigencia);
 
                 const filial = item.FILIAL
 

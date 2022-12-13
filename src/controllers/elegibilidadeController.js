@@ -250,6 +250,32 @@ module.exports = {
         }
     },
 
+    mostrarPropostaFiltradaAnalise: async (req, res) => {
+        try {
+
+            const { proposta } = req.params
+
+            const result = await Proposta.find({
+                $and: [
+                    { $or: [{ status: 'A iniciar' }, { status: 'Em andamento' }] },
+                    { proposta: { $regex: proposta } }
+                ]
+            })
+
+            console.log(result);
+
+            return res.status(200).json({
+                proposta: result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     mostrarInfoPropostaId: async (req, res) => {
         try {
 
@@ -275,6 +301,8 @@ module.exports = {
         try {
 
             const { dados, id, proxFase } = req.body
+
+            console.log(dados);
 
             for (const item of Object.keys(dados)) {
                 await Proposta.findByIdAndUpdate({
@@ -313,10 +341,18 @@ module.exports = {
                     })
                 }
 
+                if (dados.faltaDoc === 'Sem Anexos') {
+                    return res.status(200).json({
+                        msg: "Sem Anexos"
+                    })
+                }
+
                 await Proposta.findByIdAndUpdate({
                     _id: id
                 }, {
-                    status: 'Analise'
+                    status: 'A iniciar',
+                    analista: 'A definir',
+                    dataConclusaoPre: moment(new Date()).format('YYYY-MM-DD')
                 })
             }
 
@@ -330,8 +366,52 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 
+    mostrarAnalise: async (req, res) => {
+        try {
+
+            const { analista } = req.params
+
+            console.log(analista);
+
+            if (analista === 'Todos' || analista === '') {
+                const propostas = await Proposta.find({
+                    $or: [
+                        { status: 'A iniciar' },
+                        { status: 'Em andamento' }
+                    ]
+                })
+
+                return res.status(200).json({
+                    propostas,
+                    total: propostas.length
+                })
+
+            }
+
+            const propostas = await Proposta.find({
+                $or: [
+                    { status: 'A iniciar' },
+                    { status: 'Em andamento' }
+                ],
+                $and: [
+                    { analista: analista }
+                ]
+            })
+
+            return res.status(200).json({
+                propostas,
+                total: propostas.length
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 }
 
 function ajustarData(data) {

@@ -62,7 +62,7 @@ const propostaScheema = mongoose.Schema({
     analistaPreProcessamento: String,
     dataConclusaoPre: String,
     observacoes: String,
-    categoriaCancelamento: String
+    categoriaCancelamento: String,
 
 }, {
     timestamps: true
