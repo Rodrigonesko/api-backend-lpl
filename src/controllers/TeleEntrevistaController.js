@@ -111,6 +111,16 @@ module.exports = {
                 })
             }
 
+            const updateProposta = await Propostas.findOneAndUpdate({
+                _id: pessoa._id
+            }, {
+                status: 'Concluído',
+                anexadoSisAmil: 'Anexar',
+                houveDivergencia: divBanco,
+                divergencia: respostasConc['divergencia'],
+                cids: cids.toString()
+            })
+
             const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
                 $and: [
                     {
@@ -130,57 +140,12 @@ module.exports = {
                 faturado: 'Não faturado',
                 cids: cids.toString(),
                 dataEntrevista: moment(new Date).format('YYYY-MM-DD'),
-                houveDivergencia: divBanco
+                houveDivergencia: divBanco,
+                anexadoSisAmil: 'Anexar',
+                vigencia: updateProposta.vigencia
             }, {
                 upsert: true
             })
-
-            const updateProposta = await Propostas.findOneAndUpdate({
-                _id: pessoa._id
-            }, {
-                status: 'Concluído',
-                anexadoSisAmil: 'Anexar',
-                houveDivergencia: divBanco,
-                divergencia: respostasConc['divergencia'],
-                cids: cids.toString()
-            })
-
-            // const updateFaturamento = await DadosEntrevista.findOneAndUpdate({
-            //     $and: [
-            //         {
-            //             nome: pessoa.nome
-            //         }, {
-            //             proposta: pessoa.proposta
-            //         }
-            //     ]
-            // }, {
-            //     faturado: 'Não faturado'
-            // })
-
-            // const adicionarCidsEntrevista = await DadosEntrevista.findOneAndUpdate({
-            //     $and: [
-            //         {
-            //             nome: pessoa.nome
-            //         }, {
-            //             proposta: pessoa.proposta
-            //         }
-            //     ]
-            // }, {
-            //     cids: cids.toString()
-            // })
-
-            // const adicionarCidsProposta = await Propostas.findOneAndUpdate({
-            //     $and: [
-            //         {
-            //             nome: pessoa.nome
-            //         }, {
-            //             proposta: pessoa.proposta
-            //         }
-            //     ]
-            // }, {
-            //     cids: cids.toString(),
-
-            // })
 
             return res.status(200).json({
                 msg: 'oi'
@@ -349,7 +314,7 @@ module.exports = {
     buscarPropostasNaoAnexadas: async (req, res) => {
         try {
 
-            const propostas = await Propostas.find({
+            const propostas = await DadosEntrevista.find({
                 anexadoSisAmil: 'Anexar'
             })
 
@@ -370,7 +335,7 @@ module.exports = {
 
             const { id } = req.body
 
-            const update = await Propostas.findOneAndUpdate({
+            const update = await DadosEntrevista.findOneAndUpdate({
                 _id: id
             }, {
                 anexadoSisAmil: 'Anexado',
@@ -730,17 +695,14 @@ module.exports = {
 
                 for (let item of result) {
                     for (const e of (Object.keys(item))) {
-                        if (e === 'dataFaturamento' || e === 'dataEntrevista') {
+
+                        if (e === 'dataFaturamento' || e === 'dataEntrevista' || e==='dataNascimento' || e==='') {
 
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
                             item[e] = moment(item[e]).format('YYYY-MM-DD')
 
-                        } else if (e === 'dataNascimento') {
-                            item[e] = ExcelDateToJSDate(item[e])
-                            item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('YYYY-MM-DD')
-                        }
+                        } 
                         await DadosEntrevista.findOneAndUpdate({
                             $and: [
                                 {
@@ -1126,8 +1088,8 @@ module.exports = {
 
     adicionarCid: async (req, res) => {
         try {
-            
-            const {cid, descricao} = req.body
+
+            const { cid, descricao } = req.body
 
             console.log(cid, descricao);
 

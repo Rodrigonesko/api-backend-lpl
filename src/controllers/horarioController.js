@@ -84,7 +84,7 @@ module.exports = {
                         const insert = await Horario.create({
                             enfermeiro: item.name,
                             horario: horario,
-                            dia: moment(data).toDate()
+                            dia: moment(data).format('YYYY-MM-DD')
                         })
                     }
                 }
@@ -147,7 +147,7 @@ module.exports = {
 
             const result = await Horario.find({
                 enfermeiro: enfermeiro,
-                dia: moment(data).toDate()
+                dia: moment(data).format('YYYY-MM-DD')
             })
 
             console.log(result);
@@ -261,7 +261,7 @@ module.exports = {
                 return await Horario.findOneAndUpdate({
                     $and: [
                         {
-                            dia: date
+                            dia: moment(data).format('YYYY-MM-DD')
                         }, {
                             enfermeiro: responsavel
                         }, {
@@ -292,19 +292,15 @@ module.exports = {
 
             const { horarios, data, responsavel } = req.body
 
-            const date = new Date(data)
-
             let horariosFiltrados = horarios.filter(e => {
                 return e != null
             })
-
-            console.log(horariosFiltrados, date, responsavel);
 
             const result = await Promise.all(horariosFiltrados.map(async e => {
                 return await Horario.findOneAndUpdate({
                     $and: [
                         {
-                            dia: date
+                            dia: moment(data).format('YYYY-MM-DD')
                         }, {
                             enfermeiro: responsavel
                         }, {
@@ -335,14 +331,12 @@ module.exports = {
 
             const { responsavel, data } = req.params
 
-            const date = new Date(data)
-
             const result = await Horario.find({
                 $and: [
                     {
                         enfermeiro: responsavel
                     }, {
-                        dia: date
+                        dia: moment(data).format('YYYY-MM-DD')
                     }
                 ]
             })
