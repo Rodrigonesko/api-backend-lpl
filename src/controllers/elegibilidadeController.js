@@ -521,6 +521,29 @@ module.exports = {
         }
     },
 
+    statusEmAndamento: async (req, res) => {
+        try {
+            
+            const {id} = req.body
+
+            const proposta = await Proposta.findByIdAndUpdate({
+                _id: id
+            }, {
+                status: 'Em andamento'
+            })
+
+            return res.status(200).json({
+                msg: 'Ok'
+            })
+
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            }) 
+        }
+    }
 
 }
 
