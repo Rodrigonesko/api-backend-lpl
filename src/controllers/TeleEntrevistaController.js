@@ -1139,7 +1139,24 @@ module.exports = {
     gerarMensagens: async (req, res) => {
         try {
 
-            const data = "YYYY-MM-DD"
+            const { data } = req.params
+
+            let horarios = await Horario.find({
+                dia: data,
+                agendado: { $ne: 'agendado' }
+            })
+
+            horarios = horarios.map(e => {
+                return e.horario
+            })
+
+            horarios = horarios.filter((el, i) => {
+                return horarios.indexOf(el) === i
+            })
+
+            console.log(horarios);
+
+            horarios.sort()
 
             const propostas = await Propostas.find({
                 $and: [
@@ -1153,93 +1170,128 @@ module.exports = {
 
             ]
 
-            propostas.forEach((item, key) => {
-
-                arrObj.push({
-                    proposta: '',
-                    dependentes: [],
-                    titular: {
-                        nome: '',
-                        sexo: ''
-                    },
-                    telefone: ''
+            for (const item of propostas) {
+                const proposta = await Propostas.find({
+                    $and: [
+                        { agendado: { $ne: 'agendado' } },
+                        { status: { $ne: 'Concluído' } },
+                        { status: { $ne: 'Cancelado' } },
+                        { proposta: item.proposta }
+                    ]
                 })
 
-                let flag = 0
-
-                arrObj.forEach((obj) => {
-
-                    if (obj.tipoContrato !== 'Coletivo por Adesão com Administradora') {
-                        if (obj.proposta === item.proposta && obj.telefone === item.telefone) {
-                            flag++
-                            if (item.tipoAssociado === 'Dependente') {
-                                obj.dependentes.push({
-                                    nome: item.nome,
-                                    sexo: item.sexo
-                                })
-                            }
-                            if (item.tipoAssociado === 'Titular') {
-                                obj.titular = {
-                                    nome: item.nome,
-                                    sexo: item.sexo
-                                }
-                            }
-                        }
-                    } else {
-                        if (obj.proposta === item.proposta) {
-                            flag++
-                            if (item.tipoAssociado === 'Dependente') {
-                                obj.dependentes.push({
-                                    nome: item.nome,
-                                    sexo: item.sexo
-                                })
-                            }
-                            if (item.tipoAssociado === 'Titular') {
-                                obj.titular = {
-                                    nome: item.nome,
-                                    sexo: item.sexo
-                                }
-                            }
-                        }
-                    }
-
-
-
-                })
-
-                if (flag === 0) {
-                    arrObj[key].telefone = item.telefone
-                    arrObj[key].proposta = item.proposta
-                    if (item.tipoAssociado === 'Dependente') {
-                        arrObj[key].dependentes.push({
-                            nome: item.nome,
-                            sexo: item.sexo
+                if (proposta.length >= 2) {
+                    let pessoas = []
+                    for (const iterator of proposta) {
+                        pessoas.push({
+                            nome: iterator.nome,
+                            sexo: iterator.sexo,
+                            tipoAssociado: iterator.tipoAssociado
                         })
                     }
-                    if (item.tipoAssociado === 'Titular') {
-                        arrObj[key].titular = {
+
+                    let titular = {
+                        nome: '',
+                        sexo: ''
+                    }
+
+                    let dependentes = []
+
+                    pessoas.forEach(e => {
+                        if (e.tipoAssociado === 'Titular') {
+                            titular.nome = e.nome,
+                                titular.sexo = e.sexo
+                        } else {
+                            dependentes.push({
+                                nome: e.nome,
+                                sexo: e.sexo
+                            })
+                        }
+                    })
+
+                    arrObj.push({
+                        proposta: item.proposta,
+                        dependentes: dependentes,
+                        titular: titular,
+                        tipoContrato: item.tipoContrato
+                    })
+
+                } else {
+                    arrObj.push({
+                        proposta: item.proposta,
+                        dependentes: [],
+                        titular: {
                             nome: item.nome,
                             sexo: item.sexo
-                        }
-                    }
+                        },
+                        tipoContrato: item.tipoContrato
+                    })
+                }
+            }
+
+            let msgs = arrObj.map(item => {
+                let saudacao = ''
+                let parte1 = ''
+                let parte2 = ''
+                let parte3 = ''
+                let parte4 = ''
+                let parte5 = ''
+                let parte6 = ''
+                if (item.titular.sexo === 'M') {
+                    saudacao = `Prezado Sr. ${item.titular.nome}, `
+                    parte1 = `Somos da equipe de adesão da operadora de saúde Amil e para concluirmos a contratação do Plano de Saúde do Sr. e `
+                } else {
+                    saudacao = `Prezada Sra. ${item.titular.nome}, `
+                    parte1 = `Somos da equipe de adesão da operadora de saúde Amil e para concluirmos a contratação do Plano de Saúde da Sra. e `
                 }
 
+                item.dependentes.forEach(dependete => {
+                    if (dependete.sexo === 'M') {
+                        parte2 += `do Sr. ${dependete.nome}, `
+                    } else {
+                        parte2 += `da Sra. ${dependete.nome}, `
+                    }
+                })
+
+                parte3 = 'precisamos confirmar alguns dados para que a contratação seja concluída. '
+
+                parte4 = `Precisamos entrar em contato através do número 61 9648-4854. Temos disponíveis os horários para dia *${moment(data).format('DD/MM/YYYY')}* ${ajustarDiaSemana(moment(data).format('dddd'))} as `
+
+                horarios.forEach(e => {
+                    parte5 += `${e} - `
+                })
+
+                parte6 = 'Qual melhor horário? Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.  Desde já agradecemos.'
+
+                let parte7 = ` Proposta: ${item.proposta}`
+
+                const msg = {
+                    saudacao,
+                    parte1,
+                    parte2,
+                    parte3,
+                    parte4,
+                    parte5,
+                    parte6,
+                    parte7,
+                    proposta: item.proposta,
+                    tipoContrato: item.tipoContrato
+
+                }
+
+                return msg
             })
 
-            console.log(arrObj);
+            setMsg = new Set()
 
-            let msg = `Prezado [sr/sra] [nome],
-
-            Somos da equipe de adesão da operadora de saúde Amil e para concluirmos a contratação do Plano de Saúde do [sr/sra], e [sr/sra-beneficiarios] precisamos confirmar alguns dados para que a contratação seja concluída.
-            
-            Precisamos entrar em contato através do número 61 9648-4854. Temos disponíveis os horários para dia *[Dia]* Quinta as [horarios] Qual melhor horário?
-            
-            Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.
-            
-            Desde já agradecemos.`
+            msgs = msgs.filter((item) => {
+                const msgDuplicada = setMsg.has(item.proposta)
+                setMsg.add(item.proposta)
+                return !msgDuplicada
+            })
 
             return res.status(200).json({
-                msg: 'oii'
+                msgs
             })
 
         } catch (error) {
@@ -1268,4 +1320,38 @@ function ExcelDateToJSDate(serial) {
     var minutes = Math.floor(total_seconds / 60) % 60;
 
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+}
+
+const ajustarDiaSemana = date => {
+    try {
+
+        switch (date) {
+            case 'Monday':
+                return 'Segunda'
+                break;
+            case 'Tuesday':
+                return 'Terça'
+                break;
+            case 'Wednesday':
+                return 'Quarta'
+                break;
+            case 'Thursday':
+                return 'Quinta'
+                break;
+            case 'Friday':
+                return 'Sexta'
+                break;
+            case 'Saturday':
+                return 'Sábado'
+                break;
+            case 'Sunday':
+                return 'Domingo'
+                break;
+            default:
+                break;
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
 }
