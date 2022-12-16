@@ -115,7 +115,7 @@ module.exports = {
 
                 const today = new Date()
 
-                if (moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).add(1, 'days').tz('America/Sao_Paulo').format('YYYY-MM-DD')) {
+                if (moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD')) {
                     //console.log();
                     //return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
                     console.log(moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD'));
@@ -149,8 +149,6 @@ module.exports = {
                 enfermeiro: enfermeiro,
                 dia: moment(data).format('YYYY-MM-DD')
             })
-
-            console.log(result);
 
             const horariosObj = result.filter(e => {
                 return e.agendado != 'Agendado'
@@ -387,11 +385,15 @@ module.exports = {
                 }
             })
 
+
+
             Object.keys(obj).forEach(e => {
                 obj[e] = obj[e].filter((el, i) => {
                     return obj[e].indexOf(el) === i
                 })
             })
+
+            console.log(obj);
 
             Object.keys(obj).forEach(e => {
                 obj[e] = obj[e].map((el) => {

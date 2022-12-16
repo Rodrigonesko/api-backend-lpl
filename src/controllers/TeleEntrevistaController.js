@@ -696,13 +696,13 @@ module.exports = {
                 for (let item of result) {
                     for (const e of (Object.keys(item))) {
 
-                        if (e === 'dataFaturamento' || e === 'dataEntrevista' || e==='dataNascimento' || e==='') {
+                        if (e === 'dataFaturamento' || e === 'dataEntrevista' || e === 'dataNascimento' || e === '') {
 
                             item[e] = ExcelDateToJSDate(item[e])
                             item[e].setDate(item[e].getDate() + 1)
                             item[e] = moment(item[e]).format('YYYY-MM-DD')
 
-                        } 
+                        }
                         await DadosEntrevista.findOneAndUpdate({
                             $and: [
                                 {
@@ -1013,6 +1013,7 @@ module.exports = {
                 proposta
             })
 
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -1108,6 +1109,143 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    alterarSexo: async (req, res) => {
+        try {
+
+            const { id, sexo } = req.body
+
+            const proposta = await Propostas.findByIdAndUpdate({
+                _id: id
+            }, {
+                sexo
+            })
+
+            return res.status(200).json({
+                proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    gerarMensagens: async (req, res) => {
+        try {
+
+            const data = "YYYY-MM-DD"
+
+            const propostas = await Propostas.find({
+                $and: [
+                    { agendado: { $ne: 'agendado' } },
+                    { status: { $ne: 'Concluído' } },
+                    { status: { $ne: 'Cancelado' } }
+                ]
+            }).sort('vigencia')
+
+            let arrObj = [
+
+            ]
+
+            propostas.forEach((item, key) => {
+
+                arrObj.push({
+                    proposta: '',
+                    dependentes: [],
+                    titular: {
+                        nome: '',
+                        sexo: ''
+                    },
+                    telefone: ''
+                })
+
+                let flag = 0
+
+                arrObj.forEach((obj) => {
+
+                    if (obj.tipoContrato !== 'Coletivo por Adesão com Administradora') {
+                        if (obj.proposta === item.proposta && obj.telefone === item.telefone) {
+                            flag++
+                            if (item.tipoAssociado === 'Dependente') {
+                                obj.dependentes.push({
+                                    nome: item.nome,
+                                    sexo: item.sexo
+                                })
+                            }
+                            if (item.tipoAssociado === 'Titular') {
+                                obj.titular = {
+                                    nome: item.nome,
+                                    sexo: item.sexo
+                                }
+                            }
+                        }
+                    } else {
+                        if (obj.proposta === item.proposta) {
+                            flag++
+                            if (item.tipoAssociado === 'Dependente') {
+                                obj.dependentes.push({
+                                    nome: item.nome,
+                                    sexo: item.sexo
+                                })
+                            }
+                            if (item.tipoAssociado === 'Titular') {
+                                obj.titular = {
+                                    nome: item.nome,
+                                    sexo: item.sexo
+                                }
+                            }
+                        }
+                    }
+
+
+
+                })
+
+                if (flag === 0) {
+                    arrObj[key].telefone = item.telefone
+                    arrObj[key].proposta = item.proposta
+                    if (item.tipoAssociado === 'Dependente') {
+                        arrObj[key].dependentes.push({
+                            nome: item.nome,
+                            sexo: item.sexo
+                        })
+                    }
+                    if (item.tipoAssociado === 'Titular') {
+                        arrObj[key].titular = {
+                            nome: item.nome,
+                            sexo: item.sexo
+                        }
+                    }
+                }
+
+            })
+
+            console.log(arrObj);
+
+            let msg = `Prezado [sr/sra] [nome],
+
+            Somos da equipe de adesão da operadora de saúde Amil e para concluirmos a contratação do Plano de Saúde do [sr/sra], e [sr/sra-beneficiarios] precisamos confirmar alguns dados para que a contratação seja concluída.
+            
+            Precisamos entrar em contato através do número 61 9648-4854. Temos disponíveis os horários para dia *[Dia]* Quinta as [horarios] Qual melhor horário?
+            
+            Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.
+            
+            Desde já agradecemos.`
+
+            return res.status(200).json({
+                msg: 'oii'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
             })
         }
     }

@@ -217,7 +217,7 @@ module.exports = {
         try {
             const propostas = await PropostaEntrevista.find({
                 $and: [
-                    { agendado: {$ne: 'Agendado'} },
+                    { agendado: { $ne: 'agendado' } },
                     { status: { $ne: 'Concluído' } },
                     { status: { $ne: 'Cancelado' } }
                 ]

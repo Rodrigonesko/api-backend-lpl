@@ -9,7 +9,7 @@ const rnScheema = mongoose.Schema({
     pedido: String,
     tipo: String,
     filial: String,
-    idade: Number,
+    idade: String,
     dataRecebimento: String,
     procedimento: String,
     doenca: String,

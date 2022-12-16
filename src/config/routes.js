@@ -93,6 +93,8 @@ router.get('/entrevistas/producao/dados', auth, TeleEntrevistaController.mostrar
 router.get('/entrevistas/producao/diaria/:data', auth, TeleEntrevistaController.producaoDiaria)
 router.put('/entrevistas/propostas/alterarFormulario', auth, TeleEntrevistaController.alterarFormulario)
 router.post('/entrevistas/cid/adicionar', auth, TeleEntrevistaController.adicionarCid)
+router.put('/entrevistas/proposta/alterarSexo', auth, TeleEntrevistaController.alterarSexo)
+router.get('/entrevistas/mensagens/:data', TeleEntrevistaController.gerarMensagens)
 
 //Liminar
 
