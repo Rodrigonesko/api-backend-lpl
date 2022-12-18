@@ -523,8 +523,8 @@ module.exports = {
 
     statusEmAndamento: async (req, res) => {
         try {
-            
-            const {id} = req.body
+
+            const { id } = req.body
 
             const proposta = await Proposta.findByIdAndUpdate({
                 _id: id
@@ -536,12 +536,42 @@ module.exports = {
                 msg: 'Ok'
             })
 
-            
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 error
-            }) 
+            })
+        }
+    },
+
+    salvarDadosAnalise: async (req, res) => {
+        try {
+
+            const { id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario } = req.body
+
+            console.log(id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario);
+
+            const proposta = await Proposta.findByIdAndUpdate({
+                _id: id
+            }, {
+                sisAmilDeacordo,
+                contrato,
+                prc,
+                ligacao,
+                site,
+                comentario
+            })
+
+            return res.status(200).json({
+                proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
         }
     }
 

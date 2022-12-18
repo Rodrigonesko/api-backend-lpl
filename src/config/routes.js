@@ -163,5 +163,6 @@ router.get('/elegibilidade/entidades/andamento', auth, elegibilidadeController.e
 router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atribuirAnalista)
 router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
 router.put('/elegibilidade/proposta/alterarStatus', auth, elegibilidadeController.statusEmAndamento)
+router.put('/elegibilidade/proposta/salvarDadosAnalise', auth, elegibilidadeController.salvarDadosAnalise)
 
 module.exports = router
