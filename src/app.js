@@ -50,6 +50,8 @@ const StatusProtocolo = require('./models/Rsd/StatusProtocolo')
 //Models Elegibilidade
 
 const PropostasElegiblidade = require('./models/Elegibilidade/PropostasElegiblidade')
+const AgendaElegibilidade = require('./models/Elegibilidade/AgendaElegibilidade')
+const Prc = require('./models/Elegibilidade/Prc')
 
 const routes = require('./config/routes')
 

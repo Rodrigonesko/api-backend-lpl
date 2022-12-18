@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Proposta = mongoose.model('PropostasElegibilidade')
+const Agenda = mongoose.model('AgendaElegibilidade')
+const Prc = mongoose.model('Prc')
 
 const path = require('path')
 const moment = require('moment')
@@ -548,11 +550,11 @@ module.exports = {
     salvarDadosAnalise: async (req, res) => {
         try {
 
-            const { id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario } = req.body
+            const { id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario, proposta } = req.body
 
             console.log(id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario);
 
-            const proposta = await Proposta.findByIdAndUpdate({
+            const updateProposta = await Proposta.findByIdAndUpdate({
                 _id: id
             }, {
                 sisAmilDeacordo,
@@ -563,8 +565,80 @@ module.exports = {
                 comentario
             })
 
+            if (comentario != '') {
+                const agenda = await Agenda.create({
+                    comentario,
+                    analista: req.user,
+                    proposta
+                })
+            }
+
             return res.status(200).json({
+                updateProposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    buscarAgenda: async (req, res) => {
+        try {
+
+            const { proposta } = req.params
+
+            const agenda = await Agenda.find({
                 proposta
+            })
+
+            console.log(agenda);
+
+            console.log(proposta);
+
+            return res.status(200).json({
+                agenda
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    excluirComentario: async (req, res) => {
+        try {
+            const { id } = req.params
+
+            const agenda = await Agenda.findByIdAndDelete({
+                _id: id
+            })
+
+            return res.status(200).json({
+                agenda
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    buscarPrc: async (req, res) => {
+        try {
+
+            const prc = await Prc.find()
+
+            console.log(prc);
+
+            return res.status(200).json({
+                prc
             })
 
         } catch (error) {
