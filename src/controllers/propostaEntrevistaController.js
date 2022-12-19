@@ -53,7 +53,7 @@ module.exports = {
                 const tipoContrato = item.TIPO_CONTRATO
 
                 if (tipoContrato !== 'Coletivo por Adesão com Administradora') {
-                    vigencia = moment().businessAdd(2).format('DD/MM/YYYY')
+                    vigencia = moment().businessAdd(2).format('YYYY-MM-DD')
                 }
 
                 const grupoCarencia = item.GRUPO_CARENCIA
@@ -90,6 +90,7 @@ module.exports = {
                     idade = calcularIdade(dataNascimento)
                 } else {
                     dataNascimento = item.DT_NASC
+                    dataNascimento = dataNascimento.replace(' ', '')
                     idade = calcularIdade(dataNascimento)
                 }
 
@@ -106,8 +107,6 @@ module.exports = {
                 if (idade >= 9) {
                     formulario = 'adulto'
                 }
-
-                console.log(formulario);
 
                 const resultado = {
                     dataRecebimento: moment(new Date()).format('YYYY-MM-DD'),

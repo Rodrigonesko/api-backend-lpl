@@ -51,6 +51,10 @@ const StatusProtocolo = require('./models/Rsd/StatusProtocolo')
 
 const PropostasElegiblidade = require('./models/Elegibilidade/PropostasElegiblidade')
 
+//Model Urgencia Emergencia 
+
+const UrgenciasEmergencia = require('./models/UrgenciasEmergencias/UrgenciasEmergencia')
+
 const routes = require('./config/routes')
 
 app.use(express.json({limit: '100mb'}))

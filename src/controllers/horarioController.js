@@ -385,20 +385,19 @@ module.exports = {
                 }
             })
 
-
-
             Object.keys(obj).forEach(e => {
                 obj[e] = obj[e].filter((el, i) => {
                     return obj[e].indexOf(el) === i
                 })
             })
 
-            console.log(obj);
+
 
             Object.keys(obj).forEach(e => {
                 obj[e] = obj[e].map((el) => {
                     if (e === moment(today).format('DD/MM/YYYY')) {
-                        if (el >= moment(today).format('H:m')) {
+                        const date1 = new Date(`${moment(today).format('YYYY-MM-DD')} ${el}`)
+                        if (date1.getTime() > today.getTime()) {
                             return el
                         }
                     } else {
@@ -412,8 +411,6 @@ module.exports = {
                     return el != undefined
                 })
             })
-
-            console.log(obj);
 
             return res.status(200).json({
                 obj
@@ -433,8 +430,4 @@ function ajustarData(data) {
     const arr = data.split('/')
 
     return `${arr[2]}-${arr[1]}-${arr[0]}`
-}
-
-function retirarHorariosAnteriores() {
-
 }

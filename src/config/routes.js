@@ -14,6 +14,7 @@ const router = express.Router()
 
 const multer = require('multer')
 const TeleEntrevistaController = require('../controllers/TeleEntrevistaController')
+const urgenciaEmergenciaController = require('../controllers/urgenciaEmergenciaController')
 
 const uploadRsd = multer({ dest: '/tmp' })
 
@@ -163,5 +164,14 @@ router.get('/elegibilidade/entidades/andamento', auth, elegibilidadeController.e
 router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atribuirAnalista)
 router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
 router.put('/elegibilidade/proposta/alterarStatus', auth, elegibilidadeController.statusEmAndamento)
+
+/* Urgencia Emergencia */
+
+router.post('/urgenciaEmergencia/upload', auth, urgenciaEmergenciaController.upload)
+router.get('/urgenciaEmergencia/andamento', auth, urgenciaEmergenciaController.mostrarAndamento)
+router.get('/urgenciaEmergencia/todas', auth, urgenciaEmergenciaController.mostrarAndamento)
+router.get('/urgenciaEmergencia/detalhes/:id', auth, urgenciaEmergenciaController.mostrarDadosProposta)
+router.put('/urgenciaEmergencia/salvarInfo', auth, urgenciaEmergenciaController.salvarInfo)
+router.put('/urgenciaEmergencia/concluir', auth, urgenciaEmergenciaController.concluir)
 
 module.exports = router
