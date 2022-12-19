@@ -164,6 +164,10 @@ router.get('/elegibilidade/entidades/andamento', auth, elegibilidadeController.e
 router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atribuirAnalista)
 router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
 router.put('/elegibilidade/proposta/alterarStatus', auth, elegibilidadeController.statusEmAndamento)
+router.put('/elegibilidade/proposta/salvarDadosAnalise', auth, elegibilidadeController.salvarDadosAnalise)
+router.get('/elegibilidade/agenda/:proposta', auth, elegibilidadeController.buscarAgenda)
+router.delete('/elegibilidade/agenda/:id', auth, elegibilidadeController.excluirComentario)
+router.get('/elegibilidade/prc', auth, elegibilidadeController.buscarPrc)
 
 /* Urgencia Emergencia */
 
