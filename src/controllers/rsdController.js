@@ -1074,7 +1074,6 @@ module.exports = {
                     reconhece = true
                 }
 
-
                 if (reconhece === false) {
 
                     const updatePedido = await Pedido.findOneAndUpdate({
@@ -1145,7 +1144,7 @@ module.exports = {
                         fase: 'Em Andamento',
                         statusGerencial: 'Aguardando Comprovante',
                         statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
-                        analista: req.user
+                        analista: req.user,
                     })
 
                     if (item[1] === 'Dinheiro') {
@@ -1160,6 +1159,18 @@ module.exports = {
                             analista: req.user
                         })
                     }
+
+                    await Pacote.findByIdAndUpdate({
+                        _id: pacote
+                    }, {
+                        status: 'Em andamento'
+                    })
+
+                    await Pedido.updateMany({
+                        pacote: pacote
+                    }, {
+                        statusPacote: 'Em andamento'
+                    })
 
                     await Agenda.create({
                         idPacote: pacote,
@@ -1336,17 +1347,19 @@ module.exports = {
                     {
                         mo: pesquisa,
                         status: {
-                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Comprovante']
+                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }
                     },
                     {
                         pessoa: pesquisa,
                         status: {
-                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Comprovante']
+                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }
                     }
                 ]
             })
+
+            console.log(pedidos);
 
             return res.status(200).json({
                 pedidos
@@ -1737,8 +1750,8 @@ module.exports = {
 
     adicionarPrioridadeDossie: async (req, res) => {
         try {
-            
-            const {pedido, prioridade} = req.body
+
+            const { pedido, prioridade } = req.body
 
             console.log(pedido, !prioridade);
 
@@ -1747,7 +1760,7 @@ module.exports = {
             }, {
                 prioridadeDossie: prioridade
             })
-            
+
             return res.status(200).json({
                 update
             })

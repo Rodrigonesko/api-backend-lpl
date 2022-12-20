@@ -289,7 +289,7 @@ module.exports = {
     salvarDadosEditados: async (req, res) => {
         try {
 
-            const { dados, id } = req.body
+            const { dados, id, houveDivergencia } = req.body
 
             const update = await Promise.all(Object.keys(dados).map(async key => {
                 return await DadosEntrevista.findOneAndUpdate({
@@ -299,6 +299,11 @@ module.exports = {
                 })
             }))
 
+            const atualizar = await DadosEntrevista.findByIdAndUpdate({
+                _id: id
+            }, {
+                houveDivergencia
+            })
             return res.status(200).json({
                 msg: 'oii'
             })
@@ -1261,7 +1266,9 @@ module.exports = {
                     parte5 += `${e} - `
                 })
 
-                parte6 = 'Qual melhor horário? Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.  Desde já agradecemos.'
+                parte6 = 'Qual melhor horário? Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.'
+
+                let parte8 = 'Desde já agradecemos.'
 
                 let parte7 = ` Proposta: ${item.proposta}`
 
@@ -1274,6 +1281,7 @@ module.exports = {
                     parte5,
                     parte6,
                     parte7,
+                    parte8,
                     proposta: item.proposta,
                     tipoContrato: item.tipoContrato
 

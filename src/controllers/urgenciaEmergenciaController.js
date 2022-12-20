@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
+const User = mongoose.model('User')
 
 const moment = require('moment')
 const path = require('path')
@@ -147,12 +148,31 @@ module.exports = {
         }
     },
 
+    mostrarConcluidas: async (req, res) => {
+        try {
+
+            const propostas = await UrgenciasEmergencia.find({
+                status: 'Concluído'
+            })
+
+            console.log(propostas);
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     mostrarTodas: async (req, res) => {
         try {
 
             const propostas = await UrgenciasEmergencia.find()
-
-            console.log(propostas);
 
             return res.status(200).json({
                 propostas
@@ -190,7 +210,7 @@ module.exports = {
     salvarInfo: async (req, res) => {
         try {
 
-            const {id, obj} = req.body
+            const { id, obj } = req.body
 
             const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
                 _id: id
@@ -213,7 +233,7 @@ module.exports = {
     concluir: async (req, res) => {
         try {
 
-            const {id, obj} = req.body
+            const { id, obj } = req.body
 
             const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
                 _id: id
@@ -234,6 +254,46 @@ module.exports = {
 
             return res.status(200).json({
                 proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    producao: async (req, res) => {
+        try {
+
+            const { data } = req.params
+
+            const analistas = await User.find({
+                enfermeiro: true
+            })
+
+            let producao = []
+
+            for (const item of analistas) {
+                const count = await UrgenciasEmergencia.find({
+                    analista: item.name,
+                    dataConclusao: data
+                }).count()
+
+                producao.push({
+                    analista: item.name,
+                    quantidade: count
+                })
+            }
+
+            const total = await UrgenciasEmergencia.find({
+                dataConclusao: data
+            }).count()
+
+            return res.status(200).json({
+                producao,
+                total
             })
 
         } catch (error) {
