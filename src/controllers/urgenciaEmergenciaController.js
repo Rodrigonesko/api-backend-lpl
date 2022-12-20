@@ -169,7 +169,7 @@ module.exports = {
     mostrarDadosProposta: async (req, res) => {
         try {
 
-            const { id } = req.params
+            const { id, } = req.params
 
             const proposta = await UrgenciasEmergencia.findById({
                 _id: id
@@ -190,10 +190,16 @@ module.exports = {
     salvarInfo: async (req, res) => {
         try {
 
-            const {id} = req.body
+            const {id, obj} = req.body
+
+            const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
+                _id: id
+            }, obj)
+
+            console.log(proposta);
 
             return res.status(200).json({
-                msg: 'Ok'
+                proposta
             })
 
         } catch (error) {
@@ -207,10 +213,27 @@ module.exports = {
     concluir: async (req, res) => {
         try {
 
-            const {id} = req.body
+            const {id, obj} = req.body
+
+            const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
+                _id: id
+            }, {
+                contato1: obj.contato1,
+                contato2: obj.contato2,
+                contato3: obj.contato3,
+                telefone: obj.telefone,
+                email: obj.telefone,
+                retorno: obj.retorno,
+                observacoes: obj.observacoes,
+                status: 'Concluído',
+                analista: req.user,
+                dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+            })
+
+            console.log(proposta);
 
             return res.status(200).json({
-                msg: 'Ok'
+                proposta
             })
 
         } catch (error) {
