@@ -174,10 +174,13 @@ router.get('/elegibilidade/prc', auth, elegibilidadeController.buscarPrc)
 router.post('/urgenciaEmergencia/upload', auth, urgenciaEmergenciaController.upload)
 router.get('/urgenciaEmergencia/andamento', auth, urgenciaEmergenciaController.mostrarAndamento)
 router.get('/urgenciaEmergencia/concluidas', auth, urgenciaEmergenciaController.mostrarConcluidas)
+router.get('/urgenciaEmergencia/anexar', auth, urgenciaEmergenciaController.mostrarAnexar)
 router.get('/urgenciaEmergencia/todas', auth, urgenciaEmergenciaController.mostrarTodas)
 router.get('/urgenciaEmergencia/detalhes/:id', auth, urgenciaEmergenciaController.mostrarDadosProposta)
 router.put('/urgenciaEmergencia/salvarInfo', auth, urgenciaEmergenciaController.salvarInfo)
 router.put('/urgenciaEmergencia/concluir', auth, urgenciaEmergenciaController.concluir)
 router.get('/urgenciaEmergencia/producao/:data', auth, urgenciaEmergenciaController.producao)
+router.put('/urgenciaEmergencia/salvarContato', auth, urgenciaEmergenciaController.salvarContato)
+router.put('/urgenciaEmergencia/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
 
 module.exports = router

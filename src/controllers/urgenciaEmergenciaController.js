@@ -148,6 +148,24 @@ module.exports = {
         }
     },
 
+    mostrarAnexar: async (req, res) => {
+        try {
+            const propostas = await UrgenciasEmergencia.find({
+                status: 'Anexar'
+            })
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     mostrarConcluidas: async (req, res) => {
         try {
 
@@ -245,12 +263,35 @@ module.exports = {
                 email: obj.telefone,
                 retorno: obj.retorno,
                 observacoes: obj.observacoes,
-                status: 'Concluído',
+                status: 'Anexar',
                 analista: req.user,
                 dataConclusao: moment(new Date()).format('YYYY-MM-DD')
             })
 
             console.log(proposta);
+
+            return res.status(200).json({
+                proposta
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    concluirAnexo: async (req, res) => {
+        try {
+
+            const {id} = req.body
+
+            const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
+                _id: id
+            }, {
+                status: 'Concluído'
+            })
 
             return res.status(200).json({
                 proposta
@@ -294,6 +335,47 @@ module.exports = {
             return res.status(200).json({
                 producao,
                 total
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    salvarContato: async (req, res) => {
+        try {
+
+            const { obj, id } = req.body
+
+            if (obj.contato === 'contato1') {
+                const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    contato1: moment(new Date()).format('YYYY-MM-DD HH:mm')
+                })
+            }
+
+            if (obj.contato === 'contato2') {
+                const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    contato2: moment(new Date()).format('YYYY-MM-DD HH:mm')
+                })
+            }
+
+            if (obj.contato === 'contato3') {
+                const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    contato3: moment(new Date()).format('YYYY-MM-DD HH:mm')
+                })
+            }
+
+            return res.status(200).json({
+                msg: 'Contato atualizado com sucesso!'
             })
 
         } catch (error) {
