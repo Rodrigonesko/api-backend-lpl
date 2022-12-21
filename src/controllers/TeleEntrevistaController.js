@@ -434,7 +434,9 @@ module.exports = {
                 dataEntrevista: null,
                 proposta: proposta.proposta,
                 cancelado: true,
-                divergencia: motivoCancelamento
+                divergencia: motivoCancelamento,
+                houveDivergencia: 'Não',
+                dataEntrevista: moment(new Date()).format('YYYY-MM-DD')
             })
 
             return res.status(200).json({
@@ -1197,15 +1199,17 @@ module.exports = {
 
                     let titular = {
                         nome: '',
-                        sexo: ''
+                        sexo: '',
+                        telefone: '',
                     }
 
                     let dependentes = []
 
                     pessoas.forEach(e => {
                         if (e.tipoAssociado === 'Titular') {
-                            titular.nome = e.nome,
-                                titular.sexo = e.sexo
+                            titular.nome = e.nome
+                            titular.sexo = e.sexo,
+                            titular.telefone = e.telefone
                         } else {
                             dependentes.push({
                                 nome: e.nome,
@@ -1218,7 +1222,8 @@ module.exports = {
                         proposta: item.proposta,
                         dependentes: dependentes,
                         titular: titular,
-                        tipoContrato: item.tipoContrato
+                        tipoContrato: item.tipoContrato,
+
                     })
 
                 } else {
@@ -1227,7 +1232,8 @@ module.exports = {
                         dependentes: [],
                         titular: {
                             nome: item.nome,
-                            sexo: item.sexo
+                            sexo: item.sexo,
+                            telefone: item.telefone
                         },
                         tipoContrato: item.tipoContrato
                     })
@@ -1260,13 +1266,15 @@ module.exports = {
 
                 parte3 = 'precisamos confirmar alguns dados para que a contratação seja concluída. '
 
-                parte4 = `Precisamos entrar em contato através do número 61 9648-4854. Temos disponíveis os horários para dia *${moment(data).format('DD/MM/YYYY')}* ${ajustarDiaSemana(moment(data).format('dddd'))} as `
+                parte4 = `Precisamos entrar em contato através do número ${item.titular.telefone}. Temos disponíveis os horários para dia *${moment(data).format('DD/MM/YYYY')}* ${ajustarDiaSemana(moment(data).format('dddd'))} as `
 
                 horarios.forEach(e => {
                     parte5 += `${e} - `
                 })
 
-                parte6 = 'Qual melhor horário? Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.'
+                parte5 += 'Qual melhor horário?'
+
+                parte6 = 'Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.'
 
                 let parte8 = 'Desde já agradecemos.'
 

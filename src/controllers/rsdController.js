@@ -1633,7 +1633,7 @@ module.exports = {
 
                 let result = xlsx.utils.sheet_to_json(worksheet)
 
-                for (const item of result) {
+                for (let item of result) {
 
                     if (item.dataConclusao === 'NULL') {
                         item.dataConclusao = new Date('2021-01-01')
@@ -1643,9 +1643,30 @@ module.exports = {
                         item.dataSla = new Date()
                     }
 
+                    if (item.dataConclusao !== 'NULL') {
+                        item.dataConclusao = ExcelDateToJSDate(item.dataConclusao)
+                        item.dataConclusao.setDate(item.dataConclusao.getDate() + 1)
+                        item.dataConclusao = moment(item.dataConclusao).format('YYYY-MM-DD')
+                    } else {
+                        item.dataConclusao = 'Nao foi achado'
+                    }
+
+                    item.dataSolicitacao = moment(item.dataSolicitacao).format('YYYY-MM-DD')
+
+                    if (item.dataSelo !== 'NULL') {
+                        item.dataSelo = moment(item.dataSelo).format('YYYY-MM-DD')
+                    } else {
+                        item.dataSelo = 'Nao foi achado'
+                    }
+
+                    if (item.dataSla !== 'NULL') {
+                        item.dataSla = moment(item.dataSla).format('YYYY-MM-DD')
+                    } else {
+                        item.dataSla = 'Nao foi achado'
+                    }
+
                     await Pedido.create({
-                        numero: item?.numero,
-                        pacote: item?.codigo,
+                        pacote: item.pacote,
                         fase: item?.fase,
                         statusPadraoAmil: item?.statusPadraoAmil,
                         statusGerencial: item?.statusGerencial,
@@ -1662,9 +1683,18 @@ module.exports = {
                         formaPagamento: item?.formaPagamento,
                         mo: item?.mo,
                         contratoEmpresa: item?.contratoEmpresa,
+                        prioridadeDossie: item.prioridadeDossie,
+                        nf: item.nf,
                         status: item.status,
                         statusPacote: item.statusPacote,
-                        dataSla: item.dataSla
+                        dataSla: item.dataSla,
+                        ativo: item.ativo,
+                        irregular: item.irregular,
+                        reconhece: item.reconhece,
+                        semRetorno: item.semRetorno,
+                        comprovanteNaoRecebido: item.comprovanteNaoRecebido,
+                        analista: item.analista,
+                        contato: item.contato
                     })
                 }
 
