@@ -37,7 +37,8 @@ const pedidoScheema = mongoose.Schema({
     justificativa: String,
     dataSelo: String,
     contato: String,
-    prioridadeDossie: Boolean
+    prioridadeDossie: Boolean,
+    statusProtocolo: String
 
 }, {
     timestamps: true

@@ -391,8 +391,6 @@ module.exports = {
                 })
             })
 
-
-
             Object.keys(obj).forEach(e => {
                 obj[e] = obj[e].map((el) => {
                     if (e === moment(today).format('DD/MM/YYYY')) {

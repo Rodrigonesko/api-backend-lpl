@@ -1193,7 +1193,8 @@ module.exports = {
                         pessoas.push({
                             nome: iterator.nome,
                             sexo: iterator.sexo,
-                            tipoAssociado: iterator.tipoAssociado
+                            tipoAssociado: iterator.tipoAssociado,
+                            telefone: iterator.telefone
                         })
                     }
 
@@ -1206,9 +1207,16 @@ module.exports = {
                     let dependentes = []
 
                     pessoas.forEach(e => {
-                        if (e.tipoAssociado === 'Titular') {
+                        if (e.tipoAssociado === 'Titular' || e.tipoAssociado === 'Titular ') {
+                            if (titular.nome !== '') {
+                                dependentes.push({
+                                    nome: e.nome,
+                                    sexo: e.sexo
+                                })
+                                return
+                            }
                             titular.nome = e.nome
-                            titular.sexo = e.sexo,
+                            titular.sexo = e.sexo
                             titular.telefone = e.telefone
                         } else {
                             dependentes.push({
@@ -1223,7 +1231,6 @@ module.exports = {
                         dependentes: dependentes,
                         titular: titular,
                         tipoContrato: item.tipoContrato,
-
                     })
 
                 } else {

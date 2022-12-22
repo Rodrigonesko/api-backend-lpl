@@ -110,7 +110,7 @@ module.exports = {
 
                 if (req.file.originalname.indexOf('PF') === 10 || req.file.originalname.indexOf('PF') === 5) {
 
-                    let file = fs.readFileSync(req.file.path, { encoding: 'utf-8' })
+                    let file = fs.readFileSync(req.file.path, { encoding: 'latin1' })
 
                     let listaArr = file.split('\n')
                     let result = listaArr.map(e => {
@@ -175,6 +175,10 @@ module.exports = {
                                 'pf'
                             ])
 
+                            if (e[12] === '949.773.727-00') {
+                                console.log(e[1]);
+                            }
+
                             if (mapCpfs.has(e[12])) {
                                 mapCpfs.set(e[12], mapCpfs.get(e[12]) + e[14])
                             } else {
@@ -189,7 +193,7 @@ module.exports = {
 
                     console.log(`Numero de pedidos filtrado sem repetir e apenas com status que tratamos: ${arrPedidos.length}`);
 
-                    console.log(mapCpfs);
+                    //console.log(mapCpfs);
 
                     arrPedidos.forEach(val => {
                         for (const [cpf, value] of mapCpfs) {
@@ -206,10 +210,11 @@ module.exports = {
 
                     console.log(arr.length);
 
-                    arr.forEach(e => {
+
+                    arr.forEach(e => { //Verifica se existe na lpl
                         let flag = 0
                         pedidosBanco.forEach(item => {
-                            if (e[0] == item.numero || e[8] == 'LUZIA LOPES MAURI CARDOSO') {
+                            if (e[0] == item.numero) {
                                 flag++
                                 return
                             }
@@ -375,6 +380,7 @@ module.exports = {
                     fase: 'A iniciar',
                     statusGerencial: 'A iniciar',
                     statusPadraoAmil: 'A iniciar',
+                    statusProtocolo: 'A iniciar',
                     operador: item[12]
                 })
 
@@ -705,7 +711,7 @@ module.exports = {
                 }, {
                     pacote: idPacote,
                     status: 'Em andamento',
-                    statusPacote: 'A iniciar'
+                    statusPacote: 'A iniciar',
                 })
             }))
 
@@ -886,7 +892,7 @@ module.exports = {
     atualizarPedido: async (req, res) => {
         try {
 
-            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
+            const { pacote, protocolo, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
 
             const pacoteBanco = await Pedido.findOne({
                 pacote: pacote
@@ -987,7 +993,6 @@ module.exports = {
                     usuario: req.user,
                     parecer: "Iniciado Processamento (etapa: 1° Tentativa)"
                 })
-
 
                 await Pedido.updateMany({
                     pacote: pacote
@@ -1135,7 +1140,6 @@ module.exports = {
                     })
 
                 } else {
-
                     const updatePedido = await Pedido.findOneAndUpdate({
                         numero: item[0]
                     }, {
@@ -1145,6 +1149,7 @@ module.exports = {
                         statusGerencial: 'Aguardando Comprovante',
                         statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
                         analista: req.user,
+                        statusProtocolo: 'Em andamento'
                     })
 
                     if (item[1] === 'Dinheiro') {
@@ -1156,20 +1161,21 @@ module.exports = {
                             fase: 'Em Andamento',
                             statusGerencial: 'Aguardando Comprovante',
                             statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação',
-                            analista: req.user
+                            analista: req.user,
+                            statusProtocolo: 'Em andamento'
                         })
                     }
 
                     await Pacote.findByIdAndUpdate({
                         _id: pacote
                     }, {
-                        status: 'Em andamento'
+                        status: 'Em andamento',
                     })
 
                     await Pedido.updateMany({
                         pacote: pacote
                     }, {
-                        statusPacote: 'Em andamento'
+                        statusPacote: 'Em andamento',
                     })
 
                     await Agenda.create({
@@ -1258,7 +1264,6 @@ module.exports = {
                     usuario: req.user,
                     parecer: `Pedido: ${item[0]}, finalização: ${item[1]}`
                 })
-
             }
 
             const buscarPedidos = await Pedido.find({
@@ -1280,7 +1285,39 @@ module.exports = {
                         statusPacote: 'Finalizado'
                     })
                 }
+            }
 
+            let protocolos = []
+
+            for (const item of buscarPedidos) {
+
+                const aux = await Pedido.findById({
+                    _id: item._id
+                })
+
+                if (protocolos.indexOf(aux.protocolo) === -1) {
+                    protocolos.push(aux.protocolo)
+                }
+
+            }
+
+            for (const protocolo of protocolos) {
+                const aux = await Pedido.find({
+                    protocolo: protocolo
+                })
+                let flagPro = 0
+                for (const obj of aux) {
+                    if (obj.fase === 'Finalizado') {
+                        flagPro++
+                    }
+                    if (aux.length === flagPro) {
+                        await Pedido.updateMany({
+                            protocolo: obj.protocolo
+                        }, {
+                            statusProtocolo: 'Finalizado'
+                        })
+                    }
+                }
             }
 
             return res.status(200).json({
@@ -1321,7 +1358,7 @@ module.exports = {
 
             const pedidos = await Pedido.find({
                 status: {
-                    $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Comprovante']
+                    $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                 }
             })
 
@@ -1723,7 +1760,8 @@ module.exports = {
                 fase: 'Em andamento',
                 statusGerencial: 'Aguardando Comprovante',
                 statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
-                statusPacote: 'Aguardando Docs'
+                statusPacote: 'Aguardando Docs',
+                statusProtocolo: 'Em andamento'
             })
 
             console.log(pacote);
@@ -1761,7 +1799,14 @@ module.exports = {
                 fase: 'Em andamento',
                 statusGerencial: 'Aguardando Comprovante',
                 statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
-                statusPacote: 'Aguardando Docs'
+                statusPacote: 'Aguardando Docs',
+                statusPacote: 'Em andamento'
+            })
+
+            await Pedido.updateMany({
+                protocolo: atualizar.protocolo
+            }, {
+                statusProtocolo: 'Em andamento'
             })
 
             console.log(pedido);
