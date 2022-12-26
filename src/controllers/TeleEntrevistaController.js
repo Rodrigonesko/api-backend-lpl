@@ -364,15 +364,12 @@ module.exports = {
 
             const { id } = req.body
 
-
-
             const dadosProposta = await Propostas.findById({
                 _id: id
             })
 
             let split = dadosProposta.dataEntrevista.split(' ')
             let dataEntrevista = split[0]
-            dataEntrevista = new Date(dataEntrevista)
             const horario = split[1]
 
             console.log(dataEntrevista);
@@ -855,6 +852,10 @@ module.exports = {
                 }
             })
 
+            const analistas = await User.find({
+                enfermeiro: true
+            })
+
             const rns = await Rn.find()
 
             let mapQuantidadeMesAnoRn = new Map()
@@ -928,6 +929,140 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: "Internal Server Error"
+            })
+        }
+    },
+
+    mostrarDadosProducao2: async (req, res) => {
+        try {
+
+            const entrevistas = await DadosEntrevista.find()
+
+            arrQuantidadeTotalMes = []
+
+            entrevistas.forEach(e => {
+                let index = arrQuantidadeTotalMes.findIndex(val => val.data == moment(e.dataEntrevista).format('MM/YYYY'))
+
+                if (index < 0) {
+                    arrQuantidadeTotalMes.push({
+                        data: moment(e.dataEntrevista).format('MM/YYYY'),
+                        quantidade: 1,
+                        quantidadeAnalistaMes: [{
+                            analista: e.responsavel,
+                            quantidade: 1,
+                            quantidadeAnalistaDia: [{
+                                data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                                quantidade: 1
+                            }]
+                        }]
+                    })
+                } else {
+                    arrQuantidadeTotalMes[index].quantidade++
+                }
+
+                let indexAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes.findIndex(val => val.analista == e.responsavel)
+
+                if (indexAnalista < 0) {
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes.push({
+                        analista: e.responsavel,
+                        quantidade: 1,
+                        quantidadeAnalistaDia: [{
+                            data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                            quantidade: 1
+                        }]
+                    })
+                } else {
+                    if (arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes === undefined) {
+                        return
+                    }
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidade++
+                }
+
+                let indexDiaAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataEntrevista).format('YYYY-MM-DD'))
+
+                // console.log(indexDiaAnalista);
+
+                if (indexDiaAnalista < 0) {
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
+                        data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                        quantidade: 1
+                    })
+                } else {
+                    if (arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
+                        return
+                    }
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
+                }
+
+            })
+
+            const rns = await Rn.find()
+
+            let arrRns = []
+
+            rns.forEach(e => {
+                let index = arrRns.findIndex(val => val.data == moment(e.dataEntrevista).format('MM/YYYY'))
+
+                if (index < 0) {
+                    arrRns.push({
+                        data: moment(e.dataEntrevista).format('MM/YYYY'),
+                        quantidade: 1,
+                        quantidadeAnalistaMes: [{
+                            analista: e.responsavel,
+                            quantidade: 1,
+                            quantidadeAnalistaDia: [{
+                                data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                                quantidade: 1
+                            }]
+                        }]
+                    })
+                } else {
+                    arrRns[index].quantidade++
+                }
+
+                let indexAnalista = arrRns[index]?.quantidadeAnalistaMes.findIndex(val => val.analista == e.responsavel)
+
+                if (indexAnalista < 0) {
+                    arrRns[index].quantidadeAnalistaMes.push({
+                        analista: e.responsavel,
+                        quantidade: 1,
+                        quantidadeAnalistaDia: [{
+                            data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                            quantidade: 1
+                        }]
+                    })
+                } else {
+                    if (arrRns[index]?.quantidadeAnalistaMes === undefined) {
+                        return
+                    }
+                    arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidade++
+                }
+
+                let indexDiaAnalista = arrRns[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataEntrevista).format('YYYY-MM-DD'))
+
+                if (indexDiaAnalista < 0) {
+                    arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
+                        data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                        quantidade: 1
+                    })
+                } else {
+                    if (arrRns[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
+                        return
+                    }
+                    arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
+                }
+            })
+
+            return res.status(200).json({
+                arrRns,
+                arrQuantidadeTotalMes
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server"
             })
         }
     },

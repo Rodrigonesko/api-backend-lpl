@@ -97,6 +97,8 @@ router.post('/entrevistas/cid/adicionar', auth, TeleEntrevistaController.adicion
 router.put('/entrevistas/proposta/alterarSexo', auth, TeleEntrevistaController.alterarSexo)
 router.get('/entrevistas/mensagens/:data', TeleEntrevistaController.gerarMensagens)
 
+router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
+
 //Liminar
 
 router.post('/liminares/upload', auth, liminarController.upload)
