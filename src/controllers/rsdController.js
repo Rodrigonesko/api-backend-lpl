@@ -1731,7 +1731,8 @@ module.exports = {
                         semRetorno: item.semRetorno,
                         comprovanteNaoRecebido: item.comprovanteNaoRecebido,
                         analista: item.analista,
-                        contato: item.contato
+                        contato: item.contato,
+                        statusProtocolo: item.statusProtocolo
                     })
                 }
 

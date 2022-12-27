@@ -212,14 +212,10 @@ module.exports = {
 
             const { data, responsavel } = req.body
 
-            let date = new Date(data)
-
-            console.log(data, responsavel, date);
-
             const update = await Horario.updateMany({
                 $and: [
                     {
-                        dia: date
+                        dia: data
                     }, {
                         enfermeiro: responsavel
                     }
@@ -412,6 +408,41 @@ module.exports = {
 
             return res.status(200).json({
                 obj
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+    abrirNovoHorario: async (req, res) => {
+        try {
+
+            const { responsavel, dia, horario } = req.body
+
+            console.log(responsavel, dia, horario);
+
+            const find = await Horario.findOne({
+                enfermeiro: responsavel,
+                dia,
+                horario
+            })
+
+            if (!find) {
+                const create = await Horario.create({
+                    enfermeiro: responsavel,
+                    dia,
+                    horario
+                })
+                return res.status(200).json({
+                   create
+                })
+            }
+
+            return res.status(500).json({
+                msg: 'Esse horário já existe'
             })
 
         } catch (error) {
