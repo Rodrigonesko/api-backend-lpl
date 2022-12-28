@@ -1392,11 +1392,21 @@ module.exports = {
                         status: {
                             $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }
+                    },
+                    {
+                        protocolo: pesquisa,
+                        status: {
+                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
+                        }
+                    },
+                    {
+                        numero: pesquisa,
+                        status: {
+                            $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
+                        }
                     }
                 ]
             })
-
-            console.log(pedidos);
 
             return res.status(200).json({
                 pedidos
@@ -1607,16 +1617,67 @@ module.exports = {
 
             const { pedido } = req.body
 
-            console.log(pedido);
-
             const update = await Pedido.findOneAndUpdate({
                 numero: pedido
             }, {
                 status: 'Finalizado',
                 fase: 'Finalizado',
                 statusGerencial: 'Devolvido Amil',
-                statusPadraoAmil: 'Devolvido Amil'
+                statusPadraoAmil: 'Devolvido Amil',
             })
+
+            const buscaPorPacote = await Pedido.find({
+                pacote: update.pacote
+            });
+
+            let flag = 0
+
+            for (const item of buscaPorPacote) {
+                if (item.fase === 'Finalizado') {
+                    flag++
+                }
+
+                if (buscaPorPacote.length === flag) {
+                    await Pedido.updateMany({
+                        pacote: update.pacote
+                    }, {
+                        statusPacote: 'Finalizado'
+                    })
+                }
+            }
+
+            let protocolos = []
+
+            for (const item of buscaPorPacote) {
+
+                const aux = await Pedido.findById({
+                    _id: item._id
+                })
+
+                if (protocolos.indexOf(aux.protocolo) === -1) {
+                    protocolos.push(aux.protocolo)
+                }
+
+            }
+
+            for (const protocolo of protocolos) {
+                const aux = await Pedido.find({
+                    protocolo: protocolo
+                })
+                let flagPro = 0
+                for (const obj of aux) {
+                    if (obj.fase === 'Finalizado') {
+                        flagPro++
+                    }
+                    if (aux.length === flagPro) {
+                        await Pedido.updateMany({
+                            protocolo: obj.protocolo
+                        }, {
+                            statusProtocolo: 'Finalizado'
+                        })
+                    }
+                }
+            }
 
             return res.status(200).json({
                 update
@@ -1847,7 +1908,7 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 }
 
 function ExcelDateToJSDate(serial) {
