@@ -647,6 +647,77 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    enviarUnder: async (req, res) => {
+        try {
+
+            const { id, erroSistema } = req.body
+
+            let err
+
+            if (erroSistema) {
+                err = 'Sim'
+            } else (
+                err = 'Não'
+            )
+
+            const result = await Proposta.findByIdAndUpdate({
+                _id: id
+            }, {
+                status: 'Enviar Under',
+                erroSistema: err
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    enviarFaseCancelamento: async (req, res) => {
+        try {
+
+            const { id, motivoCancelamento, categoriaCancelamento, evidenciaFraude } = req.body
+
+            const result = await Proposta.findByIdAndUpdate({
+                _id: id
+            }, {
+                status: 'Fase Cancelemanto',
+                motivoCancelamento,
+                categoriaCancelamento,
+                evidenciaFraude
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    devolver: async (req, res) => {
+        try {
+
+            const {id, motivosDevolucao, observacoes} = req.body
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 
 }

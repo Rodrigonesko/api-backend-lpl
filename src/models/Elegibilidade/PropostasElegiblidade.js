@@ -63,6 +63,7 @@ const propostaScheema = mongoose.Schema({
     dataConclusaoPre: String,
     observacoes: String,
     categoriaCancelamento: String,
+    erroSistema: String
 
 }, {
     timestamps: true
