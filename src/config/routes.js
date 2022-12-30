@@ -171,6 +171,10 @@ router.put('/elegibilidade/proposta/salvarDadosAnalise', auth, elegibilidadeCont
 router.get('/elegibilidade/agenda/:proposta', auth, elegibilidadeController.buscarAgenda)
 router.delete('/elegibilidade/agenda/:id', auth, elegibilidadeController.excluirComentario)
 router.get('/elegibilidade/prc', auth, elegibilidadeController.buscarPrc)
+router.put('/elegibilidade/enviarUnder', auth, elegibilidadeController.enviarUnder)
+router.put('/elegibilidade/enviarFaseCancelamento', auth, elegibilidadeController.enviarFaseCancelamento)
+router.put('/elegibilidade/devolver', auth, elegibilidadeController.devolver)
+
 
 /* Urgencia Emergencia */
 

@@ -654,23 +654,78 @@ module.exports = {
 
             const { id, erroSistema } = req.body
 
-            let err
-
-            if (erroSistema) {
-                err = 'Sim'
-            } else (
-                err = 'Não'
-            )
-
-            const result = await Proposta.findByIdAndUpdate({
+            const find = await Proposta.findById({
                 _id: id
-            }, {
-                status: 'Enviar Under',
-                erroSistema: err
             })
 
+
+            if (!find.status1Analise) {
+
+                let status = 'Enviada para Under'
+
+                if (erroSistema) {
+                    status = 'Erro Sistema'
+                }
+
+                await Proposta.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    status1Analise: 'Liberada',
+                    primeiraDevolucao1: 'Liberada',
+                    status,
+                    dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+                })
+
+                return res.status(200).json({
+                    msg: 'Ok'
+                })
+            }
+
+            if (find.status3Analise || find.status2Analise) {
+                let status = 'Enviada para Under'
+
+                if (erroSistema) {
+                    status = 'Erro Sistema'
+                }
+
+                await Proposta.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    status3Analise: 'Liberada',
+                    segundoReprotocolo1: 'Liberada',
+                    status,
+                    dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+                })
+
+                return res.status(200).json({
+                    msg: 'Ok'
+                })
+            }
+
+            if (find.status1Analise) {
+
+                let status = 'Enviada para Under'
+
+                if (erroSistema) {
+                    status = 'Erro Sistema'
+                }
+
+                await Proposta.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    status2Analise: 'Liberada',
+                    reprotocolo1: 'Liberada',
+                    status,
+                    dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+                })
+
+                return res.status(200).json({
+                    msg: 'Ok'
+                })
+            }
+
             return res.status(200).json({
-                result
+                msg: 'oii'
             })
 
         } catch (error) {
@@ -686,17 +741,10 @@ module.exports = {
 
             const { id, motivoCancelamento, categoriaCancelamento, evidenciaFraude } = req.body
 
-            const result = await Proposta.findByIdAndUpdate({
+            const update = await Proposta.findByIdAndUpdate({
                 _id: id
             }, {
-                status: 'Fase Cancelemanto',
-                motivoCancelamento,
-                categoriaCancelamento,
-                evidenciaFraude
-            })
-
-            return res.status(200).json({
-                result
+                
             })
 
         } catch (error) {
@@ -710,7 +758,9 @@ module.exports = {
     devolver: async (req, res) => {
         try {
 
-            const {id, motivosDevolucao, observacoes} = req.body
+            const { id, motivosDevolucao, observacoes } = req.body
+
+
 
         } catch (error) {
             console.log(error);
