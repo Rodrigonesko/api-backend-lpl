@@ -17,6 +17,7 @@ const secret = process.env.JWT_SECRET
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL)
+
 const User = require('./models/User')
 const Rn = require('./models/Rn')
 

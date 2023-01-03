@@ -323,7 +323,7 @@ module.exports = {
                     let flag = 0
 
                     notorios.forEach(notorio => {
-                        if(e[8] === notorio){
+                        if (e[8] === notorio) {
                             flag++
                         }
                     })
@@ -1952,6 +1952,113 @@ module.exports = {
             })
         }
     },
+
+    devolverPacote: async (req, res) => {
+        try {
+
+            const { pacote } = req.body
+
+            const result = await Pedido.updateMany({
+                pacote: pacote
+            }, {
+                status: 'Finalizado',
+                fase: 'Finalizado',
+                statusGerencial: 'Devolvido Amil',
+                statusPadraoAmil: 'Devolvido Amil',
+                statusPacote: 'Finalizado',
+                statusProtocolo: 'Finalizado'
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    devolverProtocolo: async (req, res) => {
+        try {
+
+            const { protocolo, pacote } = req.body
+
+            console.log(protocolo, pacote);
+
+            const result = await Pedido.updateMany({
+                protocolo,
+                pacote
+            }, {
+                status: 'Finalizado',
+                fase: 'Finalizado',
+                statusGerencial: 'Devolvido Amil',
+                statusPadraoAmil: 'Devolvido Amil',
+                statusProtocolo: 'Finalizado'
+            })
+
+            console.log(result);
+
+            const buscaPorPacote = await Pedido.find({
+                pacote
+            });
+
+            let flag = 0
+
+            for (const item of buscaPorPacote) {
+                if (item.fase === 'Finalizado') {
+                    flag++
+                }
+
+                if (buscaPorPacote.length === flag) {
+                    await Pedido.updateMany({
+                        pacote
+                    }, {
+                        statusPacote: 'Finalizado'
+                    })
+                }
+            }
+
+            return res.status(200).json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    relatorioAmil: async (req, res) => {
+        try {
+
+            let { aPartir, ate } = req.params
+
+            console.log(aPartir, ate);
+
+            const result = await Pedido.find()
+
+            let pedidos
+
+            pedidos = result.filter(e => {
+                return moment(e.createdAt).format('YYYY-MM-DD') >= aPartir && moment(e.createdAt).format('YYYY-MM-DD') <= ate
+            })
+
+            return res.status(200).json({
+                pedidos
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 }
 
 function ExcelDateToJSDate(serial) {

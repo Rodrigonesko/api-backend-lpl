@@ -15,6 +15,7 @@ module.exports = {
             console.log(data);
 
             const horarios = [
+                '08:40',
                 '09:00',
                 '09:20',
                 '09:40',
@@ -46,7 +47,8 @@ module.exports = {
                 '18:20',
                 '18:40',
                 '19:00',
-                '19:20'
+                '19:20',
+                '19:40'
             ]
 
             const find = await Horario.findOne({

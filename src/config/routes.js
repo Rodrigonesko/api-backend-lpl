@@ -151,6 +151,9 @@ router.post('/rsd/pedidosAntigos', auth, rsdController.subirPedidosAntigos)
 router.put('/rsd/pacote/voltarFase', auth, rsdController.voltarFase)
 router.put('/rsd/pedido/voltarFase', auth, rsdController.voltarFasePedido)
 router.put('/rsd/pedido/prioridadeDossie', auth, rsdController.adicionarPrioridadeDossie)
+router.put('/rsd/pacote/devolver', auth, rsdController.devolverPacote)
+router.put('/rsd/protocolo/devolver', auth, rsdController.devolverProtocolo)
+router.get('/rsd/relatorio/:aPartir/:ate', auth, rsdController.relatorioAmil)
 
 //Rotas Elegibilidade
 
