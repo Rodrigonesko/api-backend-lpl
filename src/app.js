@@ -1,7 +1,5 @@
 const express = require('express')
 const app = express()
-const fileupload = require('express-fileupload')
-const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const corsOptions = {
@@ -14,7 +12,6 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET
 
 //Mongo 
-
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL)
 
