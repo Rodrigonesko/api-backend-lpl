@@ -408,6 +408,12 @@ module.exports = {
                 })
             })
 
+            Object.keys(obj).forEach(e => {
+                obj[e].sort()
+            })
+
+            console.log(obj);
+
             return res.status(200).json({
                 obj
             })
@@ -439,7 +445,7 @@ module.exports = {
                     horario
                 })
                 return res.status(200).json({
-                   create
+                    create
                 })
             }
 

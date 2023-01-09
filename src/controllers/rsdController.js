@@ -273,8 +273,8 @@ module.exports = {
                                 undefined,
                                 e['Data Solicitação'],
                                 undefined,
-                                e['Data Pagamento'],
                                 undefined,
+                                e['Data Pagamento'],
                                 undefined,
                                 mo,
                                 beneficiario,
@@ -389,8 +389,13 @@ module.exports = {
                     dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
 
                     dataPagamento = ExcelDateToJSDate(item[5])
+
+  
+                    
                     dataPagamento.setDate(dataPagamento.getDate() + 1)
                     dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
+
+                    console.log(dataPagamento);
 
                     const operadores = await Operador.find()
                     operadores.forEach(e => {
@@ -1658,7 +1663,9 @@ module.exports = {
     devolverAmil: async (req, res) => {
         try {
 
-            const { pedido } = req.body
+            const { pedido, motivoInativo } = req.body
+
+            console.log(pedido, motivoInativo);
 
             const update = await Pedido.findOneAndUpdate({
                 numero: pedido
@@ -1667,6 +1674,8 @@ module.exports = {
                 fase: 'Finalizado',
                 statusGerencial: 'Devolvido Amil',
                 statusPadraoAmil: 'Devolvido Amil',
+                motivoInativo,
+                ativo: false
             })
 
             const buscaPorPacote = await Pedido.find({
@@ -1956,7 +1965,7 @@ module.exports = {
     devolverPacote: async (req, res) => {
         try {
 
-            const { pacote } = req.body
+            const { pacote, motivoInativo } = req.body
 
             const result = await Pedido.updateMany({
                 pacote: pacote
@@ -1966,7 +1975,9 @@ module.exports = {
                 statusGerencial: 'Devolvido Amil',
                 statusPadraoAmil: 'Devolvido Amil',
                 statusPacote: 'Finalizado',
-                statusProtocolo: 'Finalizado'
+                statusProtocolo: 'Finalizado',
+                ativo: false,
+                motivoInativo
             })
 
             return res.status(200).json({
@@ -1984,7 +1995,7 @@ module.exports = {
     devolverProtocolo: async (req, res) => {
         try {
 
-            const { protocolo, pacote } = req.body
+            const { protocolo, pacote, motivoInativo } = req.body
 
             console.log(protocolo, pacote);
 
@@ -1996,7 +2007,9 @@ module.exports = {
                 fase: 'Finalizado',
                 statusGerencial: 'Devolvido Amil',
                 statusPadraoAmil: 'Devolvido Amil',
-                statusProtocolo: 'Finalizado'
+                statusProtocolo: 'Finalizado',
+                ativo: false,
+                motivoInativo
             })
 
             console.log(result);
