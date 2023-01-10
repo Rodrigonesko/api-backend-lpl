@@ -188,8 +188,9 @@ module.exports = {
                 nome: beneficiario
             })
 
-            const update2 = await PropostaEntrevista.findOneAndUpdate({
-                nome: beneficiario
+            const update2 = await PropostaEntrevista.updateMany({
+                nome: beneficiario,
+
             }, {
                 dataEntrevista: dataEHora,
                 agendado: 'agendado',

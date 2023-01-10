@@ -289,7 +289,7 @@ module.exports = {
     salvarDadosEditados: async (req, res) => {
         try {
 
-            const { dados, id, houveDivergencia } = req.body
+            const { dados, id, houveDivergencia, dataNascimento } = req.body
 
             const update = await Promise.all(Object.keys(dados).map(async key => {
                 return await DadosEntrevista.findOneAndUpdate({
@@ -302,7 +302,8 @@ module.exports = {
             const atualizar = await DadosEntrevista.findByIdAndUpdate({
                 _id: id
             }, {
-                houveDivergencia
+                houveDivergencia,
+                dataNascimento
             })
             return res.status(200).json({
                 msg: 'oii'
@@ -1456,6 +1457,28 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: "Internal Server Error"
+            })
+        }
+    },
+
+    alterarDataNascimento: async (req, res) => {
+        try {
+            const { id, dataNascimento } = req.body
+
+            const update = await DadosEntrevista.findByIdAndUpdate({
+                _id: id
+            }, {
+                dataNascimento: dataNascimento
+            })
+
+            return res.status(200).json({
+                update
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
             })
         }
     }

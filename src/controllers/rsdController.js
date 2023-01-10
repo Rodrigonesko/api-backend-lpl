@@ -862,7 +862,7 @@ module.exports = {
         try {
 
             uploadGravacao(req, res, async (err) => {
-                //console.log(req);
+
                 console.log(res.file);
             })
 
@@ -870,6 +870,18 @@ module.exports = {
 
             const caminho = `./uploads/rsd/gravacoes/${pacote}`
             const usuario = req.user
+
+            const update = await Pedido.updateMany({
+                pacote
+            }, {
+                quemAnexou: usuario
+            })
+
+            const comentario = await Agenda.create({
+                idPacote: pacote,
+                usuario: req.user,
+                parecer: 'Anexo de ligação/arquivos'
+            })
 
             return res.status(200).json({
                 msg: 'Anexado com sucesso'
