@@ -172,7 +172,8 @@ module.exports = {
                                 e[14],
                                 e[15],
                                 e[20],
-                                'pf'
+                                'pf',
+                                'RSD'
                             ])
 
                             if (e[12] === '949.773.727-00') {
@@ -281,7 +282,8 @@ module.exports = {
                                 e[' Valor Apresentado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
                                 e[' Valor Reembolsado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
                                 e['Número do Protocolo'].replace(/[^0-9]/g, ''),
-                                e['Operadora Beneficiário'].replace(' ', ' ')
+                                e['Operadora Beneficiário'].replace(' ', ' '),
+                                'RSD'
                             ])
                         }
                     })
@@ -390,8 +392,8 @@ module.exports = {
 
                     dataPagamento = ExcelDateToJSDate(item[5])
 
-  
-                    
+
+
                     dataPagamento.setDate(dataPagamento.getDate() + 1)
                     dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
 
@@ -429,7 +431,8 @@ module.exports = {
                     statusGerencial: 'A iniciar',
                     statusPadraoAmil: 'A iniciar',
                     statusProtocolo: 'A iniciar',
-                    operador: item[12]
+                    operador: item[12],
+                    fila: item[13]
                 })
 
             }))
@@ -438,6 +441,126 @@ module.exports = {
                 pedidos
             })
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    uploadQuarentena: async (req, res) => {
+        try {
+
+            uploadRsd(req, res, async (err) => {
+
+                const pedidosBanco = await Pedido.find()
+
+                let pedidos = []
+
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                result.forEach((e, key) => {
+
+                    let conc = `${e[' Valor Apresentado'].replace('R$ ', '').replace('.', '').replace(',', '.')}`
+                    conc = +conc
+                    conc = `${e['Número do Protocolo'].replace(/[^0-9]/g, '')}${conc}`
+                    let flag = 0
+
+                    pedidosBanco.forEach(item => {
+                        let concBanco = `${item?.protocolo?.replace(/[^0-9]/g, '')}${Number(item.valorApresentado)}`
+                        if (concBanco == conc) {
+                            flag++
+                            return
+                        }
+                    })
+
+                    let mo
+                    let beneficiario
+
+                    if (!e[' Beneficiário']) {
+
+                    } else {
+                        let split = e[' Beneficiário']?.split(' ')
+                        mo = split[1]
+                        beneficiario = split[2]
+                    }
+
+                    if (flag == 0) {
+                        pedidos.push([
+                            undefined,
+                            undefined,
+                            e['Data Solicitação'],
+                            undefined,
+                            undefined,
+                            e['Data Pagamento'],
+                            undefined,
+                            mo,
+                            beneficiario,
+                            e[' Valor Apresentado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
+                            e[' Valor Reembolsado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
+                            e['Número do Protocolo'].replace(/[^0-9]/g, ''),
+                            e['Operadora Beneficiário'].replace(' ', ' '),
+                            'Quarentena'
+                        ])
+                    }
+                })
+
+                const notorios = [
+                    'OTAVIANO JOSE DA COSTA',
+                    'EDSON VANDER DA COSTA BATISTA',
+                    'ERICK JACQUIN',
+                    'VERA REGINA OLIVEIRA GIMENEZ',
+                    'WALTER CASAGRANDE JUNIOR',
+                    'JOSE MARIA EYMAEL',
+                    'RUBENS FURLAN',
+                    'REINHOLD STEPHANES JUNIOR',
+                    'FRANCISCO KSYVICKIS',
+                    'FLORISVAL MEINAO',
+                    'ALBA VITORIA DE MONCLAIR',
+                    'MARIA IZILDINHA POSSI',
+                    'ROLANDO BOLDRIN',
+                    'MARCELLO ISMERIO DA SILVA',
+                    'MARIA BETHANIA VIANNA TELLES VELLOSO',
+                    'LUCIANO CALLEGARI',
+                    'CLAUDINE MELO RODRIGUES',
+                    'PETER PAUL LORENCO ESTERMANN',
+                    'IVO BUCARESKY',
+                    'SERGIO JUBRAN RACY',
+                    'PAULO ROBERTO FRANCO MARINHO',
+                    'CELENE ARAUJO OLIVEIRA',
+                    'RAFAELA BELO FREIRE DE LIMA',
+                    'MARIA ANDREA MIRANDA RODRIGUES PANTOJA DE CARVALHO',
+                    'ROBERTO RAHMIEL BEN MEIR',
+                    'DILSON SCHER NETO',
+                    'MARCELO STEPHANES'
+                ]
+
+                pedidos = pedidos.filter(e => {
+
+                    let flag = 0
+
+                    notorios.forEach(notorio => {
+                        if (e[8] === notorio) {
+                            flag++
+                        }
+                    })
+
+                    return flag === 0
+                })
+
+                return res.status(200).json({
+                    pedidos
+                })
+            })
         } catch (error) {
             console.log(error);
             return res.status(500).json({

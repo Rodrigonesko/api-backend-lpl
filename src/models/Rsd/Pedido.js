@@ -40,7 +40,8 @@ const pedidoScheema = mongoose.Schema({
     prioridadeDossie: Boolean,
     statusProtocolo: String,
     motivoInativo: String,
-    quemAnexou: String
+    quemAnexou: String,
+    fila: String
 }, {
     timestamps: true
 })

@@ -118,6 +118,7 @@ router.put('/projetoAj/change', auth, projetoAjController.change)
 //RSD
 
 router.post('/rsd/upload', auth, rsdController.upload)
+router.post('/rsd/uploadQuarentena', auth, rsdController.uploadQuarentena)
 router.post('/rsd/subir', auth, rsdController.subir)
 router.get('/rsd/pedidos/todos', auth, rsdController.show)
 router.get('/rsd/pessoas/:mo', auth, rsdController.mostrarPessoa)
