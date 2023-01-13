@@ -1810,7 +1810,8 @@ module.exports = {
                 statusGerencial: 'Devolvido Amil',
                 statusPadraoAmil: 'Devolvido Amil',
                 motivoInativo,
-                ativo: false
+                ativo: false,
+                analista: req.user
             })
 
             const buscaPorPacote = await Pedido.find({
@@ -2112,7 +2113,8 @@ module.exports = {
                 statusPacote: 'Finalizado',
                 statusProtocolo: 'Finalizado',
                 ativo: false,
-                motivoInativo
+                motivoInativo,
+                analista: req.user
             })
 
             return res.status(200).json({
@@ -2144,7 +2146,8 @@ module.exports = {
                 statusPadraoAmil: 'Devolvido Amil',
                 statusProtocolo: 'Finalizado',
                 ativo: false,
-                motivoInativo
+                motivoInativo,
+                analista: req.user
             })
 
             console.log(result);
