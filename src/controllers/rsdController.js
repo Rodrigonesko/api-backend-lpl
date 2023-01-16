@@ -176,10 +176,6 @@ module.exports = {
                                 'RSD'
                             ])
 
-                            if (e[12] === '949.773.727-00') {
-                                console.log(e[1]);
-                            }
-
                             if (mapCpfs.has(e[12])) {
                                 mapCpfs.set(e[12], mapCpfs.get(e[12]) + e[14])
                             } else {
@@ -267,6 +263,8 @@ module.exports = {
                             mo = split[1]
                             beneficiario = split[2]
                         }
+
+                        console.log(mo, beneficiario);
 
                         if (flag == 0) {
                             pedidos.push([
@@ -1562,6 +1560,26 @@ module.exports = {
 
             const { pesquisa } = req.params
 
+            const pessoa = await Pessoa.findOne({
+                cpf: pesquisa
+            })
+
+            if (pessoa) {
+                const pedidos = await Pedido.find({
+                    mo: pessoa.mo,
+                    status: {
+                        $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
+                    }
+
+                })
+
+                return res.status(200).json({
+                    pedidos
+                })
+
+            }
+
+
             const pedidos = await Pedido.find({
                 $or: [
                     {
@@ -1571,7 +1589,7 @@ module.exports = {
                         }
                     },
                     {
-                        pessoa: pesquisa,
+                        pessoa: { $regex: pesquisa },
                         status: {
                             $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }

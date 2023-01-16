@@ -30,6 +30,7 @@ const pedidoScheema = mongoose.Schema({
     dataStatus: String,
     pessoa: String,
     mo: String,
+    cpf: String,
     statusPadraoAmil: String,
     statusGerencial: String,
     fase: String,
