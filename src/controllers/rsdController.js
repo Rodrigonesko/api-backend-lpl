@@ -389,24 +389,17 @@ module.exports = {
                     dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
 
                     dataPagamento = ExcelDateToJSDate(item[5])
-
-
-
                     dataPagamento.setDate(dataPagamento.getDate() + 1)
                     dataPagamento = moment(dataPagamento).format('YYYY-MM-DD')
-
-                    console.log(dataPagamento);
 
                     const operadores = await Operador.find()
                     operadores.forEach(e => {
 
                         if (item[12].replace(/[^0-9]/g, '') == e.descricao.replace(/[^0-9]/g, '')) {
-
                             dataSla = moment(new Date()).add(e.sla, 'days').toDate()
                             return
                         }
                     })
-
                 }
 
                 let mo = item[7]
@@ -724,13 +717,9 @@ module.exports = {
 
             const { protocolo } = req.params
 
-            console.log(protocolo);
-
             const pedido = await Pedido.findOne({
                 protocolo
             })
-
-            console.log(pedido);
 
             return res.status(200).json({
                 pedido
@@ -756,8 +745,6 @@ module.exports = {
             const protocoloBanco = await Pedido.findOne({
                 protocolo
             })
-
-
 
             const create = await Pedido.create({
                 numero: pedido,
@@ -810,8 +797,6 @@ module.exports = {
                 mo: mo
             })
 
-            console.log(pessoa);
-
             const operadores = await Operador.find()
 
             let sla = 3
@@ -857,8 +842,6 @@ module.exports = {
         try {
 
             const { arrPedidos } = req.body
-
-            console.log(arrPedidos);
 
             if (arrPedidos.length === 0) {
                 return res.status(500).json({
@@ -923,8 +906,6 @@ module.exports = {
         try {
             const { name, pacote } = req.body
 
-            console.log(name, pacote);
-
             const pedidos = await Pedido.find({
                 pacote: pacote
             })
@@ -960,9 +941,7 @@ module.exports = {
         try {
 
             const { pacote } = req.params
-
-            console.log(pacote);
-
+            
             const pedidos = await Pedido.find({
                 pacote: pacote
             })
