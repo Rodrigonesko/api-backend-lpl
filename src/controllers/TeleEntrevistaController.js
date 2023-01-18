@@ -434,7 +434,8 @@ module.exports = {
                 cancelado: true,
                 divergencia: motivoCancelamento,
                 houveDivergencia: 'Não',
-                dataEntrevista: moment(new Date()).format('YYYY-MM-DD')
+                dataEntrevista: moment(new Date()).format('YYYY-MM-DD'),
+                tipoContrato: proposta.tipoContrato
             })
 
             return res.status(200).json({

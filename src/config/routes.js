@@ -21,6 +21,7 @@ const uploadRsd = multer({ dest: '/tmp' })
 //Public routes
 router.get('/', publicController.index)
 router.post('/login', publicController.login)
+router.post('/logout', publicController.logout)
 
 router.get('/verifyToken', auth, verifyToken.verify)
 

@@ -859,7 +859,8 @@ module.exports = {
             const updatePedidos = await Promise.all(arrPedidos.map(async item => {
 
                 return await Pedido.findOneAndUpdate({
-                    numero: item
+                    numero: item,
+                    ativo: true
                 }, {
                     pacote: idPacote,
                     status: 'Em andamento',
@@ -2008,7 +2009,8 @@ module.exports = {
                 statusGerencial: 'Aguardando Comprovante',
                 statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
                 statusPacote: 'Aguardando Docs',
-                statusProtocolo: 'Em andamento'
+                statusProtocolo: 'Em andamento',
+                ativo: true
             })
 
             console.log(pacote);
@@ -2047,7 +2049,8 @@ module.exports = {
                 statusGerencial: 'Aguardando Comprovante',
                 statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante',
                 statusPacote: 'Aguardando Docs',
-                statusPacote: 'Em andamento'
+                statusPacote: 'Em andamento',
+                ativo: true
             })
 
             await Pedido.updateMany({
