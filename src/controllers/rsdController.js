@@ -1796,12 +1796,12 @@ module.exports = {
     devolverAmil: async (req, res) => {
         try {
 
-            const { pedido, motivoInativo } = req.body
+            const { id, motivoInativo } = req.body
 
-            console.log(pedido, motivoInativo);
+            console.log(id, motivoInativo);
 
             const update = await Pedido.findOneAndUpdate({
-                numero: pedido
+                _id: id
             }, {
                 status: 'Finalizado',
                 fase: 'Finalizado',
