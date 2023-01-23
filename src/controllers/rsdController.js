@@ -736,7 +736,7 @@ module.exports = {
     criarPedido: async (req, res) => {
         try {
 
-            const { pedido, protocolo, valorApresentado, valorReembolsado, cnpj, clinica, nf, mo } = req.body
+            const { pedido, protocolo, valorApresentado, valorReembolsado, cnpj, clinica, nf, mo, fila } = req.body
 
             const pessoa = await Pessoa.findOne({
                 mo
@@ -763,7 +763,8 @@ module.exports = {
                 mo,
                 pessoa: pessoa.nome,
                 dataSla: protocoloBanco.dataSla,
-                operador: protocoloBanco.operador
+                operador: protocoloBanco.operador,
+                fila
             })
 
             const updateClinica = await Clinica.findOneAndUpdate({
@@ -859,7 +860,7 @@ module.exports = {
             const updatePedidos = await Promise.all(arrPedidos.map(async item => {
 
                 return await Pedido.findOneAndUpdate({
-                    numero: item,
+                    _id: item,
                     ativo: true
                 }, {
                     pacote: idPacote,
@@ -1243,7 +1244,7 @@ module.exports = {
                 if (reconhece === false) {
 
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         reconhece: reconhece,
                         status: 'Finalizado',
@@ -1262,7 +1263,7 @@ module.exports = {
 
                 } else {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         reconhece: reconhece,
                         analista: req.user
@@ -1282,7 +1283,7 @@ module.exports = {
                 if (item[1] === 'Pagamento não realizado') {
 
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         formaPagamento: item[1],
                         status: 'Pagamento Não Realizado',
@@ -1302,7 +1303,7 @@ module.exports = {
 
                 } else {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         formaPagamento: item[1],
                         status: 'Aguardando Docs',
@@ -1315,7 +1316,7 @@ module.exports = {
 
                     if (item[1] === 'Dinheiro') {
                         const updatePedido = await Pedido.findOneAndUpdate({
-                            numero: item[0]
+                            _id: item[0]
                         }, {
                             formaPagamento: item[1],
                             status: 'Aguardando Docs',
@@ -1352,7 +1353,7 @@ module.exports = {
 
                 if (item[1] === 'Comprovante Correto') {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         statusFinalizacao: 'Finalizado',
                         status: 'Finalizado',
@@ -1366,7 +1367,7 @@ module.exports = {
 
                 if (item[1] === 'Pago pela Amil sem Comprovante') {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         statusFinalizacao: 'Finalizado',
                         status: 'Finalizado',
@@ -1380,7 +1381,7 @@ module.exports = {
 
                 if (item[1] === 'Pagamento Não Realizado') {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         statusFinalizacao: 'Finalizado',
                         status: 'Finalizado',
@@ -1394,7 +1395,7 @@ module.exports = {
 
                 if (item[1] === 'Comprovante Não Recebido') {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         statusFinalizacao: 'Finalizado',
                         status: 'Finalizado',
@@ -1408,7 +1409,7 @@ module.exports = {
 
                 if (item[1] === 'Reapresentação de Protocolo Indeferido') {
                     const updatePedido = await Pedido.findOneAndUpdate({
-                        numero: item[0]
+                        _id: item[0]
                     }, {
                         statusFinalizacao: 'Finalizado',
                         status: 'Finalizado',
@@ -1635,7 +1636,8 @@ module.exports = {
                 protocolo,
                 dataSolicitacao,
                 dataPagamento,
-                pedido
+                pedido,
+                fila
             } = req.body
 
             const operadores = await Operador.find()
@@ -1679,7 +1681,8 @@ module.exports = {
                 dataSla,
                 fase: 'A iniciar',
                 statusGerencial: 'A iniciar',
-                statusPadraoAmil: 'A iniciar'
+                statusPadraoAmil: 'A iniciar',
+                fila
             })
 
             return res.status(200).json({
