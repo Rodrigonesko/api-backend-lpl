@@ -613,6 +613,12 @@ module.exports = {
                 cpf
             })
 
+            const pedido = await Pedido.updateMany({
+                mo: mo
+            }, {
+                contratoEmpresa
+            })
+
             return res.status(200).json({
                 pessoa
             })
@@ -943,7 +949,7 @@ module.exports = {
         try {
 
             const { pacote } = req.params
-            
+
             const pedidos = await Pedido.find({
                 pacote: pacote
             })
@@ -2211,6 +2217,28 @@ module.exports = {
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
+        }
+    },
+
+    atulizarProdutos: async (req, res) => {
+        try {
+            const result = await Pessoa.find()
+
+            for (const item of result) {
+                await Pedido.updateMany({
+                    mo: item.mo
+                }, {
+                    contratoEmpresa: item.contratoEmpresa
+                })
+            }
+
+            console.log(result.length);
+            return res.status(200).json({
+                result: result.length
+            })
+
+        } catch (error) {
+            console.log(error);
         }
     }
 }
