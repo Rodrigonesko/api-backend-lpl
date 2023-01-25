@@ -34,6 +34,7 @@ router.get('/users/enfermeiros', auth, userController.enfermeiros)
 router.put('/users/updatePassword', auth, userController.firstAccess)
 router.put('/users/modules', auth, userController.modules)
 router.get('/users/elegibilidade', auth, userController.analistasElegi)
+router.put('/users/resetPassword', auth, userController.resetPassword)
 
 
 //Rns

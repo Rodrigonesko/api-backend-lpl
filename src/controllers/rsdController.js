@@ -1582,7 +1582,7 @@ module.exports = {
                         }
                     },
                     {
-                        protocolo: pesquisa,
+                        protocolo: {$regex: pesquisa},
                         status: {
                             $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }

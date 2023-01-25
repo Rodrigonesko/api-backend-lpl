@@ -199,6 +199,31 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+    resetPassword: async (req, res) => {
+        try {
+
+            const {email} = req.body
+
+            const encryptedPassword = await bcrypt.hash('123', 8)
+
+            const update = await User.updateOne({
+                email
+            }, {
+                password: encryptedPassword,
+                firstAccess: 'Sim'
+            })
+
+            return res.status(200).json({
+                update
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 
 }
