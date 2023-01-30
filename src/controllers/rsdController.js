@@ -16,6 +16,30 @@ const fs = require('fs')
 const multer = require('multer')
 const os = require('os')
 
+const storageRSd = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const name = file.originalname
+        const dir = './uploads/rsd/baseRsd/'
+        if (!fs.existsSync(dir)) {
+            //Efetua a criação do diretório
+            fs.mkdir(dir, (err) => {
+                if (err) {
+                    console.log("Deu ruim...");
+                    return
+                }
+                console.log("Diretório criado!")
+            });
+        }
+
+        cb(null, dir)
+    },
+    filename: (req, file, cb) => {
+        const { name, ext } = path.parse(file.originalname)
+
+        cb(null, `baseRsd`)
+    }
+})
+
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
         const { pacote } = req.params
@@ -85,7 +109,7 @@ const storageAgd = multer.diskStorage({
 
 const xlsx = require('xlsx')
 
-const uploadRsd = multer({ dest: os.tmpdir() }).single('file')
+const uploadRsd = multer({ storage: storageRSd }).single('file')
 const uploadPedidosAntigos = multer({ dest: os.tmpdir() }).single('file')
 const uploadGravacao = multer({ storage }).single('file')
 const uploadAgd = multer({ storage: storageAgd }).single('file')
@@ -1582,7 +1606,7 @@ module.exports = {
                         }
                     },
                     {
-                        protocolo: {$regex: pesquisa},
+                        protocolo: { $regex: pesquisa },
                         status: {
                             $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }
