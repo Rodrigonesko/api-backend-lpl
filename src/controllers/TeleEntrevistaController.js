@@ -16,19 +16,14 @@ const Horario = require('../models/Horario')
 
 const uploadCid = multer({ dest: os.tmpdir() }).single('file')
 const uploadPerguntas = multer({ dest: os.tmpdir() }).single('file')
-const uploadDadosEntrevista = multer({ dest: os.tmpdir() }).single('file')
-const uploadPropostas = multer({ dest: os.tmpdir() }).single('file')
 
 module.exports = {
     mostrarPerguntas: async (req, res) => {
         try {
-
             const perguntas = await Pergunta.find()
-
             return res.status(200).json({
                 perguntas
             })
-
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -64,8 +59,6 @@ module.exports = {
             const { respostas, subRespostas, pessoa, simOuNao, cids, divergencia } = req.body
 
             let divBanco
-
-            //console.log(respostas, subRespostas);
 
             if (divergencia === true) {
                 divBanco = 'Sim'
@@ -267,8 +260,6 @@ module.exports = {
         try {
 
             const { id } = req.params
-
-            console.log(id);
 
             const proposta = await DadosEntrevista.findById({
                 _id: id
@@ -1171,8 +1162,6 @@ module.exports = {
 
             const { data } = req.params
 
-            console.log(data);
-
             const analistas = await User.find({
                 enfermeiro: true
             })
@@ -1185,9 +1174,17 @@ module.exports = {
                     dataEntrevista: data
                 }).count()
 
+                const countRn = await Rn.find({
+                    responsavel: item.name,
+                    dataConclusao: data
+                }).count()
+
+                console.log(countRn);
+
                 producao.push({
                     analista: item.name,
-                    quantidade: count
+                    quantidade: count,
+                    quantidadeRn: countRn
                 })
             }
 
@@ -1195,9 +1192,14 @@ module.exports = {
                 dataEntrevista: data
             }).count()
 
+            const totalRn = await Rn.find({
+                dataConclusao: data
+            }).count()
+
             return res.status(200).json({
                 producao,
-                total
+                total,
+                totalRn
             })
 
         } catch (error) {

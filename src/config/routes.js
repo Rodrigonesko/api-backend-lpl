@@ -47,8 +47,7 @@ router.get('/rn/report', auth, rnContoller.report)
 router.put('/rn/rns/update', auth, rnContoller.update)
 router.put('/rn/rns/concluir', auth, rnContoller.concluir)
 router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
-router.put('/rn/updateDataConclusao', rnContoller.updateDataConclusao)
-router.put('/rn/updateResponsavel', rnContoller.updateResponsavel)
+router.get('/rn/naoAgendadas', rnContoller.naoAgendadas)
 
 //Tele Entrevistas
 

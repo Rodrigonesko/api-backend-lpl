@@ -27,7 +27,7 @@ module.exports = {
                 let vigencia = ExcelDateToJSDate(e.VIGENCIA)
                 vigencia.setDate(vigencia.getDate() + 1)
 
-                vigencia = moment(vigencia).format('DD/MM/YYYY')
+                vigencia = moment(vigencia).format('YYYY-MM-DD')
 
                 const pedido = e.PEDIDO
 
@@ -179,7 +179,7 @@ module.exports = {
                 observacoes: data.observacoes,
                 email: data.email,
                 status: 'Concluido',
-                dataConclusao: new Date(),
+                dataConclusao: moment(new Date()).format('YYYY-MM-DD'),
                 responsavel: req.user
             })
 
@@ -272,70 +272,35 @@ module.exports = {
         }
     },
 
-    updateDataConclusao: async (req, res) => {
+    naoAgendadas: async (req, res) => {
         try {
-            
-            const rns = await Rn.find({
-                dataConclusao: undefined
+
+            const result = await Rn.find({
+                agendado: { $ne: 'Agendado' }
             })
 
-            console.log(rns.length);
+            const ajustar = await Rn.find()
 
-            for (const item of rns) {
-
-                let dataConclusao = item.updatedAt
-
-                await Rn.findByIdAndUpdate({
-                    _id: item._id
-                }, {
-                    dataConclusao: dataConclusao
-                })
-            }
-
-            return res.status(200).json({
-                rns: rns.length
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    updateResponsavel: async (req, res) => {
-        try {
-            
-            const rns = await Rn.find({
-                responsavel: undefined
-            })
-
-            console.log(rns.length);
-
-            for (const item of rns) {
-
-                console.log(moment(item.dataConclusao).format('MM/YYYY'));
-
-                if(moment(item.dataConclusao).format('MM/YYYY') === '09/2022'){
+            for (const e of ajustar) {
+                if (e.vigencia) {
+                    console.log(ajustarData(e.vigencia));
                     await Rn.findByIdAndUpdate({
-                        _id: item._id
+                        _id: e._id
                     }, {
-                        responsavel: 'Cristiane Antonioli'
+                        vigencia: ajustarData(e.vigencia)
                     })
                 }
-
-                if(moment(item.dataConclusao).format('MM/YYYY') === '11/2022' || moment(item.dataConclusao).format('MM/YYYY') === '12/2022' ){
+                if (e.vifencia) {
                     await Rn.findByIdAndUpdate({
-                        _id: item._id
+                        _id: e._id
                     }, {
-                        responsavel: 'Allana Silva'
+                        vigencia: ajustarData(e.vifencia)
                     })
                 }
             }
 
             return res.status(200).json({
-                rns: rns.length
+                result
             })
 
         } catch (error) {
@@ -364,4 +329,15 @@ function ExcelDateToJSDate(serial) {
     var minutes = Math.floor(total_seconds / 60) % 60;
 
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+}
+
+function ajustarData(data) {
+    const arrAux = data.split('/')
+
+    const dia = arrAux[0]
+    const mes = arrAux[1]
+    const ano = arrAux[2]
+
+    return `${ano}-${mes}-${dia}`
+
 }

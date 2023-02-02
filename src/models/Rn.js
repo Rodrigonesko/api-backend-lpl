@@ -6,6 +6,7 @@ const rnScheema = mongoose.Schema({
     mo: String,
     proposta: String,
     vigencia: String,
+    vifencia: String,
     pedido: String,
     tipo: String,
     filial: String,
@@ -27,8 +28,10 @@ const rnScheema = mongoose.Schema({
     observacoes: String,
     status: String,
     respostaBeneficiario: String,
-    dataConclusao: Date,
-    responsavel: String
+    dataConclusao: String,
+    responsavel: String,
+    agendado: String,
+    horario: String
 }, {
     timestamps: true
 })
