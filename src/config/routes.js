@@ -101,6 +101,7 @@ router.post('/entrevistas/horario/novo', auth, horarioController.abrirNovoHorari
 router.put('/entrevistas/dadosEntrevista/dataNascimento', auth, TeleEntrevistaController.alterarDataNascimento)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
+router.put('/entrevistas/atualizarContratos', TeleEntrevistaController.ajustarTipoContrato)
 
 //Liminar
 

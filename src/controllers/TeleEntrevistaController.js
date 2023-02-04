@@ -416,6 +416,8 @@ module.exports = {
                 status: 'Cancelado'
             })
 
+            console.log(proposta.tipoContrato);
+
             const create = await DadosEntrevista.create({
                 nome: proposta.nome,
                 cpf: proposta.cpf,
@@ -1482,6 +1484,39 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    ajustarTipoContrato: async (req, res) => {
+        try {
+            
+            const propostas = await Propostas.find()
+            for (const proposta of propostas) {
+                if(proposta.tipoContrato){
+                    await DadosEntrevista.updateMany({
+                        proposta: proposta.proposta
+                    }, {
+                        tipoContrato: proposta.tipoContrato
+                    })
+                } 
+            }
+
+            const dadosEntrevistas = await DadosEntrevista.updateMany({
+                tipoContrato: undefined
+            }, {
+                tipoContrato: 'Coletivo por Adesão com Administradora'
+            })
+
+            console.log('atualizou');
+
+            return res.status(200).json({
+                msg: 'oii'
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal server error'
             })
         }
     }

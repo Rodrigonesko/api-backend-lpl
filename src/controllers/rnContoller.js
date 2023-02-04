@@ -279,25 +279,25 @@ module.exports = {
                 agendado: { $ne: 'Agendado' }
             })
 
-            const ajustar = await Rn.find()
+            // const ajustar = await Rn.find()
 
-            for (const e of ajustar) {
-                if (e.vigencia) {
-                    console.log(ajustarData(e.vigencia));
-                    await Rn.findByIdAndUpdate({
-                        _id: e._id
-                    }, {
-                        vigencia: ajustarData(e.vigencia)
-                    })
-                }
-                if (e.vifencia) {
-                    await Rn.findByIdAndUpdate({
-                        _id: e._id
-                    }, {
-                        vigencia: ajustarData(e.vifencia)
-                    })
-                }
-            }
+            // for (const e of ajustar) {
+            //     if (e.vigencia) {
+            //         console.log(ajustarData(e.vigencia));
+            //         await Rn.findByIdAndUpdate({
+            //             _id: e._id
+            //         }, {
+            //             vigencia: ajustarData(e.vigencia)
+            //         })
+            //     }
+            //     if (e.vifencia) {
+            //         await Rn.findByIdAndUpdate({
+            //             _id: e._id
+            //         }, {
+            //             vigencia: ajustarData(e.vifencia)
+            //         })
+            //     }
+            // }
 
             return res.status(200).json({
                 result
