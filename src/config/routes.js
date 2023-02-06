@@ -48,6 +48,7 @@ router.put('/rn/rns/update', auth, rnContoller.update)
 router.put('/rn/rns/concluir', auth, rnContoller.concluir)
 router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
 router.get('/rn/naoAgendadas', rnContoller.naoAgendadas)
+router.delete('/rn/delete/:id', auth, rnContoller.excluirProposta)
 
 //Tele Entrevistas
 
@@ -101,7 +102,6 @@ router.post('/entrevistas/horario/novo', auth, horarioController.abrirNovoHorari
 router.put('/entrevistas/dadosEntrevista/dataNascimento', auth, TeleEntrevistaController.alterarDataNascimento)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
-router.put('/entrevistas/atualizarContratos', TeleEntrevistaController.ajustarTipoContrato)
 
 //Liminar
 

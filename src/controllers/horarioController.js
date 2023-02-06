@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Horario = mongoose.model('Horario')
 const User = mongoose.model('User')
 const PropostaEntrevista = mongoose.model('PropostaEntrevista')
+const Rn = mongoose.model('Rn')
 const moment = require('moment')
 const timezone = require('moment-timezone')
 
@@ -171,36 +172,50 @@ module.exports = {
     agendar: async (req, res) => {
         try {
 
-            const { beneficiario, enfermeiro, data, horario } = req.body
+            const { id, responsavel, data, horario } = req.body
 
-            console.log(beneficiario, enfermeiro, data, horario);
+            console.log(id, responsavel, data, horario);
 
             const dataAjustada = ajustarData(data)
 
             const dataEHora = `${dataAjustada} ${horario}`
 
             const update = await Horario.findOneAndUpdate({
-                enfermeiro: enfermeiro,
+                enfermeiro: responsavel,
                 dia: dataAjustada,
                 horario: horario
             }, {
                 agendado: 'Agendado',
-                nome: beneficiario
+                nome: id
             })
 
-            const update2 = await PropostaEntrevista.updateMany({
-                nome: beneficiario,
-
+            const updateRn = await Rn.findByIdAndUpdate({
+                _id: id
             }, {
-                dataEntrevista: dataEHora,
-                agendado: 'agendado',
-                enfermeiro: enfermeiro,
-                quemAgendou: req.user
+                responsavel: responsavel,
+                agendado: 'Agendado',
+                dataEntrevista: dataEHora
             })
+
+            if (!updateRn) {
+
+                console.log('nao tem rn');
+
+                const updateTele = await PropostaEntrevista.findByIdAndUpdate({
+                    _id: id,
+
+                }, {
+                    dataEntrevista: dataEHora,
+                    agendado: 'agendado',
+                    enfermeiro: responsavel,
+                    quemAgendou: req.user
+                })
+            } else {
+                console.log('tem rn');
+            }
 
             return res.status(200).json({
-                msg: update,
-                msg2: update2
+                msg: 'ok'
             })
 
         } catch (error) {

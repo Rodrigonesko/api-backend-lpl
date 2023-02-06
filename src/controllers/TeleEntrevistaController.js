@@ -1488,38 +1488,38 @@ module.exports = {
         }
     },
 
-    ajustarTipoContrato: async (req, res) => {
-        try {
+    // ajustarTipoContrato: async (req, res) => {
+    //     try {
             
-            const propostas = await Propostas.find()
-            for (const proposta of propostas) {
-                if(proposta.tipoContrato){
-                    await DadosEntrevista.updateMany({
-                        proposta: proposta.proposta
-                    }, {
-                        tipoContrato: proposta.tipoContrato
-                    })
-                } 
-            }
+    //         const propostas = await Propostas.find()
+    //         for (const proposta of propostas) {
+    //             if(proposta.tipoContrato){
+    //                 await DadosEntrevista.updateMany({
+    //                     proposta: proposta.proposta
+    //                 }, {
+    //                     tipoContrato: proposta.tipoContrato
+    //                 })
+    //             } 
+    //         }
 
-            const dadosEntrevistas = await DadosEntrevista.updateMany({
-                tipoContrato: undefined
-            }, {
-                tipoContrato: 'Coletivo por Adesão com Administradora'
-            })
+    //         const dadosEntrevistas = await DadosEntrevista.updateMany({
+    //             tipoContrato: undefined
+    //         }, {
+    //             tipoContrato: 'Coletivo por Adesão com Administradora'
+    //         })
 
-            console.log('atualizou');
+    //         console.log('atualizou');
 
-            return res.status(200).json({
-                msg: 'oii'
-            })
+    //         return res.status(200).json({
+    //             msg: 'oii'
+    //         })
 
-        } catch (error) {
-            return res.status(500).json({
-                msg: 'Internal server error'
-            })
-        }
-    }
+    //     } catch (error) {
+    //         return res.status(500).json({
+    //             msg: 'Internal server error'
+    //         })
+    //     }
+    // }
 }
 
 function ExcelDateToJSDate(serial) {

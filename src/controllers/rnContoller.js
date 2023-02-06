@@ -276,31 +276,35 @@ module.exports = {
         try {
 
             const result = await Rn.find({
-                agendado: { $ne: 'Agendado' }
+                agendado: { $ne: 'Agendado' },
+                status: { $ne: 'Concluido' }
             })
-
-            // const ajustar = await Rn.find()
-
-            // for (const e of ajustar) {
-            //     if (e.vigencia) {
-            //         console.log(ajustarData(e.vigencia));
-            //         await Rn.findByIdAndUpdate({
-            //             _id: e._id
-            //         }, {
-            //             vigencia: ajustarData(e.vigencia)
-            //         })
-            //     }
-            //     if (e.vifencia) {
-            //         await Rn.findByIdAndUpdate({
-            //             _id: e._id
-            //         }, {
-            //             vigencia: ajustarData(e.vifencia)
-            //         })
-            //     }
-            // }
 
             return res.status(200).json({
                 result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    excluirProposta: async (req, res) => {
+        try {
+
+            const {id} = req.params
+
+            console.log(id);
+
+            const result = await Rn.deleteOne({
+                _id: id
+            })
+            
+            return res.status(200).json({
+                msg: 'ok'
             })
 
         } catch (error) {
