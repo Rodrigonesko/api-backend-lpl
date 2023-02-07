@@ -15,6 +15,7 @@ const router = express.Router()
 const multer = require('multer')
 const TeleEntrevistaController = require('../controllers/TeleEntrevistaController')
 const urgenciaEmergenciaController = require('../controllers/urgenciaEmergenciaController')
+const amilController = require('../controllers/amilController')
 
 const uploadRsd = multer({ dest: '/tmp' })
 
@@ -48,7 +49,9 @@ router.put('/rn/rns/update', auth, rnContoller.update)
 router.put('/rn/rns/concluir', auth, rnContoller.concluir)
 router.put('/rn/updateConfirmadas', auth, rnContoller.updateConfirmadas)
 router.get('/rn/naoAgendadas', rnContoller.naoAgendadas)
+router.get('/rn/agendadas', rnContoller.agendadas)
 router.delete('/rn/delete/:id', auth, rnContoller.excluirProposta)
+router.put('/rn/reagendar', auth, rnContoller.reagendar)
 
 //Tele Entrevistas
 
@@ -100,6 +103,8 @@ router.put('/entrevistas/proposta/alterarSexo', auth, TeleEntrevistaController.a
 router.get('/entrevistas/mensagens/:data', TeleEntrevistaController.gerarMensagens)
 router.post('/entrevistas/horario/novo', auth, horarioController.abrirNovoHorario)
 router.put('/entrevistas/dadosEntrevista/dataNascimento', auth, TeleEntrevistaController.alterarDataNascimento)
+router.get('/entrevistas/realizadas/:pesquisa', auth, TeleEntrevistaController.buscarEntrevistaRealizada)
+router.put('/entrevistas/realizadas/alterarSexo', auth, TeleEntrevistaController.alterarSexoEntrevistaRealizada)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
 
@@ -198,5 +203,9 @@ router.put('/urgenciaEmergencia/concluir', auth, urgenciaEmergenciaController.co
 router.get('/urgenciaEmergencia/producao/:data', auth, urgenciaEmergenciaController.producao)
 router.put('/urgenciaEmergencia/salvarContato', auth, urgenciaEmergenciaController.salvarContato)
 router.put('/urgenciaEmergencia/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
+
+/* Amil */
+
+router.post('/amil/upload', auth, amilController.insert)
 
 module.exports = router

@@ -395,8 +395,6 @@ module.exports = {
                 msg: 'Ok'
             })
 
-
-
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -1488,9 +1486,63 @@ module.exports = {
         }
     },
 
+    buscarEntrevistaRealizada: async (req, res) => {
+        try {
+
+            const { pesquisa } = req.params
+
+            const result = await DadosEntrevista.find({
+                $or: [
+                    {
+                        proposta: { $regex: pesquisa }
+                    },
+                    {
+                        nome: { $regex: pesquisa }
+                    },
+                    {
+                        cpf: { $regex: pesquisa }
+                    }
+                ]
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    alterarSexoEntrevistaRealizada: async (req, res)=>{
+        try {
+            
+            const {id, sexo} = req.body
+
+            await DadosEntrevista.findByIdAndUpdate({
+                _id: id
+            }, {
+                sexo
+            })
+            
+            return res.status(200).json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
+
     // ajustarTipoContrato: async (req, res) => {
     //     try {
-            
+
     //         const propostas = await Propostas.find()
     //         for (const proposta of propostas) {
     //             if(proposta.tipoContrato){

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Rn = mongoose.model('Rn')
+const Horario = mongoose.model('Horario')
 const moment = require('moment')
 
 module.exports = {
@@ -292,21 +293,93 @@ module.exports = {
         }
     },
 
+    agendadas: async (req, res) => {
+        try {
+
+            const rns = await Rn.find({
+                agendado: 'Agendado',
+                status: { $ne: 'Concluido' }
+            })
+
+            return res.status(200).json({
+                rns
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     excluirProposta: async (req, res) => {
         try {
 
-            const {id} = req.params
+            const { id } = req.params
 
             console.log(id);
 
             const result = await Rn.deleteOne({
                 _id: id
             })
-            
+
             return res.status(200).json({
                 msg: 'ok'
             })
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    reagendar: async (req, res) => {
+        try {
+            const { id } = req.body
+
+            console.log(id);
+
+            const dadosProposta = await Rn.findById({
+                _id: id
+            })
+
+            console.log(dadosProposta);
+
+            let split = dadosProposta.dataEntrevista.split(' ')
+            let dataEntrevista = split[0]
+            const horario = split[1]
+
+            console.log(dataEntrevista, horario);
+
+            const atualizarHorarios = await Horario.findOneAndUpdate({
+                $and: [
+                    {
+                        dia: dataEntrevista
+                    }, {
+                        enfermeiro: dadosProposta.enfermeiro
+                    }, {
+                        horario: horario
+                    }
+                ]
+            }, {
+                agendado: 'Reaberto',
+                nome: ''
+            })
+
+            const result = await Rn.findOneAndUpdate({
+                _id: id
+            }, {
+                dataEntrevista: '',
+                agendado: '',
+                enfermeiro: ''
+            })
+
+            return res.status(200).json({
+                msg: 'oi'
+            })
         } catch (error) {
             console.log(error);
             return res.status(500).json({

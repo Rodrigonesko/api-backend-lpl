@@ -31,7 +31,7 @@ const rnScheema = mongoose.Schema({
     dataConclusao: String,
     responsavel: String,
     agendado: String,
-    horario: String
+    dataEntrevista: String
 }, {
     timestamps: true
 })
