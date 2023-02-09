@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Rn = mongoose.model('Rn')
 const Horario = mongoose.model('Horario')
 const moment = require('moment')
+const momentBusiness = require('moment-business-days')
 
 module.exports = {
     upload: async (req, res) => {
@@ -25,10 +26,7 @@ module.exports = {
 
                 const proposta = e.PROPOSTA
 
-                let vigencia = ExcelDateToJSDate(e.VIGENCIA)
-                vigencia.setDate(vigencia.getDate() + 1)
-
-                vigencia = moment(vigencia).format('YYYY-MM-DD')
+                let vigencia = moment().businessAdd(2).format('YYYY-MM-DD')
 
                 const pedido = e.PEDIDO
 
