@@ -52,6 +52,7 @@ router.get('/rn/naoAgendadas', rnContoller.naoAgendadas)
 router.get('/rn/agendadas', rnContoller.agendadas)
 router.delete('/rn/delete/:id', auth, rnContoller.excluirProposta)
 router.put('/rn/reagendar', auth, rnContoller.reagendar)
+router.put('/rn/alterarTelefone', auth, rnContoller.alterarTelefone)
 
 //Tele Entrevistas
 

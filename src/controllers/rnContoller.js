@@ -384,6 +384,29 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+    
+    alterarTelefone: async (req, res) => {
+        try {
+
+            const { id, telefone } = req.body
+
+            const result = await Rn.findByIdAndUpdate({
+                _id: id
+            }, {
+                telefones: telefone
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }
 

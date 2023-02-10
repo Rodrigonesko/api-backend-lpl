@@ -14,6 +14,8 @@ const userScheema = mongoose.Schema({
     horarioSaida1: String,
     horarioEntrada2: String,
     horarioSaida2: String,
+    atividadePrincipal: String,
+    atividadeAtual: String
 },
     {
         versionKey: false
