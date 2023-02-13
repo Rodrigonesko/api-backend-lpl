@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const bcrypt = require('bcrypt')
-const nodemailer = require('nodemailer')
 
 module.exports = {
 
@@ -29,28 +28,6 @@ module.exports = {
                 accessLevel,
                 firstAccess: 'Sim'
             })
-
-            // let transport = nodemailer.createTransport({
-            //     host: "smtp.mailtrap.io",
-            //     port: 2525,
-            //     auth: {
-            //         user: "9e7654d26f444b",
-            //         pass: "fbc1e9727d438a"
-            //     }
-            // })
-
-            // let message = {
-            //     from: "rodrigoonesko@gmail.com",
-            //     to: "rodrigo_onesko@hotmail.com",
-            //     subject: "Message title",
-            //     text: "Plaintext version of the message",
-            //     html: "<p>HTML version of the message</p>"
-            // }
-
-            // const testEmail = await transport.sendMail(message)
-
-            // console.log(testEmail);
-
 
             return res.status(201).json(newUser)
 

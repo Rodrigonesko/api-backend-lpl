@@ -10,12 +10,15 @@ const projetoAjController = require('../controllers/projetoAjController')
 const horarioController = require('../controllers/horarioController')
 const rsdController = require('../controllers/rsdController')
 const elegibilidadeController = require('../controllers/elegibilidadeController')
-const router = express.Router()
-
-const multer = require('multer')
 const TeleEntrevistaController = require('../controllers/TeleEntrevistaController')
 const urgenciaEmergenciaController = require('../controllers/urgenciaEmergenciaController')
 const amilController = require('../controllers/amilController')
+const ControleAtividadeController = require('../controllers/controleAtividadesController')
+
+const router = express.Router()
+
+const multer = require('multer')
+
 
 const uploadRsd = multer({ dest: '/tmp' })
 
@@ -208,5 +211,9 @@ router.put('/urgenciaEmergencia/concluirAnexo', auth, urgenciaEmergenciaControll
 /* Amil */
 
 router.post('/amil/upload', auth, amilController.insert)
+
+/* Controle de Atividades */
+
+router.post('/controleAtividade/iniciarPadrao', auth, ControleAtividadeController.atividadePadrao)
 
 module.exports = router
