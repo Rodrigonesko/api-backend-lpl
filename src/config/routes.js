@@ -215,5 +215,10 @@ router.post('/amil/upload', auth, amilController.insert)
 /* Controle de Atividades */
 
 router.post('/controleAtividade/iniciarPadrao', auth, ControleAtividadeController.atividadePadrao)
+router.get('/controleAtividade/andamento', auth, ControleAtividadeController.atividadesAndamento)
+router.get('/controleAtividade/atual', auth, ControleAtividadeController.atividadeAtual)
+router.put('/controleAtividade/assumir', auth, ControleAtividadeController.assumirAtividade)
+router.put('/controleAtividade/encerrar', auth, ControleAtividadeController.encerrarAtividade)
+router.get('/controleAtividade/report', auth, ControleAtividadeController.report)
 
 module.exports = router

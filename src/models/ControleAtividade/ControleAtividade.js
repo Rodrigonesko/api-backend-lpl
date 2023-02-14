@@ -7,7 +7,8 @@ const atividadeScheema = mongoose.Schema({
     horarioFim: String,
     data: String,
     mes: String,
-    totalHoras: String
+    totalHoras: String,
+    encerrado: Boolean
 })
 
 module.exports = mongoose.model('ControleAtividade', atividadeScheema)
