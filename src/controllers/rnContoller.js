@@ -76,8 +76,8 @@ module.exports = {
                     prc,
                     telefones,
                     email,
-                    status
-
+                    status,
+                    faturado: 'Não faturado'
                 }
 
 
@@ -385,7 +385,7 @@ module.exports = {
             })
         }
     },
-    
+
     alterarTelefone: async (req, res) => {
         try {
 
@@ -395,6 +395,25 @@ module.exports = {
                 _id: id
             }, {
                 telefones: telefone
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    concluidas: async (req, res) => {
+        try {
+            
+            const result = await Rn.find({
+                status: 'Concluido'
             })
 
             return res.status(200).json({

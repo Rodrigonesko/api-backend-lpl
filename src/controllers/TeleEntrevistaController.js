@@ -489,8 +489,46 @@ module.exports = {
     buscarNaoFaturados: async (req, res) => {
         try {
 
-            const entrevistas = await DadosEntrevista.find({
+            const teles = await DadosEntrevista.find({
                 faturado: 'Não faturado'
+            })
+
+            // await Rn.updateMany({
+            //     faturado: undefined
+            // }, {
+            //     faturado: 'Não faturado'
+            // })
+
+            const rns = await Rn.find({
+                faturado: 'Não faturado',
+                status: 'Concluido'
+            })
+
+            let entrevistas = []
+
+            teles.forEach(e => {
+                entrevistas.push({
+                    _id: e._id,
+                    tipo: 'Tele',
+                    proposta: e.proposta,
+                    nome: e.nome,
+                    dataEntrevista: e.dataEntrevista,
+                    faturado: e.faturado,
+                    nf: e.nf
+                })
+            })
+
+            rns.forEach(e => {
+                console.log(e.dataConclusao);
+                entrevistas.push({
+                    _id: e._id,
+                    tipo: 'Rn',
+                    proposta: e.proposta,
+                    nome: e.beneficiario,
+                    dataEntrevista: e.dataConclusao,
+                    faturado: e.faturado,
+                    nf: e.nf
+                })
             })
 
             return res.status(200).json({
@@ -510,13 +548,45 @@ module.exports = {
 
             const { status, data } = req.params
 
+            console.log(data);
+
             const split = data.split('-')
             const month = split[0]
             const year = split[1]
 
             if (status == 'todos' && data == 'todos') {
                 console.log('pesquisa tudo');
-                const entrevistas = await DadosEntrevista.find()
+                const teles = await DadosEntrevista.find()
+                const rns = await Rn.find({
+                    status: 'Concluido'
+                })
+
+                let entrevistas = []
+
+                teles.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Tele',
+                        proposta: e.proposta,
+                        nome: e.nome,
+                        dataEntrevista: e.dataEntrevista,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                rns.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Rn',
+                        proposta: e.proposta,
+                        nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
                 return res.status(200).json({
                     entrevistas
                 })
@@ -524,9 +594,40 @@ module.exports = {
 
             if (status != 'todos' && data == 'todos') {
                 console.log('status independente da data');
-                const entrevistas = await DadosEntrevista.find({
+                const teles = await DadosEntrevista.find({
                     faturado: status
                 })
+                const rns = await Rn.find({
+                    faturado: status,
+                    status: 'Concluido'
+                })
+
+                let entrevistas = []
+
+                teles.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Tele',
+                        proposta: e.proposta,
+                        nome: e.nome,
+                        dataEntrevista: e.dataEntrevista,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                rns.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Rn',
+                        proposta: e.proposta,
+                        nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
                 return res.status(200).json({
                     entrevistas
                 })
@@ -534,10 +635,44 @@ module.exports = {
 
             if (status == 'todos' && data != 'todos') {
                 console.log('tudo de tal data');
-                const entrevistasBanco = await DadosEntrevista.find()
+                const telesBanco = await DadosEntrevista.find()
 
-                const entrevistas = entrevistasBanco.filter(e => {
-                    return moment(e.createdAt).format('MM-YYYY') == data && e.cancelado == undefined
+                const teles = telesBanco.filter(e => {
+                    return moment(e.createdAt).format('YYYY-MM') == data && e.cancelado == undefined
+                })
+
+                const rnsBanco = await DadosEntrevista.find({
+                    status: 'Concluido'
+                })
+
+                const rns = rnsBanco.filter(e => {
+                    return moment(e.dataConclusao).format('YYYY-MM') === data
+                })
+
+                let entrevistas = []
+
+                teles.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Tele',
+                        proposta: e.proposta,
+                        nome: e.nome,
+                        dataEntrevista: e.dataEntrevista,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                rns.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Rn',
+                        proposta: e.proposta,
+                        nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
                 })
 
                 return res.status(200).json({
@@ -548,12 +683,47 @@ module.exports = {
             if (status != 'todos' && data != 'todos') {
                 console.log('status e data filtrado');
                 console.log(status);
-                const entrevistasBanco = await DadosEntrevista.find({
+                const telesBanco = await DadosEntrevista.find({
                     faturado: status
                 })
 
-                const entrevistas = entrevistasBanco.filter(e => {
-                    return moment(e.createdAt).format('MM-YYYY') == data && e.cancelado == undefined
+                const teles = telesBanco.filter(e => {
+                    return moment(e.createdAt).format('YYYY-MM') == data && e.cancelado == undefined
+                })
+
+                const rnsBanco = await Rn.find({
+                    faturado: status,
+                    status: 'Concluido'
+                })
+
+                const rns = rnsBanco.filter(e => {
+                    return moment(e.dataConclusao).format('YYYY-MM') == data
+                })
+
+                let entrevistas = []
+
+                teles.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Tele',
+                        proposta: e.proposta,
+                        nome: e.nome,
+                        dataEntrevista: e.dataEntrevista,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                rns.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'Tele',
+                        proposta: e.proposta,
+                        nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
                 })
 
                 return res.status(200).json({
@@ -580,13 +750,28 @@ module.exports = {
             const { entrevistas } = req.body
 
             const update = await Promise.all(entrevistas.map(async (e) => {
-                return await DadosEntrevista.findOneAndUpdate({
-                    _id: e[1]
-                }, {
-                    faturado: 'Faturado',
-                    nf: e[0],
-                    dataFaturamento: new Date()
-                })
+
+                console.log(e[0]);
+
+                if (e[0].tipo === 'Rn') {
+                    return await Rn.findOneAndUpdate({
+                        _id: e[0].id
+                    }, {
+                        faturado: 'Faturado',
+                        nf: e[0].nf,
+                        dataFaturamento: moment().format('YYYY-MM-DD')
+                    })
+                } else {
+                    return await DadosEntrevista.findOneAndUpdate({
+                        _id: e[0].id
+                    }, {
+                        faturado: 'Faturado',
+                        nf: e[0].nf,
+                        dataFaturamento: moment().format('YYYY-MM-DD')
+                    })
+                }
+
+
             }))
 
             return res.status(200).json({
@@ -1517,17 +1702,17 @@ module.exports = {
         }
     },
 
-    alterarSexoEntrevistaRealizada: async (req, res)=>{
+    alterarSexoEntrevistaRealizada: async (req, res) => {
         try {
-            
-            const {id, sexo} = req.body
+
+            const { id, sexo } = req.body
 
             await DadosEntrevista.findByIdAndUpdate({
                 _id: id
             }, {
                 sexo
             })
-            
+
             return res.status(200).json({
                 msg: 'ok'
             })
