@@ -312,7 +312,8 @@ module.exports = {
         try {
 
             const propostas = await DadosEntrevista.find({
-                anexadoSisAmil: 'Anexar'
+                anexadoSisAmil: 'Anexar',
+                implantacao: { $ne: 'Sim' }
             })
 
             return res.status(200).json({
@@ -342,6 +343,70 @@ module.exports = {
             return res.status(200).json(
                 update
             )
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    mandarImplantacao: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            console.log(id);
+
+            const result = await DadosEntrevista.findByIdAndUpdate({
+                _id: id
+            }, {
+                implantacao: 'Sim'
+            })
+
+            console.log(result);
+
+            return res.status(200).json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Interal Server Error'
+            })
+        }
+    },
+
+    implantar: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const result = await DadosEntrevista.findByIdAndUpdate({
+                _id: id
+            }, {
+                implantado: 'Sim'
+            })
+
+            return res.status(200).json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Interal Server Error'
+            })
+        }
+    },
+
+    naoImplantadas: async (req, res) => {
+        try {
+
+            const result = await DadosEntrevista.find({
+                implantado: { $ne: 'Sim' },
+                implantacao: 'Sim'
+            })
+
+            return res.status(200).json(result)
 
         } catch (error) {
             console.log(error);
@@ -492,12 +557,6 @@ module.exports = {
             const teles = await DadosEntrevista.find({
                 faturado: 'Não faturado'
             })
-
-            // await Rn.updateMany({
-            //     faturado: undefined
-            // }, {
-            //     faturado: 'Não faturado'
-            // })
 
             const rns = await Rn.find({
                 faturado: 'Não faturado',
@@ -1231,9 +1290,28 @@ module.exports = {
                 }
             })
 
+            // const propostas = await Propostas.find()
+
+            // let prop = []
+
+            // rns.forEach(e => {
+            //     let index = prop.findIndex(val => val.data == moment(e.createdAt).format('DD/MM/YYYY'))
+
+            //     if(index < 0){
+            //         prop.push({
+            //             data: moment(e.createdAt).format('DD/MM/YYYY'),
+            //             quantidade: 1
+            //         })
+            //     } else {
+            //         prop[index].quantidade++
+            //     }
+            // })
+
+            // console.log(prop);
+
             return res.status(200).json({
                 arrRns,
-                arrQuantidadeTotalMes
+                arrQuantidadeTotalMes,
             })
 
 
@@ -1399,6 +1477,8 @@ module.exports = {
         try {
 
             const { id, formulario } = req.body
+
+            console.log(id, formulario);
 
             const proposta = await Propostas.findByIdAndUpdate({
                 _id: id
@@ -1723,7 +1803,7 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 
     // ajustarTipoContrato: async (req, res) => {
     //     try {

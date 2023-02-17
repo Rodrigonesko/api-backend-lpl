@@ -53,53 +53,104 @@ module.exports = {
 
                 for (const item of result) {
                     const find = await UrgenciasEmergencia.findOne({
-                        proposta: item['PROPOSTA '],
-                        nomeAssociado: item.NOME_ASSOC
+                        pedido: item.NUM_PEDIDO,
+                        nomeAssociado: item.NOME_ASSOCIADO
                     })
 
                     if (!find) {
-                        const dataRecebimento = moment(new Date()).format('YYYY-MM-DD')
+
+                        const mes = item['MÊS']
+                        let data = ExcelDateToJSDate(item.DATA)
+                        data.setDate(data.getDate() + 1)
+                        data = moment(data).format('YYYY-MM-DD')
                         const numAssociado = item.NUM_ASSOC
-                        const proposta = item['PROPOSTA ']
-                        let dataInclusao = ExcelDateToJSDate(item.DATA_INCLUSAO)
-                        dataInclusao.setDate(dataInclusao.getDate() + 1)
-                        dataInclusao = moment(dataInclusao).format('YYYY-MM-DD')
-                        const nomeAssociado = item.NOME_ASSOC
-                        let dataNascimento = ExcelDateToJSDate(item.DATA_NASC)
+                        const nomeAssociado = item.NOME_ASSOCIADO
+                        let dataNascimento = ExcelDateToJSDate(item.DATA_NASCIMENTO)
                         dataNascimento.setDate(dataNascimento.getDate() + 1)
                         dataNascimento = moment(dataNascimento).format('YYYY-MM-DD')
                         const idade = item.IDADE
-                        const responsavel = item['RESPONSÁVEL']
-                        const telefone = item['TEL CTTO']
+                        let dataAdesao = ExcelDateToJSDate(item.DATA_ADESAO)
+                        dataAdesao.setDate(dataAdesao.getDate() + 1)
+                        dataAdesao = moment(dataAdesao).format('YYYY-MM-DD')
+                        let dataInclusao = ExcelDateToJSDate(item.DATA_INCLUSAO)
+                        dataInclusao.setDate(dataInclusao.getDate() + 1)
+                        dataInclusao = moment(dataInclusao).format('YYYY-MM-DD')
+                        const dataExclusao = item.DATA_EXCLUSAO
+                        const nomePlano = item.NOME_PLANO
+                        const tipoContrato = item.TIPO_CONTRATO
+                        const ddd = item.NUM_DDD
+                        const telefone = item.NUM_TELEFONE
                         const email = item.EMAIL
+                        const prc = item.COD_PRC
+                        const indResp1 = item.IND_RESP_1
+                        const indResp2 = item.IND_RESP_2
+                        const indResp3 = item.IND_RESP_3
+                        const indResp4 = item.IND_RESP_4
+                        const indResp5 = item.IND_RESP_5
+                        const indResp6 = item.IND_RESP_6
+                        const indResp7 = item.IND_RESP_7
+                        const indResp8 = item.IND_RESP_8
+                        const indResp9 = item.IND_RESP_9
+                        const pedido = item.NUM_PEDIDO
                         let dataSolicitacao = ExcelDateToJSDate(item.DATA_SOLICITACAO)
                         dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
                         dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
-                        const nomePrestador = item.NOME_PRESTADOR
-                        const cid = item.CID
-                        const descricaoCid = item.NOM_CID_PRIN_AUTORIZ
+                        const idadeSolic = item.IDADE_NA_SOLIC
+                        let dataAutorizacao = ExcelDateToJSDate(item.DATA_AUTORIZACAO)
+                        dataAutorizacao.setDate(dataAutorizacao.getDate() + 1)
+                        dataAutorizacao = moment(dataAutorizacao).format('YYYY-MM-DD')
+                        const indCarater = item.IND_CARATER_AUTORIZ
+                        const nomePrestador = item.NOME_PRESTADOR_AUTORIZ
+                        const cidPrin = item.CID_PRIN_AUTORIZ
+                        const nomeCidPrin = item.NOM_CID_PRIN_AUTORIZ
+                        const cidSec = item.CID_SECUND_AUTORIZ
+                        const nomeCidSec = item.NOM_CID_SECUND_AUTORIZ
                         const sitAutoriz = item.SIT_AUTORIZ
-                        const relatorioMedico = item['INF RELATÓRIO MÉDICO']
-                        const obsUnder = item[' OBS UNDER']
+                        const nomeTratamento = item.NOME_TRATAMENTO_AUTORIZ
+                        const relatorioMedico = item[' INF RELATORIO MÉDICO ']
+
+
+                        const dataRecebimento = moment().format('YYYY-MM-DD')
 
                         const obj = {
-                            dataRecebimento,
+                            mes,
+                            data,
                             numAssociado,
-                            proposta,
-                            dataInclusao,
                             nomeAssociado,
                             dataNascimento,
                             idade,
-                            responsavel,
+                            dataAdesao,
+                            dataInclusao,
+                            dataExclusao,
+                            nomePlano,
+                            tipoContrato,
+                            ddd,
                             telefone,
                             email,
+                            prc,
+                            indResp1,
+                            indResp2,
+                            indResp3,
+                            indResp4,
+                            indResp5,
+                            indResp6,
+                            indResp7,
+                            indResp8,
+                            indResp9,
+                            pedido,
                             dataSolicitacao,
+                            idadeSolic,
+                            dataAutorizacao,
+                            indCarater,
                             nomePrestador,
-                            cid,
-                            descricaoCid,
+                            cidPrin,
+                            nomeCidPrin,
+                            cidSec,
+                            nomeCidSec,
                             sitAutoriz,
+                            nomeTratamento,
                             relatorioMedico,
-                            obsUnder,
+                            dataRecebimento,
                             status: 'Andamento',
                         }
 
@@ -285,7 +336,7 @@ module.exports = {
     concluirAnexo: async (req, res) => {
         try {
 
-            const {id} = req.body
+            const { id } = req.body
 
             const proposta = await UrgenciasEmergencia.findByIdAndUpdate({
                 _id: id
@@ -409,7 +460,7 @@ function ExcelDateToJSDate(serial) {
 
 function ajustarDataEHorario(data) {
 
-    if(data === undefined){
+    if (data === undefined) {
         return ''
     }
 

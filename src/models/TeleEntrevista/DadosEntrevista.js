@@ -64,6 +64,8 @@ const dadosEntrevistaScheema = mongoose.Schema({
     quemAnexou: String,
     anexadoSisAmil: String,
     vigencia: String,
+    implantacao: String,
+    implantado: String
 }, {
     timestamps: true
 })

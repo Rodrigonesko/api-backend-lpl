@@ -110,6 +110,9 @@ router.post('/entrevistas/horario/novo', auth, horarioController.abrirNovoHorari
 router.put('/entrevistas/dadosEntrevista/dataNascimento', auth, TeleEntrevistaController.alterarDataNascimento)
 router.get('/entrevistas/realizadas/:pesquisa', auth, TeleEntrevistaController.buscarEntrevistaRealizada)
 router.put('/entrevistas/realizadas/alterarSexo', auth, TeleEntrevistaController.alterarSexoEntrevistaRealizada)
+router.put('/entrevistas/mandarImplatacao', auth, TeleEntrevistaController.mandarImplantacao)
+router.put('/entrevistas/implantar', auth, TeleEntrevistaController.implantar)
+router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImplantadas)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
 

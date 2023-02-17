@@ -78,7 +78,6 @@ module.exports = {
                 'Gerência',
                 'Sistemas',
                 'Elegibilidade',
-                'Liminares',
                 'RSD',
                 'Sindicância',
                 'Tele Entrevista',
