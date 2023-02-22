@@ -211,6 +211,7 @@ router.put('/urgenciaEmergencia/concluir', auth, urgenciaEmergenciaController.co
 router.get('/urgenciaEmergencia/producao/:data', auth, urgenciaEmergenciaController.producao)
 router.put('/urgenciaEmergencia/salvarContato', auth, urgenciaEmergenciaController.salvarContato)
 router.put('/urgenciaEmergencia/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
+router.get('/urgenciaEmergencia/producaoTotal', auth, urgenciaEmergenciaController.producaoTotal)
 
 /* Amil */
 

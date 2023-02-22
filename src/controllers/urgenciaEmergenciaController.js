@@ -63,7 +63,7 @@ module.exports = {
                         let data = ExcelDateToJSDate(item.DATA)
                         data.setDate(data.getDate() + 1)
                         data = moment(data).format('YYYY-MM-DD')
-                        const numAssociado = item.NUM_ASSOC
+                        const numAssociado = item.NUM_ASSOCIADO
                         const nomeAssociado = item.NOME_ASSOCIADO
                         let dataNascimento = ExcelDateToJSDate(item.DATA_NASCIMENTO)
                         dataNascimento.setDate(dataNascimento.getDate() + 1)
@@ -108,7 +108,6 @@ module.exports = {
                         const sitAutoriz = item.SIT_AUTORIZ
                         const nomeTratamento = item.NOME_TRATAMENTO_AUTORIZ
                         const relatorioMedico = item[' INF RELATORIO MÉDICO ']
-
 
                         const dataRecebimento = moment().format('YYYY-MM-DD')
 
@@ -386,6 +385,82 @@ module.exports = {
             return res.status(200).json({
                 producao,
                 total
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    producaoTotal: async (req, res) => {
+        try {
+
+            const pedidos = await UrgenciasEmergencia.find({
+                status: 'Concluído'
+            })
+
+            arrQuantidadeTotalMes = []
+
+            pedidos.forEach(e => {
+                let index = arrQuantidadeTotalMes.findIndex(val => val.data == moment(e.dataConclusao).format('MM/YYYY'))
+
+                if (index < 0) {
+                    arrQuantidadeTotalMes.push({
+                        data: moment(e.dataConclusao).format('MM/YYYY'),
+                        quantidade: 1,
+                        quantidadeAnalistaMes: [{
+                            analista: e.analista,
+                            quantidade: 1,
+                            quantidadeAnalistaDia: [{
+                                data: moment(e.dataConclusao).format('YYYY-MM-DD'),
+                                quantidade: 1
+                            }]
+                        }]
+                    })
+                } else {
+                    arrQuantidadeTotalMes[index].quantidade++
+                }
+
+                let indexAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes.findIndex(val => val.analista == e.analista)
+
+                if (indexAnalista < 0) {
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes.push({
+                        analista: e.analista,
+                        quantidade: 1,
+                        quantidadeAnalistaDia: [{
+                            data: moment(e.dataConclusao).format('YYYY-MM-DD'),
+                            quantidade: 1
+                        }]
+                    })
+                } else {
+                    if (arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes === undefined) {
+                        return
+                    }
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidade++
+                }
+
+                let indexDiaAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataConclusao).format('YYYY-MM-DD'))
+
+                // console.log(indexDiaAnalista);
+
+                if (indexDiaAnalista < 0) {
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
+                        data: moment(e.dataConclusao).format('YYYY-MM-DD'),
+                        quantidade: 1
+                    })
+                } else {
+                    if (arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
+                        return
+                    }
+                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
+                }
+            })
+
+            return res.status(200).json({
+                arrQuantidadeTotalMes
             })
 
         } catch (error) {
