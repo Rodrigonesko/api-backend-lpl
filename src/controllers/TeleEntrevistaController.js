@@ -111,7 +111,8 @@ module.exports = {
                 anexadoSisAmil: 'Anexar',
                 houveDivergencia: divBanco,
                 divergencia: respostasConc['divergencia'],
-                cids: cids.toString()
+                cids: cids.toString(),
+                dataConclusao: moment().format('YYYY-MM-DD')
             })
 
             const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
@@ -135,7 +136,8 @@ module.exports = {
                 dataEntrevista: moment(new Date).format('YYYY-MM-DD'),
                 houveDivergencia: divBanco,
                 anexadoSisAmil: 'Anexar',
-                vigencia: updateProposta.vigencia
+                vigencia: updateProposta.vigencia,
+                dataRecebimento: updateProposta.dataRecebimento
             }, {
                 upsert: true
             })
@@ -476,10 +478,9 @@ module.exports = {
             const proposta = await Propostas.findOneAndUpdate({
                 _id: id
             }, {
-                status: 'Cancelado'
+                status: 'Cancelado',
+                dataConclusao: moment().format('YYYY-MM-DD')
             })
-
-            console.log(proposta.tipoContrato);
 
             const create = await DadosEntrevista.create({
                 nome: proposta.nome,
@@ -490,8 +491,9 @@ module.exports = {
                 cancelado: true,
                 divergencia: motivoCancelamento,
                 houveDivergencia: 'Não',
-                dataEntrevista: moment(new Date()).format('YYYY-MM-DD'),
-                tipoContrato: proposta.tipoContrato
+                dataEntrevista: moment().format('YYYY-MM-DD'),
+                tipoContrato: proposta.tipoContrato,
+                dataRecebimento: proposta.dataRecebimento
             })
 
             return res.status(200).json({
@@ -1233,22 +1235,24 @@ module.exports = {
 
             })
 
-            const rns = await Rn.find()
+            const rns = await Rn.find({
+                status: 'Concluido'
+            })
 
             let arrRns = []
 
             rns.forEach(e => {
-                let index = arrRns.findIndex(val => val.data == moment(e.dataEntrevista).format('MM/YYYY'))
+                let index = arrRns.findIndex(val => val.data == moment(e.dataConclusao).format('MM/YYYY'))
 
                 if (index < 0) {
                     arrRns.push({
-                        data: moment(e.dataEntrevista).format('MM/YYYY'),
+                        data: moment(e.dataConclusao).format('MM/YYYY'),
                         quantidade: 1,
                         quantidadeAnalistaMes: [{
                             analista: e.responsavel,
                             quantidade: 1,
                             quantidadeAnalistaDia: [{
-                                data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                                data: moment(e.dataConclusao).format('YYYY-MM-DD'),
                                 quantidade: 1
                             }]
                         }]
@@ -1264,7 +1268,7 @@ module.exports = {
                         analista: e.responsavel,
                         quantidade: 1,
                         quantidadeAnalistaDia: [{
-                            data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                            data: moment(e.dataConclusao).format('YYYY-MM-DD'),
                             quantidade: 1
                         }]
                     })
@@ -1275,11 +1279,11 @@ module.exports = {
                     arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidade++
                 }
 
-                let indexDiaAnalista = arrRns[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataEntrevista).format('YYYY-MM-DD'))
+                let indexDiaAnalista = arrRns[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataConclusao).format('YYYY-MM-DD'))
 
                 if (indexDiaAnalista < 0) {
                     arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
-                        data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
+                        data: moment(e.dataConclusao).format('YYYY-MM-DD'),
                         quantidade: 1
                     })
                 } else {
@@ -1804,6 +1808,7 @@ module.exports = {
             })
         }
     },
+
 
     // ajustarTipoContrato: async (req, res) => {
     //     try {

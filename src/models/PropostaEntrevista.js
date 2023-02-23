@@ -52,7 +52,8 @@ const propostaScheema = mongoose.Schema({
     cids: String,
     houveDivergencia: String,
     quemAnexou: String,
-    quemAgendou: String
+    quemAgendou: String,
+    dataConclusao: String
 }, {
     timestamps: true
 })
