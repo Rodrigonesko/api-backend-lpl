@@ -411,9 +411,35 @@ module.exports = {
 
     concluidas: async (req, res) => {
         try {
-            
+
             const result = await Rn.find({
                 status: 'Concluido'
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    cancelar: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const result = await Rn.findByIdAndUpdate({
+                _id: id
+            }, {
+                observacoes: 'Sem sucesso de contato',
+                status: 'Concluido',
+                dataConclusao: moment().format('YYYY-MM-DD'),
+                responsavel: 'Cancelado'
             })
 
             return res.status(200).json({

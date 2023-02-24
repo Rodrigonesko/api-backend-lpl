@@ -2264,6 +2264,20 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
+    },
+
+    download: async (req, res) => {
+        try {
+
+            const { idPacote, filename } = req.params
+
+            res.download(`./uploads/rsd/gravacoes/${idPacote}/${filename}`)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 

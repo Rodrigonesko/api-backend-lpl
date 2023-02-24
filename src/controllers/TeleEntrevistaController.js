@@ -1809,6 +1809,33 @@ module.exports = {
         }
     },
 
+    alterarDataRecebimento: async (req, res) => {
+        try {
+
+            const propostas = await DadosEntrevista.find()
+
+            for (const item of propostas) {
+                const result = await Propostas.findOneAndUpdate({
+                    proposta: item.proposta,
+                    nome: item.nome
+                }, {
+                    dataConclusao: item.dataEntrevista
+                })
+
+                // console.log(`${item.proposta} - ${item.dataRecebimento}`);
+            }
+
+            return res.status(200).json({
+                msg: 'ok'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
+
 
     // ajustarTipoContrato: async (req, res) => {
     //     try {

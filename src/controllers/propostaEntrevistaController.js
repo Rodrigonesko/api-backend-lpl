@@ -109,7 +109,7 @@ module.exports = {
                 }
 
                 const resultado = {
-                    dataRecebimento: moment(new Date()).format('YYYY-MM-DD'),
+                    dataRecebimento: moment().format('YYYY-MM-DD'),
                     proposta,
                     filial,
                     riscoBeneficiario,

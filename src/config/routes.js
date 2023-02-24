@@ -57,6 +57,7 @@ router.delete('/rn/delete/:id', auth, rnContoller.excluirProposta)
 router.put('/rn/reagendar', auth, rnContoller.reagendar)
 router.put('/rn/alterarTelefone', auth, rnContoller.alterarTelefone)
 router.get('/rn/concluidas', auth, rnContoller.concluidas)
+router.put('/rn/cancelar', auth, rnContoller.cancelar)
 
 //Tele Entrevistas
 
@@ -115,6 +116,7 @@ router.put('/entrevistas/implantar', auth, TeleEntrevistaController.implantar)
 router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImplantadas)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
+router.get('/entrevistas/alterarDataRecebimento', TeleEntrevistaController.alterarDataRecebimento)
 
 //Liminar
 
@@ -173,6 +175,7 @@ router.put('/rsd/pedido/prioridadeDossie', auth, rsdController.adicionarPriorida
 router.put('/rsd/pacote/devolver', auth, rsdController.devolverPacote)
 router.put('/rsd/protocolo/devolver', auth, rsdController.devolverProtocolo)
 router.get('/rsd/relatorio/:aPartir/:ate', auth, rsdController.relatorioAmil)
+router.get('/rsd/download/:idPacote/:filename', rsdController.download)
 
 //Rotas Elegibilidade
 
