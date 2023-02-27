@@ -1809,6 +1809,38 @@ module.exports = {
         }
     },
 
+    voltarEntrevista: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const dados = await DadosEntrevista.findById({
+                _id: id
+            })
+
+            const result = await Propostas.findOneAndUpdate({
+                nome: dados.nome,
+                proposta: dados.proposta
+            }, {
+                status: ''
+            })
+
+            await DadosEntrevista.findByIdAndDelete({
+                _id: id
+            })
+
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     alterarDataRecebimento: async (req, res) => {
         try {
 

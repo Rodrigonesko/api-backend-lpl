@@ -13,7 +13,43 @@ module.exports = {
 
             const data = req.body.dataGerar
 
-            console.log(data);
+            const arrExc = [
+                '08:40',
+                '09:00',
+                '09:20',
+                '09:40',
+                '10:00',
+                '10:20',
+                '10:40',
+                '11:00',
+                '11:20',
+                '11:40',
+                '12:00',
+                '12:20',
+                '13:40',
+                '14:00',
+                '14:20',
+                '14:40',
+                '15:00',
+                '15:20',
+                '15:40',
+                '16:00',
+                '16:20',
+                '16:40',
+                '17:00',
+                '17:20',
+                '17:40',
+                '18:00',
+                '18:20',
+                '18:40',
+                '19:00',
+                '19:20',
+                '19:40',
+                '20:00',
+                '20:20',
+                '20:40',
+                '21:20',
+            ]
 
             const horarios = [
                 '08:40',
@@ -49,7 +85,11 @@ module.exports = {
                 '18:40',
                 '19:00',
                 '19:20',
-                '19:40'
+                '19:40',
+                '20:00',
+                '20:20',
+                '20:40',
+                '21:20',
             ]
 
             const find = await Horario.findOne({
@@ -73,6 +113,18 @@ module.exports = {
                 const entrada2 = item.horarioEntrada2
                 const saida2 = item.horarioSaida2
 
+
+                if (moment(data).format('ddd') === 'Fri' && item.name === 'Marcia Rocha') {
+                    for (const horario of arrExc) {
+                        const insert = await Horario.create({
+                            enfermeiro: item.name,
+                            horario: horario,
+                            dia: moment(data).format('YYYY-MM-DD')
+                        })
+                    }
+                    continue
+                }
+
                 for (const horario of horarios) {
                     if (entrada1 <= horario) {
                         if (saida1 <= horario && entrada2 >= horario) {
@@ -82,8 +134,6 @@ module.exports = {
                             break
                         }
 
-                        //console.log(moment(data).toDate());
-
                         const insert = await Horario.create({
                             enfermeiro: item.name,
                             horario: horario,
@@ -91,6 +141,11 @@ module.exports = {
                         })
                     }
                 }
+
+
+
+
+                console.log(moment(data).format('ddd'));
             }
 
             return res.status(200).json({

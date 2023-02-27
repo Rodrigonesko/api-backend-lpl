@@ -439,7 +439,8 @@ module.exports = {
                 observacoes: 'Sem sucesso de contato',
                 status: 'Concluido',
                 dataConclusao: moment().format('YYYY-MM-DD'),
-                responsavel: 'Cancelado'
+                responsavel: 'Cancelado',
+                cancelado: 'Cancelado'
             })
 
             return res.status(200).json({
