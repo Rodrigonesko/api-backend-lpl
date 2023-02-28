@@ -117,7 +117,6 @@ router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImpl
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
-router.get('/entrevistas/alterarDataRecebimento', TeleEntrevistaController.alterarDataRecebimento)
 
 //Liminar
 

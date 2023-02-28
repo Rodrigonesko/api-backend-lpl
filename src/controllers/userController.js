@@ -116,25 +116,23 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, liminares, liminaresAj, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2 } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal } = req.body
 
             console.log(entrada1, saida1, entrada2, saida2);
 
             const result = await User.findOneAndUpdate({ email: email }, {
-                liminares: liminares,
-                liminaresAj: liminaresAj,
                 enfermeiro: enfermeiro,
                 elegibilidade: elegibilidade,
                 horarioEntrada1: entrada1,
                 horarioSaida1: saida1,
                 horarioEntrada2: entrada2,
                 horarioSaida2: saida2,
+                atividadePrincipal
             })
 
             return res.status(200).json({
                 result
             })
-
 
         } catch (error) {
             return res.status(500).json({
@@ -177,7 +175,7 @@ module.exports = {
     resetPassword: async (req, res) => {
         try {
 
-            const {email} = req.body
+            const { email } = req.body
 
             const encryptedPassword = await bcrypt.hash('123', 8)
 
