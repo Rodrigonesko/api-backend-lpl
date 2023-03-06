@@ -151,6 +151,7 @@ module.exports = {
                             relatorioMedico,
                             dataRecebimento,
                             status: 'Andamento',
+                            faturado: 'Não faturado'
                         }
 
                         await UrgenciasEmergencia.create(
@@ -220,10 +221,8 @@ module.exports = {
         try {
 
             const propostas = await UrgenciasEmergencia.find({
-                status: 'Concluído'
+                status: { $ne: 'Andamento' }
             })
-
-            console.log(propostas);
 
             return res.status(200).json({
                 propostas

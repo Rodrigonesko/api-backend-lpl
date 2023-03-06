@@ -5,6 +5,7 @@ const Cid = mongoose.model('Cid')
 const DadosEntrevista = mongoose.model('DadosEntrevista')
 const Rn = mongoose.model('Rn')
 const User = mongoose.model('User')
+const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
 
 const path = require('path')
 const moment = require('moment')
@@ -565,6 +566,11 @@ module.exports = {
                 status: 'Concluido'
             })
 
+            const ues = await UrgenciasEmergencia.find({
+                faturado: 'Não faturado',
+                status: { $ne: 'Andamento' }
+            })
+
             let entrevistas = []
 
             teles.forEach(e => {
@@ -575,12 +581,12 @@ module.exports = {
                     nome: e.nome,
                     dataEntrevista: e.dataEntrevista,
                     faturado: e.faturado,
-                    nf: e.nf
+                    nf: e.nf,
+                    analista: e.responsavel
                 })
             })
 
             rns.forEach(e => {
-                console.log(e.dataConclusao);
                 entrevistas.push({
                     _id: e._id,
                     tipo: 'Rn',
@@ -588,7 +594,21 @@ module.exports = {
                     nome: e.beneficiario,
                     dataEntrevista: e.dataConclusao,
                     faturado: e.faturado,
-                    nf: e.nf
+                    nf: e.nf,
+                    analista: e.responsavel
+                })
+            })
+
+            ues.forEach(e => {
+                entrevistas.push({
+                    _id: e._id,
+                    tipo: 'UE',
+                    proposta: e.pedido,
+                    nome: e.nomeAssociado,
+                    dataEntrevista: e.dataConclusao,
+                    faturado: e.faturado,
+                    nf: e.nf,
+                    analista: e.analista
                 })
             })
 
@@ -622,6 +642,10 @@ module.exports = {
                     status: 'Concluido'
                 })
 
+                const ues = await UrgenciasEmergencia.find({
+                    status: { $ne: 'Andamento' }
+                })
+
                 let entrevistas = []
 
                 teles.forEach(e => {
@@ -648,6 +672,18 @@ module.exports = {
                     })
                 })
 
+                ues.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'UE',
+                        proposta: e.pedido,
+                        nome: e.nomeAssociado,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
                 return res.status(200).json({
                     entrevistas
                 })
@@ -661,6 +697,11 @@ module.exports = {
                 const rns = await Rn.find({
                     faturado: status,
                     status: 'Concluido'
+                })
+
+                const ues = await UrgenciasEmergencia.find({
+                    faturado: status,
+                    status: { $ne: 'Andamento' }
                 })
 
                 let entrevistas = []
@@ -683,6 +724,18 @@ module.exports = {
                         tipo: 'Rn',
                         proposta: e.proposta,
                         nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                ues.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'UE',
+                        proposta: e.pedido,
+                        nome: e.nomeAssociado,
                         dataEntrevista: e.dataConclusao,
                         faturado: e.faturado,
                         nf: e.nf
@@ -710,6 +763,14 @@ module.exports = {
                     return moment(e.dataConclusao).format('YYYY-MM') === data
                 })
 
+                const uesBanco = await UrgenciasEmergencia.find({
+                    status: { $ne: 'Andamento' }
+                })
+
+                const ues = uesBanco.filter(e => {
+                    return moment(e.dataConclusao).format('YYYY-MM') === data
+                })
+
                 let entrevistas = []
 
                 teles.forEach(e => {
@@ -730,6 +791,18 @@ module.exports = {
                         tipo: 'Rn',
                         proposta: e.proposta,
                         nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                ues.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'UE',
+                        proposta: e.pedido,
+                        nome: e.nomeAssociado,
                         dataEntrevista: e.dataConclusao,
                         faturado: e.faturado,
                         nf: e.nf
@@ -761,6 +834,16 @@ module.exports = {
                     return moment(e.dataConclusao).format('YYYY-MM') == data
                 })
 
+                const uesBanco = await UrgenciasEmergencia.find({
+                    faturado: status,
+                    status: { $ne: 'Andamento' }
+                })
+
+                const ues = uesBanco.filter(e => {
+                    return moment(e.dataConclusao).format('YYYY-MM') === data
+                })
+
+
                 let entrevistas = []
 
                 teles.forEach(e => {
@@ -781,6 +864,18 @@ module.exports = {
                         tipo: 'Tele',
                         proposta: e.proposta,
                         nome: e.beneficiario,
+                        dataEntrevista: e.dataConclusao,
+                        faturado: e.faturado,
+                        nf: e.nf
+                    })
+                })
+
+                ues.forEach(e => {
+                    entrevistas.push({
+                        _id: e._id,
+                        tipo: 'UE',
+                        proposta: e.pedido,
+                        nome: e.nomeAssociado,
                         dataEntrevista: e.dataConclusao,
                         faturado: e.faturado,
                         nf: e.nf
@@ -822,8 +917,10 @@ module.exports = {
                         nf: e[0].nf,
                         dataFaturamento: moment().format('YYYY-MM-DD')
                     })
-                } else {
-                    return await DadosEntrevista.findOneAndUpdate({
+                }
+
+                if (e[0].tipo === 'UE') {
+                    return await UrgenciasEmergencia.findOneAndUpdate({
                         _id: e[0].id
                     }, {
                         faturado: 'Faturado',
@@ -832,6 +929,15 @@ module.exports = {
                     })
                 }
 
+                if (e[0].tipo === 'Tele') {
+                    return await DadosEntrevista.findOneAndUpdate({
+                        _id: e[0].id
+                    }, {
+                        faturado: 'Faturado',
+                        nf: e[0].nf,
+                        dataFaturamento: moment().format('YYYY-MM-DD')
+                    })
+                }
 
             }))
 

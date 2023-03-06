@@ -53,6 +53,9 @@ const UrgenciaEmergenciaScheema = mongoose.Schema({
     dataRecebimento: String,
     dataConclusao: String,
     responsavel: String,
+    faturado: String,
+    dataFaturamento: String,
+    nf: String,
 }, {
     timestamps: true
 })
