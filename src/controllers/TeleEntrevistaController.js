@@ -138,7 +138,8 @@ module.exports = {
                 houveDivergencia: divBanco,
                 anexadoSisAmil: 'Anexar',
                 vigencia: updateProposta.vigencia,
-                dataRecebimento: updateProposta.dataRecebimento
+                dataRecebimento: updateProposta.dataRecebimento,
+                cancelado: false
             }, {
                 upsert: true
             })
@@ -494,7 +495,8 @@ module.exports = {
                 houveDivergencia: 'Não',
                 dataEntrevista: moment().format('YYYY-MM-DD'),
                 tipoContrato: proposta.tipoContrato,
-                dataRecebimento: proposta.dataRecebimento
+                dataRecebimento: proposta.dataRecebimento,
+                responsavel: motivoCancelamento
             })
 
             return res.status(200).json({
@@ -1660,25 +1662,6 @@ module.exports = {
     gerarMensagens: async (req, res) => {
         try {
 
-            const { data } = req.params
-
-            let horarios = await Horario.find({
-                dia: data,
-                agendado: { $ne: 'agendado' }
-            })
-
-            horarios = horarios.map(e => {
-                return e.horario
-            })
-
-            horarios = horarios.filter((el, i) => {
-                return horarios.indexOf(el) === i
-            })
-
-            console.log(horarios);
-
-            horarios.sort()
-
             const propostas = await Propostas.find({
                 $and: [
                     { agendado: { $ne: 'agendado' } },
@@ -1767,7 +1750,7 @@ module.exports = {
                 let parte2 = ''
                 let parte3 = ''
                 let parte4 = ''
-                let parte5 = ''
+                let parte5 = []
                 let parte6 = ''
                 if (item.titular.sexo === 'M') {
                     saudacao = `Prezado Sr. ${item.titular.nome}, `
@@ -1787,13 +1770,45 @@ module.exports = {
 
                 parte3 = 'precisamos confirmar alguns dados para que a contratação seja concluída. '
 
-                parte4 = `Precisamos entrar em contato através do número ${item.titular.telefone}. Temos disponíveis os horários para dia *${moment(data).format('DD/MM/YYYY')}* ${ajustarDiaSemana(moment(data).format('dddd'))} as `
+                parte4 = `Por gentileza escolha duas janelas de horários para entrarmos em contato com o Sr.(a)`
 
-                horarios.forEach(e => {
-                    parte5 += `${e} - `
-                })
+                let data1 = moment().format('DD/MM/YYYY')
+                let data2 = moment().format('DD/MM/YYYY')
+                let diaSemana = moment().format('dddd')
 
-                parte5 += 'Qual melhor horário?'
+                if (diaSemana === 'Friday') {
+                    if (new Date().getTime() > new Date(moment().format('YYYY-MM-DD 13:00'))) {
+                        data1 = moment().add(3, 'days').format('DD/MM/YYYY')
+                        data2 = moment().add(4, 'days').format('DD/MM/YYYY')
+                    } else {
+                        data1 = moment().format('DD/MM/YYYY')
+                        data2 = moment().add(3, 'days').format('DD/MM/YYYY')
+                    }
+                } else if (diaSemana === 'Thursday') {
+                    if (new Date().getTime() > new Date(moment().format('YYYY-MM-DD 13:00'))) {
+                        data1 = moment().add(1, 'day').format('DD/MM/YYYY')
+                        data2 = moment().add(3, 'days').format('DD/MM/YYYY')
+                    } else {
+                        data1 = moment().format('DD/MM/YYYY')
+                        data2 = moment().add(1, 'day').format('DD/MM/YYYY')
+                    }
+                } else {
+                    if (new Date().getTime() > new Date(moment().format('YYYY-MM-DD 13:00'))) {
+                        data1 = moment().add(1, 'day').format('DD/MM/YYYY')
+                        data2 = moment().add(2, 'days').format('DD/MM/YYYY')
+                    } else {
+                        data1 = moment().format('DD/MM/YYYY')
+                        data2 = moment().add(1, 'day').format('DD/MM/YYYY')
+                    }
+                }
+
+                if (new Date().getTime() > new Date(moment().format('YYYY-MM-DD 13:00'))) {
+                    parte5.push(`*${data1}*`, 'Das 09:00 às 11:00', 'Das 11:00 às 13:00', 'Das 13:00 às 15:00', 'Das 15:00 às 17:00', 'Das 17:00 às 19:00', 'Das 19:00 às 21:00', `*${data2}*`, 'Das 09:00 às 11:00', 'Das 11:00 às 13:00', 'Das 13:00 às 15:00', 'Das 15:00 às 17:00', 'Das 17:00 às 19:00', 'Das 19:00 às 21:00')
+                } else {
+                    parte5.push(`*${data1}*`, 'Das 13:00 às 15:00', 'Das 15:00 às 17:00', 'Das 17:00 às 19:00', 'Das 19:00 às 21:00', `*${data2}*`, 'Das 09:00 às 11:00', 'Das 11:00 às 13:00', 'Das 13:00 às 15:00', 'Das 15:00 às 17:00', 'Das 17:00 às 19:00', 'Das 19:00 às 21:00')
+                }
+
+                parte5.push('Qual melhor horário?')
 
                 parte6 = 'Informamos que vamos ligar dos números 11 42404975 ou 42403554, pedimos tirar do spam para evitar bloqueio da ligação.'
 
