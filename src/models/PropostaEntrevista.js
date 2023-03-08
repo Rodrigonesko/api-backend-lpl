@@ -53,7 +53,13 @@ const propostaScheema = mongoose.Schema({
     houveDivergencia: String,
     quemAnexou: String,
     quemAgendou: String,
-    dataConclusao: String
+    dataConclusao: String,
+    contato1: String,
+    responsavelContato1: String,
+    contato2: String,
+    responsavelContato2: String,
+    contato3: String,
+    responsavelContato3: String
 }, {
     timestamps: true
 })

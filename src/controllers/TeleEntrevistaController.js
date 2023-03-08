@@ -1541,6 +1541,12 @@ module.exports = {
                 enfermeiro: true
             })
 
+            analistas.push(
+                { name: 'Cancelada' },
+                { name: 'Beneficiario Solicitou o Cancelamento' },
+                { name: 'Sem Sucesso de Contato!' },
+            )
+
             let producao = []
 
             for (const item of analistas) {
@@ -1553,8 +1559,6 @@ module.exports = {
                     responsavel: item.name,
                     dataConclusao: data
                 }).count()
-
-                console.log(countRn);
 
                 producao.push({
                     analista: item.name,
@@ -1570,6 +1574,8 @@ module.exports = {
             const totalRn = await Rn.find({
                 dataConclusao: data
             }).count()
+
+            console.log(producao);
 
             return res.status(200).json({
                 producao,
@@ -1961,6 +1967,52 @@ module.exports = {
             })
         }
     },
+
+    tentativaDeContato: async (req, res) => {
+        try {
+
+            const { tentativa, id } = req.body
+
+            switch (tentativa) {
+                case 'tentativa 1':
+                    await Propostas.findByIdAndUpdate({
+                        _id: id
+                    }, {
+                        responsavelContato1: req.user,
+                        contato1: moment().format('DD/MM/YYYY HH:mm:ss')
+                    })
+                    break;
+                case 'tentativa 2':
+                    await Propostas.findByIdAndUpdate({
+                        _id: id
+                    }, {
+                        responsavelContato2: req.user,
+                        contato2: moment().format('DD/MM/YYYY HH:mm:ss')
+                    })
+                    break;
+                case 'tentativa 3':
+                    await Propostas.findByIdAndUpdate({
+                        _id: id
+                    }, {
+                        responsavelContato3: req.user,
+                        contato3: moment().format('DD/MM/YYYY HH:mm:ss')
+                    })
+                    break;
+                default:
+                    break;
+            }
+
+            return res.json({
+                msg: 'Tentativa de contato feita com sucesso'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 
     // ajustarTipoContrato: async (req, res) => {
     //     try {

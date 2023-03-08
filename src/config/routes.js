@@ -115,6 +115,7 @@ router.put('/entrevistas/mandarImplatacao', auth, TeleEntrevistaController.manda
 router.put('/entrevistas/implantar', auth, TeleEntrevistaController.implantar)
 router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImplantadas)
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
+router.put('/entrevistas/tentativaContato', auth, TeleEntrevistaController.tentativaDeContato)
 
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
 
