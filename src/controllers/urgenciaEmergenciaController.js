@@ -312,7 +312,7 @@ module.exports = {
                 email: obj.telefone,
                 retorno: obj.retorno,
                 observacoes: obj.observacoes,
-                status: 'Anexar',
+                status: 'Concluído',
                 analista: req.user,
                 dataConclusao: moment(new Date()).format('YYYY-MM-DD')
             })

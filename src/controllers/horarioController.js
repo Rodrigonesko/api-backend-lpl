@@ -5,6 +5,7 @@ const PropostaEntrevista = mongoose.model('PropostaEntrevista')
 const Rn = mongoose.model('Rn')
 const moment = require('moment')
 const timezone = require('moment-timezone')
+const { Axios, default: axios } = require('axios')
 
 
 module.exports = {
@@ -255,17 +256,18 @@ module.exports = {
 
             if (!updateRn) {
 
-                console.log('nao tem rn');
-
-                const updateTele = await PropostaEntrevista.findByIdAndUpdate({
-                    _id: id,
-
-                }, {
-                    dataEntrevista: dataEHora,
-                    agendado: 'agendado',
-                    enfermeiro: responsavel,
+                const updateTele = await axios.put(`${process.env.API_TELE}/agendar`, {
+                    id,
+                    dataEHora,
+                    responsavel,
                     quemAgendou: req.user
+                }, {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${req.cookies['token']}`
+                    }
                 })
+                
             } else {
                 console.log('tem rn');
             }

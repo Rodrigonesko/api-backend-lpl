@@ -80,7 +80,6 @@ router.get('/entrevistas/horarios/disponiveis', auth, horarioController.buscarHo
 router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
 router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
 router.post('/entrevistas/formulario', auth, TeleEntrevistaController.enviarDadosFormulario)
-router.post('/entrevistas/upload/cids', auth, TeleEntrevistaController.subirCids)
 router.get('/entrevistas/cids/pesquisa/:pesquisa', auth, TeleEntrevistaController.buscarCids)
 router.get('/entrevistas/dadosEntrevista/:proposta/:nome', auth, TeleEntrevistaController.mostrarDadosEntrevista)
 router.get('/entrevistas/dadosEntrevista', auth, TeleEntrevistaController.mostrarDadosEntrevistas)

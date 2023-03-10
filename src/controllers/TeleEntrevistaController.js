@@ -7,15 +7,14 @@ const Rn = mongoose.model('Rn')
 const User = mongoose.model('User')
 const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
 
-const path = require('path')
 const moment = require('moment')
 const fs = require('fs')
 const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')
 const Horario = require('../models/Horario')
+const { default: axios } = require('axios')
 
-const uploadCid = multer({ dest: os.tmpdir() }).single('file')
 const uploadPerguntas = multer({ dest: os.tmpdir() }).single('file')
 
 module.exports = {
@@ -87,8 +86,6 @@ module.exports = {
                 respostasConc[`${key}`] += `${respostas[key]} \n `
             })
 
-            console.log(respostasConc);
-
             for (const key of Object.keys(respostasConc)) {
                 await DadosEntrevista.findOneAndUpdate({
                     $and: [
@@ -105,16 +102,21 @@ module.exports = {
                 })
             }
 
-            const updateProposta = await Propostas.findOneAndUpdate({
-                _id: pessoa._id
-            }, {
-                status: 'Concluído',
-                anexadoSisAmil: 'Anexar',
+            const resp = await axios.put(`${process.env.API_TELE}/concluir`, {
+                id: pessoa._id,
                 houveDivergencia: divBanco,
-                divergencia: respostasConc['divergencia'],
                 cids: cids.toString(),
-                dataConclusao: moment().format('YYYY-MM-DD')
+                divergencia: respostasConc['divergencia']
+            }, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
             })
+
+            console.log(resp.data);
+
+            const updateProposta = resp.data
 
             const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
                 $and: [
@@ -152,41 +154,6 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    subirCids: async (req, res) => {
-        try {
-
-            uploadCid(req, res, async (err) => {
-                let file = fs.readFileSync(req.file.path)
-
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                for (const item of result) {
-                    const create = await Cid.create({
-                        subCategoria: item.subCategoria,
-                        descricao: item.descricao
-                    })
-                }
-
-                return res.status(200).json({
-                    msg: 'oii'
-                })
-
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'rror'
             })
         }
     },
@@ -425,15 +392,20 @@ module.exports = {
 
             const { id } = req.body
 
-            const dadosProposta = await Propostas.findById({
-                _id: id
+            const resp = await axios.get(`${process.env.API_TELE}/proposta/${id}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
             })
+
+            const dadosProposta = resp.data
+
+            console.log(dadosProposta);
 
             let split = dadosProposta.dataEntrevista.split(' ')
             let dataEntrevista = split[0]
             const horario = split[1]
-
-            console.log(dataEntrevista);
 
             const atualizarHorarios = await Horario.findOneAndUpdate({
                 $and: [
@@ -450,19 +422,16 @@ module.exports = {
                 nome: ''
             })
 
-            console.log(atualizarHorarios);
-
-            const result = await Propostas.findOneAndUpdate({
-                _id: id
+            const reagendar = await axios.put(`${process.env.API_TELE}/reagendar`, {
+                id
             }, {
-                dataEntrevista: '',
-                agendado: '',
-                enfermeiro: ''
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
             })
 
-            return res.status(200).json({
-                msg: 'Ok'
-            })
+            return res.status(200).json({ msg: 'reagendado' })
 
         } catch (error) {
             console.log(error);
@@ -477,12 +446,16 @@ module.exports = {
 
             const { id, motivoCancelamento } = req.body
 
-            const proposta = await Propostas.findOneAndUpdate({
-                _id: id
+            const resp = await axios.put(`${process.env.API_TELE}/cancelar`, {
+                id
             }, {
-                status: 'Cancelado',
-                dataConclusao: moment().format('YYYY-MM-DD')
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
             })
+
+            const proposta = resp.data
 
             const create = await DadosEntrevista.create({
                 nome: proposta.nome,
@@ -515,8 +488,6 @@ module.exports = {
         try {
 
             const { id } = req.body
-
-            console.log(id);
 
             const remove = await Propostas.deleteOne({
                 _id: id
@@ -1438,6 +1409,13 @@ module.exports = {
     reportAgendadas: async (req, res) => {
         try {
 
+            const resp = await axios.get(`${process.env.API_TELE}/agendadas`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
+            })
+
             const propostas = await Propostas.find({
                 agendado: 'agendado',
                 status: undefined
@@ -1513,16 +1491,21 @@ module.exports = {
                 })
             }
 
-            const proposta = await Propostas.findByIdAndUpdate({
-                _id: id
-            }, {
+            const resp = await axios.put(`${process.env.API_TELE}/alterarVigencia`, {
+                id,
                 vigencia
+            }, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
             })
+
+            const proposta = resp.data
 
             return res.status(200).json({
                 proposta
             })
-
 
         } catch (error) {
             console.log(error);
@@ -1595,8 +1578,6 @@ module.exports = {
         try {
 
             const { id, formulario } = req.body
-
-            console.log(id, formulario);
 
             const proposta = await Propostas.findByIdAndUpdate({
                 _id: id
@@ -1793,7 +1774,7 @@ module.exports = {
                 } else if (diaSemana === 'Thursday') {
                     if (new Date().getTime() > new Date(moment().format('YYYY-MM-DD 13:00'))) {
                         data1 = moment().add(1, 'day').format('DD/MM/YYYY')
-                        data2 = moment().add(3, 'days').format('DD/MM/YYYY')
+                        data2 = moment().add(4, 'days').format('DD/MM/YYYY')
                     } else {
                         data1 = moment().format('DD/MM/YYYY')
                         data2 = moment().add(1, 'day').format('DD/MM/YYYY')
@@ -1945,11 +1926,14 @@ module.exports = {
                 _id: id
             })
 
-            const result = await Propostas.findOneAndUpdate({
+            const resp = await axios.put(`${process.env.API_TELE}/voltarEntrevista`, {
                 nome: dados.nome,
                 proposta: dados.proposta
             }, {
-                status: ''
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
             })
 
             await DadosEntrevista.findByIdAndDelete({
@@ -1957,7 +1941,7 @@ module.exports = {
             })
 
             return res.status(200).json({
-                result
+                msg: 'ok'
             })
 
         } catch (error) {
@@ -2013,39 +1997,6 @@ module.exports = {
             })
         }
     }
-
-    // ajustarTipoContrato: async (req, res) => {
-    //     try {
-
-    //         const propostas = await Propostas.find()
-    //         for (const proposta of propostas) {
-    //             if(proposta.tipoContrato){
-    //                 await DadosEntrevista.updateMany({
-    //                     proposta: proposta.proposta
-    //                 }, {
-    //                     tipoContrato: proposta.tipoContrato
-    //                 })
-    //             } 
-    //         }
-
-    //         const dadosEntrevistas = await DadosEntrevista.updateMany({
-    //             tipoContrato: undefined
-    //         }, {
-    //             tipoContrato: 'Coletivo por Adesão com Administradora'
-    //         })
-
-    //         console.log('atualizou');
-
-    //         return res.status(200).json({
-    //             msg: 'oii'
-    //         })
-
-    //     } catch (error) {
-    //         return res.status(500).json({
-    //             msg: 'Internal server error'
-    //         })
-    //     }
-    // }
 }
 
 function ExcelDateToJSDate(serial) {
@@ -2065,38 +2016,4 @@ function ExcelDateToJSDate(serial) {
     var minutes = Math.floor(total_seconds / 60) % 60;
 
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
-}
-
-const ajustarDiaSemana = date => {
-    try {
-
-        switch (date) {
-            case 'Monday':
-                return 'Segunda'
-                break;
-            case 'Tuesday':
-                return 'Terça'
-                break;
-            case 'Wednesday':
-                return 'Quarta'
-                break;
-            case 'Thursday':
-                return 'Quinta'
-                break;
-            case 'Friday':
-                return 'Sexta'
-                break;
-            case 'Saturday':
-                return 'Sábado'
-                break;
-            case 'Sunday':
-                return 'Domingo'
-                break;
-            default:
-                break;
-        }
-
-    } catch (error) {
-        console.log(error);
-    }
 }
