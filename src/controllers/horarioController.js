@@ -267,7 +267,7 @@ module.exports = {
                         Authorization: `Bearer ${req.cookies['token']}`
                     }
                 })
-                
+
             } else {
                 console.log('tem rn');
             }

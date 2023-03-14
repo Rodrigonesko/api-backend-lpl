@@ -1996,6 +1996,28 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    migrarBanco: async (req, res) => {
+
+        try {
+            const propostas = await Propostas.find()
+
+            console.log(propostas.length);
+
+            await axios.post('http://10.0.121.55:3002/migrarBanco', {
+                propostas
+            }, {
+                withCredentials: true
+            })
+
+            return res.json(propostas.length)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 
