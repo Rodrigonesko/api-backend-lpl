@@ -1416,10 +1416,7 @@ module.exports = {
                 }
             })
 
-            const propostas = await Propostas.find({
-                agendado: 'agendado',
-                status: undefined
-            })
+            const propostas = resp.data
 
             const analistas = await User.find({
                 enfermeiro: true
