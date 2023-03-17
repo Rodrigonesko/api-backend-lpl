@@ -533,7 +533,99 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    diasDisponiveis: async (req, res) => {
+        try {
+
+            const result = await Horario.find()
+
+            const arr = result.map(e => {
+
+                const today = new Date()
+
+                if (moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD')) {
+                    //console.log();
+                    //return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
+                    console.log(moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD'));
+                    return moment(e.dia).tz('America/Sao_Paulo').format('DD/MM/YYYY')
+                }
+
+            })
+
+            const dias = arr.filter((el, i) => {
+                return arr.indexOf(el) === i
+            })
+
+            return res.status(200).json(dias)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    buscarHorariosDisponiveis: async (req, res) => {
+        try {
+
+            const { data } = req.params
+
+            const result = await Horario.find({
+                dia: data
+            })
+
+            let arr = []
+
+            result.forEach(e => {
+                if (e.agendado !== 'Agendado') {
+                    arr.push(e.horario)
+                }
+            })
+
+            const uniqueArr = [...new Set(arr)]
+
+            console.log(uniqueArr.sort());
+
+            return res.json(uniqueArr)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    buscarAnalistasDisponiveis: async (req, res) => {
+        try {
+
+            const { data, horario } = req.params
+
+            const result = await Horario.find({
+                horario,
+                dia: data,
+                agendado: { $ne: 'Agendado' }
+            })
+
+            let arr = []
+
+            result.forEach(e => {
+                arr.push(e.enfermeiro)
+            })
+
+            console.log(arr);
+
+            return res.json(arr)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
 
 }
 

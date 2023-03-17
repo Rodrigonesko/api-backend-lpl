@@ -59,7 +59,8 @@ const propostaScheema = mongoose.Schema({
     contato2: String,
     responsavelContato2: String,
     contato3: String,
-    responsavelContato3: String
+    responsavelContato3: String,
+    naoEnviar: Boolean
 }, {
     timestamps: true
 })

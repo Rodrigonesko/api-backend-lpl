@@ -116,6 +116,9 @@ router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImpl
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
 router.put('/entrevistas/tentativaContato', auth, TeleEntrevistaController.tentativaDeContato)
 
+router.get('/entrevistas/diasDisponiveis', auth, horarioController.diasDisponiveis)
+router.get('/entrevistas/horariosDisponiveis/:data', auth, horarioController.buscarHorariosDisponiveis)
+router.get('/entrevistas/analistasDisponiveis/:data/:horario', auth, horarioController.buscarAnalistasDisponiveis)
 
 router.get('/migrarBanco', TeleEntrevistaController.migrarBanco)
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)

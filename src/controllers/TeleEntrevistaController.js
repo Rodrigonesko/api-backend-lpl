@@ -1998,12 +1998,46 @@ module.exports = {
     migrarBanco: async (req, res) => {
 
         try {
-            const propostas = await Propostas.find()
+            const propostas = await Propostas.find({
+                $or: [
+                    { vigencia: '2023-03-10' },
+                    { vigencia: '2023-03-11' },
+                    { vigencia: '2023-03-13' },
+                    { vigencia: '2023-03-14' },
+                    { vigencia: '2023-03-15' },
+                ]
+            })
 
-            console.log(propostas.length);
+            let arr = []
+
+            propostas.forEach(e => {
+                if (e.contato1 && (e.status === 'Cancelado' || e.status === 'Concluído') && e.agendado !== 'agendado') {
+                    arr.push(e)
+                }
+            })
+
+            console.log(arr.length);
+
+            // arr.forEach(async e => {
+            //     const create = await DadosEntrevista.create({
+            //         nome: e.nome,
+            //         cpf: e.cpf,
+            //         dataNascimento: e.dataNascimento,
+            //         proposta: e.proposta,
+            //         cancelado: true,
+            //         divergencia: 'Sem Sucesso de Contato',
+            //         houveDivergencia: 'Não',
+            //         dataEntrevista: moment().format('YYYY-MM-DD'),
+            //         tipoContrato: e.tipoContrato,
+            //         dataRecebimento: e.dataRecebimento,
+            //         responsavel: 'Sem Sucesso de Contato'
+            //     })
+            // })
+
+            // console.log(propostas.length);
 
             await axios.post('http://10.0.121.55:3002/migrarBanco', {
-                propostas
+                propostas: arr
             }, {
                 withCredentials: true
             })
@@ -2015,7 +2049,7 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 }
 
 function ExcelDateToJSDate(serial) {
