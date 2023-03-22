@@ -1,14 +1,22 @@
 const mongoose = require('mongoose')
 const Horario = mongoose.model('Horario')
 const User = mongoose.model('User')
-const PropostaEntrevista = mongoose.model('PropostaEntrevista')
 const Rn = mongoose.model('Rn')
 const moment = require('moment')
-const timezone = require('moment-timezone')
+const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
 
-
 module.exports = {
+
+
+    /**
+*  Report das atividades em andamento.
+*
+* @route GET /controleAtividade/andamento
+* @returns {object} Report das atividades em andamento.
+* @throws {error} Erro.
+*/
+
     gerar: async (req, res) => {
         try {
 
@@ -579,8 +587,13 @@ module.exports = {
             let arr = []
 
             result.forEach(e => {
-                if (e.agendado !== 'Agendado') {
-                    arr.push(e.horario)
+                if ((e.agendado !== 'Agendado')) {
+                    if (e.dia != moment().format('YYYY-MM-DD')) {
+                        arr.push(e.horario)
+                    }
+                    if (e.horario >= moment().format('HH:mm:ss')) {
+                        arr.push(e.horario)
+                    }
                 }
             })
 

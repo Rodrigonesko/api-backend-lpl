@@ -4,15 +4,11 @@ const userController = require('../controllers/userController')
 const verifyToken = require('../middlewares/verifyToken')
 const auth = require('../middlewares/auth')
 const rnContoller = require('../controllers/rnContoller')
-const propostaEntrevistaController = require('../controllers/propostaEntrevistaController')
-const liminarController = require('../controllers/liminarController')
-const projetoAjController = require('../controllers/projetoAjController')
 const horarioController = require('../controllers/horarioController')
 const rsdController = require('../controllers/rsdController')
 const elegibilidadeController = require('../controllers/elegibilidadeController')
 const TeleEntrevistaController = require('../controllers/TeleEntrevistaController')
 const urgenciaEmergenciaController = require('../controllers/urgenciaEmergenciaController')
-const amilController = require('../controllers/amilController')
 const ControleAtividadeController = require('../controllers/controleAtividadesController')
 
 const router = express.Router()
@@ -27,9 +23,10 @@ router.get('/', publicController.index)
 router.post('/login', publicController.login)
 router.post('/logout', publicController.logout)
 
+//Verificar Token
 router.get('/verifyToken', auth, verifyToken.verify)
 
-//Rest
+//User
 router.post('/users', auth, userController.create)
 router.get('/users', auth, userController.index)
 router.get('/infoUser', auth, userController.infoUser)
@@ -39,7 +36,6 @@ router.put('/users/updatePassword', auth, userController.firstAccess)
 router.put('/users/modules', auth, userController.modules)
 router.get('/users/elegibilidade', auth, userController.analistasElegi)
 router.put('/users/resetPassword', auth, userController.resetPassword)
-
 
 //Rns
 
@@ -58,14 +54,9 @@ router.put('/rn/reagendar', auth, rnContoller.reagendar)
 router.put('/rn/alterarTelefone', auth, rnContoller.alterarTelefone)
 router.get('/rn/concluidas', auth, rnContoller.concluidas)
 router.put('/rn/cancelar', auth, rnContoller.cancelar)
+router.put('/rn/tentativaContato', auth, rnContoller.tentativaContato)
 
 //Tele Entrevistas
-
-router.post('/entrevistas/upload', auth, propostaEntrevistaController.upload)
-router.get('/entrevistas/propostas', auth, propostaEntrevistaController.show)
-
-router.get('/entrevistas/propostas/agendadas', auth, propostaEntrevistaController.mostrarPropostasAgendadas)
-router.get('/entrevistas/propostas/naoAgendadas', auth, propostaEntrevistaController.mostrarPropostasNaoAgendadas)
 
 router.post('/entrevistas/gerarHorarios', auth, horarioController.gerar)
 router.get('/entrevistas/buscarDiasDisponiveis/:enfermeiro', auth, horarioController.search)
@@ -78,7 +69,6 @@ router.put('/entrevistas/reabrirHorarios', auth, horarioController.reabrirHorari
 router.get('/entrevistas/horarios/disponiveis', auth, horarioController.buscarHorarioDisponiveis)
 
 router.get('/entrevistas/perguntas', auth, TeleEntrevistaController.mostrarPerguntas)
-router.get('/entrevistas/pessoa/:id', auth, TeleEntrevistaController.mostrarPessoaEntrevista)
 router.post('/entrevistas/formulario', auth, TeleEntrevistaController.enviarDadosFormulario)
 router.get('/entrevistas/cids/pesquisa/:pesquisa', auth, TeleEntrevistaController.buscarCids)
 router.get('/entrevistas/dadosEntrevista/:proposta/:nome', auth, TeleEntrevistaController.mostrarDadosEntrevista)
@@ -89,22 +79,14 @@ router.get('/entrevistas/propostas/anexar', auth, TeleEntrevistaController.busca
 router.put('/entrevistas/propostas/anexar', auth, TeleEntrevistaController.anexarSisAmil)
 router.put('/entrevistas/reagendar', auth, TeleEntrevistaController.reagendar)
 router.put('/entrevistas/cancelar', auth, TeleEntrevistaController.cancelarProposta)
-router.put('/entrevistas/proposta/excluir', auth, TeleEntrevistaController.excluirProposta)
-router.put('/entrevistas/alterarTelefone', auth, TeleEntrevistaController.alterarTelefone)
 router.get('/entrevistas/naoFaturadas', auth, TeleEntrevistaController.buscarNaoFaturados)
 router.put('/entrevistas/faturar', auth, TeleEntrevistaController.realizarFaturamento)
 router.get('/entrevistas/faturamento/filtros/:status/:data', auth, TeleEntrevistaController.filtrosFaturamento)
-router.get('/entrevistas/propostas/naoRealizadas', auth, TeleEntrevistaController.buscarPropostasNaoRealizadas)
 router.post('/entrevistas/upload/perguntas', auth, TeleEntrevistaController.subirPerguntas)
-router.post('/entrevistas/upload/dadosEntrevista', auth, TeleEntrevistaController.subirDadosEntrevista)
-router.post('/entrevistas/upload/propostas', auth, TeleEntrevistaController.subirPropostas)
 router.get('/entrevistas/report/agendadas', auth, TeleEntrevistaController.reportAgendadas)
 router.put('/entrevistas/propostas/vigencia/update', auth, TeleEntrevistaController.atualizarVigencia)
-router.get('/entrevistas/producao/dados', auth, TeleEntrevistaController.mostrarDadosProducao)
 router.get('/entrevistas/producao/diaria/:data', auth, TeleEntrevistaController.producaoDiaria)
-router.put('/entrevistas/propostas/alterarFormulario', auth, TeleEntrevistaController.alterarFormulario)
 router.post('/entrevistas/cid/adicionar', auth, TeleEntrevistaController.adicionarCid)
-router.put('/entrevistas/proposta/alterarSexo', auth, TeleEntrevistaController.alterarSexo)
 router.get('/entrevistas/mensagens/:data', TeleEntrevistaController.gerarMensagens)
 router.post('/entrevistas/horario/novo', auth, horarioController.abrirNovoHorario)
 router.put('/entrevistas/dadosEntrevista/dataNascimento', auth, TeleEntrevistaController.alterarDataNascimento)
@@ -114,28 +96,13 @@ router.put('/entrevistas/mandarImplatacao', auth, TeleEntrevistaController.manda
 router.put('/entrevistas/implantar', auth, TeleEntrevistaController.implantar)
 router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImplantadas)
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
-router.put('/entrevistas/tentativaContato', auth, TeleEntrevistaController.tentativaDeContato)
 
 router.get('/entrevistas/diasDisponiveis', auth, horarioController.diasDisponiveis)
-router.get('/entrevistas/horariosDisponiveis/:data', auth, horarioController.buscarHorariosDisponiveis)
+router.get('/entrevistas/horariosDisponiveis/:data', horarioController.buscarHorariosDisponiveis)
 router.get('/entrevistas/analistasDisponiveis/:data/:horario', auth, horarioController.buscarAnalistasDisponiveis)
 
 router.get('/migrarBanco', TeleEntrevistaController.migrarBanco)
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
-
-//Liminar
-
-router.post('/liminares/upload', auth, liminarController.upload)
-router.get('/liminares/show', auth, liminarController.show)
-router.put('/liminares/concluir', auth, liminarController.concluir)
-router.put('/liminares/change', auth, liminarController.change)
-
-//Projeto Aj
-
-router.post('/projetoAj/upload', auth, projetoAjController.upload)
-router.get('/projetoAj/show', auth, projetoAjController.show)
-router.put('/projetoAj/concluir', auth, projetoAjController.concluir)
-router.put('/projetoAj/change', auth, projetoAjController.change)
 
 //RSD
 
@@ -221,9 +188,6 @@ router.put('/urgenciaEmergencia/salvarContato', auth, urgenciaEmergenciaControll
 router.put('/urgenciaEmergencia/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
 router.get('/urgenciaEmergencia/producaoTotal', auth, urgenciaEmergenciaController.producaoTotal)
 
-/* Amil */
-
-router.post('/amil/upload', auth, amilController.insert)
 
 /* Controle de Atividades */
 

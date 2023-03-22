@@ -12,12 +12,22 @@ const fs = require('fs')
 const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')
-const Horario = require('../models/Horario')
+const Horario = require('../models/TeleEntrevista/Horario')
 const { default: axios } = require('axios')
 
 const uploadPerguntas = multer({ dest: os.tmpdir() }).single('file')
 
 module.exports = {
+
+
+    /**
+* Busca perguntas do formulário das teles.
+*
+* @route GET /entrevistas/perguntas
+* @returns {object} Perguntas do formulario.
+* @throws {error} Erro.
+*/
+
     mostrarPerguntas: async (req, res) => {
         try {
             const perguntas = await Pergunta.find()
@@ -32,33 +42,31 @@ module.exports = {
         }
     },
 
-    mostrarPessoaEntrevista: async (req, res) => {
-        try {
-
-            const { id } = req.params
-
-            const pessoa = await Propostas.findById({
-                _id: id
-            })
-
-            return res.status(200).json({
-                pessoa
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
+    /**
+* Envia os dados formulário para o banco.
+*
+* @route POST /entrevistas/formulario
+* @returns {object} dados do formulario.
+* @throws {error} Erro.
+*/
 
     enviarDadosFormulario: async (req, res) => {
         try {
 
             const { respostas, subRespostas, pessoa, simOuNao, cids, divergencia } = req.body
 
+            /*
+                respostas = array das respostas refenente as perguntas principais
+                subRespostas = array de respostas referente a subPerguntas
+                pessoa = 
+                simOuNao = Se sim ou não para a resposta
+                cids = array com os cids referente a aquele formulario
+                divergencia = Se existe ou nao divergencia
+            */
+
             let divBanco
+
+            //Caso exista divergencia, divBanco recebe sim para inputar no banco
 
             if (divergencia === true) {
                 divBanco = 'Sim'
@@ -66,13 +74,19 @@ module.exports = {
                 divBanco = 'Não'
             }
 
+            //respostasConc = Concatena respostas com simOuNao e subRespostas
+
             let respostasConc = {
 
             }
 
+            //Percorre o objeto SimOuNao e concatena ou cria no objeto respostasConc os valores do objeto simOuNao
+
             Object.keys(simOuNao).forEach(key => {
                 respostasConc[`${key}`] += `${simOuNao[key]} \n `
             })
+
+            //Percorre o objeto subRespostas e concatena ou cria no objeto respostasConc os valores do objeto subRespostas
 
 
             Object.keys(subRespostas).forEach(key => {
@@ -82,9 +96,13 @@ module.exports = {
 
             })
 
+            //Percorre o objeto respostas e concatena ou cria no objeto respostasConc os valores do objeto respostas
+
             Object.keys(respostas).forEach(key => {
                 respostasConc[`${key}`] += `${respostas[key]} \n `
             })
+
+            //Percorre o objeto respostasConc e insere caso nao exista no banco ou atualiza as respostas dos formulário
 
             for (const key of Object.keys(respostasConc)) {
                 await DadosEntrevista.findOneAndUpdate({
@@ -96,11 +114,13 @@ module.exports = {
                         }
                     ]
                 }, {
-                    [key]: respostasConc[key].replace('undefined', '')
+                    [key]: respostasConc[key].replace('undefined', '') //Este replace é pq algumas respostas vem do formulario como undefined mesmo respondidas, e foi a unica forma que pensei para resolver o problema
                 }, {
                     upsert: true
                 })
             }
+
+            //Manda para a API das propostas da tele e conclui a tele por lá
 
             const resp = await axios.put(`${process.env.API_TELE}/concluir`, {
                 id: pessoa._id,
@@ -116,9 +136,9 @@ module.exports = {
 
             console.log(resp.data);
 
-            const updateProposta = resp.data
+            const updateProposta = resp.data    //Pega os dados referentes aquela proposta por meio dos dados da resposta da API
 
-            const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({
+            const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({      //Atualiza alguns dados necessários no formulário que dependem dos dados da proposta
                 $and: [
                     {
                         nome: pessoa.nome
@@ -158,6 +178,14 @@ module.exports = {
         }
     },
 
+    /**
+* Busca so dados dos cids referente ao cid pesqusado.
+*
+* @route GET /entrevistas/cids/pesquisa/:pesquisa
+* @returns {object} Cids pesquisados.
+* @throws {error} Erro.
+*/
+
     buscarCids: async (req, res) => {
         try {
 
@@ -187,6 +215,15 @@ module.exports = {
         }
     },
 
+    /**
+* Busca so dados da entrevista realizada passando o nome e a proposta da pessoa.
+*
+* @route GET /entrevistas/dadosEntrevista/:proposta/:nome
+* @returns {object} Dados da entrevista realizada.
+* @throws {error} Erro.
+*/
+
+
     mostrarDadosEntrevista: async (req, res) => {
         try {
 
@@ -211,6 +248,15 @@ module.exports = {
         }
     },
 
+    /**
+* Busca todas as entrevistas ja realizadas.
+*
+* @route GET /entrevistas/dadosEntrevista
+* @returns {object} Dados de todas as entrevistas.
+* @throws {error} Erro.
+*/
+
+
     mostrarDadosEntrevistas: async (req, res) => {
         try {
 
@@ -226,6 +272,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Busca dados da entrevista pelo id.
+*
+* @route GET /entrevistas/buscar/dadosEntrevista/:id
+* @returns {object} Dados da entrevista.
+* @throws {error} Erro.
+*/
 
     mostrarDadosEntrevistaId: async (req, res) => {
         try {
@@ -247,6 +301,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Salva os dados editados da entrevista recebendo o id e as respostas como req.
+*
+* @route PUT /entrevistas/editar/dadosEntrevista
+* @returns {object} Dados da entrevista.
+* @throws {error} Erro.
+*/
 
     salvarDadosEditados: async (req, res) => {
         try {
@@ -279,6 +341,14 @@ module.exports = {
         }
     },
 
+    /**
+* Busca propostas não anexadas.
+*
+* @route GET /entrevistas/propostas/anexar
+* @returns {object} Propostas não anexadas.
+* @throws {error} Erro.
+*/
+
     buscarPropostasNaoAnexadas: async (req, res) => {
         try {
 
@@ -298,6 +368,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Atualiza estado para anexado.
+*
+* @route PUT /entrevistas/propostas/anexar
+* @returns {object} Proposta.
+* @throws {error} Erro.
+*/
 
     anexarSisAmil: async (req, res) => {
         try {
@@ -322,6 +400,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Manda proposta a implantação.
+*
+* @route PUT /entrevistas/mandarImplatacao
+* @returns {object} Proposta.
+* @throws {error} Erro.
+*/
 
     mandarImplantacao: async (req, res) => {
         try {
@@ -348,6 +434,14 @@ module.exports = {
         }
     },
 
+    /**
+* Muda o estado para implantado.
+*
+* @route PUT /entrevistas/implantar
+* @returns {object} Proposta.
+* @throws {error} Erro.
+*/
+
     implantar: async (req, res) => {
         try {
 
@@ -369,6 +463,14 @@ module.exports = {
         }
     },
 
+    /**
+* Busca propostas não implantadas.
+*
+* @route GET /entrevistas/naoImplantadas
+* @returns {object} Propostas não implantadas.
+* @throws {error} Erro.
+*/
+
     naoImplantadas: async (req, res) => {
         try {
 
@@ -387,10 +489,20 @@ module.exports = {
         }
     },
 
+    /**
+* Reagenda proposta.
+*
+* @route PUT /entrevistas/reagendar
+* @returns {object} Proposta.
+* @throws {error} Erro.
+*/
+
     reagendar: async (req, res) => {
         try {
 
             const { id } = req.body
+
+            //Manda uma requisicao get para api da tele na rota proposta/:id para receber os dados daquela proposta
 
             const resp = await axios.get(`${process.env.API_TELE}/proposta/${id}`, {
                 withCredentials: true,
@@ -403,9 +515,13 @@ module.exports = {
 
             console.log(dadosProposta);
 
+            //Separa o horário da data de entrevista
+
             let split = dadosProposta.dataEntrevista.split(' ')
             let dataEntrevista = split[0]
             const horario = split[1]
+
+            //Reabre o horário daquele responsável pela entrevista
 
             const atualizarHorarios = await Horario.findOneAndUpdate({
                 $and: [
@@ -421,6 +537,8 @@ module.exports = {
                 agendado: 'Reaberto',
                 nome: ''
             })
+
+            //Manda para api o id da proposta que deve ser reagendada para voltar para a aba de não agendados
 
             const reagendar = await axios.put(`${process.env.API_TELE}/reagendar`, {
                 id
@@ -441,10 +559,22 @@ module.exports = {
         }
     },
 
+    /**
+* Cancela a proposta.
+*
+* @route PUT /entrevistas/cancelar
+* @returns {object} Proposta.
+* @throws {error} Erro.
+*/
+
     cancelarProposta: async (req, res) => {
         try {
 
             const { id, motivoCancelamento } = req.body
+
+            //Recebe como parametro o id e o motivo do cancelamento
+
+            //Manda para a api das teles o id referente a proposta que deve ser cancelada
 
             const resp = await axios.put(`${process.env.API_TELE}/cancelar`, {
                 id
@@ -455,7 +585,9 @@ module.exports = {
                 }
             })
 
-            const proposta = resp.data
+            const proposta = resp.data //Recebe os dados da proposta cancelada
+
+            // Cria nos dadosEntrevista com os dados da proposta, o formulario como cancelado e o motivo do cancelamento
 
             const create = await DadosEntrevista.create({
                 nome: proposta.nome,
@@ -484,51 +616,18 @@ module.exports = {
         }
     },
 
-    excluirProposta: async (req, res) => {
-        try {
-
-            const { id } = req.body
-
-            const remove = await Propostas.deleteOne({
-                _id: id
-            })
-
-            return res.status(200).json({
-                remove
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    alterarTelefone: async (req, res) => {
-        try {
-            const { id, telefone } = req.body
-
-            const result = await Propostas.findOneAndUpdate({
-                _id: id
-            }, {
-                telefone: telefone
-            })
-
-            return res.status(200).json({
-                result
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
+    /**
+* Busca entrevistas, rns e ues não faturadas.
+*
+* @route GET /entrevistas/naoFaturadas
+* @returns {object} Não faturadas.
+* @throws {error} Erro.
+*/
 
     buscarNaoFaturados: async (req, res) => {
         try {
+
+            //Busca dados de não faturadas
 
             const teles = await DadosEntrevista.find({
                 faturado: 'Não faturado'
@@ -545,6 +644,8 @@ module.exports = {
             })
 
             let entrevistas = []
+
+            //Esses foreachs são responsaveis para deixar em um padrão e colocar dentro de um array as informações
 
             teles.forEach(e => {
                 entrevistas.push({
@@ -597,6 +698,14 @@ module.exports = {
         }
     },
 
+    /**
+* Busca entrevistas, rns e ues filtradas para o faturamento.
+*
+* @route GET /entrevistas/faturamento/filtros/:status/:data
+* @returns {object} Não faturadas.
+* @throws {error} Erro.
+*/
+
     filtrosFaturamento: async (req, res) => {
         try {
 
@@ -608,7 +717,7 @@ module.exports = {
             const month = split[0]
             const year = split[1]
 
-            if (status == 'todos' && data == 'todos') {
+            if (status == 'todos' && data == 'todos') {     //Caso status = todos e data = todos busca tudo independente da data e status
                 console.log('pesquisa tudo');
                 const teles = await DadosEntrevista.find()
                 const rns = await Rn.find({
@@ -662,7 +771,7 @@ module.exports = {
                 })
             }
 
-            if (status != 'todos' && data == 'todos') {
+            if (status != 'todos' && data == 'todos') {     //Caso status != todos e data = todos busca referente ao status independente da data
                 console.log('status independente da data');
                 const teles = await DadosEntrevista.find({
                     faturado: status
@@ -720,7 +829,7 @@ module.exports = {
                 })
             }
 
-            if (status == 'todos' && data != 'todos') {
+            if (status == 'todos' && data != 'todos') {     //Caso status = todos e data != todos busca referente a data e independente do status
                 console.log('tudo de tal data');
                 const telesBanco = await DadosEntrevista.find()
 
@@ -787,7 +896,7 @@ module.exports = {
                 })
             }
 
-            if (status != 'todos' && data != 'todos') {
+            if (status != 'todos' && data != 'todos') {         //Caso status != todos e data != todos busca referente a data e referente ao status
                 console.log('status e data filtrado');
                 console.log(status);
                 const telesBanco = await DadosEntrevista.find({
@@ -873,6 +982,14 @@ module.exports = {
         }
     },
 
+    /**
+* Realiza faturamento das propostas selecionadas
+*
+* @route PUT /entrevistas/faturar
+* @returns {object} Faturadas.
+* @throws {error} Erro.
+*/
+
     realizarFaturamento: async (req, res) => {
         try {
 
@@ -922,27 +1039,6 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
-            })
-        }
-    },
-
-    buscarPropostasNaoRealizadas: async (req, res) => {
-        try {
-
-            const result = await Propostas.find()
-
-            const propostas = result.filter(e => {
-                return e.status != 'Concluído' && e.status != 'Cancelado'
-            })
-
-            return res.status(200).json({
-                propostas
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
             })
         }
     },
@@ -1002,254 +1098,13 @@ module.exports = {
         }
     },
 
-    subirDadosEntrevista: async (req, res) => {
-        try {
-            uploadPerguntas(req, res, async (err) => {
-                let file = fs.readFileSync(req.file.path)
-
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                for (let item of result) {
-                    for (const e of (Object.keys(item))) {
-
-                        if (e === 'dataFaturamento' || e === 'dataEntrevista' || e === 'dataNascimento' || e === '') {
-
-                            item[e] = ExcelDateToJSDate(item[e])
-                            item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('YYYY-MM-DD')
-
-                        }
-                        await DadosEntrevista.findOneAndUpdate({
-                            $and: [
-                                {
-                                    nome: item.nome
-                                }, {
-                                    proposta: item.proposta
-                                }
-                            ]
-                        }, {
-                            [e]: item[e]
-                        }, {
-                            upsert: true
-                        })
-                    }
-                }
-
-                return res.status(200).json({
-                    msg: 'oii'
-                })
-
-            })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    subirPropostas: async (req, res) => {
-        try {
-            uploadPerguntas(req, res, async (err) => {
-                let file = fs.readFileSync(req.file.path)
-
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                for (let item of result) {
-                    for (const e of (Object.keys(item))) {
-
-                        if (e === 'dataRecebimento' || e === 'vigencia') {
-                            item[e] = ExcelDateToJSDate(item[e])
-                            item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('YYYY-MM-DD')
-                        }
-                        if (e === 'dataNascimento') {
-                            item[e] = ExcelDateToJSDate(item[e])
-                            item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('YYYY-MM-DD')
-                        }
-                        if (e === 'dataEntrevista') {
-                            item[e] = ExcelDateToJSDate(item[e])
-                            item[e].setDate(item[e].getDate() + 1)
-                            item[e] = moment(item[e]).format('YYYY-MM-DD')
-                        }
-
-                        await Propostas.findOneAndUpdate({
-                            $and: [
-                                {
-                                    nome: item.nome
-                                }, {
-                                    proposta: item.proposta
-                                }
-                            ]
-                        }, {
-                            [e]: item[e]
-                        }, {
-                            upsert: true
-                        })
-                    }
-                }
-
-                return res.status(200).json({
-                    msg: 'oii'
-                })
-
-            })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    mostrarDadosProducao: async (req, res) => {
-        try {
-
-            const entrevistas = await DadosEntrevista.find()
-
-            let mapQuantidadeMesAno = new Map()
-            let quantidadeMesAno = {}
-
-            let quantidadeAnalistaMesAno = {}
-            let quantidadeAnalistaDia = {}
-
-            entrevistas.forEach(e => {
-
-                /* Logica para verificar se ja existe array com chave no map das entrevistas */
-
-                if (mapQuantidadeMesAno.has(moment(e.dataEntrevista).format('MM/YYYY'))) {
-                    mapQuantidadeMesAno.set(moment(e.dataEntrevista).format('MM/YYYY'), mapQuantidadeMesAno.get(moment(e.dataEntrevista).format('MM/YYYY')) + 1)
-                } else {
-                    mapQuantidadeMesAno.set(moment(e.dataEntrevista).format('MM/YYYY'), 1)
-                }
-
-                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por mes */
-
-                if (!quantidadeAnalistaMesAno.hasOwnProperty(e.responsavel)) {
-                    quantidadeAnalistaMesAno[e.responsavel] = {}
-                    if (!quantidadeAnalistaMesAno[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('MM/YYYY'))) {
-                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = 1
-                    } else {
-                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] + 1
-                    }
-                } else {
-                    if (!quantidadeAnalistaMesAno[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('MM/YYYY'))) {
-                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = 1
-                    } else {
-                        quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] = quantidadeAnalistaMesAno[e.responsavel][moment(e.dataEntrevista).format('MM/YYYY')] + 1
-                    }
-                }
-                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por dia */
-
-                if (!quantidadeAnalistaDia.hasOwnProperty(e.responsavel)) {
-                    quantidadeAnalistaDia[e.responsavel] = {}
-                    if (!quantidadeAnalistaDia[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('YYYY-MM-DD'))) {
-                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = 1
-                    } else {
-                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] + 1
-                    }
-                } else {
-                    if (!quantidadeAnalistaDia[e.responsavel].hasOwnProperty(moment(e.dataEntrevista).format('YYYY-MM-DD'))) {
-                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = 1
-                    } else {
-                        quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] = quantidadeAnalistaDia[e.responsavel][moment(e.dataEntrevista).format('YYYY-MM-DD')] + 1
-                    }
-                }
-            })
-
-            const analistas = await User.find({
-                enfermeiro: true
-            })
-
-            const rns = await Rn.find()
-
-            let mapQuantidadeMesAnoRn = new Map()
-            let quantidadeMesAnoRn = {}
-
-            let quantidadeAnalistaMesAnoRn = {}
-            let quantidadeAnalistaDiaRn = {}
-
-            rns.forEach(e => {
-                if (mapQuantidadeMesAnoRn.has(moment(e.dataConclusao).format('MM/YYYY'))) {
-                    mapQuantidadeMesAnoRn.set(moment(e.dataConclusao).format('MM/YYYY'), mapQuantidadeMesAnoRn.get(moment(e.dataConclusao).format('MM/YYYY')) + 1)
-                } else {
-                    mapQuantidadeMesAnoRn.set(moment(e.dataConclusao).format('MM/YYYY'), 1)
-                }
-
-                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por mes */
-
-                if (!quantidadeAnalistaMesAnoRn.hasOwnProperty(e.responsavel)) {
-                    quantidadeAnalistaMesAnoRn[e.responsavel] = {}
-                    if (!quantidadeAnalistaMesAnoRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('MM/YYYY'))) {
-                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = 1
-                    } else {
-                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] + 1
-                    }
-                } else {
-                    if (!quantidadeAnalistaMesAnoRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('MM/YYYY'))) {
-                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = 1
-                    } else {
-                        quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] = quantidadeAnalistaMesAnoRn[e.responsavel][moment(e.dataConclusao).format('MM/YYYY')] + 1
-                    }
-                }
-                /* Logica para verificar se ja existe propriedade analista e data com a quantidade de entrevistas realizar por dia */
-
-                if (!quantidadeAnalistaDiaRn.hasOwnProperty(e.responsavel)) {
-                    quantidadeAnalistaDiaRn[e.responsavel] = {}
-                    if (!quantidadeAnalistaDiaRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('YYYY-MM-DD'))) {
-                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = 1
-                    } else {
-                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] + 1
-                    }
-                } else {
-                    if (!quantidadeAnalistaDiaRn[e.responsavel].hasOwnProperty(moment(e.dataConclusao).format('YYYY-MM-DD'))) {
-                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = 1
-                    } else {
-                        quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] = quantidadeAnalistaDiaRn[e.responsavel][moment(e.dataConclusao).format('YYYY-MM-DD')] + 1
-                    }
-                }
-
-            })
-
-            mapQuantidadeMesAno.forEach((e, key) => {
-                quantidadeMesAno[key] = e
-            })
-
-            mapQuantidadeMesAnoRn.forEach((e, key) => {
-                quantidadeMesAnoRn[key] = e
-            })
-
-            console.log(quantidadeMesAnoRn, quantidadeAnalistaMesAnoRn, quantidadeAnalistaDiaRn);
-
-            return res.status(200).json({
-                quantidadeMesAno,
-                quantidadeAnalistaMesAno,
-                quantidadeAnalistaDia,
-                quantidadeMesAnoRn,
-                quantidadeAnalistaMesAnoRn,
-                quantidadeAnalistaDiaRn
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: "Internal Server Error"
-            })
-        }
-    },
+    /**
+* Mostra produção das teles e rns
+*
+* @route PUT /entrevistas/teste/producao
+* @returns {object} Producao.
+* @throws {error} Erro.
+*/
 
     mostrarDadosProducao2: async (req, res) => {
         try {
@@ -1258,9 +1113,30 @@ module.exports = {
 
             arrQuantidadeTotalMes = []
 
+            /*
+                Produção por mês
+                monta um array de objetos, e cada objeto é um mês.
+                arrQuantidadeTotalMes = [
+                    {
+                        data: 'xx/xx/xxxx',
+                        quantidade: x,
+                        quantidadeAnalistaMes: [{
+                            analista: x,
+                            quantidade: x,
+                            quantidadeAnalistaDia: [{
+                                data: 'xx/xx/xxxx',
+                                quantidade: x
+                            }]
+                        }]
+                    }
+                ]
+            */
+
             entrevistas.forEach(e => {
+                //Verifica se ja existe aquele mês no array
                 let index = arrQuantidadeTotalMes.findIndex(val => val.data == moment(e.dataEntrevista).format('MM/YYYY'))
 
+                //Caso não exista irá criar um referente as informações
                 if (index < 0) {
                     arrQuantidadeTotalMes.push({
                         data: moment(e.dataEntrevista).format('MM/YYYY'),
@@ -1274,13 +1150,14 @@ module.exports = {
                             }]
                         }]
                     })
-                } else {
+                } else { //Se ja existe irá aumentar a quantidade em 1
                     arrQuantidadeTotalMes[index].quantidade++
                 }
 
+                //Verifica se ja existe um analista naquele mês
                 let indexAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes.findIndex(val => val.analista == e.responsavel)
 
-                if (indexAnalista < 0) {
+                if (indexAnalista < 0) {    //Se não exister ele cria as informações
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes.push({
                         analista: e.responsavel,
                         quantidade: 1,
@@ -1296,16 +1173,15 @@ module.exports = {
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidade++
                 }
 
+                //Verifica se ja existe o analista dentro daquele objeto referente aquele mes e dia
                 let indexDiaAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataEntrevista).format('YYYY-MM-DD'))
 
-                // console.log(indexDiaAnalista);
-
-                if (indexDiaAnalista < 0) {
+                if (indexDiaAnalista < 0) { //Se não existir ele irá criar as informações
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
                         data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
                         quantidade: 1
                     })
-                } else {
+                } else {    // Se exister ele irá somar a quantidade em 1
                     if (arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
                         return
                     }
@@ -1319,6 +1195,8 @@ module.exports = {
             })
 
             let arrRns = []
+
+            //A lógica é a mesma para as Rns
 
             rns.forEach(e => {
                 let index = arrRns.findIndex(val => val.data == moment(e.dataConclusao).format('MM/YYYY'))
@@ -1373,25 +1251,6 @@ module.exports = {
                 }
             })
 
-            // const propostas = await Propostas.find()
-
-            // let prop = []
-
-            // rns.forEach(e => {
-            //     let index = prop.findIndex(val => val.data == moment(e.createdAt).format('DD/MM/YYYY'))
-
-            //     if(index < 0){
-            //         prop.push({
-            //             data: moment(e.createdAt).format('DD/MM/YYYY'),
-            //             quantidade: 1
-            //         })
-            //     } else {
-            //         prop[index].quantidade++
-            //     }
-            // })
-
-            // console.log(prop);
-
             return res.status(200).json({
                 arrRns,
                 arrQuantidadeTotalMes,
@@ -1405,6 +1264,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Report das entrevistas agendadas
+*
+* @route PUT /entrevistas/teste/producao
+* @returns {object} Producao.
+* @throws {error} Erro.
+*/
 
     reportAgendadas: async (req, res) => {
         try {
@@ -1517,31 +1384,33 @@ module.exports = {
 
             const { data } = req.params
 
-            const analistas = await User.find({
-                enfermeiro: true
+            const entrevistas = await DadosEntrevista.find({
+                dataEntrevista: data
             })
 
-            analistas.push(
-                { name: 'Cancelada' },
-                { name: 'Beneficiario Solicitou o Cancelamento' },
-                { name: 'Sem Sucesso de Contato!' },
-            )
+            let analistas = []
+
+            entrevistas.forEach(e => {
+                if (!analistas.includes(e.responsavel)) {
+                    analistas.push(e.responsavel)
+                }
+            })
 
             let producao = []
 
             for (const item of analistas) {
                 const count = await DadosEntrevista.find({
-                    responsavel: item.name,
+                    responsavel: item,
                     dataEntrevista: data
                 }).count()
 
                 const countRn = await Rn.find({
-                    responsavel: item.name,
+                    responsavel: item,
                     dataConclusao: data
                 }).count()
 
                 producao.push({
-                    analista: item.name,
+                    analista: item,
                     quantidade: count,
                     quantidadeRn: countRn
                 })
@@ -1571,29 +1440,6 @@ module.exports = {
         }
     },
 
-    alterarFormulario: async (req, res) => {
-        try {
-
-            const { id, formulario } = req.body
-
-            const proposta = await Propostas.findByIdAndUpdate({
-                _id: id
-            }, {
-                formulario
-            })
-
-            return res.status(200).json({
-                proposta
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     adicionarCid: async (req, res) => {
         try {
 
@@ -1610,29 +1456,6 @@ module.exports = {
 
             return res.status(200).json({
                 result
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    alterarSexo: async (req, res) => {
-        try {
-
-            const { id, sexo } = req.body
-
-            const proposta = await Propostas.findByIdAndUpdate({
-                _id: id
-            }, {
-                sexo
-            })
-
-            return res.status(200).json({
-                proposta
             })
 
         } catch (error) {
@@ -1949,100 +1772,33 @@ module.exports = {
         }
     },
 
-    tentativaDeContato: async (req, res) => {
-        try {
-
-            const { tentativa, id } = req.body
-
-            switch (tentativa) {
-                case 'tentativa 1':
-                    await Propostas.findByIdAndUpdate({
-                        _id: id
-                    }, {
-                        responsavelContato1: req.user,
-                        contato1: moment().format('DD/MM/YYYY HH:mm:ss')
-                    })
-                    break;
-                case 'tentativa 2':
-                    await Propostas.findByIdAndUpdate({
-                        _id: id
-                    }, {
-                        responsavelContato2: req.user,
-                        contato2: moment().format('DD/MM/YYYY HH:mm:ss')
-                    })
-                    break;
-                case 'tentativa 3':
-                    await Propostas.findByIdAndUpdate({
-                        _id: id
-                    }, {
-                        responsavelContato3: req.user,
-                        contato3: moment().format('DD/MM/YYYY HH:mm:ss')
-                    })
-                    break;
-                default:
-                    break;
-            }
-
-            return res.json({
-                msg: 'Tentativa de contato feita com sucesso'
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     migrarBanco: async (req, res) => {
 
         try {
-            const propostas = await Propostas.find({
-                $or: [
-                    { vigencia: '2023-03-10' },
-                    { vigencia: '2023-03-11' },
-                    { vigencia: '2023-03-13' },
-                    { vigencia: '2023-03-14' },
-                    { vigencia: '2023-03-15' },
-                ]
-            })
 
-            let arr = []
-
-            propostas.forEach(e => {
-                if (e.contato1 && (e.status === 'Cancelado' || e.status === 'Concluído') && e.agendado !== 'agendado') {
-                    arr.push(e)
-                }
-            })
-
-            console.log(arr.length);
-
-            // arr.forEach(async e => {
-            //     const create = await DadosEntrevista.create({
-            //         nome: e.nome,
-            //         cpf: e.cpf,
-            //         dataNascimento: e.dataNascimento,
-            //         proposta: e.proposta,
-            //         cancelado: true,
-            //         divergencia: 'Sem Sucesso de Contato',
-            //         houveDivergencia: 'Não',
-            //         dataEntrevista: moment().format('YYYY-MM-DD'),
-            //         tipoContrato: e.tipoContrato,
-            //         dataRecebimento: e.dataRecebimento,
-            //         responsavel: 'Sem Sucesso de Contato'
-            //     })
-            // })
-
-            // console.log(propostas.length);
-
-            await axios.post('http://10.0.121.55:3002/migrarBanco', {
-                propostas: arr
-            }, {
+            const result = await axios.get(`http://10.0.121.55:3002/cancelarPropostasEmMassa`, {
                 withCredentials: true
             })
 
-            return res.json(propostas.length)
+            const arr = result.data
+
+            arr.forEach(async e => {
+                const create = await DadosEntrevista.create({
+                    nome: e.nome,
+                    cpf: e.cpf,
+                    dataNascimento: e.dataNascimento,
+                    proposta: e.proposta,
+                    cancelado: true,
+                    divergencia: 'Sem Sucesso de Contato!',
+                    houveDivergencia: 'Não',
+                    dataEntrevista: e.contato2 ? e.contato2 : moment().format('YYYY-MM-DD'),
+                    tipoContrato: e.tipoContrato,
+                    dataRecebimento: e.dataRecebimento,
+                    responsavel: 'Sem Sucesso de Contato!'
+                })
+            })
+
+            return res.json(result.data.length)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -2050,23 +1806,17 @@ module.exports = {
             })
         }
     },
-}
 
-function ExcelDateToJSDate(serial) {
-    var utc_days = Math.floor(serial - 25569);
-    var utc_value = utc_days * 86400;
-    var date_info = new Date(utc_value * 1000);
+    cancelarVigenciasVencidas: async (req, res) => {
+        try {
+            
 
-    var fractional_day = serial - Math.floor(serial) + 0.0000001;
 
-    var total_seconds = Math.floor(86400 * fractional_day);
-
-    var seconds = total_seconds % 60;
-
-    total_seconds -= seconds;
-
-    var hours = Math.floor(total_seconds / (60 * 60));
-    var minutes = Math.floor(total_seconds / 60) % 60;
-
-    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 }

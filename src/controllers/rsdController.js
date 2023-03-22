@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Pedido = mongoose.model('Pedido')
 const Pessoa = mongoose.model('Pessoa')
-const Protocolo = mongoose.model('Protocolo')
 const Pacote = mongoose.model('Pacote')
 const Operador = mongoose.model('Operador')
 const Clinica = mongoose.model('Clinica')

@@ -15,17 +15,14 @@ const secret = process.env.JWT_SECRET
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL)
 
-const User = require('./models/User')
-const Rn = require('./models/Rn')
-
-const Liminar = require("./models/Liminar")
-const ProjetoAj = require('./models/ProjetoAj')
+const User = require('./models/User/User')
+const Rn = require('./models/TeleEntrevista/Rn')
 
 //Models Entrevista
 
-const Proposta = require("./models/PropostaEntrevista")
-const Pergunta = require('./models/Pergunta')
-const Horario = require('./models/Horario')
+const Proposta = require("./models/TeleEntrevista/PropostaEntrevista")
+const Pergunta = require('./models/TeleEntrevista/Pergunta')
+const Horario = require('./models/TeleEntrevista/Horario')
 const DadosEntrevista = require('./models/TeleEntrevista/DadosEntrevista')
 const Cid = require("./models/TeleEntrevista/Cid")
 

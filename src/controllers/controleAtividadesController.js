@@ -1,8 +1,18 @@
 const moment = require('moment')
 const ControleAtividade = require('../models/ControleAtividade/ControleAtividade')
-const User = require('../models/User')
+const User = require('../models/User/User')
 
 module.exports = {
+
+    /**
+ * Atividade padrão iniciada.
+ *
+ * @route POST /controleAtividade/iniciarPadrao
+ * @returns {object} Atividade padrão iniciada.
+ * @throws {error} Erro.
+ * @param {string} name - Busca o usuário e inicia a atividade padrão dele
+ */
+
     atividadePadrao: async (req, res) => {
         try {
             const { name } = req.body
@@ -26,11 +36,11 @@ module.exports = {
                 encerrado: false
             })
 
-            if (diaAnterior) {
+            if (diaAnterior) {      //Se ele não encerrou a atividade anterior, esse bloco irá fechar sua atividade de acordo com seu horário de saída e fazer o cálculo de quanto tempo ela ficou nesta atividade
 
                 const dataInicio = moment(diaAnterior.horarioInicio)
                 const dataFim = moment(`${diaAnterior.data} ${horarioSaida}`)
-        
+
                 let ms = moment(dataFim).diff(moment(dataInicio))
                 let d = moment.duration(ms);
                 let s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
@@ -45,11 +55,15 @@ module.exports = {
 
             }
 
+            //Se ja tem uma atividade em andamento nada acontece
+
             if (find) {
                 return res.status(200).json({
                     msg: 'Dia já iniciado'
                 })
             }
+
+            //Inicia atividade baseada na atividade padrão do funcionário
 
             const create = await ControleAtividade.create({
                 analista: name,
@@ -71,8 +85,20 @@ module.exports = {
             })
         }
     },
+
+
+    /**
+*  Report das atividades em andamento.
+*
+* @route GET /controleAtividade/andamento
+* @returns {object} Report das atividades em andamento.
+* @throws {error} Erro.
+*/
+
     atividadesAndamento: async (req, res) => {
         try {
+
+            //Atividade padrões da LPL
 
             const atividades = [
                 'Gerência',
@@ -86,6 +112,8 @@ module.exports = {
             ]
 
             let report = []
+
+            //For responsável por verificar quem está fazendo cada atividade
 
             for (const atividade of atividades) {
                 const result = await ControleAtividade.find({
@@ -120,6 +148,16 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Atividade do funcionário em andamento.
+*
+* @route GET /controleAtividade/atual
+* @returns {object} Atividade do funcionário em andamento.
+* @throws {error} Erro.
+*/
+
+
     atividadeAtual: async (req, res) => {
         try {
 
@@ -146,6 +184,15 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Assume uma nova atividade.
+*
+* @route PUT /controleAtividade/assumir
+* @returns {object} Assume uma nova atividade.
+* @throws {error} Erro.
+*/
+
     assumirAtividade: async (req, res) => {
         try {
 
@@ -171,6 +218,16 @@ module.exports = {
             })
         }
     },
+
+
+    /**
+ * Encerra a atividade atual.
+ *
+ * @route PUT /controleAtividade/encerrar
+ * @returns {object} Encerra a atividade atual.
+ * @throws {error} Erro.
+ */
+
     encerrarAtividade: async (req, res) => {
         try {
 
@@ -206,6 +263,15 @@ module.exports = {
             })
         }
     },
+
+    /**
+ * Retorna os dados das atividades.
+ *
+ * @route GET /controleAtividade/report
+ * @returns {object} Dados para o excel.
+ * @throws {error} Erro.
+ */
+
     report: async (req, res) => {
         try {
 

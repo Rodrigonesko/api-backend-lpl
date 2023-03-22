@@ -101,7 +101,6 @@ module.exports = {
         try {
             const rns = await Rn.find()
 
-
             return res.json(rns)
         } catch (error) {
             return res.status(500).json({
@@ -445,6 +444,52 @@ module.exports = {
 
             return res.status(200).json({
                 result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    tentativaContato: async (req, res) => {
+        try {
+
+            const { id, tentativa } = req.body
+
+            switch (tentativa) {
+                case 'tentativa 1':
+                    await Rn.findByIdAndUpdate({
+                        _id: id
+                    }, {
+                        dataContato1: moment().format('YYYY-MM-DD'),
+                        horarioContato1: moment().format('HH:mm')
+                    })
+                    break;
+                case 'tentativa 2':
+                    await Rn.findByIdAndUpdate({
+                        _id: id
+                    }, {
+                        dataContato2: moment().format('YYYY-MM-DD'),
+                        horarioContato2: moment().format('HH:mm')
+                    })
+                    break;
+                case 'tentativa 3':
+                    await Rn.findByIdAndUpdate({
+                        _id: id
+                    }, {
+                        dataContato3: moment().format('YYYY-MM-DD'),
+                        horarioContato3: moment().format('HH:mm')
+                    })
+                    break;
+                default:
+                    break;
+            }
+
+            return res.json({
+                msg: 'Tentativa de contato feita com sucesso'
             })
 
         } catch (error) {
