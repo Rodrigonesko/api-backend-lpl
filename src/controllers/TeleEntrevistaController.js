@@ -1340,6 +1340,14 @@ module.exports = {
         }
     },
 
+    /**
+* Report das entrevistas agendadas
+*
+* @route PUT /entrevistas/teste/producao
+* @returns {object} Producao.
+* @throws {error} Erro.
+*/
+
     atualizarVigencia: async (req, res) => {
         try {
 
@@ -1809,7 +1817,7 @@ module.exports = {
 
     cancelarVigenciasVencidas: async (req, res) => {
         try {
-        
+
 
         } catch (error) {
             console.log(error);

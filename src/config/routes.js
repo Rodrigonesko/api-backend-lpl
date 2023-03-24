@@ -148,6 +148,9 @@ router.put('/rsd/pacote/devolver', auth, rsdController.devolverPacote)
 router.put('/rsd/protocolo/devolver', auth, rsdController.devolverProtocolo)
 router.get('/rsd/relatorio/:aPartir/:ate', auth, rsdController.relatorioAmil)
 router.get('/rsd/download/:idPacote/:filename', rsdController.download)
+router.get('/rsd/producaoDiaria/:data', auth, rsdController.producaoDiaria)
+router.get('/rsd/arrumarDataConclusao', rsdController.arrumarDataConclusao)
+
 
 //Rotas Elegibilidade
 

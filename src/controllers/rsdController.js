@@ -1114,7 +1114,7 @@ module.exports = {
                     fase: 'Finalizado',
                     statusGerencial: 'Protocolo Cancelado',
                     statusPadraoAmil: 'CANCELAMENTO - Sem retorno pós 5 dias úteis',
-                    dataConclusao: new Date(),
+                    dataConclusao: moment().format('YYYY-MM-DD'),
                     analista: req.user,
                     contato: sucesso
                 })
@@ -1280,7 +1280,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Protocolo Cancelado',
                         statusPadraoAmil: 'CANCELAMENTO - Não reconhece Procedimento/Consulta',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
 
@@ -1320,7 +1320,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Pagamento Não Realizado',
                         statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
 
@@ -1389,7 +1389,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Comprovante Correto',
                         statusPadraoAmil: 'PAGAMENTO LIBERADO',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
                 }
@@ -1403,7 +1403,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Pago pela Amil sem Comprovante',
                         statusPadraoAmil: 'PAGAMENTO LIBERADO',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
                 }
@@ -1417,7 +1417,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Pagamento Não Realizado',
                         statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
                 }
@@ -1431,7 +1431,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Protocolo Cancelado',
                         statusPadraoAmil: 'CANCELAMENTO - Comprovante não Recebido',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
                 }
@@ -1445,7 +1445,7 @@ module.exports = {
                         fase: 'Finalizado',
                         statusGerencial: 'Protocolo Cancelado',
                         statusPadraoAmil: 'INDEFERIR - Reapresentação de Protocolo Indeferido',
-                        dataConclusao: new Date(),
+                        dataConclusao: moment().format('YYYY-MM-DD'),
                         analista: req.user
                     })
                 }
@@ -2271,6 +2271,81 @@ module.exports = {
             const { idPacote, filename } = req.params
 
             res.download(`./uploads/rsd/gravacoes/${idPacote}/${filename}`)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    producaoDiaria: async (req, res) => {
+        try {
+
+            const { data } = req.params
+
+            const pedidos = await Pedido.find({
+                dataConclusao: data
+            })
+
+            let analistas = []
+
+            pedidos.forEach(e => {
+                if (!analistas.includes(e.analista)) {
+                    analistas.push(e.analista)
+                }
+            })
+
+            let producao = []
+
+            for (const analista of analistas) {
+                const count = await Pedido.find({
+                    analista,
+                    dataConclusao: data
+                }).count()
+
+                producao.push({
+                    analista,
+                    quantidade: count
+                })
+            }
+
+            const total = await Pedido.find({
+                dataConclusao: data
+            }).count()
+
+            return res.json({
+                producao,
+                total
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    arrumarDataConclusao: async (req, res) => {
+        try {
+
+            const pedidos = await Pedido.find({
+                dataConclusao: { $ne: undefined }
+            })
+
+            for (const item of pedidos) {
+                await Pedido.findByIdAndUpdate({
+                    _id: item._id
+                }, {
+                    dataConclusao: moment(item.dataConclusao)
+                })
+            }
+
+            console.log(pedidos.length);
+
+            return res.json({ qtd: pedidos.length })
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({

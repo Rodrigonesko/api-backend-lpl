@@ -9,6 +9,8 @@ const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')
 
+//Onde armazena o arquivo da urgencia e emergencia
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const dir = './uploads/urgenciaEmergencia/'
@@ -33,15 +35,26 @@ const storage = multer.diskStorage({
 const uploadUrg = multer({ storage }).single('file')
 
 module.exports = {
+
+    /**
+* Upload do arquivo e inserção no banco das UEs
+*
+* @route POST /urgenciaEmergencia/upload
+* @returns {object} quantidade de propostas inseridas.
+* @throws {error} Erro.
+*/
+
     upload: async (req, res) => {
         try {
 
             let quantidade = 0
 
-            uploadUrg(req, res, async (err) => {
+            uploadUrg(req, res, async (err) => {    //Busca o arquivo
                 console.log(req.file.originalname);
 
                 let file = fs.readFileSync(req.file.path)
+
+                //O código abaixo usando a biblioteca xlsx serve para ler o arquivo xlsx fazendo um array de objetos
 
                 const workbook = xlsx.read(file, { type: 'array' })
 
@@ -58,6 +71,8 @@ module.exports = {
                     })
 
                     if (!find) {
+
+                        //Função ExcelDateTOJSDate serve para transformar a data do excel em data
 
                         const mes = item['MÊS']
                         let data = ExcelDateToJSDate(item.DATA)
@@ -179,6 +194,14 @@ module.exports = {
         }
     },
 
+    /**
+* Mostra UEs em andamento
+*
+* @route GET /urgenciaEmergencia/andamento
+* @returns {object} Propostas em andamento.
+* @throws {error} Erro.
+*/
+
     mostrarAndamento: async (req, res) => {
         try {
             const propostas = await UrgenciasEmergencia.find({
@@ -199,6 +222,15 @@ module.exports = {
         }
     },
 
+    /**
+* Mostra UEs para anexar
+*
+* @route GET /urgenciaEmergencia/anexar
+* @returns {object} Propostas em anexar.
+* @throws {error} Erro.
+*/
+
+
     mostrarAnexar: async (req, res) => {
         try {
             const propostas = await UrgenciasEmergencia.find({
@@ -216,6 +248,15 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Mostra UEs concluidas
+*
+* @route GET /urgenciaEmergencia/concluidas
+* @returns {object} Propostas em concluidas.
+* @throws {error} Erro.
+*/
+
 
     mostrarConcluidas: async (req, res) => {
         try {
@@ -236,6 +277,14 @@ module.exports = {
         }
     },
 
+    /**
+* Mostra UEs
+*
+* @route GET /urgenciaEmergencia/todas
+* @returns {object} Propostas
+* @throws {error} Erro.
+*/
+
     mostrarTodas: async (req, res) => {
         try {
 
@@ -252,6 +301,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Mostra informações de determinada UE
+*
+* @route GET /urgenciaEmergencia/detalhes/:id
+* @returns {object} Proposta
+* @throws {error} Erro.
+*/
 
     mostrarDadosProposta: async (req, res) => {
         try {
@@ -273,6 +330,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Salva informações de determinada UE
+*
+* @route PUT /urgenciaEmergencia/salvarInfo
+* @returns {object} Proposta
+* @throws {error} Erro.
+*/
 
     salvarInfo: async (req, res) => {
         try {
@@ -296,6 +361,16 @@ module.exports = {
             })
         }
     },
+
+
+    /**
+* Conclui IE
+*
+* @route PUT /urgenciaEmergencia/concluir
+* @returns {object} Proposta
+* @throws {error} Erro.
+*/
+
 
     concluir: async (req, res) => {
         try {
@@ -331,6 +406,14 @@ module.exports = {
         }
     },
 
+    /**
+* Conclui IE
+*
+* @route PUT /urgenciaEmergencia/concluirAnexo
+* @returns {object} Proposta
+* @throws {error} Erro.
+*/
+
     concluirAnexo: async (req, res) => {
         try {
 
@@ -353,6 +436,14 @@ module.exports = {
             })
         }
     },
+
+    /**
+* Mostra produção de determinada data dos analistas
+*
+* @route GET /urgenciaEmergencia/producao/:data
+* @returns {object} Producao
+* @throws {error} Erro.
+*/
 
     producao: async (req, res) => {
         try {
@@ -393,6 +484,15 @@ module.exports = {
             })
         }
     },
+
+
+    /**
+* Mostra produção total dos analistas
+*
+* @route GET /urgenciaEmergencia/producaoTotal
+* @returns {object} Producao
+* @throws {error} Erro.
+*/
 
     producaoTotal: async (req, res) => {
         try {
@@ -469,6 +569,15 @@ module.exports = {
             })
         }
     },
+
+
+    /**
+* Salva tentativa de contato
+*
+* @route PUT /urgenciaEmergencia/salvarContato
+* @returns {object} Proposta
+* @throws {error} Erro.
+*/
 
     salvarContato: async (req, res) => {
         try {
