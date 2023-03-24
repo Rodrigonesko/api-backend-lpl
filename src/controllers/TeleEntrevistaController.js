@@ -1791,7 +1791,7 @@ module.exports = {
                     cancelado: true,
                     divergencia: 'Sem Sucesso de Contato!',
                     houveDivergencia: 'Não',
-                    dataEntrevista: e.contato2 ? e.contato2 : moment().format('YYYY-MM-DD'),
+                    dataEntrevista: moment().format('YYYY-MM-DD'),
                     tipoContrato: e.tipoContrato,
                     dataRecebimento: e.dataRecebimento,
                     responsavel: 'Sem Sucesso de Contato!'
@@ -1809,8 +1809,7 @@ module.exports = {
 
     cancelarVigenciasVencidas: async (req, res) => {
         try {
-            
-
+        
 
         } catch (error) {
             console.log(error);

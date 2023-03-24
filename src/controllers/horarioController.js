@@ -599,7 +599,7 @@ module.exports = {
 
             const uniqueArr = [...new Set(arr)]
 
-            console.log(uniqueArr.sort());
+            uniqueArr.sort()
 
             return res.json(uniqueArr)
 
