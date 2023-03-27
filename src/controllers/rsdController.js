@@ -149,7 +149,7 @@ module.exports = {
 
                     let setResult = new Set()
 
-                    result = result.filter((item) => {
+                    result = result.filter((item) => {      //Filtra todos os pedidos duplicados
                         const pedidoDuplicado = setResult.has(item[0])
                         setResult.add(item[0])
                         return !pedidoDuplicado
@@ -171,6 +171,8 @@ module.exports = {
                             let split = rep.split('-')
                             let mo = split[0]
                             let beneficiario = split[1]
+
+                            //Alguns casos vem com &apos e é preciso fazer uma verificação e corrigir esses casos
 
                             if (beneficiario.indexOf('&apos') == 10 || beneficiario.indexOf('&apos') == 5) {
                                 beneficiario = `${beneficiario}${e[14]}`
@@ -214,6 +216,8 @@ module.exports = {
                     console.log(`Numero de pedidos filtrado sem repetir e apenas com status que tratamos: ${arrPedidos.length}`);
 
                     //console.log(mapCpfs);
+
+                    //Filtra os pedidos pelo valor de corte
 
                     arrPedidos.forEach(val => {
                         for (const [cpf, value] of mapCpfs) {
@@ -371,6 +375,8 @@ module.exports = {
 
             const { pedidos } = req.body
 
+            //Verifica se ja existe pessoa, e caso não existe insere no banco
+
             const addPessoas = await Promise.all(pedidos.map(async item => {
                 return await Pessoa.findOneAndUpdate({
                     mo: item[7]
@@ -399,6 +405,8 @@ module.exports = {
 
                 if (item[12] == 'pf') {
                     dataSla = moment(new Date()).toDate()
+
+                    //Datas vem no padrão errado e precisam ser transformadas
 
                     dataSolicitacao = ajustarDataPadraoAmericano(dataSolicitacao)
                     dataPagamento = ajustarDataPadraoAmericano(dataPagamento)
@@ -583,6 +591,8 @@ module.exports = {
         }
     },
 
+    //Mostra todos os pedidos
+
     show: async (req, res) => {
         try {
             const pedidos = await Pedido.find()
@@ -598,6 +608,8 @@ module.exports = {
             })
         }
     },
+
+    //Mostra pessoa a partir da MO
 
     mostrarPessoa: async (req, res) => {
         try {
@@ -618,6 +630,8 @@ module.exports = {
             })
         }
     },
+
+    //Atualizar informações da pessoa
 
     atualizarInformacoes: async (req, res) => {
         try {
@@ -654,6 +668,8 @@ module.exports = {
         }
     },
 
+    //Busca dados do pedido
+
     buscarPedido: async (req, res) => {
         try {
             const { pedido } = req.params
@@ -674,6 +690,8 @@ module.exports = {
             })
         }
     },
+
+    // Busca clinica a partir do cnpj
 
     buscarClinica: async (req, res) => {
         try {
@@ -703,6 +721,8 @@ module.exports = {
             })
         }
     },
+
+    // Edita informações do pedido
 
     editarPedido: async (req, res) => {
         try {
@@ -741,6 +761,8 @@ module.exports = {
         }
     },
 
+    // Busca pedido por protocolo
+
     buscarMoProtocolo: async (req, res) => {
         try {
 
@@ -761,6 +783,8 @@ module.exports = {
             })
         }
     },
+
+    //Cria novo pedido
 
     criarPedido: async (req, res) => {
         try {
@@ -819,6 +843,8 @@ module.exports = {
         }
     },
 
+    // Cria novo protocolo
+
     criarProtocolo: async (req, res) => {
         try {
             const { protocolo, dataSolicitacao, dataPagamento, operadora, mo, pedido } = req.body
@@ -838,6 +864,8 @@ module.exports = {
             })
 
             dataSla = moment(new Date()).add(sla, 'days').toDate()
+
+            //Deve ser criado na tabela de pedido
 
             const criarProtocolo = await Pedido.create({
                 numero: pedido,
@@ -867,6 +895,8 @@ module.exports = {
             })
         }
     },
+
+    // Cria pacote com varios pedidos dentro
 
     criarPacote: async (req, res) => {
         try {
@@ -910,6 +940,8 @@ module.exports = {
         }
     },
 
+    // Busca pedidos a partir da MO
+
     buscarPedidosMo: async (req, res) => {
         try {
 
@@ -932,6 +964,8 @@ module.exports = {
             })
         }
     },
+
+    // Assume o pacote
 
     assumirPacote: async (req, res) => {
         try {
@@ -968,6 +1002,8 @@ module.exports = {
         }
     },
 
+    // Busca os pedidos a partir do pacote
+
     buscarPedidosPacote: async (req, res) => {
         try {
 
@@ -988,6 +1024,8 @@ module.exports = {
             })
         }
     },
+
+    // Anexa os arquivos 
 
     anexarGravacao: async (req, res) => {
         try {
@@ -1025,6 +1063,8 @@ module.exports = {
         }
     },
 
+    // Busca os arquivos a partir do pacote
+
     buscarArquivos: async (req, res) => {
         try {
 
@@ -1046,6 +1086,8 @@ module.exports = {
         }
     },
 
+    // Busca formas de pagamento
+
     buscarFormasPagamento: async (req, res) => {
         try {
 
@@ -1062,6 +1104,8 @@ module.exports = {
             })
         }
     },
+
+    // Busca Status de Finalizações
 
     buscarStatusFinalizacao: async (req, res) => {
         try {
@@ -1080,16 +1124,18 @@ module.exports = {
         }
     },
 
+    // Atualiza o status do pedido
+
     atualizarPedido: async (req, res) => {
         try {
 
             const { pacote, protocolo, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
 
-            const pacoteBanco = await Pedido.findOne({
+            const pacoteBanco = await Pedido.findOne({  //Busca os pedidos daquele pacote
                 pacote: pacote
             })
 
-            if (sucesso === 'Sim') {
+            if (sucesso === 'Sim') {    //Se houve sucesso de contato atualiza o pedido
 
                 await Pedido.updateMany({
                     pacote: pacote
@@ -1099,7 +1145,7 @@ module.exports = {
                 })
             }
 
-            if (sucesso === 'Sem Retorno de Contato') {
+            if (sucesso === 'Sem Retorno de Contato') {     //Caso não conseguiram contato finaliza o pedido como sem sucesso de contato
                 await Agenda.create({
                     idPacote: pacote,
                     usuario: req.user,
@@ -1121,7 +1167,7 @@ module.exports = {
 
             }
 
-            if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {
+            if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {        //1° Tentativa de contato
 
                 await Agenda.create({
                     idPacote: pacote,
@@ -1139,7 +1185,7 @@ module.exports = {
 
             }
 
-            if (pacoteBanco.statusPacote === '2° Tentativa' && sucesso === 'Não') {
+            if (pacoteBanco.statusPacote === '2° Tentativa' && sucesso === 'Não') {     //2° Tentativa de contato
 
                 await Agenda.create({
                     idPacote: pacote,
@@ -1156,7 +1202,7 @@ module.exports = {
                 })
             }
 
-            if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Não') {
+            if (pacoteBanco.statusPacote === '3° Tentativa' && sucesso === 'Não') {     //3° Tentativa de contato
 
                 await Agenda.create({
                     idPacote: pacote,
@@ -1177,7 +1223,7 @@ module.exports = {
                 })
             }
 
-            if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Sim') {
+            if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Sim') {    //Caso houve sucesso de contato
 
                 await Agenda.create({
                     idPacote: pacote,
@@ -1245,7 +1291,7 @@ module.exports = {
 
             }
 
-            if (sucesso === 'Não foi entrado em contato') {
+            if (sucesso === 'Não foi entrado em contato') {     //Caso não entre em contato e coloca a justificativa
                 await Pedido.updateMany({
                     pacote: pacote
                 }, {
@@ -1254,7 +1300,7 @@ module.exports = {
                 })
             }
 
-            if (dataSelo) {
+            if (dataSelo) {         //Data em que foi ligado
                 await Pedido.updateMany({
                     pacote: pacote
                 }, {
@@ -1262,15 +1308,15 @@ module.exports = {
                 })
             }
 
-            for (const item of motivoContato) {
+            for (const item of motivoContato) {     //Loop responsável que passa por todos os pedidos do pacote
 
                 let reconhece = false
 
-                if (item[1] == 'Sim') {
+                if (item[1] == 'Sim') {         //Caso o beneficiário reconheça o pedido reconhece recebe true
                     reconhece = true
                 }
 
-                if (reconhece === false) {
+                if (reconhece === false) {      //Caso o beneficiário não reconheça o pedido finaliza o pedido como o beneficiario não reconhece o pedido
 
                     const updatePedido = await Pedido.findOneAndUpdate({
                         _id: item[0]
@@ -1290,8 +1336,8 @@ module.exports = {
                         parecer: `Beneficiário não reconhece pedido: ${item[0]}, finalizando pedido`
                     })
 
-                } else {
-                    const updatePedido = await Pedido.findOneAndUpdate({
+                } else {    
+                    const updatePedido = await Pedido.findOneAndUpdate({       //Atualiza como o beneficiario reconhece o pedido
                         _id: item[0]
                     }, {
                         reconhece: reconhece,
@@ -1307,9 +1353,9 @@ module.exports = {
 
             }
 
-            for (const item of confirmacaoServico) {
+            for (const item of confirmacaoServico) {        //Loop que passa por todos os pedidos do pacote
 
-                if (item[1] === 'Pagamento não realizado') {
+                if (item[1] === 'Pagamento não realizado') {    // Caso pagamento não realizado, finaliza pedido como pagamento nao realizado
 
                     const updatePedido = await Pedido.findOneAndUpdate({
                         _id: item[0]
@@ -1378,7 +1424,7 @@ module.exports = {
 
             }
 
-            for (const item of finalizacao) {
+            for (const item of finalizacao) {   //Loop responsavel por finalizar pedidos
 
                 if (item[1] === 'Comprovante Correto') {
                     const updatePedido = await Pedido.findOneAndUpdate({
@@ -1949,69 +1995,25 @@ module.exports = {
 
                 let result = xlsx.utils.sheet_to_json(worksheet)
 
-                for (let item of result) {
+                console.log(result.length);
 
-                    if (item.dataConclusao === 'NULL') {
-                        item.dataConclusao = new Date('2021-01-01')
+                for (const item of result) {
+
+                    if (!item.data_conclusao) {
+                        continue
                     }
 
-                    if (item.dataSla === 'NULL') {
-                        item.dataSla = new Date()
-                    }
+                    let dataConclusao = ExcelDateToJSDate(item.data_conclusao)
+                    dataConclusao.setDate(dataConclusao.getDate() + 1)
+                    dataConclusao = moment(dataConclusao).format('YYYY-MM-DD')
 
-                    if (item.dataConclusao !== 'NULL') {
-                        item.dataConclusao = ExcelDateToJSDate(item.dataConclusao)
-                        item.dataConclusao.setDate(item.dataConclusao.getDate() + 1)
-                        item.dataConclusao = moment(item.dataConclusao).format('YYYY-MM-DD')
-                    } else {
-                        item.dataConclusao = 'Nao foi achado'
-                    }
 
-                    item.dataSolicitacao = moment(item.dataSolicitacao).format('YYYY-MM-DD')
+                    console.log(item.id, dataConclusao);
 
-                    if (item.dataSelo !== 'NULL') {
-                        item.dataSelo = moment(item.dataSelo).format('YYYY-MM-DD')
-                    } else {
-                        item.dataSelo = 'Nao foi achado'
-                    }
-
-                    if (item.dataSla !== 'NULL') {
-                        item.dataSla = moment(item.dataSla).format('YYYY-MM-DD')
-                    } else {
-                        item.dataSla = 'Nao foi achado'
-                    }
-
-                    await Pedido.create({
-                        pacote: item.pacote,
-                        fase: item?.fase,
-                        statusPadraoAmil: item?.statusPadraoAmil,
-                        statusGerencial: item?.statusGerencial,
-                        dataConclusao: item?.dataConclusao,
-                        createdAt: item?.createdAt,
-                        operador: item?.operador,
-                        protocolo: item?.protocolo,
-                        numero: item?.numero,
-                        pessoa: item?.pessoa,
-                        dataSolicitacao: item?.dataSolicitacao,
-                        valorApresentado: item?.valorApresentado,
-                        cnpj: item?.cnpj,
-                        clinica: item?.clinica,
-                        formaPagamento: item?.formaPagamento,
-                        mo: item?.mo,
-                        contratoEmpresa: item?.contratoEmpresa,
-                        prioridadeDossie: item.prioridadeDossie,
-                        nf: item.nf,
-                        status: item.status,
-                        statusPacote: item.statusPacote,
-                        dataSla: item.dataSla,
-                        ativo: item.ativo,
-                        irregular: item.irregular,
-                        reconhece: item.reconhece,
-                        semRetorno: item.semRetorno,
-                        comprovanteNaoRecebido: item.comprovanteNaoRecebido,
-                        analista: item.analista,
-                        contato: item.contato,
-                        statusProtocolo: item.statusProtocolo
+                    await Pedido.findByIdAndUpdate({
+                        _id: item.id
+                    }, {
+                        dataConclusao
                     })
                 }
 
@@ -2028,6 +2030,8 @@ module.exports = {
             })
         }
     },
+
+    // Volta o pacote e todos os pedidos dentro dele para a fase Aguardando Docs
 
     voltarFase: async (req, res) => {
         try {
@@ -2058,6 +2062,8 @@ module.exports = {
             })
         }
     },
+
+    // Volta fase de um unico pedido
 
     voltarFasePedido: async (req, res) => {
         try {
@@ -2104,6 +2110,8 @@ module.exports = {
             })
         }
     },
+
+
 
     adicionarPrioridadeDossie: async (req, res) => {
         try {
@@ -2216,6 +2224,8 @@ module.exports = {
         }
     },
 
+    // Geração de relatório
+
     relatorioAmil: async (req, res) => {
         try {
 
@@ -2326,33 +2336,6 @@ module.exports = {
             })
         }
     },
-
-    arrumarDataConclusao: async (req, res) => {
-        try {
-
-            const pedidos = await Pedido.find({
-                dataConclusao: { $ne: undefined }
-            })
-
-            for (const item of pedidos) {
-                await Pedido.findByIdAndUpdate({
-                    _id: item._id
-                }, {
-                    dataConclusao: moment(item.dataConclusao)
-                })
-            }
-
-            console.log(pedidos.length);
-
-            return res.json({ qtd: pedidos.length })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    }
 }
 
 function ExcelDateToJSDate(serial) {
