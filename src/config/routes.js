@@ -14,6 +14,7 @@ const ControleAtividadeController = require('../controllers/controleAtividadesCo
 const router = express.Router()
 
 const multer = require('multer')
+const amilController = require('../controllers/amilController')
 
 
 const uploadRsd = multer({ dest: '/tmp' })
@@ -199,5 +200,10 @@ router.get('/controleAtividade/atual', auth, ControleAtividadeController.ativida
 router.put('/controleAtividade/assumir', auth, ControleAtividadeController.assumirAtividade)
 router.put('/controleAtividade/encerrar', auth, ControleAtividadeController.encerrarAtividade)
 router.get('/controleAtividade/report', auth, ControleAtividadeController.report)
+
+/* Amil */
+
+router.post('/amil/upload', auth, amilController.upload)
+router.get('/amil/AGD', auth, amilController.agd)
 
 module.exports = router
