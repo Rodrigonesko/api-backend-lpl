@@ -211,8 +211,6 @@ module.exports = {
         try {
             const { data, enfermeiro } = req.params
 
-            console.log(data, enfermeiro);
-
             const result = await Horario.find({
                 enfermeiro: enfermeiro,
                 dia: moment(data).format('YYYY-MM-DD')
@@ -244,6 +242,20 @@ module.exports = {
             const dataAjustada = ajustarData(data)
 
             const dataEHora = `${dataAjustada} ${horario}`
+
+            const find = await Horario.findOne({
+                nome: id
+            })
+
+            if (find) {
+
+                await Horario.findOneAndUpdate({
+                    nome: id
+                }, {
+                    agendado: 'Reaberto',
+                    nome: ''
+                })
+            }
 
             const update = await Horario.findOneAndUpdate({
                 enfermeiro: responsavel,

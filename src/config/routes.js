@@ -205,5 +205,6 @@ router.get('/controleAtividade/report', auth, ControleAtividadeController.report
 
 router.post('/amil/upload', auth, amilController.upload)
 router.get('/amil/AGD', auth, amilController.agd)
+router.get('/amil/removeAll', auth, amilController.removeAll)
 
 module.exports = router

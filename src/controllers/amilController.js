@@ -28,12 +28,30 @@ const storage = multer.diskStorage({
 const uploadAgd = multer({ storage }).single('file')
 
 module.exports = {
+
+    removeAll: async (req, res) => {
+        try {
+
+            const remove = await Amil.remove({})
+
+            return res.status(200).json(remove)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     upload: async (req, res) => {
         try {
 
             uploadAgd(req, res, async (err) => {
 
                 let file = fs.readFileSync(req.file.path, { encoding: 'latin1' })
+
+                console.log(req.file.size);
 
                 let linhas = file.split('\n')
                 let arr = linhas.map(elem => {
@@ -74,11 +92,13 @@ module.exports = {
                         tipoContrato: item[26]
                     };
 
-                    await Amil.findOneAndUpdate({
-                        reembolso
-                    }, obj, {
-                        upsert: true
-                    })
+                    await Amil.create(obj)
+
+                    // await Amil.findOneAndUpdate({
+                    //     reembolso
+                    // }, obj, {
+                    //     upsert: true
+                    // })
                 }
             })
 
