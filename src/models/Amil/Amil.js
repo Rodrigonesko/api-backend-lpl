@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const amilScheema = mongoose.Schema({
     reembolso: String,
     situacao: String,
+    aguardandoDoc: String,
     dataPedido: String,
     dataPrevistaPagamento: String,
     dataPagamento: String,
