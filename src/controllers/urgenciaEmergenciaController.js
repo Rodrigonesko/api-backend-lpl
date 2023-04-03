@@ -115,14 +115,17 @@ module.exports = {
                         dataAutorizacao.setDate(dataAutorizacao.getDate() + 1)
                         dataAutorizacao = moment(dataAutorizacao).format('YYYY-MM-DD')
                         const indCarater = item.IND_CARATER_AUTORIZ
-                        const nomePrestador = item.NOME_PRESTADOR_AUTORIZ
+                        const nomePrestador = item.PRESTADOR
                         const cidPrin = item.CID_PRIN_AUTORIZ
                         const nomeCidPrin = item.NOM_CID_PRIN_AUTORIZ
                         const cidSec = item.CID_SECUND_AUTORIZ
                         const nomeCidSec = item.NOM_CID_SECUND_AUTORIZ
                         const sitAutoriz = item.SIT_AUTORIZ
                         const nomeTratamento = item.NOME_TRATAMENTO_AUTORIZ
-                        const relatorioMedico = item[' INF RELATORIO MÉDICO ']
+                        const relatorioMedico = item['RELATORIO MEDICO']
+                        let dataAtendimento = ExcelDateToJSDate(item['DT ATENDIMENTO'])
+                        dataAtendimento.setDate(dataAtendimento.getDate() + 1)
+                        dataAtendimento = moment(dataAtendimento).format('YYYY-MM-DD')
 
                         const dataRecebimento = moment().format('YYYY-MM-DD')
 
@@ -164,6 +167,7 @@ module.exports = {
                             sitAutoriz,
                             nomeTratamento,
                             relatorioMedico,
+                            dataAtendimento,
                             dataRecebimento,
                             status: 'Andamento',
                             faturado: 'Não faturado'

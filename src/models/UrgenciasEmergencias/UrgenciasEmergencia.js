@@ -30,6 +30,7 @@ const UrgenciaEmergenciaScheema = mongoose.Schema({
     dataSolicitacao: String,
     idadeSolic: String,
     dataAutorizacao: String,
+    dataAtendimento: String,
     indCarater: String,
     nomePrestador: String,
     cid: String,

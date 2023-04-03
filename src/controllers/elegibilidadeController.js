@@ -15,6 +15,12 @@ module.exports = {
     upload: async (req, res) => {
         try {
 
+            const ufMap = {
+                'São Paulo': 'SP',
+                'Rio de Janeiro': 'RJ',
+                'Distrito Federal': 'DF'
+            };
+
             let qtd = 0
 
             uploadPropostas(req, res, async (err) => {
@@ -30,7 +36,7 @@ module.exports = {
                         return e.split('#')
                     })
 
-                    for (const item of arrAux) {
+                    for await (const item of arrAux) {
                         let vigencia = item[36]
 
                         if (vigencia) {
@@ -40,16 +46,7 @@ module.exports = {
                         let produto = item[6]
                         let plano = item[48]
                         let produtor = item[7]
-                        let uf = item[3]
-                        if (uf == 'São Paulo') {
-                            uf = 'SP'
-                        }
-                        if (uf == 'Rio de Janeiro') {
-                            uf = 'RJ'
-                        }
-                        if (uf == 'Distrito Federal') {
-                            uf = 'DF'
-                        }
+                        const uf = ufMap[item[3]] || item[3];
                         let administradora = item[8]
                         let codCorretor = item[33]
                         let corretor = item[34]
@@ -117,6 +114,7 @@ module.exports = {
                     }
                 } else {
                     let file = fs.readFileSync(req.file.path)
+
                 }
 
             })
@@ -173,75 +171,12 @@ module.exports = {
             const proposta = await Proposta.findByIdAndUpdate({
                 _id: id
             }, {
-                analistaPreProcessamento: analista,
-                status: 'Pre Processamento'
+                analista: analista,
+                status: 'A iniciar'
             })
 
             return res.status(200).json({
                 proposta
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    mostrarPreProcessamento: async (req, res) => {
-        try {
-
-            const { analista } = req.params
-
-            if (analista === 'Todos' || analista === '') {
-                const propostas = await Proposta.find({
-                    status: 'Pre Processamento'
-                })
-
-                return res.status(200).json({
-                    propostas,
-                    total: propostas.length
-                })
-
-            }
-
-            const propostas = await Proposta.find({
-                $and: [
-                    { status: 'Pre Processamento' },
-                    { analistaPreProcessamento: analista }
-                ]
-            })
-
-            return res.status(200).json({
-                propostas,
-                total: propostas.length
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    mostrarPropostaFiltradaPreProcessamento: async (req, res) => {
-        try {
-
-            const { proposta } = req.params
-
-            const result = await Proposta.find({
-                $and: [
-                    { status: 'Pre Processamento' },
-                    { proposta: { $regex: proposta } }
-                ]
-            })
-
-            console.log(result);
-
-            return res.status(200).json({
-                proposta: result
             })
 
         } catch (error) {
@@ -445,6 +380,8 @@ module.exports = {
         try {
 
             const { analista, entidade, status } = req.query
+
+            console.log(analista ==  '', entidade == '', status === '');
 
             let propostas = await Proposta.find({
                 analista: { $regex: analista },
@@ -744,7 +681,7 @@ module.exports = {
             const update = await Proposta.findByIdAndUpdate({
                 _id: id
             }, {
-                
+
             })
 
         } catch (error) {
