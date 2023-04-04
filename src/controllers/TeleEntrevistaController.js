@@ -1764,8 +1764,10 @@ module.exports = {
                 }
             })
 
-            await DadosEntrevista.findByIdAndDelete({
+            await DadosEntrevista.findByIdAndUpdate({
                 _id: id
+            }, {
+                proposta: `${dados.proposta} - Retrocedido`
             })
 
             return res.status(200).json({
@@ -1818,6 +1820,27 @@ module.exports = {
     cancelarVigenciasVencidas: async (req, res) => {
         try {
 
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    numeroCids: async (req, res) => {
+        try {
+
+            const entrevistas = await DadosEntrevista.find()
+
+            let arrAux = entrevistas.filter(e => {
+                return e.houveDivergencia === 'Sim'
+            })
+
+            console.log(arrAux.length);
+
+            return res.json(arrAux.length)
 
         } catch (error) {
             console.log(error);

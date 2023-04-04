@@ -381,7 +381,7 @@ module.exports = {
 
             const { analista, entidade, status } = req.query
 
-            console.log(analista ==  '', entidade == '', status === '');
+            console.log(analista == '', entidade == '', status === '');
 
             let propostas = await Proposta.find({
                 analista: { $regex: analista },
@@ -484,35 +484,28 @@ module.exports = {
         }
     },
 
-    salvarDadosAnalise: async (req, res) => {
+    fase1: async (req, res) => {
         try {
 
-            const { id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario, proposta } = req.body
+            const { id, dataUpdate, concluir } = req.body;
 
-            console.log(id, sisAmilDeacordo, contrato, prc, ligacao, site, comentario);
+            console.log(id, dataUpdate, concluir);
 
-            const updateProposta = await Proposta.findByIdAndUpdate({
-                _id: id
-            }, {
-                sisAmilDeacordo,
-                contrato,
-                prc,
-                ligacao,
-                site,
-                comentario
-            })
-
-            if (comentario != '') {
-                const agenda = await Agenda.create({
-                    comentario,
-                    analista: req.user,
-                    proposta
-                })
+            if (concluir) {
+                await Proposta.updateOne({ _id: id }, { fase1: true });
             }
 
-            return res.status(200).json({
-                updateProposta
-            })
+            const result = await Proposta.findOneAndUpdate({
+                _id: id
+            }, dataUpdate, {
+                new: true
+            })?.lean();
+
+            if (result) {
+                return res.status(200).json(result);
+            } else {
+                throw new Error("Proposta não encontrada");
+            }
 
         } catch (error) {
             console.log(error);

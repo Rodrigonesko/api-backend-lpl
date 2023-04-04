@@ -10,5 +10,5 @@ const blacklistScheema = mongoose.Schema({
     telefoneCorretor: String,
     nomeSupervisor: String,
     cpfSupervisor: String,
-    telefoneSupervisor: String,
+    telefoneSupervisor: String
 })
