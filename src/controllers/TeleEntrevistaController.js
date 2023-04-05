@@ -1419,7 +1419,7 @@ module.exports = {
 
                 producao.push({
                     analista: item,
-                    quantidade: count,
+                    quantidade: count + countRn,
                     quantidadeRn: countRn
                 })
             }
@@ -1436,7 +1436,7 @@ module.exports = {
 
             return res.status(200).json({
                 producao,
-                total,
+                total: total + totalRn,
                 totalRn
             })
 
@@ -1767,7 +1767,7 @@ module.exports = {
             await DadosEntrevista.findByIdAndUpdate({
                 _id: id
             }, {
-                proposta: `${dados.proposta} - Retrocedido`
+                proposta: `${dados.proposta} - Retrocedido`,
             })
 
             return res.status(200).json({
