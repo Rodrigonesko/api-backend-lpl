@@ -106,7 +106,7 @@ module.exports = {
                         const indResp7 = item.IND_RESP_7
                         const indResp8 = item.IND_RESP_8
                         const indResp9 = item.IND_RESP_9
-                        const pedido = item.NUM_PEDIDO
+                        const pedido = item.PEDIDO
                         let dataSolicitacao = ExcelDateToJSDate(item.DATA_SOLICITACAO)
                         dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
                         dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')

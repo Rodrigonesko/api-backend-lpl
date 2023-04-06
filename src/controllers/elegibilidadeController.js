@@ -565,8 +565,6 @@ module.exports = {
 
             const prc = await Prc.find()
 
-            console.log(prc);
-
             return res.status(200).json({
                 prc
             })
