@@ -6,8 +6,6 @@ const userScheema = mongoose.Schema({
     password: String,
     accessLevel: String,
     firstAccess: String,
-    liminares: String,
-    liminaresAj: String,
     enfermeiro: String,
     elegibilidade: String,
     horarioEntrada1: String,
@@ -15,7 +13,8 @@ const userScheema = mongoose.Schema({
     horarioEntrada2: String,
     horarioSaida2: String,
     atividadePrincipal: String,
-    atividadeAtual: String
+    atividadeAtual: String,
+    coren: String
 },
     {
         versionKey: false

@@ -66,7 +66,8 @@ const dadosEntrevistaScheema = mongoose.Schema({
     vigencia: String,
     implantacao: String,
     implantado: String,
-    dataRecebimento: String
+    dataRecebimento: String,
+    entrevistaQualidade: Boolean
 }, {
     timestamps: true
 })

@@ -10,11 +10,13 @@ const elegibilidadeController = require('../controllers/elegibilidadeController'
 const TeleEntrevistaController = require('../controllers/TeleEntrevistaController')
 const urgenciaEmergenciaController = require('../controllers/urgenciaEmergenciaController')
 const ControleAtividadeController = require('../controllers/controleAtividadesController')
+const amilController = require('../controllers/amilController')
+const dicionarioController = require('../controllers/dicionarioController')
 
 const router = express.Router()
 
 const multer = require('multer')
-const amilController = require('../controllers/amilController')
+
 
 
 const uploadRsd = multer({ dest: '/tmp' })
@@ -37,6 +39,7 @@ router.put('/users/updatePassword', auth, userController.firstAccess)
 router.put('/users/modules', auth, userController.modules)
 router.get('/users/elegibilidade', auth, userController.analistasElegi)
 router.put('/users/resetPassword', auth, userController.resetPassword)
+router.get('/users/coren/:name', auth, userController.coren)
 
 //Rns
 
@@ -56,6 +59,7 @@ router.put('/rn/alterarTelefone', auth, rnContoller.alterarTelefone)
 router.get('/rn/concluidas', auth, rnContoller.concluidas)
 router.put('/rn/cancelar', auth, rnContoller.cancelar)
 router.put('/rn/tentativaContato', auth, rnContoller.tentativaContato)
+router.put('/rn/duplicada', auth, rnContoller.duplicada)
 
 //Tele Entrevistas
 
@@ -97,6 +101,8 @@ router.put('/entrevistas/mandarImplatacao', auth, TeleEntrevistaController.manda
 router.put('/entrevistas/implantar', auth, TeleEntrevistaController.implantar)
 router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImplantadas)
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
+router.get('/entrevistas/qualidade', auth, TeleEntrevistaController.entrevistasQualidade)
+router.get('/entrevistas/corretorOrtografico', TeleEntrevistaController.corretorOrtográfico)
 
 router.get('/entrevistas/diasDisponiveis', auth, horarioController.diasDisponiveis)
 router.get('/entrevistas/horariosDisponiveis/:data', horarioController.buscarHorariosDisponiveis)
@@ -188,7 +194,6 @@ router.put('/urgenciaEmergencia/salvarContato', auth, urgenciaEmergenciaControll
 router.put('/urgenciaEmergencia/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
 router.get('/urgenciaEmergencia/producaoTotal', auth, urgenciaEmergenciaController.producaoTotal)
 
-
 /* Controle de Atividades */
 
 router.post('/controleAtividade/iniciarPadrao', auth, ControleAtividadeController.atividadePadrao)
@@ -203,5 +208,11 @@ router.get('/controleAtividade/report', auth, ControleAtividadeController.report
 router.post('/amil/upload', auth, amilController.upload)
 router.get('/amil/AGD', auth, amilController.agd)
 router.get('/amil/removeAll', auth, amilController.removeAll)
+
+/* Dicionario */
+
+router.get('/dicionario', auth, dicionarioController.show)
+router.post('/dicionario', auth, dicionarioController.create)
+router.delete('/dicionario/:palavra', auth, dicionarioController.delete)
 
 module.exports = router

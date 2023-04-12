@@ -9,6 +9,7 @@ const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
 
 const moment = require('moment')
 const fs = require('fs')
+const path = require('path');
 const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')
@@ -53,7 +54,7 @@ module.exports = {
     enviarDadosFormulario: async (req, res) => {
         try {
 
-            const { respostas, subRespostas, pessoa, simOuNao, cids, divergencia } = req.body
+            const { respostas, subRespostas, pessoa, simOuNao, cids, divergencia, entrevistaQualidade } = req.body
 
             /*
                 respostas = array das respostas refenente as perguntas principais
@@ -161,7 +162,8 @@ module.exports = {
                 anexadoSisAmil: 'Anexar',
                 vigencia: updateProposta.vigencia,
                 dataRecebimento: updateProposta.dataRecebimento,
-                cancelado: false
+                cancelado: false,
+                entrevistaQualidade
             }, {
                 upsert: true
             })
@@ -1841,6 +1843,57 @@ module.exports = {
             console.log(arrAux.length);
 
             return res.json(arrAux.length)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    entrevistasQualidade: async (req, res) => {
+        try {
+
+            const entrevistas = await DadosEntrevista.find({
+                entrevistaQualidade: true
+            })
+
+            return res.json(entrevistas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    corretorOrtográfico: async (req, res) => {
+        try {
+
+            // Exemplo de uso
+            const nomeArquivoDic = path.join(__dirname, 'index.dic');
+            const nomeArquivoAff = path.join(__dirname, 'index.aff');
+
+            const frase = 'Ola tudo bom?'
+
+            const palavraVerificar = 'números';
+
+            const dicionario = carregarDicionario(nomeArquivoDic);
+            const afixos = fs.readFileSync(nomeArquivoAff, 'utf-8').split('\n');
+
+            const palavraExiste = verificarPalavra(palavraVerificar, dicionario, afixos);
+
+            if (palavraExiste) {
+                console.log(`A palavra "${palavraVerificar}" existe no dicionário.`);
+            } else {
+                console.log(`A palavra "${palavraVerificar}" não existe no dicionário.`);
+            }
+
+            return res.json({
+                msg: 'oi'
+            })
 
         } catch (error) {
             console.log(error);

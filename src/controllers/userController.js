@@ -116,9 +116,9 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren } = req.body
 
-            console.log(entrada1, saida1, entrada2, saida2);
+            console.log(entrada1, saida1, entrada2, saida2, coren);
 
             const result = await User.findOneAndUpdate({ email: email }, {
                 enfermeiro: enfermeiro,
@@ -127,7 +127,8 @@ module.exports = {
                 horarioSaida1: saida1,
                 horarioEntrada2: entrada2,
                 horarioSaida2: saida2,
-                atividadePrincipal
+                atividadePrincipal,
+                coren
             })
 
             return res.status(200).json({
@@ -189,6 +190,27 @@ module.exports = {
             return res.status(200).json({
                 update
             })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    coren: async (req, res) => {
+        try {
+
+            const { name } = req.params
+
+            const result = await User.findOne({
+                name
+            })
+
+            const coren = result.coren
+
+            return res.json(coren)
 
         } catch (error) {
             console.log(error);

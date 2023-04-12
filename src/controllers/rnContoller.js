@@ -498,6 +498,30 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    duplicada: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            await Rn.updateOne({
+                _id: id
+            }, {
+                responsavel: 'Duplicada',
+                status: 'Concluido'
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }
 
