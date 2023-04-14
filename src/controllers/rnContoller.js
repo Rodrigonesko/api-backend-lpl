@@ -26,7 +26,11 @@ module.exports = {
 
                 const proposta = e.PROPOSTA
 
-                let vigencia = moment().businessAdd(2).format('YYYY-MM-DD')
+                let vigencia = ExcelDateToJSDate(e.VIGENCIA)
+                vigencia.setDate(vigencia.getDate() + 1)
+                vigencia = moment(vigencia).format('YYYY-MM-DD')
+
+                let vigenciaLpl = moment().businessAdd(2).format('YYYY-MM-DD')
 
                 const pedido = e.PEDIDO
 
@@ -64,6 +68,7 @@ module.exports = {
                     mo,
                     proposta,
                     vigencia,
+                    vigenciaLpl,
                     pedido,
                     tipo,
                     filial,

@@ -30,8 +30,8 @@ router.post('/logout', publicController.logout)
 router.get('/verifyToken', auth, verifyToken.verify)
 
 //User
-router.post('/users', auth, userController.create)
-router.get('/users', auth, userController.index)
+router.post('/users', userController.create)
+router.get('/users', userController.index)
 router.get('/infoUser', auth, userController.infoUser)
 router.get('/infoUser/:email', auth, userController.searchEmail)
 router.get('/users/enfermeiros', auth, userController.enfermeiros)

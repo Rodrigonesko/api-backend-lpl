@@ -6,6 +6,7 @@ const rnScheema = mongoose.Schema({
     mo: String,
     proposta: String,
     vigencia: String,
+    vigenciaLpl: String,
     vifencia: String,
     pedido: String,
     tipo: String,
