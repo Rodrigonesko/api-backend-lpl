@@ -135,8 +135,6 @@ module.exports = {
                 }
             })
 
-            console.log(resp.data);
-
             const updateProposta = resp.data    //Pega os dados referentes aquela proposta por meio dos dados da resposta da API
 
             const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({      //Atualiza alguns dados necessários no formulário que dependem dos dados da proposta
@@ -235,8 +233,6 @@ module.exports = {
                 nome,
                 proposta
             })
-
-            console.log(result);
 
             return res.status(200).json({
                 result
@@ -416,8 +412,6 @@ module.exports = {
 
             const { id } = req.body
 
-            console.log(id);
-
             const result = await DadosEntrevista.findByIdAndUpdate({
                 _id: id
             }, {
@@ -514,8 +508,6 @@ module.exports = {
             })
 
             const dadosProposta = resp.data
-
-            console.log(dadosProposta);
 
             //Separa o horário da data de entrevista
 
@@ -713,14 +705,12 @@ module.exports = {
 
             const { status, data } = req.params
 
-            console.log(data);
-
             const split = data.split('-')
             const month = split[0]
             const year = split[1]
 
             if (status == 'todos' && data == 'todos') {     //Caso status = todos e data = todos busca tudo independente da data e status
-                console.log('pesquisa tudo');
+         
                 const teles = await DadosEntrevista.find()
                 const rns = await Rn.find({
                     status: 'Concluido'
@@ -998,8 +988,6 @@ module.exports = {
             const { entrevistas } = req.body
 
             const update = await Promise.all(entrevistas.map(async (e) => {
-
-                console.log(e[0]);
 
                 if (e[0].tipo === 'Rn') {
                     return await Rn.findOneAndUpdate({
@@ -1461,8 +1449,6 @@ module.exports = {
                 subCategoria: cid,
                 descricao: descricao
             })
-
-            console.log(result);
 
             return res.status(200).json({
                 result

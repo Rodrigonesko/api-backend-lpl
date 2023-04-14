@@ -640,8 +640,6 @@ module.exports = {
                 arr.push(e.enfermeiro)
             })
 
-            console.log(arr);
-
             return res.json(arr)
 
         } catch (error) {

@@ -171,6 +171,8 @@ router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atri
 router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
 router.put('/elegibilidade/proposta/alterarStatus', auth, elegibilidadeController.statusEmAndamento)
 router.put('/elegibilidade/proposta/fase1', auth, elegibilidadeController.fase1)
+router.put('/elegibilidade/proposta/fase2', auth, elegibilidadeController.fase2)
+router.post('/elegibilidade/agenda/comentario', auth, elegibilidadeController.comentario)
 router.get('/elegibilidade/agenda/:proposta', auth, elegibilidadeController.buscarAgenda)
 router.delete('/elegibilidade/agenda/:id', auth, elegibilidadeController.excluirComentario)
 router.get('/elegibilidade/prc', auth, elegibilidadeController.buscarPrc)

@@ -158,7 +158,7 @@ module.exports = {
 
             const { id, analista } = req.body
 
-            if (req.userAcessLevel != 1) {
+            if (req.userAcessLevel === 'false') {
 
                 console.log(req.userAcessLevel);
 
@@ -199,8 +199,6 @@ module.exports = {
                 ]
             })
 
-            console.log(result);
-
             return res.status(200).json({
                 proposta: result
             })
@@ -234,83 +232,10 @@ module.exports = {
         }
     },
 
-    salvarDadosPreProcessamento: async (req, res) => {
-        try {
-
-            const { dados, id, proxFase } = req.body
-
-            console.log(dados);
-
-            for (const item of Object.keys(dados)) {
-                await Proposta.findByIdAndUpdate({
-                    _id: id
-                }, {
-                    [item]: dados[item]
-                })
-            }
-
-            if (proxFase) {
-
-                if (!dados.planoAmil) {
-                    return res.status(500).json({
-                        msg: 'Campo Plano Amil não foi marcado'
-                    })
-                }
-
-                if (!dados.documentoIdentificacao) {
-                    return res.status(500).json({
-                        msg: 'Campo Documento Identificação não foi marcado'
-                    })
-                }
-                if (!dados.declaracaoAssociado) {
-                    return res.status(500).json({
-                        msg: 'Campo Declaração de Associado ou Carteirinha não foi marcado'
-                    })
-                }
-                if (!dados.vinculadosSimNao) {
-                    return res.status(500).json({
-                        msg: 'Campo Vinculados não foi marcado'
-                    })
-                }
-                if (!dados.planoAnterior) {
-                    return res.status(500).json({
-                        msg: 'Campo Plano Anterior não foi marcado'
-                    })
-                }
-
-                if (dados.faltaDoc === 'Sem Anexos') {
-                    return res.status(200).json({
-                        msg: "Sem Anexos"
-                    })
-                }
-
-                await Proposta.findByIdAndUpdate({
-                    _id: id
-                }, {
-                    status: 'A iniciar',
-                    analista: 'A definir',
-                    dataConclusaoPre: moment(new Date()).format('YYYY-MM-DD')
-                })
-            }
-
-            return res.status(200).json({
-                msg: 'OIi'
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     mostrarAnalise: async (req, res) => {
         try {
 
             const { analista } = req.params
-
-            console.log(analista);
 
             if (analista === 'Todos' || analista === '') {
                 const propostas = await Proposta.find({
@@ -361,8 +286,6 @@ module.exports = {
                     { status: 'Em andamento' }
                 ]
             }).distinct('entidade')
-
-
 
             return res.status(200).json({
                 entidades
@@ -440,7 +363,7 @@ module.exports = {
 
             const { analista, id } = req.body
 
-            if (req.userAcessLevel == 1) {
+            if (req.userAcessLevel !== 'false') {
                 await Proposta.findByIdAndUpdate({
                     _id: id
                 }, {
@@ -465,7 +388,7 @@ module.exports = {
 
             const { id } = req.body
 
-            const proposta = await Proposta.findByIdAndUpdate({
+            await Proposta.updateOne({
                 _id: id
             }, {
                 status: 'Em andamento'
@@ -474,7 +397,6 @@ module.exports = {
             return res.status(200).json({
                 msg: 'Ok'
             })
-
 
         } catch (error) {
             console.log(error);
@@ -492,7 +414,7 @@ module.exports = {
             console.log(id, dataUpdate, concluir);
 
             if (concluir) {
-                await Proposta.updateOne({ _id: id }, { fase1: true });
+                await Proposta.updateOne({ _id: id }, { fase1: true, status: 'Em andamento' });
             }
 
             const result = await Proposta.findOneAndUpdate({
@@ -515,6 +437,59 @@ module.exports = {
         }
     },
 
+    fase2: async (req, res) => {
+        try {
+
+            const { id, dataUpdate } = req.body
+
+            console.log(id, dataUpdate);
+
+            const result = await Proposta.findOneAndUpdate({
+                _id: id
+            }, dataUpdate, {
+                new: true
+            })?.lean();
+
+            if (result) {
+                return res.status(200).json(result);
+            } else {
+                throw new Error("Proposta não encontrada");
+            }
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    comentario: async (req, res) => {
+        try {
+
+            const { comentario, id } = req.body
+
+            console.log(comentario, id, req.user);
+
+            const result = await Agenda.create({
+                comentario,
+                proposta: id,
+                analista: req.user,
+                data: moment().format('YYYY-MM-DD HH:mm:ss')
+            })
+
+            console.log(result);
+
+            return res.status(200).json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     buscarAgenda: async (req, res) => {
         try {
 
@@ -526,11 +501,7 @@ module.exports = {
 
             console.log(agenda);
 
-            console.log(proposta);
-
-            return res.status(200).json({
-                agenda
-            })
+            return res.status(200).json(agenda)
 
         } catch (error) {
             console.log(error);
@@ -580,81 +551,44 @@ module.exports = {
     enviarUnder: async (req, res) => {
         try {
 
-            const { id, erroSistema } = req.body
+            const { id, erroSistema } = req.body;
+            const find = await Proposta.findById({ _id: id });
 
-            const find = await Proposta.findById({
-                _id: id
-            })
-
+            let status = '';
+            let camposAtualizados = {};
 
             if (!find.status1Analise) {
-
-                let status = 'Enviada para Under'
-
-                if (erroSistema) {
-                    status = 'Erro Sistema'
-                }
-
-                await Proposta.findByIdAndUpdate({
-                    _id: id
-                }, {
+                status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
+                camposAtualizados = {
                     status1Analise: 'Liberada',
                     primeiraDevolucao1: 'Liberada',
                     status,
                     dataConclusao: moment(new Date()).format('YYYY-MM-DD')
-                })
-
-                return res.status(200).json({
-                    msg: 'Ok'
-                })
-            }
-
-            if (find.status3Analise || find.status2Analise) {
-                let status = 'Enviada para Under'
-
-                if (erroSistema) {
-                    status = 'Erro Sistema'
-                }
-
-                await Proposta.findByIdAndUpdate({
-                    _id: id
-                }, {
+                };
+            } else if (find.status3Analise || find.status2Analise) {
+                status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
+                camposAtualizados = {
                     status3Analise: 'Liberada',
                     segundoReprotocolo1: 'Liberada',
                     status,
                     dataConclusao: moment(new Date()).format('YYYY-MM-DD')
-                })
-
-                return res.status(200).json({
-                    msg: 'Ok'
-                })
-            }
-
-            if (find.status1Analise) {
-
-                let status = 'Enviada para Under'
-
-                if (erroSistema) {
-                    status = 'Erro Sistema'
-                }
-
-                await Proposta.findByIdAndUpdate({
-                    _id: id
-                }, {
+                };
+            } else if (find.status1Analise) {
+                status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
+                camposAtualizados = {
                     status2Analise: 'Liberada',
                     reprotocolo1: 'Liberada',
                     status,
                     dataConclusao: moment(new Date()).format('YYYY-MM-DD')
-                })
-
-                return res.status(200).json({
-                    msg: 'Ok'
-                })
+                };
             }
 
-            return res.status(200).json({
-                msg: 'oii'
-            })
+            if (Object.keys(camposAtualizados).length > 0) {
+                await Proposta.findByIdAndUpdate({ _id: id }, camposAtualizados);
+            }
+
+            const respostaJson = { msg: 'Ok' };
+            return res.status(200).json(respostaJson);
 
         } catch (error) {
             console.log(error);

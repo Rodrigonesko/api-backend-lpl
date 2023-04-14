@@ -29,7 +29,7 @@ module.exports = {
             }
 
             const result = await Dicionario.findOne({
-                palavra
+                palavra: palavra.toLowerCase().replace(/[^a-zA-ZÀ-ú]/g, '')
             })
 
             if (result) {
@@ -39,7 +39,7 @@ module.exports = {
             }
 
             await Dicionario.create({
-                palavra
+                palavra: palavra.toLowerCase().replace(/[^a-zA-ZÀ-ú]/g, '')
             })
 
             return res.status(200).json({
