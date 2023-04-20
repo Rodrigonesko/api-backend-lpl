@@ -702,8 +702,6 @@ module.exports = {
                 cnpj
             })
 
-            console.log(clinica);
-
             if (!clinica) {
                 return res.status(501).json({
                     msg: 'Não foi encontrado clinica'
@@ -951,8 +949,6 @@ module.exports = {
                 mo: mo
             }).sort([['createdAt', -1]])
 
-            console.log(pedidos);
-
             return res.status(200).json({
                 pedidos
             })
@@ -1032,7 +1028,7 @@ module.exports = {
 
             uploadGravacao(req, res, async (err) => {
 
-                console.log(res.file);
+                // console.log(res.file);
             })
 
             const { pacote } = req.params
@@ -1558,7 +1554,7 @@ module.exports = {
             }
 
             return res.status(200).json({
-                msg: 'oi'
+                msg: 'ok'
             })
 
         } catch (error) {

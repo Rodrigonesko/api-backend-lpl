@@ -388,7 +388,6 @@ module.exports = {
                 contato2: obj.contato2,
                 contato3: obj.contato3,
                 telefone: obj.telefone,
-                email: obj.telefone,
                 retorno: obj.retorno,
                 observacoes: obj.observacoes,
                 status: 'Concluído',

@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET
-const cookieParser = require('cookie-parser')
 
 module.exports = {
     index: (req, res) => {

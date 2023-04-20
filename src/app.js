@@ -7,6 +7,14 @@ const corsOptions = {
     credentials: true
 }
 
+//Tasks
+
+// const lembreteMensagem = require('./tasks/mensagemLembrente')
+// lembreteMensagem()
+// setInterval(lembreteMensagem, 300000)
+
+// lembreteMensagem()
+
 //JWT Related
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET
@@ -54,7 +62,7 @@ const UrgenciasEmergencia = require('./models/UrgenciasEmergencias/UrgenciasEmer
 
 const routes = require('./config/routes')
 
-app.use(express.json({limit: '100mb'}))
+app.use(express.json({ limit: '100mb' }))
 app.use(cookieParser())
 app.use(cors(corsOptions))
 app.use(function (req, res, next) {

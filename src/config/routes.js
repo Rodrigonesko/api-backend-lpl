@@ -102,7 +102,8 @@ router.put('/entrevistas/implantar', auth, TeleEntrevistaController.implantar)
 router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImplantadas)
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
 router.get('/entrevistas/qualidade', auth, TeleEntrevistaController.entrevistasQualidade)
-router.get('/entrevistas/corretorOrtografico', TeleEntrevistaController.corretorOrtográfico)
+
+router.get('/entrevistas/testeMensagem', TeleEntrevistaController.testeMensagem)
 
 router.get('/entrevistas/diasDisponiveis', auth, horarioController.diasDisponiveis)
 router.get('/entrevistas/horariosDisponiveis/:data', horarioController.buscarHorariosDisponiveis)

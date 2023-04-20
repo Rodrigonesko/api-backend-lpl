@@ -710,7 +710,7 @@ module.exports = {
             const year = split[1]
 
             if (status == 'todos' && data == 'todos') {     //Caso status = todos e data = todos busca tudo independente da data e status
-         
+
                 const teles = await DadosEntrevista.find()
                 const rns = await Rn.find({
                     status: 'Concluido'
@@ -1855,31 +1855,12 @@ module.exports = {
         }
     },
 
-    corretorOrtográfico: async (req, res) => {
+    testeMensagem: async (req, res) => {
         try {
 
-            // Exemplo de uso
-            const nomeArquivoDic = path.join(__dirname, 'index.dic');
-            const nomeArquivoAff = path.join(__dirname, 'index.aff');
+    
 
-            const frase = 'Ola tudo bom?'
-
-            const palavraVerificar = 'números';
-
-            const dicionario = carregarDicionario(nomeArquivoDic);
-            const afixos = fs.readFileSync(nomeArquivoAff, 'utf-8').split('\n');
-
-            const palavraExiste = verificarPalavra(palavraVerificar, dicionario, afixos);
-
-            if (palavraExiste) {
-                console.log(`A palavra "${palavraVerificar}" existe no dicionário.`);
-            } else {
-                console.log(`A palavra "${palavraVerificar}" não existe no dicionário.`);
-            }
-
-            return res.json({
-                msg: 'oi'
-            })
+            return res.json({msg: 'oi'})
 
         } catch (error) {
             console.log(error);
@@ -1888,4 +1869,6 @@ module.exports = {
             })
         }
     }
+
+
 }

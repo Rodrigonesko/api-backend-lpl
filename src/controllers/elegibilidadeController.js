@@ -554,32 +554,33 @@ module.exports = {
             const { id, erroSistema } = req.body;
             const find = await Proposta.findById({ _id: id });
 
+            console.log(find)
+
             let status = '';
             let camposAtualizados = {};
 
+            status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
+
             if (!find.status1Analise) {
-                status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
                 camposAtualizados = {
                     status1Analise: 'Liberada',
                     primeiraDevolucao1: 'Liberada',
                     status,
-                    dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD')
                 };
             } else if (find.status3Analise || find.status2Analise) {
-                status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
                 camposAtualizados = {
                     status3Analise: 'Liberada',
                     segundoReprotocolo1: 'Liberada',
                     status,
-                    dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD')
                 };
             } else if (find.status1Analise) {
-                status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
                 camposAtualizados = {
                     status2Analise: 'Liberada',
                     reprotocolo1: 'Liberada',
                     status,
-                    dataConclusao: moment(new Date()).format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD')
                 };
             }
 
@@ -601,12 +602,12 @@ module.exports = {
     enviarFaseCancelamento: async (req, res) => {
         try {
 
-            const { id, motivoCancelamento, categoriaCancelamento, evidenciaFraude } = req.body
+            const { id, motivoCancelamento, categoriaCancelamento, evidencia } = req.body
 
-            const update = await Proposta.findByIdAndUpdate({
-                _id: id
-            }, {
+            console.log(id, motivoCancelamento, categoriaCancelamento, evidencia);
 
+            return res.json({
+                msg: 'oii'
             })
 
         } catch (error) {
@@ -620,9 +621,74 @@ module.exports = {
     devolver: async (req, res) => {
         try {
 
-            const { id, motivosDevolucao, observacoes } = req.body
+            const { id, motivos, observacoes } = req.body
+
+            const find = await Proposta.findById({ _id: id });
+
+            const status = 'Devolvida'
+
+            let camposAtualizados = {}
+
+            if (!find.primeiraDevolucao1) {
+
+                const primeiraDevolucao1 = motivos[0]
+                const primeiraDevolucao2 = motivos[1]
+                const primeiraDevolucao3 = motivos[2]
+                const primeiraDevolucao4 = motivos[3]
+
+                camposAtualizados = {
+                    status1Analise: 'Devolvida',
+                    primeiraDevolucao1,
+                    primeiraDevolucao2,
+                    primeiraDevolucao3,
+                    primeiraDevolucao4,
+                    observacoesDevolucao: observacoes,
+                    status,
+                    dataConclusao: moment().format('YYYY-MM-DD')
+                };
+
+            } else if (find.primeiraDevolucao1 && !find.reprotocolo1) {
+
+                const reprotocolo1 = motivos[0]
+                const reprotocolo2 = motivos[1]
+                const reprotocolo3 = motivos[2]
+
+                camposAtualizados = {
+                    status2Analise: 'Devolvida',
+                    reprotocolo1,
+                    reprotocolo2,
+                    reprotocolo3,
+                    observacoesDevolucao: observacoes,
+                    status,
+                    dataConclusao: moment().format('YYYY-MM-DD')
+                };
 
 
+            } else if (find.primeiraDevolucao1 && find.reprotocolo1) {
+                console.log('terceira devolução');
+
+                const segundoReprotocolo1 = motivos[0]
+                const segundoReprotocolo2 = motivos[1]
+                const segundoReprotocolo3 = motivos[2]
+
+                camposAtualizados = {
+                    status3Analise: 'Devolvida',
+                    segundoReprotocolo1,
+                    segundoReprotocolo2,
+                    segundoReprotocolo3,
+                    observacoesDevolucao: observacoes,
+                    status,
+                    dataConclusao: moment().format('YYYY-MM-DD')
+                };
+            }
+
+            if (Object.keys(camposAtualizados).length > 0) {
+                await Proposta.updateOne({ _id: id }, camposAtualizados);
+            }
+
+            return res.json({
+                msg: 'ok'
+            })
 
         } catch (error) {
             console.log(error);
