@@ -383,6 +383,137 @@ module.exports = {
         }
     },
 
+    propostasACancelar: async (req, res) => {
+        try {
+
+            const { analista } = req.params
+
+            if (analista === 'Todos' || analista === '') {
+                const propostas = await Proposta.find({
+                    status: 'Fase Cancelamento'
+                })
+
+                return res.json(propostas)
+
+            }
+
+            const propostas = await Proposta.find({
+                status: 'Fase Cancelamento',
+                $and: [
+                    { analista: analista }
+                ]
+            })
+
+            return res.status(200).json({
+                propostas,
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+    filtroPropostaCancelar: async (req, res) => {
+        try {
+
+            const { proposta } = req.params
+
+            const propostas = await Proposta.find({
+
+                proposta: { $regex: proposta },
+                status: 'Fase Cancelamento'
+            })
+
+            console.log(propostas);
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+    filtroCancelar: async (req, res) => {
+        try {
+
+            const { analista, entidade } = req.query
+
+            console.log(analista == '', entidade == '');
+
+            let propostas = await Proposta.find({
+                analista: { $regex: analista },
+                entidade: { $regex: entidade },
+                status: 'Fase Cancelamento',
+            })
+
+            // propostas = propostas.filter(e => {
+            //     return e.status === 'A iniciar' || e.status === 'Em andamento'
+            // })
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+    filtroPropostaTodas: async (req, res) => {
+        try {
+
+            const { proposta } = req.params
+
+            const propostas = await Proposta.find({
+                proposta: { $regex: proposta }
+            })
+
+            console.log(propostas);
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+    filtroTodas: async (req, res) => {
+        try {
+
+            const { analista, vigencia, status } = req.query
+
+            console.log(analista, vigencia, status);
+
+            let propostas = await Proposta.find({
+                analista: { $regex: analista },
+                vigencia: { $regex: vigencia },
+                status: { $regex: status },
+            })
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
     statusEmAndamento: async (req, res) => {
         try {
 
@@ -566,21 +697,24 @@ module.exports = {
                     status1Analise: 'Liberada',
                     primeiraDevolucao1: 'Liberada',
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
                 };
             } else if (find.status3Analise || find.status2Analise) {
                 camposAtualizados = {
                     status3Analise: 'Liberada',
                     segundoReprotocolo1: 'Liberada',
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
                 };
             } else if (find.status1Analise) {
                 camposAtualizados = {
                     status2Analise: 'Liberada',
                     reprotocolo1: 'Liberada',
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
                 };
             }
 
@@ -606,8 +740,19 @@ module.exports = {
 
             console.log(id, motivoCancelamento, categoriaCancelamento, evidencia);
 
+            await Proposta.updateOne({
+                _id: id
+            }, {
+                motivoCancelamento,
+                categoriaCancelamento,
+                evidenciaFraude: evidencia,
+                status: 'Fase Cancelamento',
+                dataConclusao: moment().format('YYYY-MM-DD'),
+                analista: req.user
+            })
+
             return res.json({
-                msg: 'oii'
+                msg: 'ok'
             })
 
         } catch (error) {
@@ -644,7 +789,8 @@ module.exports = {
                     primeiraDevolucao4,
                     observacoesDevolucao: observacoes,
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
                 };
 
             } else if (find.primeiraDevolucao1 && !find.reprotocolo1) {
@@ -660,7 +806,8 @@ module.exports = {
                     reprotocolo3,
                     observacoesDevolucao: observacoes,
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
                 };
 
 
@@ -678,7 +825,8 @@ module.exports = {
                     segundoReprotocolo3,
                     observacoesDevolucao: observacoes,
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD')
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
                 };
             }
 
@@ -688,6 +836,105 @@ module.exports = {
 
             return res.json({
                 msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    cancelar: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const proposta = Proposta.findOne({
+                _id: id
+            })
+
+            const status = 'Cancelada'
+
+            if (!proposta.status1Analise) {
+                camposAtualizados = {
+                    status1Analise: 'Cancelada',
+                    primeiraDevolucao1: 'Cancelada',
+                    status,
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
+                };
+            } else if (proposta.status3Analise || proposta.status2Analise) {
+                camposAtualizados = {
+                    status3Analise: 'Cancelada',
+                    segundoReprotocolo1: 'Cancelada',
+                    status,
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
+                };
+            } else if (proposta.status1Analise) {
+                camposAtualizados = {
+                    status2Analise: 'Cancelada',
+                    reprotocolo1: 'Cancelada',
+                    status,
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                    analista: req.user
+                };
+            }
+
+            if (Object.keys(camposAtualizados).length > 0) {
+                await Proposta.updateOne({ _id: id }, camposAtualizados);
+            }
+
+            return res.json({ msg: 'ok' })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    producaoDiaria: async (req, res) => {
+        try {
+
+            const { data } = req.params
+
+            const propostas = await Proposta.find({
+                dataConclusao: data
+            })
+
+            let analistas = []
+
+            propostas.forEach(e => {
+                if (!analistas.includes(e.analista)) {
+                    analistas.push(e.analista)
+                }
+            })
+
+            let producao = []
+
+            for (const analista of analistas) {
+                const count = await Proposta.find({
+                    analista,
+                    dataConclusao: data
+                }).count()
+
+                producao.push({
+                    analista,
+                    quantidade: count
+                })
+            }
+
+            const total = await Proposta.find({
+                dataConclusao: data
+            }).count()
+
+            return res.json({
+                producao,
+                total
             })
 
         } catch (error) {

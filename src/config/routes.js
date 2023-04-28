@@ -103,8 +103,6 @@ router.get('/entrevistas/naoImplantadas', auth, TeleEntrevistaController.naoImpl
 router.put('/entrevistas/voltar', auth, TeleEntrevistaController.voltarEntrevista)
 router.get('/entrevistas/qualidade', auth, TeleEntrevistaController.entrevistasQualidade)
 
-router.get('/entrevistas/testeMensagem', TeleEntrevistaController.testeMensagem)
-
 router.get('/entrevistas/diasDisponiveis', auth, horarioController.diasDisponiveis)
 router.get('/entrevistas/horariosDisponiveis/:data', horarioController.buscarHorariosDisponiveis)
 router.get('/entrevistas/analistasDisponiveis/:data/:horario', auth, horarioController.buscarAnalistasDisponiveis)
@@ -166,10 +164,15 @@ router.get('/elegibilidade/propostas/analiseDoc', auth, elegibilidadeController.
 router.put('/elegibilidade/atribuir/preProcessamento', auth, elegibilidadeController.atribuirAnalistaPre)
 router.get('/elegibilidade/infoProposta/:id', auth, elegibilidadeController.mostrarInfoPropostaId)
 router.get('/elegibilidade/propostas/analise/:analista', auth, elegibilidadeController.mostrarAnalise)
-router.get('/elegibilidade/proposta/teste', auth, elegibilidadeController.filtroAnalise)
+router.get('/elegibilidade/propostas/cancelar/:analista', auth, elegibilidadeController.propostasACancelar)
+router.get('/elegibilidade/proposta/filtroAnalise', auth, elegibilidadeController.filtroAnalise)
+router.get('/elegibilidade/proposta/filtroCancelar', auth, elegibilidadeController.filtroCancelar)
+router.get('/elegibilidade/proposta/filtroTodas', auth, elegibilidadeController.filtroTodas)
 router.get('/elegibilidade/entidades/andamento', auth, elegibilidadeController.entidades)
 router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atribuirAnalista)
 router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
+router.get('/elegibilidade/propostas/cancelar/proposta/:proposta', auth, elegibilidadeController.filtroPropostaCancelar)
+router.get('/elegibilidade/propostas/todas/proposta/:proposta', auth, elegibilidadeController.filtroPropostaTodas)
 router.put('/elegibilidade/proposta/alterarStatus', auth, elegibilidadeController.statusEmAndamento)
 router.put('/elegibilidade/proposta/fase1', auth, elegibilidadeController.fase1)
 router.put('/elegibilidade/proposta/fase2', auth, elegibilidadeController.fase2)
@@ -180,7 +183,8 @@ router.get('/elegibilidade/prc', auth, elegibilidadeController.buscarPrc)
 router.put('/elegibilidade/enviarUnder', auth, elegibilidadeController.enviarUnder)
 router.put('/elegibilidade/enviarFaseCancelamento', auth, elegibilidadeController.enviarFaseCancelamento)
 router.put('/elegibilidade/devolver', auth, elegibilidadeController.devolver)
-
+router.put('/elegibilidade/cancelar', auth, elegibilidadeController.cancelar)
+router.get('/elegibilidade/producao/:data', auth, elegibilidadeController.producaoDiaria)
 
 /* Urgencia Emergencia */
 

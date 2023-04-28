@@ -311,7 +311,7 @@ module.exports = {
     salvarDadosEditados: async (req, res) => {
         try {
 
-            const { dados, id, houveDivergencia, dataNascimento } = req.body
+            const { dados, id, houveDivergencia, dataNascimento, nome, cpf } = req.body
 
             const update = await Promise.all(Object.keys(dados).map(async key => {
                 return await DadosEntrevista.findOneAndUpdate({
@@ -327,8 +327,18 @@ module.exports = {
                 houveDivergencia,
                 dataNascimento
             })
+
+            if(req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida'){
+                await DadosEntrevista.findByIdAndUpdate({
+                    _id: id
+                }, {
+                    nome,
+                    cpf
+                })
+            }
+
             return res.status(200).json({
-                msg: 'oii'
+                msg: 'ok'
             })
 
         } catch (error) {
@@ -1854,21 +1864,6 @@ module.exports = {
             })
         }
     },
-
-    testeMensagem: async (req, res) => {
-        try {
-
-    
-
-            return res.json({msg: 'oi'})
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    }
 
 
 }
