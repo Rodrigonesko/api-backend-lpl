@@ -1332,7 +1332,7 @@ module.exports = {
                         parecer: `Beneficiário não reconhece pedido: ${item[0]}, finalizando pedido`
                     })
 
-                } else {    
+                } else {
                     const updatePedido = await Pedido.findOneAndUpdate({       //Atualiza como o beneficiario reconhece o pedido
                         _id: item[0]
                     }, {
@@ -2134,6 +2134,29 @@ module.exports = {
         }
     },
 
+    prioridadeDossiePacote: async (req, res) => {
+        try {
+
+            const { pacote, prioridade } = req.body
+
+            const update = await Pedido.updateMany({
+                pacote
+            }, {
+                prioridadeDossie: prioridade
+            })
+
+            return res.status(200).json({
+                update
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     devolverPacote: async (req, res) => {
         try {
 
@@ -2333,7 +2356,7 @@ module.exports = {
         }
     },
 
-    
+
 }
 
 function ExcelDateToJSDate(serial) {
