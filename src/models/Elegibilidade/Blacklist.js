@@ -10,5 +10,10 @@ const blacklistScheema = mongoose.Schema({
     telefoneCorretor: String,
     nomeSupervisor: String,
     cpfSupervisor: String,
-    telefoneSupervisor: String
+    telefoneSupervisor: String,
+    motivoCancelamento: String,
+    categoriaCancelamento: String,
+    evidenciaFraude: String
 })
+
+module.exports = mongoose.model('Blacklist', blacklistScheema)

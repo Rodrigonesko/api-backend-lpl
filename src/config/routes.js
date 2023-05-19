@@ -169,6 +169,8 @@ router.get('/elegibilidade/propostas/cancelar/:analista', auth, elegibilidadeCon
 router.get('/elegibilidade/proposta/filtroAnalise', auth, elegibilidadeController.filtroAnalise)
 router.get('/elegibilidade/proposta/filtroCancelar', auth, elegibilidadeController.filtroCancelar)
 router.get('/elegibilidade/proposta/filtroTodas', auth, elegibilidadeController.filtroTodas)
+router.get('/elegibilidade/propostas/devolvidas/:analista', auth, elegibilidadeController.propostasDevolvidas)
+router.get('/elegibilidade/propostas/devolvidas/proposta/:propota', auth, elegibilidadeController.filtroPropostasDevolvidas)
 router.get('/elegibilidade/entidades/andamento', auth, elegibilidadeController.entidades)
 router.put('/elegibilidade/atribuir/analise', auth, elegibilidadeController.atribuirAnalista)
 router.get('/elegibilidade/propostas/analise/proposta/:proposta', auth, elegibilidadeController.fitroPropostaAnalise)
@@ -186,6 +188,8 @@ router.put('/elegibilidade/enviarFaseCancelamento', auth, elegibilidadeControlle
 router.put('/elegibilidade/devolver', auth, elegibilidadeController.devolver)
 router.put('/elegibilidade/cancelar', auth, elegibilidadeController.cancelar)
 router.get('/elegibilidade/producao/:data', auth, elegibilidadeController.producaoDiaria)
+router.get('/elegibilidade/corretor/:corretor', auth, elegibilidadeController.propostasCorretor)
+router.get('/elegibilidade/blacklist', auth, elegibilidadeController.blacklist)
 
 /* Urgencia Emergencia */
 

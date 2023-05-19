@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Proposta = mongoose.model('PropostasElegibilidade')
 const Agenda = mongoose.model('AgendaElegibilidade')
 const Prc = mongoose.model('Prc')
+const Blacklist = require('../models/Elegibilidade/Blacklist')
 
 const path = require('path')
 const moment = require('moment')
@@ -470,6 +471,92 @@ module.exports = {
         }
     },
 
+    propostasDevolvidas: async (req, res) => {
+        try {
+            const { analista } = req.params
+
+            if (analista === 'Todos' || analista === '') {
+                const propostas = await Proposta.find({
+                    status: 'Devolvida'
+                })
+
+                return res.json(propostas)
+
+            }
+
+            const propostas = await Proposta.find({
+                status: 'Devolvida',
+                $and: [
+                    { analista: analista }
+                ]
+            })
+
+            return res.status(200).json({
+                propostas,
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+    filtroPropostasDevolvidas: async (req, res) => {
+        try {
+
+            const { proposta } = req.params
+
+            const propostas = await Proposta.find({
+
+                proposta: { $regex: proposta },
+                status: 'Devolvida'
+            })
+
+            console.log(propostas);
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
+    filtroDevolvidas: async (req, res) => {
+        try {
+
+            const { analista, entidade } = req.query
+
+            console.log(analista == '', entidade == '');
+
+            let propostas = await Proposta.find({
+                analista: { $regex: analista },
+                entidade: { $regex: entidade },
+                status: 'Devolvida',
+            })
+
+            // propostas = propostas.filter(e => {
+            //     return e.status === 'A iniciar' || e.status === 'Em andamento'
+            // })
+
+            return res.status(200).json({
+                propostas
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error
+            })
+        }
+    },
+
     filtroPropostaTodas: async (req, res) => {
         try {
 
@@ -851,7 +938,7 @@ module.exports = {
 
             const { id } = req.body
 
-            const proposta = Proposta.findOne({
+            const proposta = await Proposta.findOne({
                 _id: id
             })
 
@@ -886,6 +973,24 @@ module.exports = {
             if (Object.keys(camposAtualizados).length > 0) {
                 await Proposta.updateOne({ _id: id }, camposAtualizados);
             }
+
+            await Blacklist.create({
+                proposta: proposta.proposta,
+                codCorretor: proposta.codCorretor,
+                entidade: proposta.entidade,
+                administradora: proposta.administradora,
+                cpfCorretor: proposta.cpfCorretor,
+                nomeCorretor: proposta.nomeCorretor,
+                telefoneCorretor: proposta.telefoneCorretor,
+                nomeSupervisor: proposta.nomeSupervisor,
+                cpfSupervisor: proposta.cpfSupervisor,
+                telefoneSupervisor: proposta.telefoneSupervisor,
+                motivoCancelamento: proposta.motivoCancelamento,
+                categoriaCancelamento: proposta.categoriaCancelamento,
+                evidenciaFraude: proposta.evidenciaFraude
+            })
+
+            // console.log(addBlacklist);
 
             return res.json({ msg: 'ok' })
 
@@ -943,8 +1048,41 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 
+    propostasCorretor: async (req, res) => {
+        try {
+
+            const { corretor } = req.params
+
+            const propostas = await Proposta.find({
+                nomeCorretor: corretor
+            })
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    blacklist: async (req, res) => {
+        try {
+
+            const propostas = await Blacklist.find()
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 }
 
 function ajustarData(data) {
