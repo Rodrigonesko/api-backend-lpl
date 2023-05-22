@@ -13,6 +13,24 @@ const os = require('os')
 const uploadPropostas = multer({ dest: os.tmpdir() }).single('file')
 
 module.exports = {
+
+    show: async (req, res) => {
+
+        try {
+
+            const propostas = await Proposta.find()
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+
+    },
+
     upload: async (req, res) => {
         try {
 
@@ -508,6 +526,8 @@ module.exports = {
 
             const { proposta } = req.params
 
+            console.log(proposta);
+
             const propostas = await Proposta.find({
 
                 proposta: { $regex: proposta },
@@ -541,10 +561,6 @@ module.exports = {
                 status: 'Devolvida',
             })
 
-            // propostas = propostas.filter(e => {
-            //     return e.status === 'A iniciar' || e.status === 'Em andamento'
-            // })
-
             return res.status(200).json({
                 propostas
             })
@@ -565,8 +581,6 @@ module.exports = {
             const propostas = await Proposta.find({
                 proposta: { $regex: proposta }
             })
-
-            console.log(propostas);
 
             return res.json(propostas)
 
@@ -1075,6 +1089,67 @@ module.exports = {
             const propostas = await Blacklist.find()
 
             return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    report: async (req, res) => {
+        try {
+
+            const recebidasHoje = await Proposta.find({
+                dataImportacao: moment().format('YYYY-MM-DD')
+            }).count()
+
+            const emAnalise = await Proposta.find({
+                dataImportacao: { $ne: moment().format('YYYY-MM-DD') },
+                $or: [
+                    { status: 'Em andamento' },
+                    { status: 'A iniciar' },
+                    { status: 'Análise de Documentos' }
+                ]
+            }).count()
+
+            const propostas = await Proposta.find({
+                $or: [
+                    { status: 'Em andamento' },
+                    { status: 'A iniciar' },
+                    { status: 'Análise de Documentos' }
+                ]
+            })
+
+            const vigencias = []
+
+            propostas.forEach(proposta => {
+
+                const { vigencia } = proposta
+
+                const indice = vigencias.findIndex((item) => item.vigencia === vigencia)
+
+                if (indice === -1) {
+                    vigencias.push({ vigencia, quantidade: 1 })
+                } else {
+                    vigencias[indice].quantidade++
+                }
+
+            })
+
+            const totalEmAnalise = propostas.length
+
+            const obj = {
+                recebidasHoje,
+                emAnalise,
+                totalEmAnalise,
+                vigencias
+            }
+
+            console.log(obj);
+
+            return res.json(obj)
 
         } catch (error) {
             console.log(error);
