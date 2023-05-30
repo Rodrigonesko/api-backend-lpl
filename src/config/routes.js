@@ -107,6 +107,8 @@ router.get('/entrevistas/diasDisponiveis', auth, horarioController.diasDisponive
 router.get('/entrevistas/horariosDisponiveis/:data', horarioController.buscarHorariosDisponiveis)
 router.get('/entrevistas/analistasDisponiveis/:data/:horario', auth, horarioController.buscarAnalistasDisponiveis)
 
+router.put('/entrevistas/reenviarHorariosDisponiveis', auth, TeleEntrevistaController.reenviarHorariosDisponiveis)
+
 router.get('/migrarBanco', TeleEntrevistaController.migrarBanco)
 router.get('/entrevistas/teste/producao', TeleEntrevistaController.mostrarDadosProducao2)
 
@@ -156,6 +158,7 @@ router.put('/rsd/protocolo/devolver', auth, rsdController.devolverProtocolo)
 router.get('/rsd/relatorio/:aPartir/:ate', auth, rsdController.relatorioAmil)
 router.get('/rsd/download/:idPacote/:filename', rsdController.download)
 router.get('/rsd/producaoDiaria/:data', auth, rsdController.producaoDiaria)
+router.post('/rsd/baixaAgd', auth, rsdController.baixaAgd)
 
 
 //Rotas Elegibilidade
@@ -193,6 +196,9 @@ router.get('/elegibilidade/producao/:data', auth, elegibilidadeController.produc
 router.get('/elegibilidade/report', auth, elegibilidadeController.report)
 router.get('/elegibilidade/corretor/:corretor', auth, elegibilidadeController.propostasCorretor)
 router.get('/elegibilidade/blacklist', auth, elegibilidadeController.blacklist)
+router.post('/elegibilidade/registrar/proposta', auth, elegibilidadeController.registroPropostaManual)
+router.get('/elegibilidade/show/propostasManual', auth, elegibilidadeController.showPropostasManual)
+router.get('/elegibilidade/show/propostaManual/andamento', auth, elegibilidadeController.showPropostasManualAndamento)
 
 /* Urgencia Emergencia */
 

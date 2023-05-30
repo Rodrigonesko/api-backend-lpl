@@ -2356,6 +2356,100 @@ module.exports = {
         }
     },
 
+    baixaAgd: async (req, res) => {
+        try {
+
+            uploadAgd(req, res, async (err) => {
+
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                result.forEach(async e => {
+
+                    if (e.procv === 'Confirmação de pagamento' || e.procv === 'Interface financeiro') {
+
+
+
+                        await Pedido.updateOne({
+                            _id: e.ID
+                        }, {
+                            statusPadraoAmil: 'PAGAMENTO LIBERADO',
+                            statusGerencial: 'Comprovante correto',
+                            fase: 'Finalizado',
+                            dataConclusao: moment().format('YYYY-MM-DD'),
+                            status: 'Finalizado'
+                        })
+                    }
+
+                    if (e.procv === 'Pedido cancelado' && (e['Status Amil'] === 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante' || e['Status Amil'] === 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação')) {
+
+                        await Pedido.updateOne({
+                            _id: e.ID
+                        }, {
+                            statusPadraoAmil: 'CANCELAMENTO - Comprovante não Recebido',
+                            statusGerencial: 'Protocolo Cancelado',
+                            fase: 'Finalizado',
+                            dataConclusao: moment().format('YYYY-MM-DD'),
+                            status: 'Finalizado'
+                        })
+                    }
+
+                    if (e.procv === 'Pedido cancelado' && e['Status Amil'] === 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno') {
+
+                        await Pedido.updateOne({
+                            _id: e.ID
+                        }, {
+                            statusPadraoAmil: 'CANCELAMENTO - Sem retorno pós 5 dias úteis',
+                            statusGerencial: 'Protocolo Cancelado',
+                            fase: 'Finalizado',
+                            dataConclusao: moment().format('YYYY-MM-DD'),
+                            status: 'Finalizado'
+                        })
+                    }
+
+                    const pedidos = await Pedido.find({
+                        _id: e.ID
+                    })
+
+                    let finalizadas = 0
+
+                    pedidos.forEach(pedido => {
+                        if (pedido.fase === 'Finalizado') {
+                            finalizadas++
+                        }
+                    })
+
+                    if (finalizadas === pedidos.length) {
+                        await Pedido.updateMany({
+                            pacote: e['Código']
+                        }, {
+                            statusPacote: 'Finalizado'
+                        })
+                    }
+
+                })
+
+                return res.json({
+                    msg: 'ola'
+                })
+
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
+
 
 }
 

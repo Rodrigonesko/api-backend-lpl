@@ -328,7 +328,7 @@ module.exports = {
                 dataNascimento
             })
 
-            if(req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida'){
+            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida') {
                 await DadosEntrevista.findByIdAndUpdate({
                     _id: id
                 }, {
@@ -1864,6 +1864,61 @@ module.exports = {
             })
         }
     },
+
+    reenviarHorariosDisponiveis: async (req, res) => {
+        try {
+
+            const { data, whatsapps } = req.body
+
+            const result = await Horario.find({
+                dia: data
+            })
+
+            let arr = []
+
+            result.forEach(e => {
+                if ((e.agendado !== 'Agendado')) {
+                    if (e.dia != moment().format('YYYY-MM-DD')) {
+                        arr.push(e.horario)
+                    }
+                    if (e.horario >= moment().format('HH:mm:ss')) {
+                        arr.push(e.horario)
+                    }
+                }
+            })
+
+            const horarios = [...new Set(arr)]
+
+            horarios.sort()
+
+            console.log(horarios, whatsapps);
+
+            console.log(horarios);
+
+            const urlLocal = 'http://10.0.121.55:3002'
+
+            const sendApi = await axios.put(`${urlLocal}/reenviarHorariosDisponiveis`, {
+                horarios, whatsapps, data
+            }, {
+                headers: {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${req.cookies['token']}`
+                    }
+                }
+            })
+
+            // console.log(sendApi);
+
+            return res.json(horarios)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 
 
 }

@@ -3,6 +3,7 @@ const Proposta = mongoose.model('PropostasElegibilidade')
 const Agenda = mongoose.model('AgendaElegibilidade')
 const Prc = mongoose.model('Prc')
 const Blacklist = require('../models/Elegibilidade/Blacklist')
+const PropostaManual = require('../models/Elegibilidade/PropostaElegibilidadeManual')
 
 const path = require('path')
 const moment = require('moment')
@@ -1150,6 +1151,57 @@ module.exports = {
             console.log(obj);
 
             return res.json(obj)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    registroPropostaManual: async (req, res) => {
+        try {
+
+            const { dadosProposta } = req.body
+
+            await PropostaManual.create(dadosProposta)
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    showPropostasManual: async (req, res) => {
+        try {
+
+            const propostas = await PropostaManual.find()
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    showPropostasManualAndamento: async (req, res) => {
+        try {
+
+            const propostas = await PropostaManual.find({
+                status: 'Em andamento'
+            })
+
+            return res.json(propostas)
 
         } catch (error) {
             console.log(error);
