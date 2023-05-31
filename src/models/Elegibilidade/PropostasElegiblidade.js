@@ -65,7 +65,10 @@ const propostaScheema = mongoose.Schema({
     categoriaCancelamento: String,
     erroSistema: String,
     fase1: Boolean,
-
+    numeroRegistro: String,
+    universidade: String,
+    curso: String,
+    localizacaoCurso: String
 }, {
     timestamps: true
 })

@@ -192,6 +192,8 @@ router.put('/elegibilidade/enviarUnder', auth, elegibilidadeController.enviarUnd
 router.put('/elegibilidade/enviarFaseCancelamento', auth, elegibilidadeController.enviarFaseCancelamento)
 router.put('/elegibilidade/devolver', auth, elegibilidadeController.devolver)
 router.put('/elegibilidade/cancelar', auth, elegibilidadeController.cancelar)
+router.post('/elegibilidade/cancelarCpf', auth, elegibilidadeController.cancelarCpf)
+router.get('/elegibilidade/consultaCpf/:cpf', auth, elegibilidadeController.consultaCpfCancelado)
 router.get('/elegibilidade/producao/:data', auth, elegibilidadeController.producaoDiaria)
 router.get('/elegibilidade/report', auth, elegibilidadeController.report)
 router.get('/elegibilidade/corretor/:corretor', auth, elegibilidadeController.propostasCorretor)
@@ -199,6 +201,8 @@ router.get('/elegibilidade/blacklist', auth, elegibilidadeController.blacklist)
 router.post('/elegibilidade/registrar/proposta', auth, elegibilidadeController.registroPropostaManual)
 router.get('/elegibilidade/show/propostasManual', auth, elegibilidadeController.showPropostasManual)
 router.get('/elegibilidade/show/propostaManual/andamento', auth, elegibilidadeController.showPropostasManualAndamento)
+router.put('/elegibilidade/salvarDiploma', auth, elegibilidadeController.salvarDiploma)
+router.post('/elegibilidade/buscarDiploma', auth, elegibilidadeController.buscarDiploma)
 
 /* Urgencia Emergencia */
 

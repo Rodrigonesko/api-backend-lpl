@@ -4,6 +4,7 @@ const Agenda = mongoose.model('AgendaElegibilidade')
 const Prc = mongoose.model('Prc')
 const Blacklist = require('../models/Elegibilidade/Blacklist')
 const PropostaManual = require('../models/Elegibilidade/PropostaElegibilidadeManual')
+const CpfCancelado = require('../models/Elegibilidade/Cpfcancelado')
 
 const path = require('path')
 const moment = require('moment')
@@ -1209,7 +1210,103 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    cancelarCpf: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            await CpfCancelado.create(dados)
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    consultaCpfCancelado: async (req, res) => {
+        try {
+
+            const { cpf } = req.params
+
+            const result = await CpfCancelado.findOne({
+                cpfCorretor: cpf
+            })
+
+            if (!result) {
+                return res.json({
+                    msg: 'Não achou'
+                })
+            }
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    salvarDiploma: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            const { universidade, curso, numeroRegistro } = dados
+
+            await Proposta.updateOne({
+                _id: dados.id
+            }, {
+                universidade,
+                curso,
+                numeroRegistro
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    buscarDiploma: async (req, res) => {
+        try {
+
+            const { universidade, curso, numeroRegistro, id } = req.body.dados
+
+            const diplomas = await Proposta.find({
+                universidade,
+                curso,
+                numeroRegistro,
+                _id: { $ne: id }
+            })
+
+            return res.json(diplomas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
+
 }
 
 function ajustarData(data) {

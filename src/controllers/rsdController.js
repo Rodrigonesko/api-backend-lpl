@@ -2415,14 +2415,26 @@ module.exports = {
                     }
 
                     const pedidos = await Pedido.find({
-                        _id: e.ID
+                        pacote: e['Código']
+                    })
+
+                    const protocolos = await Pedido.find({
+                        protocolo: e['Número Protocolo'].replace(/\D/g, '')
                     })
 
                     let finalizadas = 0
 
+                    let protocolosFinalizados = 0
+
                     pedidos.forEach(pedido => {
                         if (pedido.fase === 'Finalizado') {
                             finalizadas++
+                        }
+                    })
+
+                    protocolos.forEach(pedido => {
+                        if (pedido.fase === 'Finalizado') {
+                            protocolosFinalizados++
                         }
                     })
 
@@ -2431,6 +2443,14 @@ module.exports = {
                             pacote: e['Código']
                         }, {
                             statusPacote: 'Finalizado'
+                        })
+                    }
+
+                    if (protocolosFinalizados === protocolos.length) {
+                        await Pedido.updateMany({
+                            protocolo: e['Número Protocolo'].replace(/\D/g, '')
+                        }, {
+                            statusProtocolo: 'Finalizado'
                         })
                     }
 
