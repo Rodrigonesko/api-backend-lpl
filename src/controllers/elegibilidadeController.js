@@ -14,6 +14,25 @@ const os = require('os')
 
 const uploadPropostas = multer({ dest: os.tmpdir() }).single('file')
 
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+    host: '10.0.0.71', // endereço do servidor do MySQL
+    user: 'adm', // usuário do MySQL
+    password: 'lpladm$1', // senha do MySQL
+    database: 'elegibilidade' // nome do banco de dados
+});
+
+// Conectar ao banco de dados
+connection.connect((err) => {
+    if (err) {
+        console.error('Erro ao conectar ao MySQL:', err);
+        return;
+    }
+    console.log('Conexão bem-sucedida ao MySQL!');
+});
+
+
 module.exports = {
 
     show: async (req, res) => {
@@ -1290,6 +1309,12 @@ module.exports = {
 
             const { universidade, curso, numeroRegistro, id } = req.body.dados
 
+            if (!universidade || !curso || !numeroRegistro) {
+                const diplomas = []
+
+                return res.json(diplomas)
+            }
+
             const diplomas = await Proposta.find({
                 universidade,
                 curso,
@@ -1305,6 +1330,211 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    buscarUniversidades: async (req, res) => {
+        try {
+
+            const result = await Proposta.aggregate([
+                {
+                    $group: {
+                        _id: null, // Usamos null para agrupar todos os documentos em um único grupo
+                        universidades: { $addToSet: "$universidade" }
+                    }
+                }
+            ])
+
+            const universidades = result[0].universidades
+
+            return res.json(universidades)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    buscarCursos: async (req, res) => {
+        try {
+
+            const result = await Proposta.aggregate([
+                {
+                    $group: {
+                        _id: null, // Usamos null para agrupar todos os documentos em um único grupo
+                        cursos: { $addToSet: "$curso" }
+                    }
+                }
+            ])
+
+            const cursos = result[0].cursos
+
+            return res.json(cursos)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    migrarBanco: async (req, res) => {
+
+        try {
+            connection.query("SELECT * FROM analise", async (err, rows) => {
+                if (err) {
+                    console.log(err);
+                    return
+                }
+
+                for (const item of rows) {
+
+                    if (item.ligacao?.toLowerCase() === 'sim') {
+                        item.ligacao = true
+                    } else if (item.ligacao?.toLowerCase() === 'não' || item.ligacao?.toLowerCase() === 'nao') {
+                        item.ligacao = false
+                    } else {
+                        item.ligacao = undefined
+                    }
+
+                    if (item.documento_identificacao?.toLowerCase() === 'sim') {
+                        item.documento_identificacao = true
+                    } else if (item.documento_identificacao?.toLowerCase() === 'não' || item.documento_identificacao?.toLowerCase() === 'nao') {
+                        item.documento_identificacao = false
+                    } else {
+                        item.documento_identificacao = undefined
+                    }
+
+                    if (item.declaracao_associado_carteirinha?.toLowerCase() === 'sim') {
+                        item.declaracao_associado_carteirinha = true
+                    } else if (item.declaracao_associado_carteirinha?.toLowerCase() === 'não' || item.declaracao_associado_carteirinha?.toLowerCase() === 'nao') {
+                        item.declaracao_associado_carteirinha = false
+                    } else {
+                        item.declaracao_associado_carteirinha = undefined
+                    }
+
+                    let vinculadosSimNao = undefined
+
+                    if (item.vinculados) {
+                        vinculadosSimNao = true
+                    }
+
+                    if (item.plano_anterior?.toLowerCase() === 'sim') {
+                        item.plano_anterior = true
+                    } else if (item.plano_anterior?.toLowerCase() === 'não' || item.plano_anterior?.toLowerCase() === 'nao') {
+                        item.plano_anterior = false
+                    } else {
+                        item.plano_anterior = undefined
+                    }
+
+                    if (item.sisamil_deacordo?.toLowerCase() === 'sim') {
+                        item.sisamil_deacordo = true
+                    } else if (item.sisamil_deacordo?.toLowerCase() === 'não' || item.sisamil_deacordo?.toLowerCase() === 'nao') {
+                        item.sisamil_deacordo = false
+                    } else {
+                        item.sisamil_deacordo = undefined
+                    }
+
+                    if (item.site?.toLowerCase() === 'sim') {
+                        item.site = true
+                    } else if (item.site?.toLowerCase() === 'não' || item.site?.toLowerCase() === 'nao') {
+                        item.site = false
+                    } else {
+                        item.site = undefined
+                    }
+
+                    let fase1 = false
+
+                    if (item.finalizada_pre) {
+                        fase1 = true
+                    }
+
+
+                    const obj = {
+                        dataImportacao: item.dataImportacao,
+                        vigencia: item.inicioVigencia,
+                        proposta: item.proposta,
+                        statusMotor: item.statusMotor,
+                        status: item.enviadaUnder,
+                        status1Analise: item.status1analise,
+                        status2Analise: item.status2analise,
+                        status3Analise: item.status3analise,
+                        produto: item.produto,
+                        plano: item.plano,
+                        produtor: item.produtor,
+                        uf: item.uf,
+                        administradora: item.administradora,
+                        codCorretor: item.codCorretor,
+                        nomeCorretor: item.corretor,
+                        entidade: item.entidade,
+                        tipoVinculo: item.tipoVinculo,
+                        nome: item.nomeTitular,
+                        idade: item.idadeBeneficiario,
+                        numeroVidas: item.numeroVidas,
+                        valorMedico: item.valorMedico,
+                        valorDental: item.valorDental,
+                        valorTotal: item.valorTotal,
+                        primeiraDevolucao1: item.primeiraDevolucao1,
+                        primeiraDevolucao2: item.primeiraDevolucao2,
+                        primeiraDevolucao3: item.primeiraDevolucao3,
+                        primeiraDevolucao4: item.primeiraDevolucao4,
+                        reprotocolo1: item.reprotocolo1,
+                        reprotocolo2: item.reprotocolo2,
+                        reprotocolo3: item.reprotocolo3,
+                        segundoReprotocolo1: item.segundoReprotocolo1,
+                        segundoReprotocolo2: item.segundoReprotocolo2,
+                        segundoReprotocolo3: item.segundoReprotocolo3,
+                        observacoesDevolucao: item.segundoReprotocolo4,
+                        analista: item.analistaResponsavel,
+                        dataConclusao: item.finalizada,
+                        ligacao: item.ligacao,
+                        prc: item.pontosDeAtencao,
+                        motivoCancelamento: item.motivoCancelamento,
+                        evidenciaFraude: item.evidenciaFraude,
+                        cpfCorretor: item.cpf_corretor,
+                        telefoneCorretor: item.telefone_corretor,
+                        nomeSupervisor: item.supervisor,
+                        cpfSupervisor: item.cpf_supervisor,
+                        telefoneSupervisor: item.telefone_supervisor,
+                        cpf: item.cpf_titular,
+                        planoAmil: item.plano_amil,
+                        dataInicioPlanoAmil: item.data_inicio_plano_amil,
+                        dataFimPlanoAmil: item.data_fim_plano_amil,
+                        custoPlanoAmil: item.custo_plano_amil,
+                        documentoIdentificacao: item.documento_identificacao,
+                        declaracaoAssociadoCarteirinha: item.declaracao_associado_carteirinha,
+                        vinculados: item.vinculados,
+                        vinculadosSimNao,
+                        planoAnterior: item.plano_anterior,
+                        faltaDoc: item.falta_doc,
+                        sisAmilDeacordo: item.sisamil_deacordo,
+                        site: item.site,
+                        contrato: item.contrato,
+                        analistaPreProcessamento: item.analista_1,
+                        dataConclusaoPre: item.finalizada_pre,
+                        observacoes: item.observacoes,
+                        categoriaCancelamento: item.categoria_cancelamento,
+                        fase1
+                    }
+
+                    await Proposta.create(obj)
+
+                }
+
+                // console.log(obj[100]);
+
+                return res.json({ msg: 'oi' })
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+
     }
 
 }

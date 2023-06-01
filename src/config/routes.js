@@ -203,6 +203,9 @@ router.get('/elegibilidade/show/propostasManual', auth, elegibilidadeController.
 router.get('/elegibilidade/show/propostaManual/andamento', auth, elegibilidadeController.showPropostasManualAndamento)
 router.put('/elegibilidade/salvarDiploma', auth, elegibilidadeController.salvarDiploma)
 router.post('/elegibilidade/buscarDiploma', auth, elegibilidadeController.buscarDiploma)
+router.get('/elegibilidade/universidades', auth, elegibilidadeController.buscarUniversidades)
+router.get('/elegibilidade/cursos', auth, elegibilidadeController.buscarCursos)
+router.get('/elegibilidade/migrarBanco', elegibilidadeController.migrarBanco)
 
 /* Urgencia Emergencia */
 

@@ -34,6 +34,7 @@
     "moment-timezone": "^0.5.37",
     "mongoose": "^6.5.4",
     "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
     "natural": "^6.2.0",
     "nodemailer": "^6.7.8",
     "os": "^0.1.2",
