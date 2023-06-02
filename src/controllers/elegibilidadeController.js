@@ -11,6 +11,7 @@ const moment = require('moment')
 const fs = require('fs')
 const multer = require('multer')
 const os = require('os')
+const xlsx = require('xlsx')
 
 const uploadPropostas = multer({ dest: os.tmpdir() }).single('file')
 
@@ -155,15 +156,97 @@ module.exports = {
                 } else {
                     let file = fs.readFileSync(req.file.path)
 
+                    const workbook = xlsx.read(file, { type: 'array' })
+
+                    const firstSheetName = workbook.SheetNames[0]
+
+                    const worksheet = workbook.Sheets[firstSheetName]
+
+                    let result = xlsx.utils.sheet_to_json(worksheet)
+
+                    console.log(result.length);
+
+                    result = result.filter((e) => { return e['Situação Atual'] === 'Pronta para análise' || e['Situação Atual'] === 'Em análise' })
+
+                    console.log(result.length);
+
+                    for (const item of result) {
+
+                        const dataImportacao = moment().format('YYYY-MM-DD')
+                        const proposta = item.Proposta
+                        const statusMotor = item.Score_motor
+
+                        let vigencia = ExcelDateToJSDate(item['Vigência Beneficiario'])
+                        vigencia.setDate(vigencia.getDate() + 1)
+                        vigencia = moment(vigencia).format('YYYY-MM-DD')
+
+                        const produto = item['Linha de Produto']
+                        const produtor = item['Cód. Adm.']
+                        const uf = item['Nome da Unidade']
+                        const administradora = item['Nome da Administradora']
+                        const codCorretor = item['Cód.Corretor']
+                        const nomeCorretor = item['Nome Corretor']
+                        const entidade = item['Nome Fantasia Contrato Médico']
+                        const tipoVinculo = item['Classificação Prof. Médica']
+                        const nome = item.Titular
+                        const idade = item['Idade Beneficiário']
+                        const numeroVidas = item['Nro Vidas Médico']
+                        const valorMedico = item['Valor Médico']
+                        const valorDental = item['Valor Dental']
+                        const valorTotal = item['Valor Total']
+                        const nomeSupervisor = item['Nome Supervisor']
+
+                        const existeProposta = await Proposta.findOne({
+                            proposta
+                        })
+
+                        const obj = {
+                            dataImportacao,
+                            proposta,
+                            statusMotor,
+                            vigencia,
+                            produto,
+                            produtor,
+                            uf,
+                            administradora,
+                            codCorretor,
+                            nomeCorretor,
+                            entidade,
+                            tipoVinculo,
+                            nome,
+                            idade,
+                            numeroVidas,
+                            valorMedico,
+                            valorDental,
+                            valorTotal,
+                            nomeSupervisor,
+                            status: 'Análise de Documentos',
+                        }
+
+                        if (!existeProposta) {
+                            await Proposta.create(obj)
+                            qtd++
+
+                        } else if (statusMotor !== '#N/D') {
+
+                            await Proposta.updateOne({
+                                proposta
+                            },
+                                statusMotor
+                            )
+                        }
+
+                    }
+
                 }
 
+
+                return res.status(200).json({
+                    qtd
+                })
+
             })
 
-            console.log(qtd);
-
-            return res.status(200).json({
-                qtd
-            })
 
         } catch (error) {
             console.log(error);
@@ -1391,6 +1474,39 @@ module.exports = {
 
                 for (const item of rows) {
 
+                    if (item.enviadaUnder === 'Pré Processamento') {
+                        item.enviadaUnder = 'A iniciar'
+                    }
+
+                    var mapeamento = {
+                        Samantha: "Samantha Maciel Giazzon",
+                        Gerson: "Fernanda Ribeiro",
+                        Djeinny: "Djeinny Carradore",
+                        Matheus: "Matheus Lopes",
+                        Daniele: "Daniele Silva",
+                        Vanessa: "Vanessa Passos da Silva",
+                        Barbara: "Bárbara Cristina Nunes",
+                        Claudia: "Cecilia Belli",
+                        Fernanda: "Fernanda Ribeiro",
+                        Denise: "Denise Gonçalves Vargas",
+                        Luciana: "Luciana Tavares",
+                        Jessica: "Jéssica Wachesk",
+                        Camila: "Camila Cristine Remus",
+                        Ana: "Ana Paula Brás",
+                        Giovana: "Giovana Santana",
+                        Allana: "Allana Silva",
+                        Hevellin: "Hevellin Santos",
+                        Eduarda: "Eduarda Mayworm",
+                        Isabelle: "Isabelle Silva",
+                        Sandra: "Sandra Santos",
+                        Michelle: "Michelle Jonsson"
+                    };
+
+                    var nomeAntigo = item.analistaResponsavel;
+                    if (mapeamento.hasOwnProperty(nomeAntigo)) {
+                        item.analistaResponsavel = mapeamento[nomeAntigo];
+                    }
+
                     if (item.ligacao?.toLowerCase() === 'sim') {
                         item.ligacao = true
                     } else if (item.ligacao?.toLowerCase() === 'não' || item.ligacao?.toLowerCase() === 'nao') {
@@ -1453,7 +1569,7 @@ module.exports = {
 
 
                     const obj = {
-                        dataImportacao: item.dataImportacao,
+                        dataImportacao: ajustarData(item.dataImportacao),
                         vigencia: item.inicioVigencia,
                         proposta: item.proposta,
                         statusMotor: item.statusMotor,
@@ -1488,7 +1604,7 @@ module.exports = {
                         segundoReprotocolo3: item.segundoReprotocolo3,
                         observacoesDevolucao: item.segundoReprotocolo4,
                         analista: item.analistaResponsavel,
-                        dataConclusao: item.finalizada,
+                        dataConclusao: item.finalizada ? ajustarData(item.finalizada) : undefined,
                         ligacao: item.ligacao,
                         prc: item.pontosDeAtencao,
                         motivoCancelamento: item.motivoCancelamento,
@@ -1513,7 +1629,7 @@ module.exports = {
                         site: item.site,
                         contrato: item.contrato,
                         analistaPreProcessamento: item.analista_1,
-                        dataConclusaoPre: item.finalizada_pre,
+                        dataConclusaoPre: item.finalizada_pre ? ajustarData(item.finalizada_pre) : undefined,
                         observacoes: item.observacoes,
                         categoriaCancelamento: item.categoria_cancelamento,
                         fase1
@@ -1522,8 +1638,6 @@ module.exports = {
                     await Proposta.create(obj)
 
                 }
-
-                // console.log(obj[100]);
 
                 return res.json({ msg: 'oi' })
             })
@@ -1535,6 +1649,72 @@ module.exports = {
             })
         }
 
+    },
+
+    adicionarUniversidades: async (req, res) => {
+        try {
+
+            connection.query("SELECT * FROM blacklist_diplomas GROUP BY proposta", async function (err, result, fields) {
+                if (err) throw err;
+
+                for (const item of result) {
+                    await Proposta.updateOne({
+                        proposta: item.proposta
+                    }, {
+                        numeroRegistro: item.n_registro,
+                        universidade: item.universidade,
+                        curso: item.curso
+                    })
+
+                }
+
+
+                return res.json(result.length)
+            });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarBlacklist: async (req, res) => {
+        try {
+
+            connection.query("SELECT * FROM analise WHERE enviadaUnder = 'Cancelada'", async function (err, result, fields) {
+                if (err) throw err;
+
+                for (const item of result) {
+
+                    await Blacklist.create({
+                        proposta: item.proposta,
+                        codCorretor: item.codCorretor,
+                        entidade: item.entidade,
+                        administradora: item.administradora,
+                        cpfCorretor: item.cpf_corretor,
+                        telefoneCorretor: item.telefone_corretor,
+                        nomeCorretor: item.corretor,
+                        nomeSupervisor: item.supervisor,
+                        cpfSupervisor: item.cpf_supervisor,
+                        telefoneSupervisor: item.telefone_supervisor,
+                        motivoCancelamento: item.motivoCancelamento,
+                        categoriaCancelamento: item.categoria_cancelamento,
+                        evidenciaFraude: item.evidenciaFraude
+                    })
+                }
+
+
+                return res.json(result.length)
+            });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 
 }
@@ -1546,4 +1726,23 @@ function ajustarData(data) {
     let ano = split[2]
 
     return `${ano}-${mes}-${dia}`
+}
+
+function ExcelDateToJSDate(serial) {
+    var utc_days = Math.floor(serial - 25569);
+    var utc_value = utc_days * 86400;
+    var date_info = new Date(utc_value * 1000);
+
+    var fractional_day = serial - Math.floor(serial) + 0.0000001;
+
+    var total_seconds = Math.floor(86400 * fractional_day);
+
+    var seconds = total_seconds % 60;
+
+    total_seconds -= seconds;
+
+    var hours = Math.floor(total_seconds / (60 * 60));
+    var minutes = Math.floor(total_seconds / 60) % 60;
+
+    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
 }

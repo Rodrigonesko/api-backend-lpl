@@ -206,6 +206,8 @@ router.post('/elegibilidade/buscarDiploma', auth, elegibilidadeController.buscar
 router.get('/elegibilidade/universidades', auth, elegibilidadeController.buscarUniversidades)
 router.get('/elegibilidade/cursos', auth, elegibilidadeController.buscarCursos)
 router.get('/elegibilidade/migrarBanco', elegibilidadeController.migrarBanco)
+router.get('/elegibilidade/adicionarUniversidades', elegibilidadeController.adicionarUniversidades)
+router.get('/elegibilidade/adicionarBlacklist', elegibilidadeController.adicionarBlacklist)
 
 /* Urgencia Emergencia */
 

@@ -38,6 +38,11 @@ module.exports = {
     index: async (req, res) => {
         try {
             const users = await User.find()
+
+            users.forEach(e => {
+                console.log(e.name);
+            })
+
             return res.json(users)
         } catch (error) {
             console.error(error);

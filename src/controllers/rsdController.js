@@ -531,7 +531,7 @@ module.exports = {
                             e[' Valor Reembolsado']?.replace('R$ ', '').replace('.', '').replace(',', '.'),
                             e['Número do Protocolo'].replace(/[^0-9]/g, ''),
                             e['Operadora Beneficiário'].replace(' ', ' '),
-                            'Quarentena'
+                            'Alta Frequência Consulta'
                         ])
                     }
                 })
