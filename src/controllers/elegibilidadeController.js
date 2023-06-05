@@ -13,7 +13,27 @@ const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')
 
-const uploadPropostas = multer({ dest: os.tmpdir() }).single('file')
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = './uploads/elegibilidade/'
+        if (!fs.existsSync(dir)) {
+            fs.mkdir(dir, (err) => {
+                if (err) {
+                    console.log("Algo deu errado", err);
+                    return
+                }
+                console.log("Diretório criado!")
+            })
+        }
+        cb(null, dir)
+    },
+
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+})
+
+const uploadPropostas = multer({ storage }).single('file')
 
 const mysql = require('mysql');
 
@@ -1314,6 +1334,52 @@ module.exports = {
         }
     },
 
+    atualizarObservacoes: async (req, res) => {
+
+        try {
+
+            const { observacoes, id } = req.body
+
+            await PropostaManual.updateOne({
+                _id: id
+            }, {
+                observacoes
+            })
+
+            return res.json({ msg: 'ok' })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+
+    },
+
+    concluirPropostaManual: async (req, res) => {
+
+        try {
+
+            const { id } = req.body
+
+            await PropostaManual.updateOne({
+                _id: id
+            }, {
+                status: 'Concluido'
+            })
+
+            return res.json({ msg: 'ok' })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+
+    },
+
     cancelarCpf: async (req, res) => {
         try {
 
@@ -1459,6 +1525,45 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    divergencias: async (req, res) => {
+        try {
+
+            uploadPropostas(req, res, async (err) => {
+
+                let data = fs.readFileSync(req.file.path, { encoding: 'latin1' })
+                let listaArr = data.split('\n');
+                let arrAux = listaArr.map(e => {
+                    return e.split('#')
+                })
+
+                // const propostas = await Proposta.find()
+
+                for (const item of arrAux) {
+
+                    console.log(item[44], item[22]);
+
+                    // const pesquisa = await Proposta.findOne({
+                    //     proposta: item[22],
+                    //     status: item[44]
+                    // })
+
+                }
+
+                // console.log(arrAux);
+
+            })
+
+            return res.json({ msg: 'ok' })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
             })
         }
     },
@@ -1702,6 +1807,42 @@ module.exports = {
                         motivoCancelamento: item.motivoCancelamento,
                         categoriaCancelamento: item.categoria_cancelamento,
                         evidenciaFraude: item.evidenciaFraude
+                    })
+                }
+
+
+                return res.json(result.length)
+            });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarPropostaManual: async (req, res) => {
+        try {
+
+            connection.query("SELECT * FROM registros", async function (err, result, fields) {
+                if (err) throw err;
+
+                for (const item of result) {
+
+                    await PropostaManual.create({
+                        data: item.data,
+                        proposta: item.proposta,
+                        beneficiario: item.beneficiario,
+                        confirmacao: item.confirmacao,
+                        meioSolicitacao: item.meio_solicitacao,
+                        meioConfirmacao: item.meio_confirmacao,
+                        resultado: item.resultado,
+                        responsavel: item.responsavel,
+                        observacoes: item.observacoes,
+                        status: item.status,
+                        dataConclusao: item.finalizado,
+                        dataInclusao: item.data,
                     })
                 }
 

@@ -1891,13 +1891,9 @@ module.exports = {
 
             horarios.sort()
 
-            console.log(horarios, whatsapps);
-
-            console.log(horarios);
-
             const urlLocal = 'http://10.0.121.55:3002'
 
-            const sendApi = await axios.put(`${urlLocal}/reenviarHorariosDisponiveis`, {
+            await axios.put(`${process.env.API_TELE}/reenviarHorariosDisponiveis`, {
                 horarios, whatsapps, data
             }, {
                 headers: {
@@ -1908,8 +1904,6 @@ module.exports = {
                 }
             })
 
-            // console.log(sendApi);
-
             return res.json(horarios)
 
         } catch (error) {
@@ -1919,6 +1913,4 @@ module.exports = {
             })
         }
     }
-
-
 }

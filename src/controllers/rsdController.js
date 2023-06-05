@@ -476,7 +476,9 @@ module.exports = {
 
             uploadRsd(req, res, async (err) => {
 
-                const pedidosBanco = await Pedido.find()
+                const pedidosBanco = await Pedido.find({
+                    fila: 'Alta Frequência Consulta'
+                })
 
                 let pedidos = []
 
@@ -2375,8 +2377,6 @@ module.exports = {
 
                     if (e.procv === 'Confirmação de pagamento' || e.procv === 'Interface financeiro') {
 
-
-
                         await Pedido.updateOne({
                             _id: e.ID
                         }, {
@@ -2469,8 +2469,6 @@ module.exports = {
             })
         }
     }
-
-
 }
 
 function ExcelDateToJSDate(serial) {

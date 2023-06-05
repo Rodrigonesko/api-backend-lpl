@@ -17,8 +17,6 @@ const router = express.Router()
 
 const multer = require('multer')
 
-
-
 const uploadRsd = multer({ dest: '/tmp' })
 
 //Public routes
@@ -208,6 +206,10 @@ router.get('/elegibilidade/cursos', auth, elegibilidadeController.buscarCursos)
 router.get('/elegibilidade/migrarBanco', elegibilidadeController.migrarBanco)
 router.get('/elegibilidade/adicionarUniversidades', elegibilidadeController.adicionarUniversidades)
 router.get('/elegibilidade/adicionarBlacklist', elegibilidadeController.adicionarBlacklist)
+router.get('/elegibilidade/adicionarPropostaManual', elegibilidadeController.adicionarPropostaManual)
+router.put('/elegibilidade/atualizarObservacoes', auth, elegibilidadeController.atualizarObservacoes)
+router.put('/elegibilidade/concluirPropostaManual', auth, elegibilidadeController.concluirPropostaManual)
+router.post('/elegibilidade/uploadDivergencias', auth, elegibilidadeController.divergencias)
 
 /* Urgencia Emergencia */
 

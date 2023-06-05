@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
         if (!fs.existsSync(dir)) {
             fs.mkdir(dir, (err) => {
                 if (err) {
-                    console.log("Deu ruim...");
+                    console.log("Algo deu errado", err);
                     return
                 }
                 console.log("Diretório criado!")
