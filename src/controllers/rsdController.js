@@ -2386,6 +2386,8 @@ module.exports = {
                             dataConclusao: moment().format('YYYY-MM-DD'),
                             status: 'Finalizado'
                         })
+
+                        console.log('Comprovante correto');
                     }
 
                     if (e.procv === 'Pedido cancelado' && (e['Status Amil'] === 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante' || e['Status Amil'] === 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação')) {
@@ -2399,6 +2401,8 @@ module.exports = {
                             dataConclusao: moment().format('YYYY-MM-DD'),
                             status: 'Finalizado'
                         })
+
+                        console.log('Comprovante Cancelado');
                     }
 
                     if (e.procv === 'Pedido cancelado' && e['Status Amil'] === 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno') {
@@ -2468,8 +2472,63 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    teste: async (req, res) => {
+        try {
+
+            const protocolos = [
+                '32630520230605109851',
+                '32630520230605110133',
+                '32630520230605110343',
+                '32630520230605110597',
+                '32630520230605110816',
+                '32630520230605110989',
+                '32630520230605111372',
+                '32630520230605112338',
+                '32630520230605112489',
+                '32630520230605112625',
+                '32630520230605112946',
+                '32630520230605113221',
+                '32630520230605114819',
+                '32630520230605115204',
+                '32630520230605116628',
+                '32630520230605116666',
+                '32630520230605117200',
+                '32630520230605118852',
+                '32630520230605119231',
+                '32630520230605119864',
+                '32630520230605120266',
+                '32630520230605121422',
+                '32630520230605123140',
+                '32630520230605136910',
+                '32630520230605143796',
+                '32630520230605145927',
+                '32630520230605146937',
+            ]
+
+            protocolos.forEach(async protocolo => {
+                await Pedido.updateOne({
+                    protocolo
+                }, {
+                    fila: 'Alta Frequência Consulta'
+                })
+            })
+
+            return res.json({ tamanho: protocolos.length })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
+
+
 }
+
+
 
 function ExcelDateToJSDate(serial) {
     var utc_days = Math.floor(serial - 25569);

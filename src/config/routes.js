@@ -157,6 +157,7 @@ router.get('/rsd/relatorio/:aPartir/:ate', auth, rsdController.relatorioAmil)
 router.get('/rsd/download/:idPacote/:filename', rsdController.download)
 router.get('/rsd/producaoDiaria/:data', auth, rsdController.producaoDiaria)
 router.post('/rsd/baixaAgd', auth, rsdController.baixaAgd)
+router.get('/rsd/teste', rsdController.teste)
 
 
 //Rotas Elegibilidade

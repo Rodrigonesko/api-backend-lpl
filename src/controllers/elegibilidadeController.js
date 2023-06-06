@@ -1540,24 +1540,40 @@ module.exports = {
                     return e.split('#')
                 })
 
-                // const propostas = await Proposta.find()
+                const statusAmil = ['Pronta para análise', 'Em análise', 'Em Análise Técnica']
+                const statusBanco = ['Enviada para Under', 'Erro Sistema', 'Cancelada', 'A iniciar']
+
+                arrAux = arrAux.filter(item => {
+                    return statusAmil.find(status => status === item[44])
+                })
+
+                const arr = []
+
+                //const propostas = await Proposta.find()
 
                 for (const item of arrAux) {
 
-                    console.log(item[44], item[22]);
+                    const result = await Proposta.findOne({
+                        proposta: item[22]
+                    })
 
-                    // const pesquisa = await Proposta.findOne({
-                    //     proposta: item[22],
-                    //     status: item[44]
-                    // })
+                    if (statusBanco.find(status => status === result.status)) {
+
+                        arr.push({
+                            statusBanco: result.status,
+                            statusAmil: item[44],
+                            proposta: item[22]
+                        })
+
+                    }
 
                 }
-
-                // console.log(arrAux);
+                
+                return res.json({ propostas: arr })
 
             })
 
-            return res.json({ msg: 'ok' })
+            // return res.json({ msg: 'ok' })
 
         } catch (error) {
             console.log(error);
