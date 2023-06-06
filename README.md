@@ -14,11 +14,21 @@
  <a href="#contato">Contato</a> • 
 </p>
 
+<h4 align="center"> 
+	Instalação
+</h4>
 <p align="center">
     Certifique-se de ter o Node.js e o MongoDB instalados em sua máquina
     <p>
-        Close este repositório:
-        
+        Clone este repositório:
+        git clone https://github.com/seu-usuario/api-exemplo.git
     </p>
-    
+    <p>
+        Acesse o diretório do projeto:
+        cd api-exemplo
+    </p>
+    <p>
+        Instale as dependências:
+        npm install
+    </p>
 </p>
