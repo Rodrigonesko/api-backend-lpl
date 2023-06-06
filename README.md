@@ -21,14 +21,20 @@
     Certifique-se de ter o Node.js e o MongoDB instalados em sua máquina
     <p>
         Clone este repositório:
-        git clone https://github.com/seu-usuario/api-exemplo.git
+    </p>
+        <p>
+        git clone https://github.com/Rodrigonesko/api-backend-lpl.git
     </p>
     <p>
         Acesse o diretório do projeto:
+        <p>
         cd api-exemplo
+        </p>
     </p>
     <p>
         Instale as dependências:
+        <p>
         npm install
+        </p>
     </p>
 </p>
