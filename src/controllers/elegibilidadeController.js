@@ -1601,7 +1601,7 @@ module.exports = {
 
                     var mapeamento = {
                         Samantha: "Samantha Maciel Giazzon",
-                        Gerson: "Fernanda Ribeiro",
+                        Gerson: "Gerson Douglas",
                         Djeinny: "Djeinny Carradore",
                         Matheus: "Matheus Lopes",
                         Daniele: "Daniele Silva",
