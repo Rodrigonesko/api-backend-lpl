@@ -328,12 +328,30 @@ module.exports = {
                 dataNascimento
             })
 
-            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida') {
+            const nomeAntigo = atualizar.nome
+
+            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida' || req.user === 'Rodrigo') {
                 await DadosEntrevista.findByIdAndUpdate({
                     _id: id
                 }, {
                     nome,
                     cpf
+                })
+
+                const dados = {
+                    nome,
+                    cpf,
+                    nomeAntigo,
+                    proposta: atualizar.proposta
+                }
+
+                await axios.put(`${process.env.API_TELE}/alterarDadosProposta`, {
+                    dados
+                }, {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${req.cookies['token']}`
+                    }
                 })
             }
 
