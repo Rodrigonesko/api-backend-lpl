@@ -375,42 +375,28 @@ module.exports = {
         }
     },
 
-    mostrarAnalise: async (req, res) => {
+    propostasAnalistaPorStatus: async (req, res) => {
         try {
 
-            const { analista } = req.params
+            const { analista, status } = req.params;
+            let query = {};
 
-            if (analista === 'Todos' || analista === '') {
-                const propostas = await Proposta.find({
-                    $or: [
-                        { status: 'A iniciar' },
-                        { status: 'Em andamento' }
-                    ]
-                })
-
-                return res.status(200).json({
-                    propostas,
-                    total: propostas.length
-                })
-
+            if (analista !== 'Todos' && analista !== '') {
+                query.analista = analista;
             }
 
-            const propostas = await Proposta.find({
-                $or: [
-                    { status: 'A iniciar' },
-                    { status: 'Em andamento' }
-                ],
-                $and: [
-                    { analista: analista }
-                ]
-            })
+            if (status === 'Andamento') {
+                query.status = { $in: ['A iniciar', 'Em andamento'] };
+            } else {
+                query.status = status;
+            }
 
-            console.log(propostas);
+            const propostas = await Proposta.find(query);
 
             return res.status(200).json({
                 propostas,
                 total: propostas.length
-            })
+            });
 
         } catch (error) {
             console.log(error)
@@ -423,12 +409,22 @@ module.exports = {
     entidades: async (req, res) => {
         try {
 
-            const entidades = await Proposta.find({
-                $or: [
-                    { status: 'A iniciar' },
-                    { status: 'Em andamento' }
-                ]
-            }).distinct('entidade')
+            const { status } = req.params
+
+            let entidades = []
+
+            if (status === 'andamento') {
+                entidades = await Proposta.find({
+                    $or: [
+                        { status: 'A iniciar' },
+                        { status: 'Em andamento' }
+                    ]
+                }).distinct('entidade')
+            } else {
+                entidades = await Proposta.find({
+                    status
+                }).distinct('entidade')
+            }
 
             return res.status(200).json({
                 entidades
@@ -442,22 +438,25 @@ module.exports = {
         }
     },
 
-    filtroAnalise: async (req, res) => {
+    filtro: async (req, res) => {
+
         try {
 
-            const { analista, entidade, status } = req.query
-
-            console.log(analista == '', entidade == '', status === '');
+            const { analista, entidade, status, vigencia, fase } = req.query
 
             let propostas = await Proposta.find({
                 analista: { $regex: analista },
                 entidade: { $regex: entidade },
+                vigencia: { $regex: vigencia },
                 status: { $regex: status },
+
             })
 
-            propostas = propostas.filter(e => {
-                return e.status === 'A iniciar' || e.status === 'Em andamento'
-            })
+            if (fase === 'Analise') {
+                propostas = propostas.filter(e => {
+                    return e.status === 'A iniciar' || e.status === 'Em andamento'
+                })
+            }
 
             return res.status(200).json({
                 propostas
@@ -469,25 +468,45 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+
     },
 
-    fitroPropostaAnalise: async (req, res) => {
+    filtroProposta: async (req, res) => {
         try {
-            const { proposta } = req.params
+            const { proposta, status } = req.params
 
-            const propostas = await Proposta.find({
-                $or: [
-                    {
-                        proposta: { $regex: proposta },
-                        status: 'A iniciar'
-                    }, {
-                        proposta: { $regex: proposta },
-                        status: 'Em andamento'
-                    }
-                ]
-            })
+            console.log(proposta, status);
 
-            console.log(propostas);
+            let propostas = []
+
+            if (status === 'Andamento') {
+
+                console.log('entrou aqui');
+
+                propostas = await Proposta.find({
+                    $or: [
+                        {
+                            proposta: { $regex: proposta },
+                            status: 'A iniciar'
+                        }, {
+                            proposta: { $regex: proposta },
+                            status: 'Em andamento'
+                        }
+                    ]
+                })
+            } else if (status === 'Todas') {
+                console.log('entrou aqui 2');
+                propostas = await Proposta.find({
+                    proposta: { $regex: proposta }
+                })
+            } else {
+                console.log('entrou aqui 3');
+                propostas = await Proposta.find({
+                    proposta: { $regex: proposta }
+                }, {
+                    status
+                })
+            }
 
             return res.status(200).json({
                 propostas
@@ -526,39 +545,6 @@ module.exports = {
         }
     },
 
-    propostasACancelar: async (req, res) => {
-        try {
-
-            const { analista } = req.params
-
-            if (analista === 'Todos' || analista === '') {
-                const propostas = await Proposta.find({
-                    status: 'Fase Cancelamento'
-                })
-
-                return res.json(propostas)
-
-            }
-
-            const propostas = await Proposta.find({
-                status: 'Fase Cancelamento',
-                $and: [
-                    { analista: analista }
-                ]
-            })
-
-            return res.status(200).json({
-                propostas,
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
     filtroPropostaCancelar: async (req, res) => {
         try {
 
@@ -574,67 +560,6 @@ module.exports = {
 
             return res.status(200).json({
                 propostas
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
-    filtroCancelar: async (req, res) => {
-        try {
-
-            const { analista, entidade } = req.query
-
-            console.log(analista == '', entidade == '');
-
-            let propostas = await Proposta.find({
-                analista: { $regex: analista },
-                entidade: { $regex: entidade },
-                status: 'Fase Cancelamento',
-            })
-
-            // propostas = propostas.filter(e => {
-            //     return e.status === 'A iniciar' || e.status === 'Em andamento'
-            // })
-
-            return res.status(200).json({
-                propostas
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
-    propostasDevolvidas: async (req, res) => {
-        try {
-            const { analista } = req.params
-
-            if (analista === 'Todos' || analista === '') {
-                const propostas = await Proposta.find({
-                    status: 'Devolvida'
-                })
-
-                return res.json(propostas)
-
-            }
-
-            const propostas = await Proposta.find({
-                status: 'Devolvida',
-                $and: [
-                    { analista: analista }
-                ]
-            })
-
-            return res.status(200).json({
-                propostas,
             })
 
         } catch (error) {
@@ -672,31 +597,6 @@ module.exports = {
         }
     },
 
-    filtroDevolvidas: async (req, res) => {
-        try {
-
-            const { analista, entidade } = req.query
-
-            console.log(analista == '', entidade == '');
-
-            let propostas = await Proposta.find({
-                analista: { $regex: analista },
-                entidade: { $regex: entidade },
-                status: 'Devolvida',
-            })
-
-            return res.status(200).json({
-                propostas
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
     filtroPropostaTodas: async (req, res) => {
         try {
 
@@ -704,29 +604,6 @@ module.exports = {
 
             const propostas = await Proposta.find({
                 proposta: { $regex: proposta }
-            })
-
-            return res.json(propostas)
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
-    filtroTodas: async (req, res) => {
-        try {
-
-            const { analista, vigencia, status } = req.query
-
-            console.log(analista, vigencia, status);
-
-            let propostas = await Proposta.find({
-                analista: { $regex: analista },
-                vigencia: { $regex: vigencia },
-                status: { $regex: status },
             })
 
             return res.json(propostas)
@@ -1568,7 +1445,7 @@ module.exports = {
                     }
 
                 }
-                
+
                 return res.json({ propostas: arr })
 
             })
