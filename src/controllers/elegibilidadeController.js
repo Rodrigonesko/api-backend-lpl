@@ -502,8 +502,7 @@ module.exports = {
             } else {
                 console.log('entrou aqui 3');
                 propostas = await Proposta.find({
-                    proposta: { $regex: proposta }
-                }, {
+                    proposta: { $regex: proposta },
                     status
                 })
             }
@@ -525,88 +524,30 @@ module.exports = {
 
             const { analista, id } = req.body
 
-            if (req.userAcessLevel !== 'false') {
-                await Proposta.findByIdAndUpdate({
-                    _id: id
-                }, {
-                    analista
-                })
-            }
+            const responsavel = req.user
+
+            const result = await Proposta.findOne({
+                _id: id
+            })
+
+            await Proposta.findByIdAndUpdate({
+                _id: id
+            }, {
+                analista
+            })
+
+            const teste = await Agenda.create({
+                comentario: `O analista ${responsavel}, trocou a proposta que estava com o analista: ${result.analista} para o analista ${analista}.`,
+                analista: responsavel,
+                proposta: result.proposta,
+                data: moment().format('YYYY-MM-DD HH:mm:ss')
+            })
+
+            console.log(teste);
 
             return res.status(200).json({
-                msg: 'oiii'
+                msg: 'ok'
             })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
-    filtroPropostaCancelar: async (req, res) => {
-        try {
-
-            const { proposta } = req.params
-
-            const propostas = await Proposta.find({
-
-                proposta: { $regex: proposta },
-                status: 'Fase Cancelamento'
-            })
-
-            console.log(propostas);
-
-            return res.status(200).json({
-                propostas
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
-    filtroPropostasDevolvidas: async (req, res) => {
-        try {
-
-            const { proposta } = req.params
-
-            console.log(proposta);
-
-            const propostas = await Proposta.find({
-
-                proposta: { $regex: proposta },
-                status: 'Devolvida'
-            })
-
-            console.log(propostas);
-
-            return res.status(200).json({
-                propostas
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error
-            })
-        }
-    },
-
-    filtroPropostaTodas: async (req, res) => {
-        try {
-
-            const { proposta } = req.params
-
-            const propostas = await Proposta.find({
-                proposta: { $regex: proposta }
-            })
-
-            return res.json(propostas)
 
         } catch (error) {
             console.log(error);
@@ -702,11 +643,11 @@ module.exports = {
 
             const { comentario, id } = req.body
 
-            console.log(comentario, id, req.user);
+            const { proposta } = await Proposta.findOne({ _id: id })
 
             const result = await Agenda.create({
                 comentario,
-                proposta: id,
+                proposta,
                 analista: req.user,
                 data: moment().format('YYYY-MM-DD HH:mm:ss')
             })
@@ -726,7 +667,9 @@ module.exports = {
     buscarAgenda: async (req, res) => {
         try {
 
-            const { proposta } = req.params
+            const { id } = req.params
+
+            const { proposta } = await Proposta.findOne({ _id: id })
 
             const agenda = await Agenda.find({
                 proposta
