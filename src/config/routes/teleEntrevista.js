@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const teleEntrevistaController = require('../../controllers/teleEntrevistaController')
+const teleEntrevistaController = require('../../controllers/TeleEntrevistaController')
 const horarioController = require('../../controllers/horarioController')
 const auth = require('../../middlewares/auth')
 

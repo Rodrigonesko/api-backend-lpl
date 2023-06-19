@@ -76,6 +76,7 @@ module.exports = {
     upload: async (req, res) => {
         try {
 
+            // Mapeamento dos estados para suas siglas
             const ufMap = {
                 'São Paulo': 'SP',
                 'Rio de Janeiro': 'RJ',
@@ -84,6 +85,7 @@ module.exports = {
 
             let qtd = 0
 
+            // Função para processar o upload das propostas
             uploadPropostas(req, res, async (err) => {
 
                 const { name, ext } = path.parse(req.file.originalname)
@@ -91,9 +93,12 @@ module.exports = {
 
                 if (ext == '.txt') {
 
+                    // Processamento de arquivo de texto
+
+                    // Leitura síncrona do arquivo em formato Latin-1
                     let data = fs.readFileSync(req.file.path, { encoding: 'latin1' })
-                    let listaArr = data.split('\n');
-                    let arrAux = listaArr.map(e => {
+                    let listaArr = data.split('\n');                 // Divisão do conteúdo em linhas
+                    let arrAux = listaArr.map(e => {                 // Mapeamento das linhas para arrays
                         return e.split('#')
                     })
 
@@ -132,6 +137,7 @@ module.exports = {
                         let situacao = item[44]
 
                         if (situacao == 'Implantada') {
+                            // Atualiza o status da proposta para 'Implantada'
                             await Proposta.findOneAndUpdate({
                                 proposta
                             }, {
@@ -145,7 +151,7 @@ module.exports = {
                                 proposta
                             })
 
-                            if (!find) {
+                            if (!find) { // Cria uma nova proposta caso não exista
                                 await Proposta.create({
                                     proposta,
                                     vigencia,
@@ -174,21 +180,24 @@ module.exports = {
                         }
                     }
                 } else {
+                    // Processamento de arquivo Excel
+                    // Leitura síncrona do arquivo
                     let file = fs.readFileSync(req.file.path)
 
+                    // Leitura do arquivo Excel
                     const workbook = xlsx.read(file, { type: 'array' })
 
+                    // Obtém o nome da primeira planilha
                     const firstSheetName = workbook.SheetNames[0]
 
+                    // Obtém a planilha
                     const worksheet = workbook.Sheets[firstSheetName]
 
+                    // Converte a planilha em JSON
                     let result = xlsx.utils.sheet_to_json(worksheet)
 
-                    console.log(result.length);
-
+                    // Filtra as propostas com status 'Pronta para análise' ou 'Em análise'
                     result = result.filter((e) => { return e['Situação Atual'] === 'Pronta para análise' || e['Situação Atual'] === 'Em análise' })
-
-                    console.log(result.length);
 
                     for (const item of result) {
 
@@ -244,22 +253,20 @@ module.exports = {
                         }
 
                         if (!existeProposta) {
+                            // Cria uma nova proposta caso não exista
                             await Proposta.create(obj)
                             qtd++
 
                         } else if (statusMotor !== '#N/D') {
-
+                            // Atualiza o status do motor da proposta
                             await Proposta.updateOne({
                                 proposta
                             },
                                 statusMotor
                             )
                         }
-
                     }
-
                 }
-
 
                 return res.status(200).json({
                     qtd
@@ -378,21 +385,31 @@ module.exports = {
     propostasAnalistaPorStatus: async (req, res) => {
         try {
 
+            // Obtém os parâmetros analista e status da requisição
             const { analista, status } = req.params;
+
+            // Cria um objeto de consulta vazio
             let query = {};
 
+            // Verifica se o parâmetro analista é diferente de 'Todos' e vazio
             if (analista !== 'Todos' && analista !== '') {
+                // Define a propriedade analista na consulta com o valor do parâmetro analista
                 query.analista = analista;
             }
 
+            // Verifica o valor do parâmetro status
             if (status === 'Andamento') {
+                // Se for 'Andamento', define a propriedade status na consulta com os valores 'A iniciar' ou 'Em andamento'
                 query.status = { $in: ['A iniciar', 'Em andamento'] };
             } else {
+                // Caso contrário, define a propriedade status na consulta com o valor do parâmetro status
                 query.status = status;
             }
 
+            // Executa a consulta no banco de dados utilizando o modelo Proposta e a consulta definida
             const propostas = await Proposta.find(query);
 
+            // Retorna uma resposta com status 200 contendo as propostas encontradas e o total de propostas
             return res.status(200).json({
                 propostas,
                 total: propostas.length
@@ -409,26 +426,33 @@ module.exports = {
     entidades: async (req, res) => {
         try {
 
-            const { status } = req.params
+            const { status } = req.params;
 
-            let entidades = []
+            // Cria um array vazio para armazenar as entidades
+            let entidades = [];
 
+            // Verifica o valor do parâmetro status
             if (status === 'andamento') {
+                // Se for 'andamento', realiza uma consulta no banco de dados para encontrar as entidades
+                // cujo status seja 'A iniciar' ou 'Em andamento'
                 entidades = await Proposta.find({
                     $or: [
                         { status: 'A iniciar' },
                         { status: 'Em andamento' }
                     ]
-                }).distinct('entidade')
+                }).distinct('entidade');
             } else {
+                // Caso contrário, realiza uma consulta no banco de dados para encontrar as entidades
+                // cujo status seja igual ao valor do parâmetro status
                 entidades = await Proposta.find({
                     status
-                }).distinct('entidade')
+                }).distinct('entidade');
             }
 
+            // Retorna uma resposta com status 200 contendo o array de entidades encontradas
             return res.status(200).json({
                 entidades
-            })
+            });
 
         } catch (error) {
             console.log(error)
@@ -495,12 +519,10 @@ module.exports = {
                     ]
                 })
             } else if (status === 'Todas') {
-                console.log('entrou aqui 2');
                 propostas = await Proposta.find({
                     proposta: { $regex: proposta }
                 })
             } else {
-                console.log('entrou aqui 3');
                 propostas = await Proposta.find({
                     proposta: { $regex: proposta },
                     status
@@ -587,21 +609,25 @@ module.exports = {
 
             console.log(id, dataUpdate, concluir);
 
+            // Verifica se a variável concluir é verdadeira
             if (concluir) {
+                // Atualiza a proposta com o ID fornecido, definindo fase1 como true e status como 'Em andamento'
                 await Proposta.updateOne({ _id: id }, { fase1: true, status: 'Em andamento' });
             }
 
-            const result = await Proposta.findOneAndUpdate({
-                _id: id
-            }, dataUpdate, {
-                new: true
-            })?.lean();
+            // Procura e atualiza a proposta com o ID fornecido, utilizando os dados fornecidos em dataUpdate
+            // A opção new: true faz com que o método retorne o documento atualizado
+            const result = await Proposta.findOneAndUpdate({ _id: id }, dataUpdate, { new: true })?.lean();
 
+            // Verifica se a variável result contém um documento atualizado
             if (result) {
+                // Retorna uma resposta com status 200 contendo o documento atualizado
                 return res.status(200).json(result);
             } else {
+                // Caso contrário, lança um erro informando que a proposta não foi encontrada
                 throw new Error("Proposta não encontrada");
             }
+
 
         } catch (error) {
             console.log(error);
@@ -614,21 +640,23 @@ module.exports = {
     fase2: async (req, res) => {
         try {
 
-            const { id, dataUpdate } = req.body
+            const { id, dataUpdate } = req.body;
 
             console.log(id, dataUpdate);
 
-            const result = await Proposta.findOneAndUpdate({
-                _id: id
-            }, dataUpdate, {
-                new: true
-            })?.lean();
+            // Procura e atualiza a proposta com o ID fornecido, utilizando os dados fornecidos em dataUpdate
+            // A opção new: true faz com que o método retorne o documento atualizado
+            const result = await Proposta.findOneAndUpdate({ _id: id }, dataUpdate, { new: true })?.lean();
 
+            // Verifica se a variável result contém um documento atualizado
             if (result) {
+                // Retorna uma resposta com status 200 contendo o documento atualizado
                 return res.status(200).json(result);
             } else {
+                // Caso contrário, lança um erro informando que a proposta não foi encontrada
                 throw new Error("Proposta não encontrada");
             }
+
 
         } catch (error) {
             console.log(error);
@@ -728,15 +756,19 @@ module.exports = {
         try {
 
             const { id, erroSistema } = req.body;
+
+            // Procura a proposta com o ID fornecido
             const find = await Proposta.findById({ _id: id });
 
-            console.log(find)
+            console.log(find);
 
             let status = '';
             let camposAtualizados = {};
 
+            // Define o valor da variável status com base na presença da variável erroSistema
             status = erroSistema ? 'Erro Sistema' : 'Enviada para Under';
 
+            // Verifica se find.status1Analise não está definido
             if (!find.status1Analise) {
                 camposAtualizados = {
                     status1Analise: 'Liberada',
@@ -745,7 +777,9 @@ module.exports = {
                     dataConclusao: moment().format('YYYY-MM-DD'),
                     analista: req.user
                 };
-            } else if (find.status3Analise || find.status2Analise) {
+            }
+            // Verifica se find.status3Analise ou find.status2Analise estão definidos
+            else if (find.status3Analise || find.status2Analise) {
                 camposAtualizados = {
                     status3Analise: 'Liberada',
                     segundoReprotocolo1: 'Liberada',
@@ -753,7 +787,9 @@ module.exports = {
                     dataConclusao: moment().format('YYYY-MM-DD'),
                     analista: req.user
                 };
-            } else if (find.status1Analise) {
+            }
+            // Caso contrário, find.status1Analise está definido
+            else if (find.status1Analise) {
                 camposAtualizados = {
                     status2Analise: 'Liberada',
                     reprotocolo1: 'Liberada',
@@ -763,12 +799,16 @@ module.exports = {
                 };
             }
 
+            // Verifica se há campos a serem atualizados
             if (Object.keys(camposAtualizados).length > 0) {
+                // Atualiza a proposta com os campos fornecidos em camposAtualizados
                 await Proposta.findByIdAndUpdate({ _id: id }, camposAtualizados);
             }
 
+            // Retorna uma resposta com status 200 contendo um objeto JSON com a mensagem "Ok"
             const respostaJson = { msg: 'Ok' };
             return res.status(200).json(respostaJson);
+
 
         } catch (error) {
             console.log(error);
@@ -811,20 +851,21 @@ module.exports = {
     devolver: async (req, res) => {
         try {
 
-            const { id, motivos, observacoes } = req.body
+            const { id, motivos, observacoes } = req.body;
 
+            // Procura a proposta com o ID fornecido
             const find = await Proposta.findById({ _id: id });
 
-            const status = 'Devolvida'
+            const status = 'Devolvida';
 
-            let camposAtualizados = {}
+            let camposAtualizados = {};
 
             if (!find.primeiraDevolucao1) {
-
-                const primeiraDevolucao1 = motivos[0]
-                const primeiraDevolucao2 = motivos[1]
-                const primeiraDevolucao3 = motivos[2]
-                const primeiraDevolucao4 = motivos[3]
+                // Define os valores das variáveis primeiraDevolucao1, primeiraDevolucao2, primeiraDevolucao3 e primeiraDevolucao4
+                const primeiraDevolucao1 = motivos[0];
+                const primeiraDevolucao2 = motivos[1];
+                const primeiraDevolucao3 = motivos[2];
+                const primeiraDevolucao4 = motivos[3];
 
                 camposAtualizados = {
                     status1Analise: 'Devolvida',
@@ -837,12 +878,11 @@ module.exports = {
                     dataConclusao: moment().format('YYYY-MM-DD'),
                     analista: req.user
                 };
-
             } else if (find.primeiraDevolucao1 && !find.reprotocolo1) {
-
-                const reprotocolo1 = motivos[0]
-                const reprotocolo2 = motivos[1]
-                const reprotocolo3 = motivos[2]
+                // Define os valores das variáveis reprotocolo1, reprotocolo2 e reprotocolo3
+                const reprotocolo1 = motivos[0];
+                const reprotocolo2 = motivos[1];
+                const reprotocolo3 = motivos[2];
 
                 camposAtualizados = {
                     status2Analise: 'Devolvida',
@@ -854,14 +894,13 @@ module.exports = {
                     dataConclusao: moment().format('YYYY-MM-DD'),
                     analista: req.user
                 };
-
-
             } else if (find.primeiraDevolucao1 && find.reprotocolo1) {
                 console.log('terceira devolução');
 
-                const segundoReprotocolo1 = motivos[0]
-                const segundoReprotocolo2 = motivos[1]
-                const segundoReprotocolo3 = motivos[2]
+                // Define os valores das variáveis segundoReprotocolo1, segundoReprotocolo2 e segundoReprotocolo3
+                const segundoReprotocolo1 = motivos[0];
+                const segundoReprotocolo2 = motivos[1];
+                const segundoReprotocolo3 = motivos[2];
 
                 camposAtualizados = {
                     status3Analise: 'Devolvida',
@@ -876,12 +915,15 @@ module.exports = {
             }
 
             if (Object.keys(camposAtualizados).length > 0) {
+                // Atualiza a proposta com os campos fornecidos em camposAtualizados
                 await Proposta.updateOne({ _id: id }, camposAtualizados);
             }
 
+            // Retorna uma resposta com status 200 contendo um objeto JSON com a mensagem "Ok"
             return res.json({
                 msg: 'ok'
-            })
+            });
+
 
         } catch (error) {
             console.log(error);
@@ -932,23 +974,25 @@ module.exports = {
                 await Proposta.updateOne({ _id: id }, camposAtualizados);
             }
 
-            await Blacklist.create({
-                proposta: proposta.proposta,
-                codCorretor: proposta.codCorretor,
-                entidade: proposta.entidade,
-                administradora: proposta.administradora,
-                cpfCorretor: proposta.cpfCorretor,
-                nomeCorretor: proposta.nomeCorretor,
-                telefoneCorretor: proposta.telefoneCorretor,
-                nomeSupervisor: proposta.nomeSupervisor,
-                cpfSupervisor: proposta.cpfSupervisor,
-                telefoneSupervisor: proposta.telefoneSupervisor,
-                motivoCancelamento: proposta.motivoCancelamento,
-                categoriaCancelamento: proposta.categoriaCancelamento,
-                evidenciaFraude: proposta.evidenciaFraude
-            })
+            if (proposta.corretor) {
+                await Blacklist.create({
+                    proposta: proposta.proposta,
+                    codCorretor: proposta.codCorretor,
+                    entidade: proposta.entidade,
+                    administradora: proposta.administradora,
+                    cpfCorretor: proposta.cpfCorretor,
+                    nomeCorretor: proposta.nomeCorretor,
+                    telefoneCorretor: proposta.telefoneCorretor,
+                    nomeSupervisor: proposta.nomeSupervisor,
+                    cpfSupervisor: proposta.cpfSupervisor,
+                    telefoneSupervisor: proposta.telefoneSupervisor,
+                    motivoCancelamento: proposta.motivoCancelamento,
+                    categoriaCancelamento: proposta.categoriaCancelamento,
+                    evidenciaFraude: proposta.evidenciaFraude
+                })
+            }
 
-            // console.log(addBlacklist);
+
 
             return res.json({ msg: 'ok' })
 
@@ -962,43 +1006,48 @@ module.exports = {
 
     producaoDiaria: async (req, res) => {
         try {
+            const { data } = req.params;
 
-            const { data } = req.params
-
+            // Procura as propostas com a data de conclusão fornecida
             const propostas = await Proposta.find({
                 dataConclusao: data
-            })
+            });
 
-            let analistas = []
+            let analistas = [];
 
+            // Percorre as propostas e adiciona os analistas únicos à lista de analistas
             propostas.forEach(e => {
                 if (!analistas.includes(e.analista)) {
-                    analistas.push(e.analista)
+                    analistas.push(e.analista);
                 }
-            })
+            });
 
-            let producao = []
+            let producao = [];
 
+            // Para cada analista, conta o número de propostas concluídas na data fornecida
             for (const analista of analistas) {
                 const count = await Proposta.find({
                     analista,
                     dataConclusao: data
-                }).count()
+                }).count();
 
                 producao.push({
                     analista,
                     quantidade: count
-                })
+                });
             }
 
+            // Conta o número total de propostas concluídas na data fornecida
             const total = await Proposta.find({
                 dataConclusao: data
-            }).count()
+            }).count();
 
+            // Retorna uma resposta com status 200 contendo um objeto JSON com a produção por analista e o total
             return res.json({
                 producao,
                 total
-            })
+            });
+
 
         } catch (error) {
             console.log(error);
@@ -1047,7 +1096,7 @@ module.exports = {
 
             const recebidasHoje = await Proposta.find({
                 dataImportacao: moment().format('YYYY-MM-DD')
-            }).count()
+            }).count();
 
             const emAnalise = await Proposta.find({
                 dataImportacao: { $ne: moment().format('YYYY-MM-DD') },
@@ -1056,7 +1105,7 @@ module.exports = {
                     { status: 'A iniciar' },
                     { status: 'Análise de Documentos' }
                 ]
-            }).count()
+            }).count();
 
             const propostas = await Proposta.find({
                 $or: [
@@ -1064,36 +1113,34 @@ module.exports = {
                     { status: 'A iniciar' },
                     { status: 'Análise de Documentos' }
                 ]
-            })
+            });
 
-            const vigencias = []
+            const vigencias = [];
 
+            // Percorre as propostas e conta a quantidade de propostas para cada vigência
             propostas.forEach(proposta => {
-
-                const { vigencia } = proposta
-
-                const indice = vigencias.findIndex((item) => item.vigencia === vigencia)
+                const { vigencia } = proposta;
+                const indice = vigencias.findIndex((item) => item.vigencia === vigencia);
 
                 if (indice === -1) {
-                    vigencias.push({ vigencia, quantidade: 1 })
+                    vigencias.push({ vigencia, quantidade: 1 });
                 } else {
-                    vigencias[indice].quantidade++
+                    vigencias[indice].quantidade++;
                 }
+            });
 
-            })
+            const totalEmAnalise = propostas.length;
 
-            const totalEmAnalise = propostas.length
-
+            // Cria um objeto contendo os valores obtidos
             const obj = {
                 recebidasHoje,
                 emAnalise,
                 totalEmAnalise,
                 vigencias
-            }
+            };
 
-            console.log(obj);
-
-            return res.json(obj)
+            // Retorna uma resposta com status 200 contendo o objeto JSON com as informações
+            return res.json(obj);
 
         } catch (error) {
             console.log(error);

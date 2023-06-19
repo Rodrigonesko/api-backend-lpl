@@ -37,6 +37,7 @@ const propostaScheema = mongoose.Schema({
     dataConclusao: String,
     ligacao: Boolean,
     prc: String,
+    prcProposta: String,
     motivoCancelamento: String,
     evidenciaFraude: String,
     cpfCorretor: String,
