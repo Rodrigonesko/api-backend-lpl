@@ -61,7 +61,7 @@ module.exports = {
         try {
 
             const propostas = await Proposta.find()
-
+            
             return res.json(propostas)
 
         } catch (error) {
