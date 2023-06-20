@@ -612,7 +612,7 @@ module.exports = {
             // Verifica se a variável concluir é verdadeira
             if (concluir) {
                 // Atualiza a proposta com o ID fornecido, definindo fase1 como true e status como 'Em andamento'
-                await Proposta.updateOne({ _id: id }, { fase1: true, status: 'Em andamento' });
+                await Proposta.updateOne({ _id: id }, { fase1: true });
             }
 
             // Procura e atualiza a proposta com o ID fornecido, utilizando os dados fornecidos em dataUpdate
