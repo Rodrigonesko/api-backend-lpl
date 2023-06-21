@@ -3,7 +3,7 @@ const app = express()
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const corsOptions = {
-    origin: `${process.env.FRONT_END_ADDRESS}`,
+    origin: true,
     credentials: true
 }
 
@@ -67,9 +67,9 @@ app.use(cookieParser())
 app.use(cors(corsOptions))
 app.use(function (req, res, next) {
 
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', `${process.env.FRONT_END_ADDRESS}`);
+    // Set headers to allow all origins
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
