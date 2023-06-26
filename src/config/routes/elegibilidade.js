@@ -46,5 +46,6 @@ router.get('/adicionarPropostaManual', elegibilidadeController.adicionarProposta
 router.put('/atualizarObservacoes', auth, elegibilidadeController.atualizarObservacoes)
 router.put('/concluirPropostaManual', auth, elegibilidadeController.concluirPropostaManual)
 router.post('/uploadDivergencias', auth, elegibilidadeController.divergencias)
+router.get('/planosBlacklist', auth, elegibilidadeController.planosBlacklist)
 
 module.exports = router

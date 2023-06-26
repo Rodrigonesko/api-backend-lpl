@@ -5,6 +5,7 @@ const Prc = mongoose.model('Prc')
 const Blacklist = require('../models/Elegibilidade/Blacklist')
 const PropostaManual = require('../models/Elegibilidade/PropostaElegibilidadeManual')
 const CpfCancelado = require('../models/Elegibilidade/Cpfcancelado')
+const BlacklistPlano = require('../models/Elegibilidade/BlacklistPlanos')
 
 const path = require('path')
 const moment = require('moment')
@@ -61,7 +62,7 @@ module.exports = {
         try {
 
             const propostas = await Proposta.find()
-            
+
             return res.json(propostas)
 
         } catch (error) {
@@ -337,30 +338,6 @@ module.exports = {
         }
     },
 
-    mostrarPropostaFiltradaAnalise: async (req, res) => {
-        try {
-
-            const { proposta } = req.params
-
-            const result = await Proposta.find({
-                $and: [
-                    { $or: [{ status: 'A iniciar' }, { status: 'Em andamento' }] },
-                    { proposta: { $regex: proposta } }
-                ]
-            })
-
-            return res.status(200).json({
-                proposta: result
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     mostrarInfoPropostaId: async (req, res) => {
         try {
 
@@ -407,7 +384,7 @@ module.exports = {
             }
 
             // Executa a consulta no banco de dados utilizando o modelo Proposta e a consulta definida
-            const propostas = await Proposta.find(query);
+            const propostas = await Proposta.find(query).sort('vigencia');
 
             // Retorna uma resposta com status 200 contendo as propostas encontradas e o total de propostas
             return res.status(200).json({
@@ -474,7 +451,7 @@ module.exports = {
                 vigencia: { $regex: vigencia },
                 status: { $regex: status },
 
-            })
+            }).sort('vigencia')
 
             if (fase === 'Analise') {
                 propostas = propostas.filter(e => {
@@ -517,16 +494,16 @@ module.exports = {
                             status: 'Em andamento'
                         }
                     ]
-                })
+                }).sort('vigencia')
             } else if (status === 'Todas') {
                 propostas = await Proposta.find({
                     proposta: { $regex: proposta }
-                })
+                }).sort('vigencia')
             } else {
                 propostas = await Proposta.find({
                     proposta: { $regex: proposta },
                     status
-                })
+                }).sort('vigencia')
             }
 
             return res.status(200).json({
@@ -1732,6 +1709,21 @@ module.exports = {
 
                 return res.json(result.length)
             });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    planosBlacklist: async (req, res) => {
+        try {
+
+            const planos = await BlacklistPlano.find()
+
+            return res.json(planos)
 
         } catch (error) {
             console.log(error);

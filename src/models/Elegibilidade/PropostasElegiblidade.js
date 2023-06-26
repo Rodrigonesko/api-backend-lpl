@@ -47,6 +47,7 @@ const propostaScheema = mongoose.Schema({
     cpfSupervisor: String,
     telefoneSupervisor: String,
     cpf: String,
+    plano: String,
     planoAmil: String,
     dataInicioPlanoAmil: String,
     dataFimPlanoAmil: String,

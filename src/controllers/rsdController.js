@@ -1494,6 +1494,20 @@ module.exports = {
                     })
                 }
 
+                if (item[1] === 'Fracionamento de Nota Fiscal') {
+                    await Pedido.updateOne({
+                        _id: item[0]
+                    }, {
+                        statusFinalizacao: 'Finalizado',
+                        status: 'Finalizado',
+                        fase: 'Finalizado',
+                        statusGerencial: 'Fracionamento de NF',
+                        statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal',
+                        dataConclusao: moment().format('YYYY-MM-DD'),
+                        analista: req.user
+                    })
+                }
+
                 await Agenda.create({
                     idPacote: pacote,
                     usuario: req.user,
@@ -2477,63 +2491,38 @@ module.exports = {
     teste: async (req, res) => {
         try {
 
-            const pedidos = [
-                '4268986210',
-                '4291408406',
-                '4292639401',
-                '4283942530 ',
-                '4285904772',
-                '32630520230504080094 ',
-                '4289448209',
-                '4278841888',
-                '4289707415',
-                '4292809796',
-                '4292824886',
-                '4292832627',
-                '4292836779',
-                '4292841827',
-                '4292848094',
-                '4292851075',
-                '4292852598',
-                '4279445384',
-                '4279445387',
-                '4279445733',
-                '4267640306',
-                '4267640307',
-                '4279252929',
-                '4265230906',
-                '4279254099',
-                '32630520230504084009 ',
-                '4259653573',
-                '4259653332',
-                '4293065561',
-                '4254550038',
-                '4254550993'
-
+            const ids = [
+                '647f16486de1909bf2295c34',
+                '647f16486de1909bf2295c36',
+                '647f16486de1909bf2295c3a',
+                '647f16486de1909bf2295c3e',
+                '647f16486de1909bf2295c42',
+                '6483098abacb97fd85f8dfdf',
+                '648af4eb0e8182367147f031',
+                '648af4eb0e8182367147f033',
+                '648af4eb0e8182367147f035',
+                '648af4eb0e8182367147f037',
+                '648af4eb0e8182367147f039',
+                '648af4eb0e8182367147f03b',
+                '64905d4d92332b66396d72f3',
+                '6492df4f41642d5e54cde944',
+                '64943026b0abc3b66db49b17',
+                '64948bb9a3a8e170d341a418',
             ]
 
-            for (const pedido of pedidos) {
+            for (const id of ids) {
 
-                const result = await Pedido.findOne({
-                    numero: pedido
-                })
-
-                await Pedido.updateMany({
-                    pacote: result.pacote
+                await Pedido.updateOne({
+                    _id: id
                 }, {
-                    statusPacote: 'Em andamento'
+                    statusGerencial: 'Fracionamento de NF',
+                    statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal',
+                    formaPagamento: 'Fracionamento de NF'
                 })
+
             }
 
-            // pedidos.forEach(async pedido => {
-            //     await Pedido.updateOne({
-            //         pedido
-            //     }, {
-            //         fila: 'Alta Frequência Consulta'
-            //     })
-            // })
-
-            return res.json({ tamanho: pedidos.length })
+            return res.json({ ids })
 
         } catch (error) {
             console.log(error);
