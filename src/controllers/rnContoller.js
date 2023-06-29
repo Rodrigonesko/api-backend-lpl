@@ -173,12 +173,6 @@ module.exports = {
             const rn = await Rn.findByIdAndUpdate({
                 _id: data.id
             }, {
-                dataContato1: data.dataContato1,
-                dataContato2: data.dataContato2,
-                dataContato3: data.dataContato3,
-                horarioContato1: data.horarioContato1,
-                horarioContato2: data.horarioContato2,
-                horarioContato3: data.horarioContato3,
                 observacoes: data.observacoes,
                 email: data.email,
                 status: 'Concluido',
