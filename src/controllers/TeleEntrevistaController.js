@@ -1798,6 +1798,41 @@ module.exports = {
         }
     },
 
+    migrarRet: async (req, res) => {
+        try {
+
+            const result = await DadosEntrevista.find()
+
+            console.log(result.length);
+
+            const arrAux = result.filter(proposta => {
+                return proposta.proposta.indexOf('Retrocedido') !== -1
+            })
+            const regex = /[^\d]/g;
+
+
+            arrAux.forEach(async proposta => {
+                const prop = proposta.proposta.replaceAll(' ', '').replaceAll('-', '').replaceAll('Retrocedido', '')
+
+                const result = await axios.put('http://localhost:3002/migrarRet', {
+                    proposta: prop,
+                    nome: proposta.nome
+                })
+
+                console.log(result.data);
+
+            })
+
+            return res.json(arrAux.length)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     migrarBanco: async (req, res) => {
 
         try {

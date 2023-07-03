@@ -50,4 +50,6 @@ router.get('/analistasDisponiveis/:data/:horario', auth, horarioController.busca
 router.put('/reenviarHorariosDisponiveis', auth, teleEntrevistaController.reenviarHorariosDisponiveis)
 router.get('/teste/producao', teleEntrevistaController.mostrarDadosProducao2)
 
+router.get('/migrarRet', teleEntrevistaController.migrarRet)
+
 module.exports = router

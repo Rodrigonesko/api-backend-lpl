@@ -2387,8 +2387,7 @@ module.exports = {
 
                 let result = xlsx.utils.sheet_to_json(worksheet)
 
-                result.forEach(async e => {
-
+                for (const e of result) {
                     if (e.procv === 'Confirmação de pagamento' || e.procv === 'Interface financeiro') {
 
                         await Pedido.updateOne({
@@ -2401,7 +2400,6 @@ module.exports = {
                             status: 'Finalizado'
                         })
 
-                        console.log('Comprovante correto');
                     }
 
                     if (e.procv === 'Pedido cancelado' && (e['Status Amil'] === 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante' || e['Status Amil'] === 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação')) {
@@ -2416,7 +2414,6 @@ module.exports = {
                             status: 'Finalizado'
                         })
 
-                        console.log('Comprovante Cancelado');
                     }
 
                     if (e.procv === 'Pedido cancelado' && e['Status Amil'] === 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno') {
@@ -2457,6 +2454,9 @@ module.exports = {
                     })
 
                     if (finalizadas === pedidos.length) {
+
+                        console.log(e['Código']);
+
                         await Pedido.updateMany({
                             pacote: e['Código']
                         }, {
@@ -2471,8 +2471,7 @@ module.exports = {
                             statusProtocolo: 'Finalizado'
                         })
                     }
-
-                })
+                }
 
                 return res.json({
                     msg: 'ola'
@@ -2531,8 +2530,6 @@ module.exports = {
             })
         }
     }
-
-
 }
 
 
