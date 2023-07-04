@@ -54,7 +54,7 @@ module.exports = {
     enviarDadosFormulario: async (req, res) => {
         try {
 
-            const { respostas, subRespostas, pessoa, simOuNao, cids, divergencia, entrevistaQualidade } = req.body
+            let { respostas, subRespostas, pessoa, simOuNao, cids, divergencia, entrevistaQualidade } = req.body
 
             /*
                 respostas = array das respostas refenente as perguntas principais
@@ -73,6 +73,7 @@ module.exports = {
                 divBanco = 'Sim'
             } else {
                 divBanco = 'Não'
+                cids = []
             }
 
             //respostasConc = Concatena respostas com simOuNao e subRespostas

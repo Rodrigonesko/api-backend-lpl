@@ -157,8 +157,7 @@ module.exports = {
 
                     console.log(`pós filtro: ${result.length}`);
 
-                    result.forEach(e => {
-
+                    for (const e of result) {
                         if (e[1] == 'Aguardando documentação' ||
                             e[1] == 'Documento recebido na Amil' ||
                             e[1] == 'Em processamento' ||
@@ -207,7 +206,7 @@ module.exports = {
                                 mapCpfs.set(e[12], e[14])
                             }
                         }
-                    })
+                    }
 
                     let arr = []
 
@@ -219,7 +218,7 @@ module.exports = {
 
                     //Filtra os pedidos pelo valor de corte
 
-                    arrPedidos.forEach(val => {
+                    for (const val of arrPedidos) {
                         for (const [cpf, value] of mapCpfs) {
                             if (value >= valorCorte) {
                                 if (val[6] == cpf) {
@@ -228,7 +227,7 @@ module.exports = {
                                 }
                             }
                         }
-                    })
+                    }
 
                     console.log('verificando se existe na lpl');
 
@@ -265,8 +264,7 @@ module.exports = {
 
                     let result = xlsx.utils.sheet_to_json(worksheet)
 
-                    result.forEach((e, key) => {
-
+                    for (const e of result) {
                         let conc = `${e[' Valor Apresentado'].replace('R$ ', '').replace('.', '').replace(',', '.')}`
                         conc = +conc
                         conc = `${e['Número do Protocolo'].replace(/[^0-9]/g, '')}${conc}`
@@ -311,8 +309,7 @@ module.exports = {
                                 'RSD'
                             ])
                         }
-                    })
-
+                    }
                 }
 
                 const notorios = [
