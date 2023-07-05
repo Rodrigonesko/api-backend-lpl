@@ -1731,6 +1731,72 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProducao: async (req, res) => {
+        try {
+
+            connection.query("SELECT * FROM analise", async function (err, result, fields) {
+                if (err) throw err;
+
+                let arrProd = []
+
+                for (const item of result) {
+
+                    const key = `${item.analistaResponsavel}-${item.finalizada}`
+                    const keyPre = `${item.analista_1}-${item.finalizada_pre}`
+
+                    if (arrProd[key]) {
+                        arrProd[key].quantidade += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: item.analistaResponsavel,
+                            data: item.finalizada,
+                            quantidade: 1,
+                            quantidadePre: 0,
+                            equivalente: 0
+                        }
+                    }
+
+                    if (arrProd[keyPre]) {
+                        arrProd[keyPre].quantidadePre += 1
+                    } else {
+                        arrProd[keyPre] = {
+                            analista: item.analista_1,
+                            data: item.finalizada_pre,
+                            quantidade: 0,
+                            quantidadePre: 1,
+                            equivalente: 0
+                        }
+                    }
+
+                    // arrProd.push({
+                    //     analista: item.analistaResponsavel,
+
+                    // })
+
+                }
+
+                for (let key in arrProd) {
+
+                    const equivalente = arrProd[key].quantidade + (arrProd[key].quantidadePre / 2.5)
+
+                    arrProd[key].equivalente = Math.round(equivalente)
+
+                }
+
+                console.log(arrProd);
+
+
+                return res.json(result.length)
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 
 }
@@ -1762,3 +1828,4 @@ function ExcelDateToJSDate(serial) {
 
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
 }
+

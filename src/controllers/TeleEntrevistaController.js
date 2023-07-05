@@ -1966,5 +1966,5 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 }

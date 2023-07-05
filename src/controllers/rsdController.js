@@ -2535,6 +2535,43 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProducao: async (req, res) => {
+        try {
+
+            const pedidos = await Pedido.find()
+
+            let arrProd = []
+
+            for (const pedido of pedidos) {
+
+                const dataConclusao = moment(pedido.dataConclusao).format('DD/MM/YYYY')
+
+                const key = `${pedido.analista}-${dataConclusao}`
+
+                if (arrProd[key]) {
+                    arrProd[key].quantidade += 1
+                } else {
+                    arrProd[key] = {
+                        analista: pedido.analista,
+                        data: dataConclusao,
+                        quantidade: 1,
+                        anexos: 0
+                    }
+                }
+            }
+
+            console.log(arrProd);
+
+            return res.json(arrProd.length)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 

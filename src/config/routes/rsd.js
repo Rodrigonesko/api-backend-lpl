@@ -50,5 +50,6 @@ router.get('/download/:idPacote/:filename', rsdController.download)
 router.get('/producaoDiaria/:data', auth, rsdController.producaoDiaria)
 router.post('/baixaAgd', auth, rsdController.baixaAgd)
 router.get('/teste', rsdController.teste)
+router.get('/relatorioProducao', rsdController.relatorioProducao)
 
 module.exports = router
