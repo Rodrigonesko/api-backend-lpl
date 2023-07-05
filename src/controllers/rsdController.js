@@ -234,20 +234,29 @@ module.exports = {
                     console.log(arr.length);
 
 
-                    arr.forEach(e => { //Verifica se existe na lpl
-                        let flag = 0
-                        pedidosBanco.forEach(item => {
-                            if (e[0] == item.numero) {
-                                flag++
-                                return
-                            }
-                        })
+                    for (const e of arr) {
 
-                        if (flag == 0) {
-                            pedidos.push(e)
+                        const existeNaLpl = pedidosBanco.some(item => e[0] === item.numero);
+                        if (!existeNaLpl) {
+                            pedidos.push(e);
                         }
 
-                    })
+                    }
+
+                    // arr.forEach(e => { //Verifica se existe na lpl
+                    //     let flag = 0
+                    //     pedidosBanco.forEach(item => {
+                    //         if (e[0] == item.numero) {
+                    //             flag++
+                    //             return
+                    //         }
+                    //     })
+
+                    //     if (flag == 0) {
+                    //         pedidos.push(e)
+                    //     }
+
+                    // })
 
                     console.log(pedidos.length);
 
