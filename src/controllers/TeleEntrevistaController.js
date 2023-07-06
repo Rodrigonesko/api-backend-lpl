@@ -1967,4 +1967,177 @@ module.exports = {
             })
         }
     },
+
+    relatorioProducao: async (req, res) => {
+        try {
+
+            const entrevistasRealizadas = await DadosEntrevista.find()
+
+            let arrProd = {}
+
+            for (const item of entrevistasRealizadas) {
+
+                const dataEntrevista = moment(item.dataEntrevista).format('DD/MM/YYYY')
+
+                const key = `${item.responsavel}-${dataEntrevista}`
+
+                if (arrProd[key]) {
+                    arrProd[key].tele += 1
+                } else {
+                    arrProd[key] = {
+                        analista: item.responsavel,
+                        data: dataEntrevista,
+                        tentativa1: 0,
+                        tentativa2: 0,
+                        tentativa3: 0,
+                        tele: 1,
+                        rn: 0,
+                        ue: 0
+                    }
+                }
+            }
+
+
+            const result = await axios.get(`http://localhost:3002/show`)
+
+            const propostas = result.data.propostas
+
+            for (const item of propostas) {
+
+                if (item.contato1 && item.responsavelContato1 !== 'Bot Whatsapp') {
+                    const [diaContato1] = item.contato1.split(" ")
+                    const responsavelContato1 = item.responsavelContato1
+
+                    const key = `${responsavelContato1}-${diaContato1}`
+
+                    if (arrProd[key]) {
+                        arrProd[key].tentativa1 += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: responsavelContato1,
+                            data: diaContato1,
+                            tentativa1: 1,
+                            tentativa2: 0,
+                            tentativa3: 0,
+                            tele: 0,
+                            rn: 0,
+                            ue: 0
+                        }
+                    }
+
+                }
+
+                if (item.contato2) {
+                    const [diaContato2] = item.contato2.split(" ")
+                    const responsavelContato2 = item.responsavelContato2
+
+                    const key = `${responsavelContato2}-${diaContato2}`
+
+                    if (arrProd[key]) {
+                        arrProd[key].tentativa2 += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: responsavelContato2,
+                            data: diaContato2,
+                            tentativa1: 0,
+                            tentativa2: 1,
+                            tentativa3: 0,
+                            tele: 0,
+                            rn: 0,
+                            ue: 0
+                        }
+                    }
+
+                }
+
+                if (item.contato3) {
+                    const [diaContato3] = item.contato3.split(" ")
+                    const responsavelContato3 = item.responsavelContato3
+
+                    const key = `${responsavelContato3}-${diaContato3}`
+
+                    if (arrProd[key]) {
+                        arrProd[key].tentativa3 += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: responsavelContato3,
+                            data: diaContato3,
+                            tentativa1: 0,
+                            tentativa2: 0,
+                            tentativa3: 1,
+                            tele: 0,
+                            rn: 0,
+                            ue: 0
+                        }
+                    }
+
+                }
+                //const key = `${item.responsavelContato1}`
+            }
+
+            const rns = await Rn.find()
+
+            for (const item of rns) {
+
+                if (item.dataConclusao) {
+                    const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
+
+                    const key = `${item.responsavel}-${dataConclusao}`
+
+                    if (arrProd[key]) {
+                        arrProd[key].rn += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: item.responsavel,
+                            data: dataConclusao,
+                            tentativa1: 0,
+                            tentativa2: 0,
+                            tentativa3: 0,
+                            tele: 0,
+                            rn: 1,
+                            ue: 0
+                        }
+                    }
+                }
+            }
+
+            const urgenciaEmergencia = await UrgenciasEmergencia.find()
+
+            for (const item of urgenciaEmergencia) {
+
+                if (item.dataConclusao) {
+                    const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
+
+                    const key = `${item.analista}-${dataConclusao}`
+
+                    if (arrProd[key]) {
+                        arrProd[key].ue += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: item.analista,
+                            data: dataConclusao,
+                            tentativa1: 0,
+                            tentativa2: 0,
+                            tentativa3: 0,
+                            tele: 0,
+                            rn: 0,
+                            ue: 1
+                        }
+                    }
+                }
+            }
+
+            console.log(arrProd);
+
+
+            return res.json(arrProd)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
+
 }

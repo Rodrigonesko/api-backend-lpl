@@ -70,7 +70,8 @@ const propostaScheema = mongoose.Schema({
     numeroRegistro: String,
     universidade: String,
     curso: String,
-    localizacaoCurso: String
+    localizacaoCurso: String,
+    semDoc: Boolean
 }, {
     timestamps: true
 })

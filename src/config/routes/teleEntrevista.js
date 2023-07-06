@@ -49,6 +49,7 @@ router.get('/horariosDisponiveis/:data', horarioController.buscarHorariosDisponi
 router.get('/analistasDisponiveis/:data/:horario', auth, horarioController.buscarAnalistasDisponiveis)
 router.put('/reenviarHorariosDisponiveis', auth, teleEntrevistaController.reenviarHorariosDisponiveis)
 router.get('/teste/producao', teleEntrevistaController.mostrarDadosProducao2)
+router.get('/relatorioProducao', teleEntrevistaController.relatorioProducao)
 
 router.get('/migrarRet', teleEntrevistaController.migrarRet)
 

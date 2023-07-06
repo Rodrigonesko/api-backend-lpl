@@ -400,6 +400,46 @@ module.exports = {
         }
     },
 
+    getSemDocumentos: async (req, res) => {
+        try {
+
+            const propostas = await Proposta.find({
+                status: 'Sem documentos'
+            })
+
+            return res.json(propostas)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    documentoRecebido: async (req, res) => {
+        try {
+
+            const {id} = req.body
+
+            await Proposta.updateOne({
+                _id: id
+            }, {
+                status: 'A iniciar'
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     entidades: async (req, res) => {
         try {
 
@@ -450,7 +490,6 @@ module.exports = {
                 entidade: { $regex: entidade },
                 vigencia: { $regex: vigencia },
                 status: { $regex: status },
-
             }).sort('vigencia')
 
             if (fase === 'Analise') {
@@ -589,7 +628,7 @@ module.exports = {
             // Verifica se a variável concluir é verdadeira
             if (concluir) {
                 // Atualiza a proposta com o ID fornecido, definindo fase1 como true e status como 'Em andamento'
-                await Proposta.updateOne({ _id: id }, { fase1: true });
+                await Proposta.updateOne({ _id: id }, { fase1: true, });
             }
 
             // Procura e atualiza a proposta com o ID fornecido, utilizando os dados fornecidos em dataUpdate
@@ -605,6 +644,29 @@ module.exports = {
                 throw new Error("Proposta não encontrada");
             }
 
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    semDocumentos: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            await Proposta.updateOne({
+                _id: id
+            }, {
+                status: 'Sem documentos'
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
 
         } catch (error) {
             console.log(error);
@@ -1682,6 +1744,32 @@ module.exports = {
         }
     },
 
+    migrarObservacoes: async (req, res) => {
+        try {
+
+            connection.query("SELECT * FROM agenda", async function (err, result, fields) {
+                if (err) throw err;
+
+                for (const item of result) {
+                    await Agenda.create({
+                        comentario: item.comentario,
+                        data: item.data,
+                        proposta: item.proposta
+                    })
+                }
+
+                res.json(result.length)
+
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     adicionarPropostaManual: async (req, res) => {
         try {
 
@@ -1736,10 +1824,11 @@ module.exports = {
     relatorioProducao: async (req, res) => {
         try {
 
+
             connection.query("SELECT * FROM analise", async function (err, result, fields) {
                 if (err) throw err;
 
-                let arrProd = []
+                let arrProd = {}
 
                 for (const item of result) {
 
@@ -1785,10 +1874,8 @@ module.exports = {
 
                 }
 
-                console.log(arrProd);
+                return res.json(arrProd)
 
-
-                return res.json(result.length)
             })
 
         } catch (error) {
