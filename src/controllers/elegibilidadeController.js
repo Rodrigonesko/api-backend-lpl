@@ -420,7 +420,7 @@ module.exports = {
     documentoRecebido: async (req, res) => {
         try {
 
-            const {id} = req.body
+            const { id } = req.body
 
             await Proposta.updateOne({
                 _id: id
@@ -1812,6 +1812,48 @@ module.exports = {
             const planos = await BlacklistPlano.find()
 
             return res.json(planos)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarPlanoBlacklist: async (req, res) => {
+        try {
+
+            const { plano } = req.body
+
+            await BlacklistPlano.create({
+                plano
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    removerPlanoBlacklist: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await BlacklistPlano.findByIdAndDelete({
+                _id: id
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
 
         } catch (error) {
             console.log(error);

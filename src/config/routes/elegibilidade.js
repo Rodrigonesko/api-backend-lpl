@@ -52,5 +52,7 @@ router.get('/relatorioProducao', elegibilidadeController.relatorioProducao)
 router.put('/semDocumentos', auth, elegibilidadeController.semDocumentos)
 router.get('/semDocumentos', auth, elegibilidadeController.getSemDocumentos)
 router.put('/documentoRecebido', auth, elegibilidadeController.documentoRecebido)
+router.post('/planosBlacklist', auth, elegibilidadeController.adicionarPlanoBlacklist)
+router.delete('/planosBlacklist/:id', auth, elegibilidadeController.removerPlanoBlacklist)
 
 module.exports = router
