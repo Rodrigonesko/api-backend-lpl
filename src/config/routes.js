@@ -12,6 +12,7 @@ const rsdRoutes = require('./routes/rsd')
 const elegibilidadeRoutes = require("./routes/elegibilidade")
 const urgenciaEmergenciaRoutes = require('./routes/urgenciaEmergencia')
 const dicionarioRoutes = require('./routes/dicionario')
+const elegibilidadePmeRoutes = require("./routes/elegibilidadePme")
 
 const router = express.Router()
 
@@ -44,6 +45,6 @@ router.use('/urgenciaEmergencia', urgenciaEmergenciaRoutes)
 router.use('/elegibilidade', elegibilidadeRoutes)
 router.use('/controleAtividade', controleAtividadeRoutes)
 router.use('/dicionario', dicionarioRoutes)
-
+router.use('/elegibilidadePme', elegibilidadePmeRoutes)
 
 module.exports = router

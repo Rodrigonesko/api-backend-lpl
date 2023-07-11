@@ -9,7 +9,6 @@ const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
 
 const moment = require('moment')
 const fs = require('fs')
-const path = require('path');
 const multer = require('multer')
 const os = require('os')
 const xlsx = require('xlsx')

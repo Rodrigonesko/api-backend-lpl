@@ -309,16 +309,6 @@ module.exports = {
 
             const { id, analista } = req.body
 
-            if (req.userAcessLevel === 'false') {
-
-                console.log(req.userAcessLevel);
-
-                return res.status(500).json({
-                    msg: 'O usuário não tem permissão para trocar de Analista'
-                })
-
-            }
-
             const proposta = await Proposta.findByIdAndUpdate({
                 _id: id
             }, {
@@ -574,14 +564,12 @@ module.exports = {
                 analista
             })
 
-            const teste = await Agenda.create({
+            await Agenda.create({
                 comentario: `O analista ${responsavel}, trocou a proposta que estava com o analista: ${result.analista} para o analista ${analista}.`,
                 analista: responsavel,
                 proposta: result.proposta,
                 data: moment().format('YYYY-MM-DD HH:mm:ss')
             })
-
-            console.log(teste);
 
             return res.status(200).json({
                 msg: 'ok'
