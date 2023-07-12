@@ -17,7 +17,8 @@ const propostaScheema = mongoose.Schema({
     analista: String,
     dataRecebimento: String,
     dataConclusao: String,
-    status: String
+    status: String,
+    motivo: String
 }, {
     timestamps: true
 })

@@ -179,12 +179,18 @@ module.exports = {
 
             const { status, proposta } = req.params
 
+            if (status === 'Todos') {
+                const result = await Proposta.find({
+                    proposta: { $regex: proposta }
+                })
+
+                return res.json(result)
+            }
+
             const result = await Proposta.find({
                 status,
                 proposta: { $regex: proposta }
             })
-
-            console.log(result);
 
             return res.json(result)
 
@@ -214,7 +220,7 @@ module.exports = {
             await Agenda.create({
                 proposta: result.proposta,
                 analista: req.user,
-                data: moment().format('YYYY-MM-DD H:i:s'),
+                data: moment().format('YYYY-MM-DD HH:mm:ss'),
                 comentario: `O analista: ${req.user}, atribuiu de: ${result.analista} para: ${analista}`
             })
 
@@ -269,7 +275,7 @@ module.exports = {
                     proposta: result.proposta,
                     analista: req.user,
                     comentario: `O analista: ${req.user} devolveu a proposta com o motivo: ${motivo}`,
-                    data: moment().format("YYYY-MM-DD HH:ii:ss")
+                    data: moment().format("YYYY-MM-DD HH:mm:ss")
                 })
 
                 return res.json({
@@ -290,7 +296,7 @@ module.exports = {
                 proposta: result.proposta,
                 analista: req.user,
                 comentario: `O analista: ${req.user} concluiu a proposta`,
-                data: moment().format("YYYY-MM-DD HH:ii:ss")
+                data: moment().format("YYYY-MM-DD HH:mm:ss")
             })
 
             return res.json({
@@ -333,7 +339,7 @@ module.exports = {
                 analista: req.user,
                 proposta,
                 comentario,
-                data: moment().format("YYYY-MM-MM H:i:s")
+                data: moment().format("YYYY-MM-MM HH:mm:ss")
             })
 
             return res.json({
