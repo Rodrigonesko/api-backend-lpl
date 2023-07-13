@@ -75,5 +75,6 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', routes)
+app.use('/media', express.static('uploads'))
 
 module.exports = app
