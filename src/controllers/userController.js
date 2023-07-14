@@ -223,6 +223,29 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    lerPolitica: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            await User.updateOne({
+                name: req.user
+            }, {
+                $push: { politicasLidas: id }
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 
 }

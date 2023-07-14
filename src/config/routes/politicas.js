@@ -7,5 +7,7 @@ const auth = require('../../middlewares/auth')
 
 router.post('/:politica/:versao', auth, politicaController.create)
 router.get('/', auth, politicaController.show)
+router.get('/ativos', auth, politicaController.showActive)
+router.get('/politica/:id', auth, politicaController.showPolitica)
 
 module.exports = router

@@ -36,6 +36,7 @@ router.put('/users/modules', auth, userController.modules)
 router.get('/users/elegibilidade', auth, userController.analistasElegi)
 router.put('/users/resetPassword', auth, userController.resetPassword)
 router.get('/users/coren/:name', auth, userController.coren)
+router.put('/users/lerPolitica', auth, userController.lerPolitica)
 
 //Rotas das células
 
