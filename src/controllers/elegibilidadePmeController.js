@@ -292,6 +292,14 @@ module.exports = {
                 analista: req.user
             })
 
+            const result = await Proposta.findOneAndUpdate({
+                _id: id
+            }, {
+                status,
+                dataConclusao: moment().format('DD/MM/YYYY'),
+                analista: req.user
+            })
+
             await Agenda.create({
                 proposta: result.proposta,
                 analista: req.user,

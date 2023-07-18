@@ -57,6 +57,7 @@ const dadosEntrevistaScheema = mongoose.Schema({
     houveDivergencia: String,
     divergencia: String,
     cids: String,
+    codigosCids: String,
     cancelado: Boolean,
     nf: String,
     dataFaturamento: Date,
@@ -67,7 +68,9 @@ const dadosEntrevistaScheema = mongoose.Schema({
     implantacao: String,
     implantado: String,
     dataRecebimento: String,
-    entrevistaQualidade: Boolean
+    entrevistaQualidade: Boolean,
+    filial: String,
+    idProposta: String
 }, {
     timestamps: true
 })

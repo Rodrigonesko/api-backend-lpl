@@ -55,6 +55,18 @@ module.exports = {
 
             let { respostas, subRespostas, pessoa, simOuNao, cids, divergencia, entrevistaQualidade } = req.body
 
+            let codigosCids = ''
+            let cidsAjustados = ''
+
+            for (const cid of cids) {
+                const codigo = cid.substring(0, 4);
+                codigosCids += `${codigo} - `
+                cidsAjustados += `${cid}, `
+            }
+
+            console.log(cidsAjustados);
+
+
             /*
                 respostas = array das respostas refenente as perguntas principais
                 subRespostas = array de respostas referente a subPerguntas
@@ -126,8 +138,9 @@ module.exports = {
             const resp = await axios.put(`${process.env.API_TELE}/concluir`, {
                 id: pessoa._id,
                 houveDivergencia: divBanco,
-                cids: cids.toString(),
-                divergencia: respostasConc['divergencia']
+                cids: cidsAjustados,
+                divergencia: respostasConc['divergencia'],
+                responsavel: req.user
             }, {
                 withCredentials: true,
                 headers: {
@@ -154,20 +167,23 @@ module.exports = {
                 sexo: pessoa.sexo,
                 idade: pessoa.idade,
                 faturado: 'Não faturado',
-                cids: cids.toString(),
+                cids: cidsAjustados,
+                codigosCids: codigosCids,
                 dataEntrevista: moment(new Date).format('YYYY-MM-DD'),
                 houveDivergencia: divBanco,
                 anexadoSisAmil: 'Anexar',
                 vigencia: updateProposta.vigencia,
                 dataRecebimento: updateProposta.dataRecebimento,
                 cancelado: false,
-                entrevistaQualidade
+                entrevistaQualidade,
+                filial: updateProposta.filial,
+                idProposta: updateProposta._id
             }, {
                 upsert: true
             })
 
             return res.status(200).json({
-                msg: 'oi'
+                msg: 'ok'
             })
 
         } catch (error) {
@@ -1991,7 +2007,9 @@ module.exports = {
                         tentativa3: 0,
                         tele: 1,
                         rn: 0,
-                        ue: 0
+                        ue: 0,
+                        agendado: 0,
+                        naoAgendado: 0,
                     }
                 }
             }
@@ -2020,7 +2038,9 @@ module.exports = {
                             tentativa3: 0,
                             tele: 0,
                             rn: 0,
-                            ue: 0
+                            ue: 0,
+                            agendado: 0,
+                            naoAgendado: 0,
                         }
                     }
 
@@ -2043,7 +2063,9 @@ module.exports = {
                             tentativa3: 0,
                             tele: 0,
                             rn: 0,
-                            ue: 0
+                            ue: 0,
+                            agendado: 0,
+                            naoAgendado: 0,
                         }
                     }
 
@@ -2066,11 +2088,31 @@ module.exports = {
                             tentativa3: 1,
                             tele: 0,
                             rn: 0,
-                            ue: 0
+                            ue: 0,
+                            agendado: 0,
+                            naoAgendado: 0,
                         }
                     }
-
                 }
+
+                if (item.dataConclusao) {
+
+                    const dataConclusao = moment(item.dataConclusao).format("DD/MM/YYYY")
+                    const responsavel = item.enfermeiro
+
+                    if (dataConclusao) {
+
+                        const key = `${responsavel}-${dataConclusao}`
+
+                        if (item.agendado === 'agendado') {
+                            arrProd[key].agendado += 1
+                        } else {
+                            arrProd[key].naoAgendado += 1
+                        }
+
+                    }
+                }
+
                 //const key = `${item.responsavelContato1}`
             }
 
@@ -2130,6 +2172,62 @@ module.exports = {
 
 
             return res.json(arrProd)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    ajustarCodigosCids: async (req, res) => {
+        try {
+
+            const result = await DadosEntrevista.find()
+
+            for (const item of result) {
+                let codigosCids = ''
+                if (item.cids) {
+                    const split = item.cids.split('),')
+                    for (const cid of split) {
+                        codigosCids += `${cid.substring(0, 4)} - `
+                    }
+                    await DadosEntrevista.updateOne({
+                        _id: item._id
+                    }, {
+                        codigosCids
+                    })
+                    console.log(codigosCids);
+                }
+            }
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    ajustarEnfermeiros: async (req, res) => {
+        try {
+
+            const propostas = await DadosEntrevista.find()
+
+            const result = await axios.post(`http://localhost:3002/ajustarEnfermeiro`, {
+                propostas
+            })
+
+            console.log(result);
+
+            return res.json({
+                msg: 'ok'
+            })
 
         } catch (error) {
             console.log(error);
