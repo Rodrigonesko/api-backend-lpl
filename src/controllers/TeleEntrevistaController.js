@@ -2095,7 +2095,7 @@ module.exports = {
                     }
                 }
 
-                if (item.dataConclusao) {
+                if (item.dataConclusao && item.status === 'Concluído') {
 
                     const dataConclusao = moment(item.dataConclusao).format("DD/MM/YYYY")
                     const responsavel = item.enfermeiro
@@ -2104,12 +2104,41 @@ module.exports = {
 
                         const key = `${responsavel}-${dataConclusao}`
 
-                        if (item.agendado === 'agendado') {
-                            arrProd[key].agendado += 1
+                        if (arrProd[key]) {
+                            if (item.agendado === 'agendado') {
+                                arrProd[key].agendado += 1
+                            } else {
+                                arrProd[key].naoAgendado += 1
+                            }
                         } else {
-                            arrProd[key].naoAgendado += 1
+                            if (item.agendado === 'agendado') {
+                                arrProd[key] = {
+                                    analista: responsavel,
+                                    data: dataConclusao,
+                                    tentativa1: 0,
+                                    tentativa2: 0,
+                                    tentativa3: 0,
+                                    tele: 0,
+                                    rn: 0,
+                                    ue: 0,
+                                    agendado: 1,
+                                    naoAgendado: 0,
+                                }
+                            } else {
+                                arrProd[key] = {
+                                    analista: responsavel,
+                                    data: dataConclusao,
+                                    tentativa1: 0,
+                                    tentativa2: 0,
+                                    tentativa3: 0,
+                                    tele: 0,
+                                    rn: 0,
+                                    ue: 0,
+                                    agendado: 0,
+                                    naoAgendado: 1,
+                                }
+                            }
                         }
-
                     }
                 }
 
@@ -2136,7 +2165,9 @@ module.exports = {
                             tentativa3: 0,
                             tele: 0,
                             rn: 1,
-                            ue: 0
+                            ue: 0,
+                            agendado: 0,
+                            naoAgendado: 0
                         }
                     }
                 }
@@ -2162,14 +2193,13 @@ module.exports = {
                             tentativa3: 0,
                             tele: 0,
                             rn: 0,
-                            ue: 1
+                            ue: 1,
+                            agendado: 0,
+                            naoAgendado: 0
                         }
                     }
                 }
             }
-
-            console.log(arrProd);
-
 
             return res.json(arrProd)
 

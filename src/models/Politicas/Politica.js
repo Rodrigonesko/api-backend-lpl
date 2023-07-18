@@ -5,7 +5,8 @@ const scheme = mongoose.Schema({
     versao: String,
     dataCriacao: String,
     arquivo: String,
-    inativo: Boolean
+    inativo: Boolean,
+    assinaturas: []
 }, {
     timestamps: true
 })

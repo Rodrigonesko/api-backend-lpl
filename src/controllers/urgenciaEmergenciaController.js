@@ -87,42 +87,14 @@ module.exports = {
                         let dataAdesao = ExcelDateToJSDate(item.DATA_ADESAO)
                         dataAdesao.setDate(dataAdesao.getDate() + 1)
                         dataAdesao = moment(dataAdesao).format('YYYY-MM-DD')
-                        let dataInclusao = ExcelDateToJSDate(item.DATA_INCLUSAO)
-                        dataInclusao.setDate(dataInclusao.getDate() + 1)
-                        dataInclusao = moment(dataInclusao).format('YYYY-MM-DD')
-                        const dataExclusao = item.DATA_EXCLUSAO
-                        const nomePlano = item.NOME_PLANO
-                        const tipoContrato = item.TIPO_CONTRATO
-                        const ddd = item.NUM_DDD
                         const telefone = item.NUM_TELEFONE
                         const email = item.EMAIL
                         const prc = item.COD_PRC
-                        const indResp1 = item.IND_RESP_1
-                        const indResp2 = item.IND_RESP_2
-                        const indResp3 = item.IND_RESP_3
-                        const indResp4 = item.IND_RESP_4
-                        const indResp5 = item.IND_RESP_5
-                        const indResp6 = item.IND_RESP_6
-                        const indResp7 = item.IND_RESP_7
-                        const indResp8 = item.IND_RESP_8
-                        const indResp9 = item.IND_RESP_9
                         const pedido = item.PEDIDO
-                        let dataSolicitacao = ExcelDateToJSDate(item.DATA_SOLICITACAO)
-                        dataSolicitacao.setDate(dataSolicitacao.getDate() + 1)
-                        dataSolicitacao = moment(dataSolicitacao).format('YYYY-MM-DD')
-                        const idadeSolic = item.IDADE_NA_SOLIC
-                        let dataAutorizacao = ExcelDateToJSDate(item.DATA_AUTORIZACAO)
-                        dataAutorizacao.setDate(dataAutorizacao.getDate() + 1)
-                        dataAutorizacao = moment(dataAutorizacao).format('YYYY-MM-DD')
-                        const indCarater = item.IND_CARATER_AUTORIZ
+                        
                         const nomePrestador = item.PRESTADOR
-                        const cidPrin = item.CID_PRIN_AUTORIZ
-                        const nomeCidPrin = item.NOM_CID_PRIN_AUTORIZ
-                        const cidSec = item.CID_SECUND_AUTORIZ
-                        const nomeCidSec = item.NOM_CID_SECUND_AUTORIZ
-                        const sitAutoriz = item.SIT_AUTORIZ
-                        const nomeTratamento = item.NOME_TRATAMENTO_AUTORIZ
-                        const relatorioMedico = item['RELATORIO MEDICO']
+                        const cidPrin = item.CID
+                        const relatorioMedico = item.PATOLOGIA
                         let dataAtendimento = ExcelDateToJSDate(item['DT ATENDIMENTO'])
                         dataAtendimento.setDate(dataAtendimento.getDate() + 1)
                         dataAtendimento = moment(dataAtendimento).format('YYYY-MM-DD')
@@ -137,35 +109,12 @@ module.exports = {
                             dataNascimento,
                             idade,
                             dataAdesao,
-                            dataInclusao,
-                            dataExclusao,
-                            nomePlano,
-                            tipoContrato,
-                            ddd,
                             telefone,
                             email,
                             prc,
-                            indResp1,
-                            indResp2,
-                            indResp3,
-                            indResp4,
-                            indResp5,
-                            indResp6,
-                            indResp7,
-                            indResp8,
-                            indResp9,
                             pedido,
-                            dataSolicitacao,
-                            idadeSolic,
-                            dataAutorizacao,
-                            indCarater,
                             nomePrestador,
                             cidPrin,
-                            nomeCidPrin,
-                            cidSec,
-                            nomeCidSec,
-                            sitAutoriz,
-                            nomeTratamento,
                             relatorioMedico,
                             dataAtendimento,
                             dataRecebimento,

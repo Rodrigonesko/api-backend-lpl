@@ -112,13 +112,37 @@ module.exports = {
     showPolitica: async (req, res) => {
         try {
 
-            const {id} = req.params
+            const { id } = req.params
 
             const result = await Politica.findOne({
                 _id: id
             })
 
             return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    assinarPolitica: async (req, res) => {
+        try {
+            
+            const {id} = req.body
+
+            await Politica.updateOne({
+                _id: id
+            }, {
+                $push: {
+                    assinaturas: {
+                        nome: req.user,
+                        data: moment().format('YYYY-MM-DD HH:mm:ss')
+                    }
+                }
+            })
 
         } catch (error) {
             console.log(error);
