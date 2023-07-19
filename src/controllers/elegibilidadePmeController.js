@@ -96,10 +96,10 @@ module.exports = {
                     }
 
                     const existeProposta = await Proposta.findOne({
-                        proposta
+                        proposta,
                     })
 
-                    if (!existeProposta) {
+                    if (!existeProposta || existeProposta.status === "Devolvida") {
                         await Proposta.create(obj)
                         qtd++
                     }
@@ -353,6 +353,62 @@ module.exports = {
             return res.json({
                 msg: 'ok'
             })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    producaoDiaria: async (req, res) => {
+        try {
+
+            const { data } = req.params;
+
+
+            // Procura as propostas com a data de conclusão fornecida
+            const propostas = await Proposta.find({
+                dataConclusao: moment(data).format('DD/MM/YYYY')
+            });
+
+            let analistas = [];
+
+            // Percorre as propostas e adiciona os analistas únicos à lista de analistas
+            propostas.forEach(e => {
+                if (!analistas.includes(e.analista)) {
+                    analistas.push(e.analista);
+                }
+            });
+
+            let producao = [];
+
+            // Para cada analista, conta o número de propostas concluídas na data fornecida
+            for (const analista of analistas) {
+                const count = await Proposta.find({
+                    analista,
+                    dataConclusao: moment(data).format('DD/MM/YYYY')
+                }).count();
+
+                producao.push({
+                    analista,
+                    quantidade: count
+                });
+            }
+
+            // Conta o número total de propostas concluídas na data fornecida
+            const total = await Proposta.find({
+                dataConclusao: moment(data).format('DD/MM/YYYY')
+            }).count();
+
+
+            // Retorna uma resposta com status 200 contendo um objeto JSON com a produção por analista e o total
+            return res.json({
+                producao,
+                total
+            });
+
 
         } catch (error) {
             console.log(error);

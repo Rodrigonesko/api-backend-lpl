@@ -627,7 +627,7 @@ module.exports = {
 
             // Cria nos dadosEntrevista com os dados da proposta, o formulario como cancelado e o motivo do cancelamento
 
-            const create = await DadosEntrevista.create({
+            await DadosEntrevista.create({
                 nome: proposta.nome,
                 cpf: proposta.cpf,
                 dataNascimento: proposta.dataNascimento,
@@ -639,11 +639,12 @@ module.exports = {
                 dataEntrevista: moment().format('YYYY-MM-DD'),
                 tipoContrato: proposta.tipoContrato,
                 dataRecebimento: proposta.dataRecebimento,
-                responsavel: motivoCancelamento
+                responsavel: motivoCancelamento,
+                filial: proposta.filial
             })
 
             return res.status(200).json({
-                msg: 'oii'
+                msg: 'ok'
             })
 
         } catch (error) {
@@ -1991,25 +1992,26 @@ module.exports = {
             let arrProd = {}
 
             for (const item of entrevistasRealizadas) {
+                if (item.dataEntrevista) {
+                    const dataEntrevista = moment(item.dataEntrevista).format('DD/MM/YYYY')
 
-                const dataEntrevista = moment(item.dataEntrevista).format('DD/MM/YYYY')
+                    const key = `${item.responsavel}-${dataEntrevista}`
 
-                const key = `${item.responsavel}-${dataEntrevista}`
-
-                if (arrProd[key]) {
-                    arrProd[key].tele += 1
-                } else {
-                    arrProd[key] = {
-                        analista: item.responsavel,
-                        data: dataEntrevista,
-                        tentativa1: 0,
-                        tentativa2: 0,
-                        tentativa3: 0,
-                        tele: 1,
-                        rn: 0,
-                        ue: 0,
-                        agendado: 0,
-                        naoAgendado: 0,
+                    if (arrProd[key]) {
+                        arrProd[key].tele += 1
+                    } else {
+                        arrProd[key] = {
+                            analista: item.responsavel,
+                            data: dataEntrevista,
+                            tentativa1: 0,
+                            tentativa2: 0,
+                            tentativa3: 0,
+                            tele: 1,
+                            rn: 0,
+                            ue: 0,
+                            agendado: 0,
+                            naoAgendado: 0,
+                        }
                     }
                 }
             }
@@ -2254,6 +2256,35 @@ module.exports = {
             })
 
             console.log(result);
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    migrarFilial: async (req, res) => {
+        try {
+
+            const result = await axios.get('http://localhost:3002/show')
+
+            const { propostas } = result.data
+
+            for (const proposta of propostas) {
+                await DadosEntrevista.updateOne({
+                    proposta: proposta.proposta,
+                    nome: proposta.nome
+                }, {
+                    filial: proposta.filial
+                })
+                console.log(proposta.nome, proposta.proposta, proposta.filial);
+            }
 
             return res.json({
                 msg: 'ok'

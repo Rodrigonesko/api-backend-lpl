@@ -13,5 +13,6 @@ router.get('/infoProposta/:id', auth, elegibilidadePmeController.infoProposta)
 router.put('/alterarStatus', auth, elegibilidadePmeController.alterarStatus)
 router.get('/agenda/:proposta', auth, elegibilidadePmeController.agendaPorProposta)
 router.post('/agenda', auth, elegibilidadePmeController.adicionarComentario)
+router.get('/producaoDiaria/:data', auth, elegibilidadePmeController.producaoDiaria)
 
 module.exports = router

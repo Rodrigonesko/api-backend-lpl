@@ -1130,7 +1130,8 @@ module.exports = {
                 $or: [
                     { status: 'Em andamento' },
                     { status: 'A iniciar' },
-                    { status: 'Análise de Documentos' }
+                    { status: 'Análise de Documentos' },
+                    { status: 'Sem documentos' }
                 ]
             }).count();
 
@@ -1138,7 +1139,8 @@ module.exports = {
                 $or: [
                     { status: 'Em andamento' },
                     { status: 'A iniciar' },
-                    { status: 'Análise de Documentos' }
+                    { status: 'Análise de Documentos' },
+                    { status: 'Sem documentos' }
                 ]
             });
 
