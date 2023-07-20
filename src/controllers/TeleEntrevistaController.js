@@ -2016,7 +2016,6 @@ module.exports = {
                 }
             }
 
-
             const result = await axios.get(`http://localhost:3002/show`)
 
             const propostas = result.data.propostas
@@ -2288,6 +2287,163 @@ module.exports = {
 
             return res.json({
                 msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    rendimentoIndividualMensal: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            let objTele = {}
+            let producaoTele = [
+                ['Dia', 'Quantidade']
+            ]
+
+            let houveDivergencia = 0
+            let naoHouveDivergencia = 0
+
+            const dadosDoMes = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes },
+                responsavel: analista
+            })
+
+            for (const proposta of dadosDoMes) {
+                const key = moment(proposta.dataEntrevista).format('DD/MM/YYYY')
+
+                if (objTele[key]) {
+                    objTele[key].entrevistas += 1
+                } else {
+                    objTele[key] = {
+                        entrevistas: 1
+                    }
+                }
+
+                if (proposta.houveDivergencia === 'Sim') {
+                    houveDivergencia += 1
+                } else {
+                    naoHouveDivergencia += 1
+                }
+
+            }
+
+            let total = 0
+
+            for (const item of Object.entries(objTele)) {
+                producaoTele.push([
+                    item[0],
+                    item[1].entrevistas
+                ])
+
+                total += item[1].entrevistas
+
+            }
+
+            const result = await axios.get(`http://localhost:3002/rendimentoMensal/${mes}/${analista}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
+            })
+
+            const {
+                agendadas,
+                naoAgendadas,
+                primeiroContato,
+                segundoContato,
+                terceiroContato
+            } = result.data
+
+            let objRn = {}
+            let producaoRn = [
+                ['Dia', 'Quantidade']
+            ]
+
+            const dadosDoMesRn = await Rn.find({
+                dataConclusao: { $regex: mes },
+                responsavel: analista
+            })
+
+            for (const proposta of dadosDoMesRn) {
+                const key = moment(proposta.dataConclusao).format('DD/MM/YYYY')
+
+                if (objRn[key]) {
+                    objRn[key].entrevistas += 1
+                } else {
+                    objRn[key] = {
+                        entrevistas: 1
+                    }
+                }
+            }
+
+            let totalRn = 0
+
+            for (const item of Object.entries(objRn)) {
+                producaoRn.push([
+                    item[0],
+                    item[1].entrevistas
+                ])
+
+                totalRn += item[1].entrevistas
+
+            }
+
+
+            let objUe = {}
+            let producaoUe = [
+                ['Dia', 'Quantidade']
+            ]
+
+            const dadosDoMesUe = await UrgenciasEmergencia.find({
+                dataConclusao: { $regex: mes },
+                analista: analista
+            })
+
+            for (const proposta of dadosDoMesUe) {
+                const key = moment(proposta.dataConclusao).format('DD/MM/YYYY')
+
+                if (objUe[key]) {
+                    objUe[key].entrevistas += 1
+                } else {
+                    objUe[key] = {
+                        entrevistas: 1
+                    }
+                }
+            }
+
+            let totalUe = 0
+
+            for (const item of Object.entries(objUe)) {
+                producaoUe.push([
+                    item[0],
+                    item[1].entrevistas
+                ])
+
+                totalUe += item[1].entrevistas
+
+            }
+            
+            return res.json({
+                producaoTele,
+                total,
+                houveDivergencia,
+                naoHouveDivergencia,
+                agendadas,
+                naoAgendadas,
+                primeiroContato,
+                segundoContato,
+                terceiroContato,
+                producaoRn,
+                totalRn,
+                producaoUe,
+                totalUe
             })
 
         } catch (error) {
