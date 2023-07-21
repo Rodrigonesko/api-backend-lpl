@@ -2304,9 +2304,8 @@ module.exports = {
 
             let objTele = {}
             let producaoTele = [
-                ['Dia', 'Quantidade']
+                ['Dia', 'Quantidade', 'Meta']
             ]
-
             let houveDivergencia = 0
             let naoHouveDivergencia = 0
 
@@ -2339,11 +2338,10 @@ module.exports = {
             for (const item of Object.entries(objTele)) {
                 producaoTele.push([
                     item[0],
-                    item[1].entrevistas
+                    item[1].entrevistas,
+                    22
                 ])
-
                 total += item[1].entrevistas
-
             }
 
             const result = await axios.get(`http://localhost:3002/rendimentoMensal/${mes}/${analista}`, {
@@ -2358,8 +2356,11 @@ module.exports = {
                 naoAgendadas,
                 primeiroContato,
                 segundoContato,
-                terceiroContato
+                terceiroContato,
+                arrPrazo
             } = result.data
+
+            console.log(arrPrazo);
 
             let objRn = {}
             let producaoRn = [
@@ -2429,7 +2430,7 @@ module.exports = {
                 totalUe += item[1].entrevistas
 
             }
-            
+
             return res.json({
                 producaoTele,
                 total,
@@ -2443,7 +2444,8 @@ module.exports = {
                 producaoRn,
                 totalRn,
                 producaoUe,
-                totalUe
+                totalUe,
+                arrPrazo
             })
 
         } catch (error) {

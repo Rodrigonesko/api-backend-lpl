@@ -1916,6 +1916,52 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    produtividadeMensal: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const find = await Proposta.find({
+                dataConclusao: { $regex: mes },
+                analista
+            })
+
+            let objProducao = {}
+            let producao = ['']
+
+            for (const item of find) {
+
+                const key = moment(item.dataConclusao).format('DD/MM/YYYY')
+
+                if (objProducao[key]) {
+                    objProducao[key].quantidade += 1
+                } else {
+                    objProducao[key] = {
+                        quantidade: 1
+                    }
+                }
+            }
+
+            for (const item of Object.entries(objProducao)) {
+                producao.push([
+                    item[0],
+                    item[1].quantidade,
+                    35
+                ])
+            }
+
+            return res.json({
+                producao
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 
 }
@@ -1948,3 +1994,17 @@ function ExcelDateToJSDate(serial) {
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
 }
 
+
+function calcularDiasUteis(dataInicio, dataFim, feriados) {
+    let diasUteis = 0;
+    let dataAtual = moment(dataInicio);
+
+    while (dataAtual.isSameOrBefore(dataFim, 'day')) {
+        if (dataAtual.isBusinessDay() && !feriados.some(feriado => feriado.isSame(dataAtual, 'day'))) {
+            diasUteis++;
+        }
+        dataAtual.add(1, 'day');
+    }
+
+    return diasUteis - 1;
+}
