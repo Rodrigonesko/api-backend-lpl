@@ -2344,7 +2344,7 @@ module.exports = {
                 total += item[1].entrevistas
             }
 
-            const result = await axios.get(`http://localhost:3002/rendimentoMensal/${mes}/${analista}`, {
+            const result = await axios.get(`${process.env.API_TELE}/rendimentoMensal/${mes}/${analista}`, {
                 withCredentials: true,
                 headers: {
                     Authorization: `Bearer ${req.cookies['token']}`

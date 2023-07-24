@@ -178,6 +178,24 @@ module.exports = {
             })
         }
     },
+
+    analistasRsd: async (req, res) => {
+        try {
+
+            const analistas = await User.find({
+                rsd: true
+            })
+
+            return res.json(analistas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     resetPassword: async (req, res) => {
         try {
 

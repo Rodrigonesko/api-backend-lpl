@@ -8,6 +8,7 @@ const userScheema = mongoose.Schema({
     firstAccess: String,
     enfermeiro: String,
     elegibilidade: String,
+    rsd: Boolean,
     horarioEntrada1: String,
     horarioSaida1: String,
     horarioEntrada2: String,
