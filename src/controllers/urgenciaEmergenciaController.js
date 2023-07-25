@@ -3,10 +3,8 @@ const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
 const User = mongoose.model('User')
 
 const moment = require('moment')
-const path = require('path')
 const fs = require('fs')
 const multer = require('multer')
-const os = require('os')
 const xlsx = require('xlsx')
 
 //Onde armazena o arquivo da urgencia e emergencia
@@ -591,23 +589,4 @@ function ExcelDateToJSDate(serial) {
     var minutes = Math.floor(total_seconds / 60) % 60;
 
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
-}
-
-function ajustarDataEHorario(data) {
-
-    if (data === undefined) {
-        return ''
-    }
-
-    const spaceSplit = data.split(' - ')
-    const dataSplit = spaceSplit[0].split('/')
-    const dia = dataSplit[0]
-    const mes = dataSplit[1]
-    const ano = dataSplit[2]
-    const horario = spaceSplit[1]
-
-    const dataCorrigida = `${ano}-${mes}-${dia} ${horario}`
-
-    return dataCorrigida
-
 }

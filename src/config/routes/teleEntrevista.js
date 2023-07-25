@@ -52,9 +52,4 @@ router.get('/teste/producao', teleEntrevistaController.mostrarDadosProducao2)
 router.get('/relatorioProducao', teleEntrevistaController.relatorioProducao)
 router.get('/rendimentoIndividualMensal/:mes/:analista', auth, teleEntrevistaController.rendimentoIndividualMensal)
 
-router.get('/migrarRet', teleEntrevistaController.migrarRet)
-router.get('/ajustarCodigosCids', teleEntrevistaController.ajustarCodigosCids)
-router.get('/ajustarEnfermeiro', teleEntrevistaController.ajustarEnfermeiros)
-router.get('/migrarFilial', teleEntrevistaController.migrarFilial)
-
 module.exports = router

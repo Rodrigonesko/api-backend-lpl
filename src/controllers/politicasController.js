@@ -133,6 +133,8 @@ module.exports = {
             
             const {id} = req.body
 
+            console.log(id);
+
             await Politica.updateOne({
                 _id: id
             }, {
@@ -142,6 +144,10 @@ module.exports = {
                         data: moment().format('YYYY-MM-DD HH:mm:ss')
                     }
                 }
+            })
+
+            return res.json({
+                msg: 'ok'
             })
 
         } catch (error) {

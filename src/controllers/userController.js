@@ -121,7 +121,7 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd } = req.body
 
             console.log(entrada1, saida1, entrada2, saida2, coren);
 
@@ -132,6 +132,7 @@ module.exports = {
                 horarioSaida1: saida1,
                 horarioEntrada2: entrada2,
                 horarioSaida2: saida2,
+                rsd,
                 atividadePrincipal,
                 coren
             })

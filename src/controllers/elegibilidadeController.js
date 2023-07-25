@@ -7,11 +7,11 @@ const PropostaManual = require('../models/Elegibilidade/PropostaElegibilidadeMan
 const CpfCancelado = require('../models/Elegibilidade/Cpfcancelado')
 const BlacklistPlano = require('../models/Elegibilidade/BlacklistPlanos')
 
+
 const path = require('path')
 const moment = require('moment')
 const fs = require('fs')
 const multer = require('multer')
-const os = require('os')
 const xlsx = require('xlsx')
 
 const storage = multer.diskStorage({
@@ -35,25 +35,6 @@ const storage = multer.diskStorage({
 })
 
 const uploadPropostas = multer({ storage }).single('file')
-
-const mysql = require('mysql');
-
-const connection = mysql.createConnection({
-    host: '10.0.0.71', // endereço do servidor do MySQL
-    user: 'adm', // usuário do MySQL
-    password: 'lpladm$1', // senha do MySQL
-    database: 'elegibilidade' // nome do banco de dados
-});
-
-// Conectar ao banco de dados
-connection.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao MySQL:', err);
-        return;
-    }
-    console.log('Conexão bem-sucedida ao MySQL!');
-});
-
 
 module.exports = {
 
@@ -1480,322 +1461,6 @@ module.exports = {
         }
     },
 
-    migrarBanco: async (req, res) => {
-
-        try {
-            connection.query("SELECT * FROM analise", async (err, rows) => {
-                if (err) {
-                    console.log(err);
-                    return
-                }
-
-                for (const item of rows) {
-
-                    if (item.enviadaUnder === 'Pré Processamento') {
-                        item.enviadaUnder = 'A iniciar'
-                    }
-
-                    var mapeamento = {
-                        Samantha: "Samantha Maciel Giazzon",
-                        Gerson: "Gerson Douglas",
-                        Djeinny: "Djeinny Carradore",
-                        Matheus: "Matheus Lopes",
-                        Daniele: "Daniele Silva",
-                        Vanessa: "Vanessa Passos da Silva",
-                        Barbara: "Bárbara Cristina Nunes",
-                        Claudia: "Cecilia Belli",
-                        Fernanda: "Fernanda Ribeiro",
-                        Denise: "Denise Gonçalves Vargas",
-                        Luciana: "Luciana Tavares",
-                        Jessica: "Jéssica Wachesk",
-                        Camila: "Camila Cristine Remus",
-                        Ana: "Ana Paula Brás",
-                        Giovana: "Giovana Santana",
-                        Allana: "Allana Silva",
-                        Hevellin: "Hevellin Santos",
-                        Eduarda: "Eduarda Mayworm",
-                        Isabelle: "Isabelle Silva",
-                        Sandra: "Sandra Santos",
-                        Michelle: "Michelle Jonsson"
-                    };
-
-                    var nomeAntigo = item.analistaResponsavel;
-                    if (mapeamento.hasOwnProperty(nomeAntigo)) {
-                        item.analistaResponsavel = mapeamento[nomeAntigo];
-                    }
-
-                    if (item.ligacao?.toLowerCase() === 'sim') {
-                        item.ligacao = true
-                    } else if (item.ligacao?.toLowerCase() === 'não' || item.ligacao?.toLowerCase() === 'nao') {
-                        item.ligacao = false
-                    } else {
-                        item.ligacao = undefined
-                    }
-
-                    if (item.documento_identificacao?.toLowerCase() === 'sim') {
-                        item.documento_identificacao = true
-                    } else if (item.documento_identificacao?.toLowerCase() === 'não' || item.documento_identificacao?.toLowerCase() === 'nao') {
-                        item.documento_identificacao = false
-                    } else {
-                        item.documento_identificacao = undefined
-                    }
-
-                    if (item.declaracao_associado_carteirinha?.toLowerCase() === 'sim') {
-                        item.declaracao_associado_carteirinha = true
-                    } else if (item.declaracao_associado_carteirinha?.toLowerCase() === 'não' || item.declaracao_associado_carteirinha?.toLowerCase() === 'nao') {
-                        item.declaracao_associado_carteirinha = false
-                    } else {
-                        item.declaracao_associado_carteirinha = undefined
-                    }
-
-                    let vinculadosSimNao = undefined
-
-                    if (item.vinculados) {
-                        vinculadosSimNao = true
-                    }
-
-                    if (item.plano_anterior?.toLowerCase() === 'sim') {
-                        item.plano_anterior = true
-                    } else if (item.plano_anterior?.toLowerCase() === 'não' || item.plano_anterior?.toLowerCase() === 'nao') {
-                        item.plano_anterior = false
-                    } else {
-                        item.plano_anterior = undefined
-                    }
-
-                    if (item.sisamil_deacordo?.toLowerCase() === 'sim') {
-                        item.sisamil_deacordo = true
-                    } else if (item.sisamil_deacordo?.toLowerCase() === 'não' || item.sisamil_deacordo?.toLowerCase() === 'nao') {
-                        item.sisamil_deacordo = false
-                    } else {
-                        item.sisamil_deacordo = undefined
-                    }
-
-                    if (item.site?.toLowerCase() === 'sim') {
-                        item.site = true
-                    } else if (item.site?.toLowerCase() === 'não' || item.site?.toLowerCase() === 'nao') {
-                        item.site = false
-                    } else {
-                        item.site = undefined
-                    }
-
-                    let fase1 = false
-
-                    if (item.finalizada_pre) {
-                        fase1 = true
-                    }
-
-
-                    const obj = {
-                        dataImportacao: ajustarData(item.dataImportacao),
-                        vigencia: item.inicioVigencia,
-                        proposta: item.proposta,
-                        statusMotor: item.statusMotor,
-                        status: item.enviadaUnder,
-                        status1Analise: item.status1analise,
-                        status2Analise: item.status2analise,
-                        status3Analise: item.status3analise,
-                        produto: item.produto,
-                        plano: item.plano,
-                        produtor: item.produtor,
-                        uf: item.uf,
-                        administradora: item.administradora,
-                        codCorretor: item.codCorretor,
-                        nomeCorretor: item.corretor,
-                        entidade: item.entidade,
-                        tipoVinculo: item.tipoVinculo,
-                        nome: item.nomeTitular,
-                        idade: item.idadeBeneficiario,
-                        numeroVidas: item.numeroVidas,
-                        valorMedico: item.valorMedico,
-                        valorDental: item.valorDental,
-                        valorTotal: item.valorTotal,
-                        primeiraDevolucao1: item.primeiraDevolucao1,
-                        primeiraDevolucao2: item.primeiraDevolucao2,
-                        primeiraDevolucao3: item.primeiraDevolucao3,
-                        primeiraDevolucao4: item.primeiraDevolucao4,
-                        reprotocolo1: item.reprotocolo1,
-                        reprotocolo2: item.reprotocolo2,
-                        reprotocolo3: item.reprotocolo3,
-                        segundoReprotocolo1: item.segundoReprotocolo1,
-                        segundoReprotocolo2: item.segundoReprotocolo2,
-                        segundoReprotocolo3: item.segundoReprotocolo3,
-                        observacoesDevolucao: item.segundoReprotocolo4,
-                        analista: item.analistaResponsavel,
-                        dataConclusao: item.finalizada ? ajustarData(item.finalizada) : undefined,
-                        ligacao: item.ligacao,
-                        prc: item.pontosDeAtencao,
-                        motivoCancelamento: item.motivoCancelamento,
-                        evidenciaFraude: item.evidenciaFraude,
-                        cpfCorretor: item.cpf_corretor,
-                        telefoneCorretor: item.telefone_corretor,
-                        nomeSupervisor: item.supervisor,
-                        cpfSupervisor: item.cpf_supervisor,
-                        telefoneSupervisor: item.telefone_supervisor,
-                        cpf: item.cpf_titular,
-                        planoAmil: item.plano_amil,
-                        dataInicioPlanoAmil: item.data_inicio_plano_amil,
-                        dataFimPlanoAmil: item.data_fim_plano_amil,
-                        custoPlanoAmil: item.custo_plano_amil,
-                        documentoIdentificacao: item.documento_identificacao,
-                        declaracaoAssociadoCarteirinha: item.declaracao_associado_carteirinha,
-                        vinculados: item.vinculados,
-                        vinculadosSimNao,
-                        planoAnterior: item.plano_anterior,
-                        faltaDoc: item.falta_doc,
-                        sisAmilDeacordo: item.sisamil_deacordo,
-                        site: item.site,
-                        contrato: item.contrato,
-                        analistaPreProcessamento: item.analista_1,
-                        dataConclusaoPre: item.finalizada_pre ? ajustarData(item.finalizada_pre) : undefined,
-                        observacoes: item.observacoes,
-                        categoriaCancelamento: item.categoria_cancelamento,
-                        fase1
-                    }
-
-                    await Proposta.create(obj)
-
-                }
-
-                return res.json({ msg: 'oi' })
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-
-    },
-
-    adicionarUniversidades: async (req, res) => {
-        try {
-
-            connection.query("SELECT * FROM blacklist_diplomas GROUP BY proposta", async function (err, result, fields) {
-                if (err) throw err;
-
-                for (const item of result) {
-                    await Proposta.updateOne({
-                        proposta: item.proposta
-                    }, {
-                        numeroRegistro: item.n_registro,
-                        universidade: item.universidade,
-                        curso: item.curso
-                    })
-
-                }
-
-
-                return res.json(result.length)
-            });
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    adicionarBlacklist: async (req, res) => {
-        try {
-
-            connection.query("SELECT * FROM analise WHERE enviadaUnder = 'Cancelada'", async function (err, result, fields) {
-                if (err) throw err;
-
-                for (const item of result) {
-
-                    await Blacklist.create({
-                        proposta: item.proposta,
-                        codCorretor: item.codCorretor,
-                        entidade: item.entidade,
-                        administradora: item.administradora,
-                        cpfCorretor: item.cpf_corretor,
-                        telefoneCorretor: item.telefone_corretor,
-                        nomeCorretor: item.corretor,
-                        nomeSupervisor: item.supervisor,
-                        cpfSupervisor: item.cpf_supervisor,
-                        telefoneSupervisor: item.telefone_supervisor,
-                        motivoCancelamento: item.motivoCancelamento,
-                        categoriaCancelamento: item.categoria_cancelamento,
-                        evidenciaFraude: item.evidenciaFraude
-                    })
-                }
-
-
-                return res.json(result.length)
-            });
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    migrarObservacoes: async (req, res) => {
-        try {
-
-            connection.query("SELECT * FROM agenda", async function (err, result, fields) {
-                if (err) throw err;
-
-                for (const item of result) {
-                    await Agenda.create({
-                        comentario: item.comentario,
-                        data: item.data,
-                        proposta: item.proposta
-                    })
-                }
-
-                res.json(result.length)
-
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    adicionarPropostaManual: async (req, res) => {
-        try {
-
-            connection.query("SELECT * FROM registros", async function (err, result, fields) {
-                if (err) throw err;
-
-                for (const item of result) {
-
-                    await PropostaManual.create({
-                        data: item.data,
-                        proposta: item.proposta,
-                        beneficiario: item.beneficiario,
-                        confirmacao: item.confirmacao,
-                        meioSolicitacao: item.meio_solicitacao,
-                        meioConfirmacao: item.meio_confirmacao,
-                        resultado: item.resultado,
-                        responsavel: item.responsavel,
-                        observacoes: item.observacoes,
-                        status: item.status,
-                        dataConclusao: item.finalizado,
-                        dataInclusao: item.data,
-                    })
-                }
-
-
-                return res.json(result.length)
-            });
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     planosBlacklist: async (req, res) => {
         try {
 
@@ -2089,34 +1754,6 @@ module.exports = {
 
 }
 
-function ajustarData(data) {
-    let split = data.split('/')
-    let dia = split[0]
-    let mes = split[1]
-    let ano = split[2]
-
-    return `${ano}-${mes}-${dia}`
-}
-
-function ExcelDateToJSDate(serial) {
-    var utc_days = Math.floor(serial - 25569);
-    var utc_value = utc_days * 86400;
-    var date_info = new Date(utc_value * 1000);
-
-    var fractional_day = serial - Math.floor(serial) + 0.0000001;
-
-    var total_seconds = Math.floor(86400 * fractional_day);
-
-    var seconds = total_seconds % 60;
-
-    total_seconds -= seconds;
-
-    var hours = Math.floor(total_seconds / (60 * 60));
-    var minutes = Math.floor(total_seconds / 60) % 60;
-
-    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
-}
-
 const feriados = [
     moment('2022-01-01'),
     moment('2022-04-21'),
@@ -2154,3 +1791,32 @@ function calcularDiasUteis(dataInicio, dataFim, feriados) {
 
     return diasUteis - 1;
 }
+
+function ajustarData(data) {
+    let split = data.split('/')
+    let dia = split[0]
+    let mes = split[1]
+    let ano = split[2]
+
+    return `${ano}-${mes}-${dia}`
+}
+
+function ExcelDateToJSDate(serial) {
+    var utc_days = Math.floor(serial - 25569);
+    var utc_value = utc_days * 86400;
+    var date_info = new Date(utc_value * 1000);
+
+    var fractional_day = serial - Math.floor(serial) + 0.0000001;
+
+    var total_seconds = Math.floor(86400 * fractional_day);
+
+    var seconds = total_seconds % 60;
+
+    total_seconds -= seconds;
+
+    var hours = Math.floor(total_seconds / (60 * 60));
+    var minutes = Math.floor(total_seconds / 60) % 60;
+
+    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+}
+

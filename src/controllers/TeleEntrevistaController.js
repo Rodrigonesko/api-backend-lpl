@@ -1815,88 +1815,6 @@ module.exports = {
         }
     },
 
-    migrarRet: async (req, res) => {
-        try {
-
-            const result = await DadosEntrevista.find()
-
-            console.log(result.length);
-
-            const arrAux = result.filter(proposta => {
-                return proposta.proposta.indexOf('Retrocedido') !== -1
-            })
-            const regex = /[^\d]/g;
-
-
-            arrAux.forEach(async proposta => {
-                const prop = proposta.proposta.replaceAll(' ', '').replaceAll('-', '').replaceAll('Retrocedido', '')
-
-                const result = await axios.put('http://localhost:3002/migrarRet', {
-                    proposta: prop,
-                    nome: proposta.nome
-                })
-
-                console.log(result.data);
-
-            })
-
-            return res.json(arrAux.length)
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    migrarBanco: async (req, res) => {
-
-        try {
-
-            const result = await axios.get(`http://10.0.121.55:3002/cancelarPropostasEmMassa`, {
-                withCredentials: true
-            })
-
-            const arr = result.data
-
-            arr.forEach(async e => {
-                const create = await DadosEntrevista.create({
-                    nome: e.nome,
-                    cpf: e.cpf,
-                    dataNascimento: e.dataNascimento,
-                    proposta: e.proposta,
-                    cancelado: true,
-                    divergencia: 'Sem Sucesso de Contato!',
-                    houveDivergencia: 'Não',
-                    dataEntrevista: moment().format('YYYY-MM-DD'),
-                    tipoContrato: e.tipoContrato,
-                    dataRecebimento: e.dataRecebimento,
-                    responsavel: 'Sem Sucesso de Contato!'
-                })
-            })
-
-            return res.json(result.data.length)
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    cancelarVigenciasVencidas: async (req, res) => {
-        try {
-
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     numeroCids: async (req, res) => {
         try {
 
@@ -2212,91 +2130,6 @@ module.exports = {
         }
     },
 
-    ajustarCodigosCids: async (req, res) => {
-        try {
-
-            const result = await DadosEntrevista.find()
-
-            for (const item of result) {
-                let codigosCids = ''
-                if (item.cids) {
-                    const split = item.cids.split('),')
-                    for (const cid of split) {
-                        codigosCids += `${cid.substring(0, 4)} - `
-                    }
-                    await DadosEntrevista.updateOne({
-                        _id: item._id
-                    }, {
-                        codigosCids
-                    })
-                    console.log(codigosCids);
-                }
-            }
-
-            return res.json({
-                msg: 'ok'
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    ajustarEnfermeiros: async (req, res) => {
-        try {
-
-            const propostas = await DadosEntrevista.find()
-
-            const result = await axios.post(`http://localhost:3002/ajustarEnfermeiro`, {
-                propostas
-            })
-
-            console.log(result);
-
-            return res.json({
-                msg: 'ok'
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    migrarFilial: async (req, res) => {
-        try {
-
-            const result = await axios.get('http://localhost:3002/show')
-
-            const { propostas } = result.data
-
-            for (const proposta of propostas) {
-                await DadosEntrevista.updateOne({
-                    proposta: proposta.proposta,
-                    nome: proposta.nome
-                }, {
-                    filial: proposta.filial
-                })
-                console.log(proposta.nome, proposta.proposta, proposta.filial);
-            }
-
-            return res.json({
-                msg: 'ok'
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     rendimentoIndividualMensal: async (req, res) => {
         try {
 
@@ -2455,5 +2288,4 @@ module.exports = {
             })
         }
     }
-
 }

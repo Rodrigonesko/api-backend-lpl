@@ -96,13 +96,12 @@ module.exports = {
                     }
 
                     const existeProposta = await Proposta.findOne({
-                        proposta,
+                        proposta
                     })
 
-                    if (!existeProposta || existeProposta.status === "Devolvida") {
-                        await Proposta.create(obj)
-                        qtd++
-                    }
+                    await Proposta.create(obj)
+                    qtd++
+
                 }
 
                 return res.status(200).json({
@@ -520,7 +519,7 @@ module.exports = {
             }
 
             for (const item of Object.entries(objPrazo)) {
-                
+
                 arrPrazo.push([
                     item[0],
                     item[1].d0,
