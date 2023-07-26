@@ -973,7 +973,9 @@ module.exports = {
 
     assumirPacote: async (req, res) => {
         try {
-            const { name, pacote } = req.body
+            const { pacote } = req.body
+
+            const name = req.user
 
             const pedidos = await Pedido.find({
                 pacote: pacote
@@ -1892,77 +1894,54 @@ module.exports = {
     devolverAmil: async (req, res) => {
         try {
 
-            const { id, motivoInativo } = req.body
+            const { id, motivoInativo } = req.body;
 
             console.log(id, motivoInativo);
 
-            const update = await Pedido.findOneAndUpdate({
-                _id: id
-            }, {
-                status: 'Finalizado',
-                fase: 'Finalizado',
-                statusGerencial: 'Devolvido Amil',
-                statusPadraoAmil: 'Devolvido Amil',
-                motivoInativo,
-                ativo: false,
-                analista: req.user
-            })
-
-            const buscaPorPacote = await Pedido.find({
-                pacote: update.pacote
-            });
-
-            let flag = 0
-
-            for (const item of buscaPorPacote) {
-                if (item.fase === 'Finalizado') {
-                    flag++
+            // Atualizar o pedido com as informações fornecidas
+            const update = await Pedido.findOneAndUpdate(
+                { _id: id },
+                {
+                    status: 'Finalizado',
+                    fase: 'Finalizado',
+                    statusGerencial: 'Devolvido Amil',
+                    statusPadraoAmil: 'Devolvido Amil',
+                    motivoInativo,
+                    ativo: false,
+                    analista: req.user,
                 }
+            );
 
-                if (buscaPorPacote.length === flag) {
-                    await Pedido.updateMany({
-                        pacote: update.pacote
-                    }, {
-                        statusPacote: 'Finalizado'
-                    })
-                }
+            // Encontrar todos os pedidos com o mesmo pacote do pedido atual
+            const buscaPorPacote = await Pedido.find({ pacote: update.pacote });
+
+            // Verificar se todos os pedidos do pacote estão finalizados
+            const isPacoteFinalizado = buscaPorPacote.every(item => item.fase === 'Finalizado');
+
+            if (isPacoteFinalizado) {
+                // Atualizar o statusPacote para 'Finalizado' de todos os pedidos no pacote
+                await Pedido.updateMany({ pacote: update.pacote }, { statusPacote: 'Finalizado' });
             }
 
-            let protocolos = []
-
-            for (const item of buscaPorPacote) {
-
-                const aux = await Pedido.findById({
-                    _id: item._id
-                })
-
-                if (protocolos.indexOf(aux.protocolo) === -1) {
-                    protocolos.push(aux.protocolo)
-                }
-
-            }
+            // Encontrar todos os protocolos relacionados aos pedidos do pacote
+            const protocolos = buscaPorPacote.map(item => item.protocolo);
 
             for (const protocolo of protocolos) {
-                const aux = await Pedido.find({
-                    protocolo: protocolo
-                })
-                let flagPro = 0
-                for (const obj of aux) {
-                    if (obj.fase === 'Finalizado') {
-                        flagPro++
-                    }
-                    if (aux.length === flagPro) {
-                        await Pedido.updateMany({
-                            protocolo: obj.protocolo
-                        }, {
-                            statusProtocolo: 'Finalizado'
-                        })
-                    }
+                // Encontrar todos os pedidos com o mesmo protocolo
+                const pedidosDoProtocolo = await Pedido.find({ protocolo: protocolo });
+
+                // Verificar se todos os pedidos do protocolo estão finalizados
+                const isProtocoloFinalizado = pedidosDoProtocolo.every(obj => obj.fase === 'Finalizado');
+
+                if (isProtocoloFinalizado) {
+                    // Atualizar o statusProtocolo para 'Finalizado' de todos os pedidos com o mesmo protocolo
+                    await Pedido.updateMany({ protocolo: protocolo }, { statusProtocolo: 'Finalizado' });
                 }
             }
 
+
             return res.status(200).json({
-                update
+                msg: 'ok'
             })
 
         } catch (error) {
