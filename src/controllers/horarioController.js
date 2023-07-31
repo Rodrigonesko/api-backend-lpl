@@ -286,8 +286,6 @@ module.exports = {
 
             console.log(responsavel, horarios, data);
 
-            const date = new Date(data)
-
             let horariosFiltrados = horarios.filter(e => {
                 return e != null
             })
@@ -301,6 +299,8 @@ module.exports = {
                             enfermeiro: responsavel
                         }, {
                             horario: e
+                        }, {
+                            nome: {$ne: 'Fechado'}
                         }
                     ]
                 }, {

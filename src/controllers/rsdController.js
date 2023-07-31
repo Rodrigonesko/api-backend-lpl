@@ -1135,7 +1135,9 @@ module.exports = {
     atualizarPedido: async (req, res) => {
         try {
 
-            const { pacote, protocolo, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
+            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
+
+            console.log(pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo);
 
             const pacoteBanco = await Pedido.findOne({  //Busca os pedidos daquele pacote
                 pacote: pacote
@@ -2356,6 +2358,91 @@ module.exports = {
             })
         }
     },
+
+    adicionarFormaPagamento: async (req, res) => {
+        try {
+
+            const { formaPagamento } = req.body
+
+            await FormaPagamento.create({
+                nome: formaPagamento
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    deleteFormaPagamento: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await FormaPagamento.deleteOne({
+                _id: id
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarStatusFinalizacao: async (req, res) => {
+        try {
+
+            const { finalizacao } = req.body
+
+            await StatusFinalizacao.create({
+                descricao: finalizacao
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    deleteStatusFinalizacao: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await StatusFinalizacao.deleteOne({
+                _id: id
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
 
     baixaAgd: async (req, res) => {
         try {

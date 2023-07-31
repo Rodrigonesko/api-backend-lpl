@@ -13,6 +13,8 @@ const dadosEntrevistaScheema = mongoose.Schema({
     tratamento: String,
     espectro: String,
     deficitAtencao: String,
+    desenvolvimentoCreche: String,
+    diagnosticoAutismo: String,
     preenchimentoDps: String,
     responsavel: String,
     patologias: String,
