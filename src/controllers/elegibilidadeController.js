@@ -1750,6 +1750,36 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    voltarProposta: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            const { proposta } = await Proposta.findOneAndUpdate({
+                _id: id
+            }, {
+                status: 'A iniciar'
+            })
+
+            await Agenda.create({
+                comentario: `O analista: ${req.user} voltou a proposta`,
+                analista: req.user,
+                proposta,
+                data: moment().format('YYYY-MM-DD HH:mm:ss')
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 
 }
