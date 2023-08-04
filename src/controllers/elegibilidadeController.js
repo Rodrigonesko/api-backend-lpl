@@ -1522,58 +1522,32 @@ module.exports = {
         try {
 
 
-            connection.query("SELECT * FROM analise", async function (err, result, fields) {
-                if (err) throw err;
+            const result = await Proposta.find()
 
-                let arrProd = {}
+            let arrProd = {}
 
-                for (const item of result) {
+            for (const item of result) {
 
-                    const key = `${item.analistaResponsavel}-${item.finalizada}`
-                    const keyPre = `${item.analista_1}-${item.finalizada_pre}`
-
-                    if (arrProd[key]) {
-                        arrProd[key].quantidade += 1
-                    } else {
-                        arrProd[key] = {
-                            analista: item.analistaResponsavel,
-                            data: item.finalizada,
-                            quantidade: 1,
-                            quantidadePre: 0,
-                            equivalente: 0
-                        }
+                const key = `${item.analista}-${item.dataConclusao}`
+                if (arrProd[key]) {
+                    arrProd[key].quantidade += 1
+                } else {
+                    arrProd[key] = {
+                        analista: item.analista,
+                        data: item.dataConclusao,
+                        quantidade: 1,
+                        ligacao: 0
                     }
-
-                    if (arrProd[keyPre]) {
-                        arrProd[keyPre].quantidadePre += 1
-                    } else {
-                        arrProd[keyPre] = {
-                            analista: item.analista_1,
-                            data: item.finalizada_pre,
-                            quantidade: 0,
-                            quantidadePre: 1,
-                            equivalente: 0
-                        }
-                    }
-
-                    // arrProd.push({
-                    //     analista: item.analistaResponsavel,
-
-                    // })
-
                 }
 
-                for (let key in arrProd) {
-
-                    const equivalente = arrProd[key].quantidade + (arrProd[key].quantidadePre / 2.5)
-
-                    arrProd[key].equivalente = Math.round(equivalente)
-
+                if (item.ligacao) {
+                    arrProd[key].ligacao += 1
                 }
 
-                return res.json(arrProd)
+            }
 
-            })
+            return res.json(arrProd)
+
 
         } catch (error) {
             console.log(error);

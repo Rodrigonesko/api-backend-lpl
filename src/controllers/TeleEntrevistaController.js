@@ -2287,5 +2287,185 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    ProducaoMensal: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const find = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes },
+                // idProposta: { $ne: undefined }
+            })
+
+            // for (const item of find) {
+            //     console.log(item.idProposta, item.responsavel);
+            // }
+
+            
+
+            let obj = {}
+
+            for (const item of find) {
+                if (obj[item.responsavel]) {
+                    obj[item.responsavel].total += 1
+                } else {
+                    obj[item.responsavel] = {
+                        total: 1,
+                        d0: 0,
+                        d1: 0,
+                        d2: 0,
+                        d3: 0,
+                        d4: 0
+                    }
+                }
+            }
+
+            const result = await axios.get(`${process.env.API_TELE}/producaoMensal/${mes}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
+            })
+
+            for (const item of result.data) {
+
+                const diasUteis = calcularDiasUteis(moment(item.dataRecebimento), moment(item.dataConclusao), feriados)
+
+                if (diasUteis === 0) {
+                    if (obj[item.enfermeiro]) {
+                        obj[item.enfermeiro].d0 += 1
+                    } else {
+                        obj[item.responsavel] = {
+                            total: 1,
+                            d0: 1,
+                            d1: 0,
+                            d2: 0,
+                            d3: 0,
+                            d4: 0
+                        }
+                    }
+                }
+
+                if (diasUteis === 1) {
+                    if (obj[item.enfermeiro]) {
+                        obj[item.enfermeiro].d1 += 1
+                    } else {
+                        obj[item.responsavel] = {
+                            total: 1,
+                            d0: 0,
+                            d1: 1,
+                            d2: 0,
+                            d3: 0,
+                            d4: 0
+                        }
+                    }
+                }
+
+                if (diasUteis === 2) {
+                    if (obj[item.enfermeiro]) {
+                        obj[item.enfermeiro].d2 += 1
+                    } else {
+                        obj[item.responsavel] = {
+                            total: 1,
+                            d0: 0,
+                            d1: 0,
+                            d2: 1,
+                            d3: 0,
+                            d4: 0
+                        }
+                    }
+                }
+
+                if (diasUteis === 3) {
+                    if (obj[item.enfermeiro]) {
+                        obj[item.enfermeiro].d3 += 1
+                    } else {
+                        obj[item.responsavel] = {
+                            total: 1,
+                            d0: 0,
+                            d1: 0,
+                            d2: 0,
+                            d3: 1,
+                            d4: 0
+                        }
+                    }
+                }
+
+                if (diasUteis >= 4) {
+                    if (obj[item.enfermeiro]) {
+                        obj[item.enfermeiro].d4 += 1
+                    } else {
+                        obj[item.responsavel] = {
+                            total: 1,
+                            d0: 0,
+                            d1: 0,
+                            d2: 0,
+                            d3: 0,
+                            d4: 1
+                        }
+                    }
+                }
+            }
+
+            for (const item of Object.entries(obj)) {
+
+                const totalDados = item[1].total
+                const totalApi = item[1].d0 + item[1].d1 + item[1].d2 + item[1].d3 + item[1].d4
+
+                console.log(totalDados, totalApi, item[0]);
+
+            }
+
+
+            return res.json({
+                total: find.length
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
+}
+
+const feriados = [
+    moment('2022-01-01'),
+    moment('2022-04-21'),
+    moment('2022-05-01'),
+    moment('2022-09-07'),
+    moment('2022-10-12'),
+    moment('2022-11-02'),
+    moment('2022-11-15'),
+    moment('2022-12-25'),
+    moment('2023-01-01'),
+    moment('2023-02-20'),
+    moment('2023-02-21'),
+    moment('2023-02-22'),
+    moment('2023-04-07'),
+    moment('2023-04-21'),
+    moment('2023-05-01'),
+    moment('2023-06-08'),
+    moment('2023-09-07'),
+    moment('2023-10-12'),
+    moment('2023-11-02'),
+    moment('2023-11-15'),
+    moment('2023-12-25')
+];
+
+function calcularDiasUteis(dataInicio, dataFim, feriados) {
+    let diasUteis = 0;
+    let dataAtual = moment(dataInicio);
+
+    while (dataAtual.isSameOrBefore(dataFim, 'day')) {
+        if (dataAtual.isBusinessDay() && !feriados.some(feriado => feriado.isSame(dataAtual, 'day'))) {
+            diasUteis++;
+        }
+        dataAtual.add(1, 'day');
+    }
+
+    return diasUteis - 1;
 }

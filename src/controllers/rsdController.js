@@ -2624,9 +2624,19 @@ module.exports = {
                             analista: pedido.analista,
                             data: dataConclusao,
                             quantidade: 1,
-                            anexos: 0
+                            indeferidos: 0,
+                            cancelados: 0
                         }
                     }
+
+                    if (pedido.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento') {
+                        arrProd[key].indeferidos += 1
+                    }
+
+                    if (pedido.statusGerencial === 'Protocolo Cancelado') {
+                        arrProd[key].cancelados += 1
+                    }
+
                 }
             }
 
