@@ -59,6 +59,7 @@ module.exports = {
 
                 const email = e['EMAIL BENEFICIARIO']
 
+                const analistaAmil = e.ANALISTA
 
                 const status = 'Em andamento'
 
@@ -82,11 +83,11 @@ module.exports = {
                     telefones,
                     email,
                     status,
-                    faturado: 'Não faturado'
+                    faturado: 'Não faturado',
+                    analistaAmil
                 }
 
-
-                const newRn = await Rn.create(resultado)
+                await Rn.create(resultado)
 
                 quantidade++
 
@@ -112,8 +113,6 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-
-
     },
 
     search: async (req, res) => {
@@ -207,7 +206,6 @@ module.exports = {
                 }
             }
 
-
             return res.json(resp)
         } catch (error) {
             return res.status(500).json({
@@ -247,7 +245,7 @@ module.exports = {
                     item.respostaBeneficiario = 'Não'
                 }
 
-                const result = await Rn.findOneAndUpdate({
+                await Rn.findOneAndUpdate({
                     proposta: item.proposta
                 }, {
                     respostaBeneficiario: item.respostaBeneficiario
@@ -316,7 +314,7 @@ module.exports = {
 
             console.log(id);
 
-            const result = await Rn.deleteOne({
+            await Rn.deleteOne({
                 _id: id
             })
 
@@ -336,8 +334,6 @@ module.exports = {
         try {
             const { id } = req.body
 
-            console.log(id);
-
             const dadosProposta = await Rn.findById({
                 _id: id
             })
@@ -350,7 +346,7 @@ module.exports = {
 
             console.log(dataEntrevista, horario);
 
-            const atualizarHorarios = await Horario.findOneAndUpdate({
+            await Horario.findOneAndUpdate({
                 $and: [
                     {
                         dia: dataEntrevista
