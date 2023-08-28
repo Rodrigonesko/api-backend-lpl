@@ -488,7 +488,8 @@ module.exports = {
             const { id } = req.body
 
             const result = await DadosEntrevista.findByIdAndUpdate({
-                _id: id
+                _id: id,
+                quemImplantou: req.user
             }, {
                 implantado: 'Sim'
             })

@@ -456,12 +456,26 @@ module.exports = {
 
             const { analista, entidade, status, vigencia, fase } = req.query
 
-            let propostas = await Proposta.find({
-                analista: { $regex: analista },
-                entidade: { $regex: entidade },
-                vigencia: { $regex: vigencia },
-                status: { $regex: status },
-            }).sort('vigencia')
+            console.log("analista: " + analista, "entidade: " + entidade, "status: " + status, "vigencia: " + vigencia, "fase: " + fase);
+
+            let propostas
+
+            if (status === 'Análise de Documentos') {
+                propostas = await Proposta.find({
+                    entidade,
+                    status
+                }).sort('vigencia')
+
+            } else {
+                propostas = await Proposta.find({
+                    analista: { $regex: analista },
+                    entidade: { $regex: entidade },
+                    vigencia: { $regex: vigencia },
+                    status: { $regex: status },
+                }).sort('vigencia')
+            }
+
+
 
             if (fase === 'Analise') {
                 propostas = propostas.filter(e => {

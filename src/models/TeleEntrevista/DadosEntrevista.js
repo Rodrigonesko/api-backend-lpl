@@ -72,7 +72,8 @@ const dadosEntrevistaScheema = mongoose.Schema({
     dataRecebimento: String,
     entrevistaQualidade: Boolean,
     filial: String,
-    idProposta: String
+    idProposta: String,
+    quemImplantou: String
 }, {
     timestamps: true
 })
