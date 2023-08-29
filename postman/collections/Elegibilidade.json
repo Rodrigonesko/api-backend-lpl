@@ -1,0 +1,1069 @@
+{
+	"info": {
+		"_postman_id": "9e069dc8-04ff-4312-8c5f-a62451b90bc0",
+		"name": "Elegibilidade",
+		"description": "Rotas para a célula da Elegibilidade",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-9e069dc8-04ff-4312-8c5f-a62451b90bc0"
+	},
+	"item": [
+		{
+			"name": "Retorna todas as propostas",
+			"id": "a91dcfb3-442a-4066-9454-9424278f14b3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/show",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"show"
+					]
+				},
+				"description": "Retorna todas as propostas"
+			},
+			"response": []
+		},
+		{
+			"name": "Upload de propostas",
+			"id": "21062c03-4713-48cb-a69b-75c70e02224b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/upload",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"upload"
+					]
+				},
+				"description": "Mande um arquivo txt ou excel para essa rota para ler os dados e popular e atualizar o banco de dados"
+			},
+			"response": []
+		},
+		{
+			"name": "Retorna propostas não atribuidas",
+			"id": "3e5d5d7e-f8a5-40b2-8ccc-611d1670fcaa",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/propostas/analiseDoc",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"propostas",
+						"analiseDoc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atribui analista para primeira fase",
+			"id": "1903df60-b433-4fd1-a82b-c86fae593b46",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"idProposta\",\r\n    \"analista\": \"novoAnalista\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/atribuir/preProcessamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"atribuir",
+						"preProcessamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Informações da proposta",
+			"id": "e71286b5-3542-47a1-896a-2257a10a8e3b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/infoProposta/:id",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"infoProposta",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtro de propostas baseada no status",
+			"id": "49259c55-9115-4cac-9145-b005bec36216",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/propostas/:status/:analista",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"propostas",
+						":status",
+						":analista"
+					],
+					"variable": [
+						{
+							"key": "status",
+							"value": "Em andamento"
+						},
+						{
+							"key": "analista",
+							"value": "Fernanda Ribeiro"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtro propostas",
+			"id": "d00c0e79-5e81-42c8-8ab0-1499b91a0846",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/proposta/filtroAnalise?analista=&entidade&status&fase&vigencia",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"proposta",
+						"filtroAnalise"
+					],
+					"query": [
+						{
+							"key": "analista",
+							"value": ""
+						},
+						{
+							"key": "entidade",
+							"value": null
+						},
+						{
+							"key": "status",
+							"value": null
+						},
+						{
+							"key": "fase",
+							"value": null,
+							"type": "text"
+						},
+						{
+							"key": "vigencia",
+							"value": null,
+							"type": "text"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retorna entidades baseada nos status",
+			"id": "92c47441-8538-460a-9466-566e3d9bd297",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/entidades/:status",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"entidades",
+						":status"
+					],
+					"variable": [
+						{
+							"key": "status",
+							"value": "Em andamento"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atribuir analista",
+			"id": "cab9b10e-caf2-4be7-b74c-58fbfeaa22d1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"analista\": \"Rodrigo\",\r\n    \"id\": \"valor_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/atribuir/analise",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"atribuir",
+						"analise"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtro propostas",
+			"id": "f24004ba-1b34-457a-aeda-17925e9063bc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/propostas/:status/proposta/:proposta",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"propostas",
+						":status",
+						"proposta",
+						":proposta"
+					],
+					"variable": [
+						{
+							"key": "status",
+							"value": "Andamento"
+						},
+						{
+							"key": "proposta",
+							"value": "19"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status andamento",
+			"id": "93d600e0-fe76-470a-b349-acf927aba771",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/proposta/alterarStatus",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"proposta",
+						"alterarStatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Concluir fase 1",
+			"id": "f8d29b54-54d5-48e6-acd4-994f68ae4e17",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\",\r\n    \"dataUpdate\": {\r\n        \"nomeCorretor\": \"valor_nome\",\r\n        \"...\": \"...\"\r\n    },\r\n    \"concluir\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/proposta/fase1",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"proposta",
+						"fase1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Salvar Informações fase 2",
+			"id": "cf0f2ec2-3b93-4679-a54f-36168f1038d3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\",\r\n    \"dataUpdate\": {\r\n        \"objeto\": \"valorObjeto\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/proposta/fase2",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"proposta",
+						"fase2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agenda",
+			"id": "14c50485-bbea-4f97-84da-7371c1c7a68e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\",\r\n    \"comentario\": \"valor_comentario\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/agenda/comentario",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"agenda",
+						"comentario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agenda",
+			"id": "e50147fe-3848-4a07-a891-28e3f6b15245",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/agenda/:id",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"agenda",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "valor_id"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agenda",
+			"id": "f0997d5b-cdd4-448e-a695-1b112789fc70",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/agenda/:id",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"agenda",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "id_a_deletar"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Prcs",
+			"id": "f66c3ee6-4ca4-4023-992e-3b8cf9767416",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/prc",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"prc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar Under",
+			"id": "6818a103-79cf-4601-8e87-21accfaaf567",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\",\r\n    \"erroSistema\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/enviarUnder",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"enviarUnder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar Cancelamento",
+			"id": "0ee19bf8-5802-41a5-a9e7-6529cbb7f658",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\",\r\n    \"motivoCancelamento\": \"valor_motivo\",\r\n    \"categoriaCancelamento\": \"valor_categoria\",\r\n    \"evidencia\": \"evidencia\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/enviarFaseCancelamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"enviarFaseCancelamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Devolver",
+			"id": "6bf35f1a-c4d5-4823-8f83-32203900cad5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\",\r\n    \"motivos\": [\"1\", \"2\", \"3\", \"4\"],\r\n    \"observacoes\": \"observacoes\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/devolver",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"devolver"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancelar",
+			"id": "b3c87859-b999-49d8-b867-b4d52a60423c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/cancelar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"cancelar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancelar CPF corretor",
+			"id": "e38ff6e4-badb-4d18-bbe4-bd36b894c78d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dados\": {\r\n        \"objeto\": \"objeto\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegiblidade/cancelarCpf",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegiblidade",
+						"cancelarCpf"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consulta CPF",
+			"id": "aaf0a43e-9031-4f86-8b3a-75a28660aed8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/consultaCpf/:cpf",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"consultaCpf",
+						":cpf"
+					],
+					"variable": [
+						{
+							"key": "cpf",
+							"value": "valor_cpf"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Producao por data",
+			"id": "84665aac-b0ce-436f-b2af-9810732e54c3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/producao/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"producao",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": "2023-06-05"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report",
+			"id": "e7e38173-34da-4fd7-b23a-1e6c4ea72140",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/report",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"report"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Propostas Corretor",
+			"id": "4ffb2bfc-97ae-4c7b-8276-76878187003c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/corretor/:corretor",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"corretor",
+						":corretor"
+					],
+					"variable": [
+						{
+							"key": "corretor",
+							"value": "nome_corretor"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Blacklist",
+			"id": "7279b08a-4750-4b50-945e-fcaefa175e36",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/blacklist",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"blacklist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registro Proposta",
+			"id": "1a7de6c6-c068-44a7-8570-1e05746899e6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dadosProposta\": {\r\n        \"objeto\": \"objeto\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/registrar/proposta",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"registrar",
+						"proposta"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Propostas Registradas",
+			"id": "aa4c2ac8-01fe-4828-9215-d281d267a842",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/show/propostasManual",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"show",
+						"propostasManual"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Propostas Registradas Andamento",
+			"id": "4e1153f0-2490-4b3e-adec-39e2711917a8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/show/propostaManual/andamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"show",
+						"propostaManual",
+						"andamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adicionar Diploma",
+			"id": "1dd9e98c-7392-44dc-978a-cae7cb2fa57a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dados\": {\r\n        \"univsersidade\": \"\",\r\n        \"curso\": \"\",\r\n        \"numeroRegistro\": \"\",\r\n        \"id\": \"valor_id\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/salvarDiploma",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"salvarDiploma"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscae diplomas",
+			"id": "9c692ae1-bf1a-4646-8cd4-0b390c46b461",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dados\": {\r\n        \"universidade\": \"\",\r\n        \"curso\": \"\",\r\n        \"numeroRegistro\": \"\",\r\n        \"id\": \"valor_id\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/buscarDiploma",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"buscarDiploma"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Universidades",
+			"id": "9bc618bd-28a1-4503-bc3a-f532b591767d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/universidades",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"universidades"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cursos",
+			"id": "65d8b837-7063-444b-9008-0271f2c08708",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/cursos",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"cursos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Concluir proposta registrada",
+			"id": "612b3fb0-bf2a-46df-a5ed-e1f99d6c9bd5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"valor_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/concluirPropostaManual",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"concluirPropostaManual"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Divergencias",
+			"id": "b6779e91-3e7e-4128-a3e3-806e487adbd4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"contentType": "multipart/form-data",
+							"src": "/C:/Users/rodrigo_onesko/Desktop/CMC_REL_TXT_ACOMP_PROP_ADESAO28032023_075902.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/elegibilidade/uploadDivergencias",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"elegibilidade",
+						"uploadDivergencias"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
