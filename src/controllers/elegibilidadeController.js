@@ -972,7 +972,6 @@ module.exports = {
                     primeiraDevolucao1: 'Cancelada',
                     status,
                     dataConclusao: moment().format('YYYY-MM-DD'),
-                    analista: req.user
                 };
             } else if (proposta.status3Analise || proposta.status2Analise) {
                 camposAtualizados = {
@@ -980,16 +979,13 @@ module.exports = {
                     segundoReprotocolo1: 'Cancelada',
                     status,
                     dataConclusao: moment().format('YYYY-MM-DD'),
-                    analista: req.user
                 };
             } else if (proposta.status1Analise) {
                 camposAtualizados = {
                     status2Analise: 'Cancelada',
                     reprotocolo1: 'Cancelada',
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD'),
-                    analista: req.user
-                };
+                    dataConclusao: moment().format('YYYY-MM-DD'),                };
             }
 
             if (Object.keys(camposAtualizados).length > 0) {
@@ -1013,8 +1009,6 @@ module.exports = {
                     evidenciaFraude: proposta.evidenciaFraude
                 })
             }
-
-
 
             return res.json({ msg: 'ok' })
 

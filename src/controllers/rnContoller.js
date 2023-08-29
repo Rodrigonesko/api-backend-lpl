@@ -129,6 +129,7 @@ module.exports = {
             return res.json(rn)
 
         } catch (error) {
+            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
@@ -138,6 +139,7 @@ module.exports = {
     update: async (req, res) => {
         try {
             const data = req.body
+
 
             // console.log(data);
 
@@ -154,9 +156,13 @@ module.exports = {
                 email: data.email
             })
 
+            console.log(rn);
+
+
             return res.status(200).json(rn)
 
         } catch (error) {
+            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
@@ -259,7 +265,6 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-
             return res.status(500).json({
                 error: "Internal server error.",
                 error
@@ -510,6 +515,30 @@ module.exports = {
             return res.json({
                 msg: 'ok'
             })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    filter: async (req, res) => {
+        try {
+
+            const { pesquisa } = req.params
+
+            const rns = await Rn.find({
+                $or: [
+                    { beneficiario: { $regex: pesquisa } },
+                    { mo: { $regex: pesquisa } },
+                    { proposta: { $regex: pesquisa } },
+                    { pedido: { $regex: pesquisa } }
+                ]
+            })
+
+            return res.json(rns)
 
         } catch (error) {
             console.log(error);

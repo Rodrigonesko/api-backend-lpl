@@ -22,5 +22,6 @@ router.get('/concluidas', auth, rnContoller.concluidas)
 router.put('/cancelar', auth, rnContoller.cancelar)
 router.put('/tentativaContato', auth, rnContoller.tentativaContato)
 router.put('/duplicada', auth, rnContoller.duplicada)
+router.get('/filter/:pesquisa', auth, rnContoller.filter)
 
 module.exports = router;
