@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "e06afc61-9eeb-4129-8c0d-c838481752d7",
+		"name": "Rotas publicas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-e06afc61-9eeb-4129-8c0d-c838481752d7"
+	},
+	"item": [
+		{
+			"name": "Index",
+			"id": "e14f2500-e3b8-409e-8a31-fd6635036f44",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}",
+					"host": [
+						"{{SERVER_IP}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"id": "f8e4948d-ff89-4e9e-8900-f66c237c127e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"rodrigo_onesko@hotmail.com\",\r\n    \"password\": \"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/login",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"id": "bb87f0de-181e-43e1-a998-4d8af6f4c960",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/logout",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

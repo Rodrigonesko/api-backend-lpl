@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "ee46b737-7d44-4883-9345-2b861c61be9c",
+		"name": "API TELE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-ee46b737-7d44-4883-9345-2b861c61be9c"
+	},
+	"item": [
+		{
+			"name": "DevolverPropostas",
+			"id": "a498172d-4793-4c39-99cc-7a15b40e88ad",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ29fb25lc2tvQGhvdG1haWwuY29tIiwiYWNjZXNzTGV2ZWwiOiIxIiwiaWF0IjoxNjg3MTc5NDYwLCJleHAiOjE2ODcyMjI2NjB9.eKq6oltxtsk9BP0y3oNneGBuW9EOKZFELLAARwlUQlQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{TELE_API}}/devolverPropostas",
+					"host": [
+						"{{TELE_API}}"
+					],
+					"path": [
+						"devolverPropostas"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

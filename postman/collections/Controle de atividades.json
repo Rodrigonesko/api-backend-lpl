@@ -1,0 +1,205 @@
+{
+	"info": {
+		"_postman_id": "69357a1d-a631-4475-a809-a0779cd59f76",
+		"name": "Controle de atividades",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-69357a1d-a631-4475-a809-a0779cd59f76"
+	},
+	"item": [
+		{
+			"name": "Report",
+			"id": "3b0e8e7c-5662-4872-84fc-b0c1b87c7367",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/controleAtividade/report",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"controleAtividade",
+						"report"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andamento",
+			"id": "de194703-46a6-4e54-a589-a6430712798b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/controleAtividade/andamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"controleAtividade",
+						"andamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atual",
+			"id": "bb39f342-dab0-4790-9c0f-16478537fa40",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/controleAtividade/atual",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"controleAtividade",
+						"atual"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Iniciar atividade padrão",
+			"id": "65f45a8a-5aec-4ff4-9035-2108868a7d40",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"nome_usuario\" //Coloque um nome de usuário que exista\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/controleAtividade/iniciarPadrao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"controleAtividade",
+						"iniciarPadrao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assumir nova atividade",
+			"id": "9bb55b00-a089-41a6-ad5c-70319c0766d6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"atividade\": \"Sistemas\" //Nova atividade em que será relacionada ao usuário\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/controleAtividade/assumir",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"controleAtividade",
+						"assumir"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Encerrar atividade em andamento",
+			"id": "87291f82-5998-4c54-9ad6-d6175bd813a8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/controleAtividade/encerrar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"controleAtividade",
+						"encerrar"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "50f66fb0-ae45-48af-930e-799f7b8f23f9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5fc4b3b1-917b-4270-8282-6d23f9e808b4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "da7cb342-5390-4834-8cfa-e52fa8ed23f3",
+			"key": "API_ADDRESS",
+			"value": "http://10.0.0.71:3001",
+			"type": "string"
+		},
+		{
+			"id": "44b102ef-f624-4833-afe2-c3cf934df4c6",
+			"key": "LOCAL_ADDRESS",
+			"value": "http://10.0.121.55:3001",
+			"type": "string"
+		}
+	]
+}
