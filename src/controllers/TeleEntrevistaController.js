@@ -428,7 +428,8 @@ module.exports = {
                 _id: id
             }, {
                 anexadoSisAmil: 'Anexado',
-                quemAnexou: req.user
+                quemAnexou: req.user,
+                dataAnexado: moment().format('YYYY-MM-DD')
             })
 
             return res.status(200).json(
@@ -459,7 +460,9 @@ module.exports = {
             const result = await DadosEntrevista.findByIdAndUpdate({
                 _id: id
             }, {
-                implantacao: 'Sim'
+                implantacao: 'Sim',
+                dataMandouImplantacao: moment().format('YYYY-MM-DD'),
+                quemMandouImplantacao: req.user
             })
 
             console.log(result);
@@ -2304,7 +2307,7 @@ module.exports = {
             //     console.log(item.idProposta, item.responsavel);
             // }
 
-            
+
 
             let obj = {}
 
@@ -2423,6 +2426,29 @@ module.exports = {
             return res.json({
                 total: find.length
             })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    reportAnexos: async (req, res) => {
+        try {
+
+            const { data } = req.params
+
+            const result = await Propostas.find({
+                $or: [
+                    { dataAnexado: data },
+                    { dataMandouImplantacao: data },
+                    { dataImplantado: data }
+                ]
+            })
+
+            return res.json(result)
 
         } catch (error) {
             console.log(error);
