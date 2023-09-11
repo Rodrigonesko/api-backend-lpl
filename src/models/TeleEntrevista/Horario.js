@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const horariosSCheema = mongoose.Schema({
+const horariosSCheema = new mongoose.Schema({
     enfermeiro: String,
     dia: String,
     horario: String,

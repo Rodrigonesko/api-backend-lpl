@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const statusPedidoScheema = mongoose.Schema({
+const statusPedidoScheema = new mongoose.Schema({
     descricao: String,
     ativo: Boolean
 })

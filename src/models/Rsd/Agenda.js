@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const AgendaScheema = mongoose.Schema({
+const AgendaScheema = new mongoose.Schema({
     idPacote: String,
     usuario: String,
     tipo: String,

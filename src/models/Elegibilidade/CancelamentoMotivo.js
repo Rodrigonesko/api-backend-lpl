@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const cancelamentosScheema = mongoose.Schema({
+const cancelamentosScheema = new mongoose.Schema({
     descricao: String
 })
 

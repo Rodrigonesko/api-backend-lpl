@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const scheme = mongoose.Schema({
+const scheme = new mongoose.Schema({
     obesidade: Boolean,
     autismo: Boolean,
     cronicos: Boolean,

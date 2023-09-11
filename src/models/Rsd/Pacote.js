@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const pacoteScheema = mongoose.Schema({
+const pacoteScheema = new mongoose.Schema({
     codigo: String,
     dataSla: String,
     ativo: Boolean,

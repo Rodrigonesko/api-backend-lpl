@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const agendaElegiScheema = mongoose.Schema({
+const agendaElegiScheema = new mongoose.Schema({
     comentario: String,
     analista: String,
     proposta: String,

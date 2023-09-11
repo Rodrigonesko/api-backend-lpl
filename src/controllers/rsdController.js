@@ -2657,6 +2657,10 @@ module.exports = {
 
             const { mes, analista } = req.params
 
+            const findMelhor = await Pedido.find({
+                dataConclusao: {$regex: mes}
+            })
+
             const find = await Pedido.find({
                 dataConclusao: { $regex: mes },
                 analista

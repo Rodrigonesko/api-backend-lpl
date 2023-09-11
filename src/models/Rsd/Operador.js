@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const OperadorScheema = mongoose.Schema({
+const OperadorScheema = new mongoose.Schema({
     descricao: String,
     sla: String,
     ativo: Boolean

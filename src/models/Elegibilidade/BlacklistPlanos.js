@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const scheema = mongoose.Schema({
+const scheema = new mongoose.Schema({
     plano: String
 }, {
     timestamps: true

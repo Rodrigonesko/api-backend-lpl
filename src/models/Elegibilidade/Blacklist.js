@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const blacklistScheema = mongoose.Schema({
+const blacklistScheema = new mongoose.Schema({
     proposta: String,
     codCorretor: String,
     entidade: String,

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const propostaScheema = mongoose.Schema({
+const propostaScheema = new mongoose.Schema({
     dataRecebimento: String,
     proposta: String,
     administradora: String,

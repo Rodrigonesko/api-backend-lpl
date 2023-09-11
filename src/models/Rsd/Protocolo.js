@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const protocoloScheema = mongoose.Schema({
+const protocoloScheema = new mongoose.Schema({
     numero: String,
     mo: String,
     dataSolicitacao: Date,

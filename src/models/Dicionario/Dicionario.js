@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const dicionarioScheema = mongoose.Schema({
+const dicionarioScheema = new mongoose.Schema({
     palavra: String
 })
 

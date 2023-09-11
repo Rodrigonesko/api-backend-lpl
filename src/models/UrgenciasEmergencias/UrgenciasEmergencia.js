@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const UrgenciaEmergenciaScheema = mongoose.Schema({
+const UrgenciaEmergenciaScheema = new mongoose.Schema({
     mes: String,
     data: String,
     numAssociado: String,

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const formaPagamento = mongoose.Schema({
+const formaPagamento = new mongoose.Schema({
     nome: String
 })
 

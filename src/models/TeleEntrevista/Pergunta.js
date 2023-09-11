@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const perguntasScheema = mongoose.Schema({
+const perguntasScheema = new mongoose.Schema({
     pergunta: String,
     formulario: String,
     categoria: String,

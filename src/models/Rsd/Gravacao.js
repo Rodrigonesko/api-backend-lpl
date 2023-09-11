@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const gravacaoScheema = mongoose.Schema({
+const gravacaoScheema = new mongoose.Schema({
     caminho: String,
     usuario: String,
     arquivo: String,

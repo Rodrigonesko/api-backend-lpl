@@ -2419,9 +2419,7 @@ module.exports = {
                 const totalApi = item[1].d0 + item[1].d1 + item[1].d2 + item[1].d3 + item[1].d4
 
                 console.log(totalDados, totalApi, item[0]);
-
             }
-
 
             return res.json({
                 total: find.length

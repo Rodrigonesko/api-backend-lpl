@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const statusFinalizacaoScheema = mongoose.Schema({
+const statusFinalizacaoScheema = new mongoose.Schema({
     descricao: String
 }, {
     timestamps: true
