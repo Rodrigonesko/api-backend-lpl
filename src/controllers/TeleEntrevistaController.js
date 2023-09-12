@@ -2139,6 +2139,36 @@ module.exports = {
 
             const { mes, analista } = req.params
 
+            const findMelhor = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes }
+            })
+
+            const analistasContagem = {}
+
+            for (const proposta of findMelhor) {
+                if (proposta.responsavel === 'Sem Sucesso de Contato!') {
+                    continue
+                }
+                const analista = proposta.responsavel
+                if (analistasContagem[analista]) {
+                    analistasContagem[analista]++
+                } else {
+                    analistasContagem[analista] = 1
+                }
+            }
+
+            let analistaMaisConclusoes = null;
+            let maxConclusoes = 0;
+
+            for (const analista in analistasContagem) {
+                if (analistasContagem[analista] > maxConclusoes) {
+                    analistaMaisConclusoes = analista;
+                    maxConclusoes = analistasContagem[analista];
+                }
+            };
+
+            console.log(analistaMaisConclusoes);
+
             let objTele = {}
             let producaoTele = [
                 ['Dia', 'Quantidade', 'Meta']
@@ -2268,6 +2298,45 @@ module.exports = {
 
             }
 
+            const findComparativo = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes },
+                $or: [
+                    { responsavel: analista },
+                    { responsavel: analistaMaisConclusoes }
+                ]
+            })
+
+            const objComparativo = {}
+            const arrComparativo = [['Data', 'Eu', 'Melhor']]
+
+            for (const item of findComparativo) {
+                const key = moment(item.dataEntrevista).format('DD/MM/YYYY');
+                const isAnalista = item.responsavel === analista;
+                const entry = objComparativo[key] || { responsavel: 0, melhor: 0 };
+
+                objComparativo[key] = {
+                    responsavel: isAnalista ? entry.responsavel + 1 : entry.responsavel,
+                    melhor: isAnalista ? entry.melhor : entry.melhor + 1,
+                };
+            }
+
+            for (const item of Object.entries(objComparativo)) {
+
+                arrComparativo.push([
+                    item[0],
+                    item[1].responsavel,
+                    item[1].melhor,
+                ])
+            }
+
+            arrComparativo.sort((a, b) => {
+                const dateA = new Date(a[0].split('/').reverse().join('-'));
+                const dateB = new Date(b[0].split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            console.log(arrComparativo);
+
             return res.json({
                 producaoTele,
                 total,
@@ -2282,7 +2351,8 @@ module.exports = {
                 totalRn,
                 producaoUe,
                 totalUe,
-                arrPrazo
+                arrPrazo,
+                arrComparativo
             })
 
         } catch (error) {
@@ -2300,14 +2370,7 @@ module.exports = {
 
             const find = await DadosEntrevista.find({
                 dataEntrevista: { $regex: mes },
-                // idProposta: { $ne: undefined }
             })
-
-            // for (const item of find) {
-            //     console.log(item.idProposta, item.responsavel);
-            // }
-
-
 
             let obj = {}
 

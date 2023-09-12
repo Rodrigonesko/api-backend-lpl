@@ -7,7 +7,8 @@ const Scheema = new mongoose.Schema({
     modeloSolicitado: String,
     startDate: String,
     endDate: String,
-    status: String
+    status: String,
+    periodo: String
 })
 
 const VacationRequest = mongoose.model('VacationRequest', Scheema)

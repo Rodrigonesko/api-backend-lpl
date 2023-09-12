@@ -2658,8 +2658,29 @@ module.exports = {
             const { mes, analista } = req.params
 
             const findMelhor = await Pedido.find({
-                dataConclusao: {$regex: mes}
+                dataConclusao: { $regex: mes }
             })
+
+            const analistasContagem = {}
+
+            for (const pedido of findMelhor) {
+                const analista = pedido.analista
+                if (analistasContagem[analista]) {
+                    analistasContagem[analista]++
+                } else {
+                    analistasContagem[analista] = 1
+                }
+            }
+
+            let analistaMaisConclusoes = null;
+            let maxConclusoes = 0;
+
+            for (const analista in analistasContagem) {
+                if (analistasContagem[analista] > maxConclusoes) {
+                    analistaMaisConclusoes = analista;
+                    maxConclusoes = analistasContagem[analista];
+                }
+            }
 
             const find = await Pedido.find({
                 dataConclusao: { $regex: mes },
@@ -2784,6 +2805,45 @@ module.exports = {
                 return dateA - dateB;
             });
 
+            const findComparativo = await Pedido.find({
+                dataConclusao: { $regex: mes },
+                $or: [
+                    { analista: analista },
+                    { analista: analistaMaisConclusoes }
+                ]
+            })
+
+            const objComparativo = {}
+            const arrComparativo = [['Data', 'Eu', 'Melhor']]
+
+            for (const item of findComparativo) {
+                const key = moment(item.dataConclusao).format('DD/MM/YYYY');
+                const isAnalista = item.analista === analista;
+                const entry = objComparativo[key] || { analista: 0, melhor: 0 };
+              
+                objComparativo[key] = {
+                  analista: isAnalista ? entry.analista + 1 : entry.analista,
+                  melhor: isAnalista ? entry.melhor : entry.melhor + 1,
+                };
+              }
+
+            for (const item of Object.entries(objComparativo)) {
+
+                arrComparativo.push([
+                    item[0],
+                    item[1].analista,
+                    item[1].melhor,
+                ])
+            }
+
+            arrComparativo.sort((a, b) => {
+                const dateA = new Date(a[0].split('/').reverse().join('-'));
+                const dateB = new Date(b[0].split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            console.log(arrComparativo);
+
             return res.json(
                 {
                     arrPrazo,
@@ -2791,7 +2851,8 @@ module.exports = {
                     indeferidos,
                     naoIndeferidos,
                     cancelado,
-                    naoCancelado
+                    naoCancelado,
+                    arrComparativo
                 }
             )
 

@@ -985,7 +985,8 @@ module.exports = {
                     status2Analise: 'Cancelada',
                     reprotocolo1: 'Cancelada',
                     status,
-                    dataConclusao: moment().format('YYYY-MM-DD'),                };
+                    dataConclusao: moment().format('YYYY-MM-DD'),
+                };
             }
 
             if (Object.keys(camposAtualizados).length > 0) {
@@ -1570,14 +1571,35 @@ module.exports = {
 
             const { mes, analista } = req.params
 
-            console.log(mes);
+            const findMelhor = await Proposta.find({
+                dataConclusao: { $regex: mes }
+            })
+
+            const analistasContagem = {}
+
+            for (const proposta of findMelhor) {
+                const analista = proposta.analista
+                if (analistasContagem[analista]) {
+                    analistasContagem[analista]++
+                } else {
+                    analistasContagem[analista] = 1
+                }
+            }
+
+            let analistaMaisConclusoes = null;
+            let maxConclusoes = 0;
+
+            for (const analista in analistasContagem) {
+                if (analistasContagem[analista] > maxConclusoes) {
+                    analistaMaisConclusoes = analista;
+                    maxConclusoes = analistasContagem[analista];
+                }
+            };
 
             const find = await Proposta.find({
                 dataConclusao: { $regex: mes },
                 analista
             })
-
-            console.log(find);
 
             let objProducao = {}
             let objPrazo = {}
@@ -1716,6 +1738,45 @@ module.exports = {
                 return dateA - dateB;
             });
 
+            const findComparativo = await Proposta.find({
+                dataConclusao: { $regex: mes },
+                $or: [
+                    { analista: analista },
+                    { analista: analistaMaisConclusoes }
+                ]
+            })
+
+            const objComparativo = {}
+            const arrComparativo = [['Data', 'Eu', 'Melhor']]
+
+            for (const item of findComparativo) {
+                const key = moment(item.dataConclusao).format('DD/MM/YYYY');
+                const isAnalista = item.analista === analista;
+                const entry = objComparativo[key] || { analista: 0, melhor: 0 };
+
+                objComparativo[key] = {
+                    analista: isAnalista ? entry.analista + 1 : entry.analista,
+                    melhor: isAnalista ? entry.melhor : entry.melhor + 1,
+                };
+            }
+
+            for (const item of Object.entries(objComparativo)) {
+
+                arrComparativo.push([
+                    item[0],
+                    item[1].analista,
+                    item[1].melhor,
+                ])
+            }
+
+            arrComparativo.sort((a, b) => {
+                const dateA = new Date(a[0].split('/').reverse().join('-'));
+                const dateB = new Date(b[0].split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            console.log(arrComparativo);
+
             return res.json({
                 producao,
                 arrPrazo,
@@ -1723,7 +1784,8 @@ module.exports = {
                 propostasNaoCanceladas,
                 qtdLigadas,
                 qtdNaoLigadas,
-                total
+                total,
+                arrComparativo
             })
 
         } catch (error) {

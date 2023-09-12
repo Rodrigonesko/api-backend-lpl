@@ -19,7 +19,6 @@ const userScheema = mongoose.Schema({
     ajusteHorarios: Boolean,
     politicasLidas: [],
     dataAdmissao: String,
-    feriasSolicitadas: Boolean
 },
     {
         versionKey: false
