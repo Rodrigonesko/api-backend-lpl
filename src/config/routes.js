@@ -15,6 +15,7 @@ const dicionarioRoutes = require('./routes/dicionario')
 const elegibilidadePmeRoutes = require("./routes/elegibilidadePme")
 const politicasRoutes = require('./routes/politicas')
 const patologiasRoutes = require('./routes/patologia')
+const vacationRequestRoutes = require('./routes/vacationRequest')
 
 const router = express.Router()
 
@@ -52,5 +53,7 @@ router.use('/dicionario', dicionarioRoutes)
 router.use('/elegibilidadePme', elegibilidadePmeRoutes)
 router.use('/politicas', politicasRoutes)
 router.use('/patologias', patologiasRoutes)
+router.use('/vacation', vacationRequestRoutes)
+
 
 module.exports = router
