@@ -3,16 +3,11 @@ const User = require('../models/User/User')
 
 module.exports = {
 
-    verifyRequest: async (req, res) => {
-        try {
-
-        } catch (error) {
-
-        }
-    },
-
     sendRequest: async (req, res) => {
         try {
+
+            //Fazer lógica para poder mandar solicitação
+
             const body = req.body
             const create = await VacationRequest.create({
                 nome: req.user,
@@ -23,9 +18,10 @@ module.exports = {
             console.log(create)
             return (res.json(body))
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ error })
-
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 
@@ -35,49 +31,67 @@ module.exports = {
             console.log(result)
             return (res.json(result))
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ error })
-
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 
     getRequestById: async (req, res) => {
         try {
 
+            //ajustar essa rota
+
             const params = req.params
             const result = await VacationRequest.findOne({ nome: params.id })
             console.log(result)
             return (res.json(result))
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ error })
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 
-    approveRequest: async (req, res) => {
+    getRequestByStatus: async (req, res) => {
         try {
 
-            if (res === body) {
-                const body = req.body
-                console.log(body.resposta)
+            //Fazer rota para retornar as solicitações de acordo com o status requisitado
 
-                return res.json({ mensagem: 'oi' })
-
-            } else {
-                console.log(error)
-                return res.status(500).json({ error })
-
-            }
         } catch (error) {
-
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 
-    denyRequest: async (req, res) => {
+    getMyRequests: async (req, res) => {
         try {
 
-        } catch (error) {
+            //Rota para retornar as solicitações de férias de quem está fazendo a requisição
 
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
-    }
+    },
+
+    analyseRequest: async (req, res) => {
+        try {
+
+            //Rota para aprovar ou Recusar solicitação de férias
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
 }

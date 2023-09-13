@@ -4,8 +4,8 @@ const vacationRequestController = require('../../controllers/vacationRequestCont
 const auth = require('../../middlewares/auth')
 
 router.get('/', vacationRequestController.getAllRequests)
-router.get('/id', vacationRequestController.getRequestById)
-router.put('/approve', vacationRequestController.approveRequest)
+router.get('/:id', vacationRequestController.getRequestById)
+router.put('/analyse', vacationRequestController.analyseRequest)
 router.post('/send', vacationRequestController.sendRequest)
 
 module.exports = router
