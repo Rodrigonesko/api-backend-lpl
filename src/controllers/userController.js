@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
+const Celula = require('../models/User/Celula')
 const bcrypt = require('bcrypt')
 
 module.exports = {
@@ -265,6 +266,51 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
 
+    getAllCelulas: async (req, res) => {
+        try {
+            const result = await Celula.find()
+            return res.json(result)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    createCelula: async (req, res) => {
+        try {
+            const { celula } = req.body
+            await Celula.create({
+                celula
+            })
+            return res.json({
+                msg: 'ok'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    deleteCelula: async (req, res) => {
+        try {
+            const { celula } = req.params
+            await Celula.deleteOne({
+                celula
+            })
+            return res.json({
+                msg: 'ok'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    }
 }

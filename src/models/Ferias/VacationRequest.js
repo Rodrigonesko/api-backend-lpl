@@ -1,14 +1,20 @@
 const mongoose = require('mongoose')
 
 const Scheema = new mongoose.Schema({
-    nome: String,
-    idFuncionario: String,
-    email: String,
-    modeloSolicitado: String,
-    startDate: String,
-    endDate: String,
-    status: String,
-    periodo: String
+    vencimento: String,
+    colaborador: String,
+    dataVencimento: String,
+    dataInicio: String,
+    dataRetorno: String,
+    totalDias: Number,
+    expectativa: String,
+    statusRh: String,
+    solicitado: Boolean,
+    assinado: Boolean,
+    realizado: Boolean,
+    status: String
+}, {
+    timestamps: true
 })
 
 const VacationRequest = mongoose.model('VacationRequest', Scheema)

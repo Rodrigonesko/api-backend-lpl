@@ -40,6 +40,8 @@ router.put('/users/modules', auth, userController.modules)
 router.put('/users/resetPassword', auth, userController.resetPassword)
 router.get('/users/coren/:name', auth, userController.coren)
 router.put('/users/lerPolitica', auth, userController.lerPolitica)
+router.get('/celulas', auth, userController.getAllCelulas)
+router.post('/celulas', auth, userController.createCelula)
 
 //Rotas das células
 

@@ -2539,7 +2539,9 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+
 }
 
 const feriados = [
