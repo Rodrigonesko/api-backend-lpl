@@ -109,6 +109,7 @@ module.exports = {
 
             })
 
+
             //Percorre o objeto respostas e concatena ou cria no objeto respostasConc os valores do objeto respostas
 
             Object.keys(respostas).forEach(key => {
@@ -177,7 +178,8 @@ module.exports = {
                 cancelado: false,
                 entrevistaQualidade,
                 filial: updateProposta.filial,
-                idProposta: updateProposta._id
+                idProposta: updateProposta._id,
+                tea: subRespostas['espectro-Diagnostico:']
             }, {
                 upsert: true
             })
