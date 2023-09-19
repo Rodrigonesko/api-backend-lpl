@@ -6,7 +6,7 @@ const Scheema = new mongoose.Schema({
     dataVencimento: String,
     dataInicio: String,
     dataRetorno: String,
-    totalDias: Number,
+    totalDias: String,
     expectativa: String,
     statusRh: String,
     solicitado: Boolean,
