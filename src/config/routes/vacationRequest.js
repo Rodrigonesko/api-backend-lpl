@@ -6,5 +6,8 @@ const auth = require('../../middlewares/auth')
 
 //Crie as rotas
 
+    router.get('/findAll', auth, vacationRequestController.findAll)
+    router.post('/request', vacationRequestController.createVacationRequest)
+    router.put('/status', vacationRequestController.setStatusRh)
 
 module.exports = router
