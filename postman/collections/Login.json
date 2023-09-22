@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "96474fd7-cea4-4bd3-b6bd-9f717aa368d9",
+		"name": "Login",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-96474fd7-cea4-4bd3-b6bd-9f717aa368d9"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"id": "ecfe414b-ead0-4aff-bc23-203687e102fc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"rodrigo.dias@lplseguros.com.br\",\r\n    \"password\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/login",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

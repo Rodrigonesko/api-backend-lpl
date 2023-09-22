@@ -1,0 +1,588 @@
+{
+	"info": {
+		"_postman_id": "aef88d2c-1d66-4cfd-a719-13434fae6509",
+		"name": "Rn",
+		"description": "Rotas para o módulo de Rns no sistema da lpl",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-aef88d2c-1d66-4cfd-a719-13434fae6509"
+	},
+	"item": [
+		{
+			"name": "filtro rn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array with at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array').and.to.have.lengthOf.at.least(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data is in a valid date format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    responseData.forEach(function(item) {",
+							"        pm.expect(item.data).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"telefones is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function(item) {",
+							"        pm.expect(item.telefones).to.be.a('string').and.to.have.lengthOf.at.least(1, \"telefones should not be empty\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"id": "4633bf8e-6b82-4530-aec2-91c63b6dec9e"
+					}
+				}
+			],
+			"id": "cc12fdf8-132f-43ea-9437-efa557b67f8c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/filter/12",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"filter",
+						"12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload",
+			"id": "669264bf-29eb-44a4-839b-c53a9671abae",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/upload",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "busca todas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data is in a valid date format\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    responseData.forEach(function (item) {",
+							"        pm.expect(item.data).to.match(/\\d{4}-\\d{2}-\\d{2}/, \"Data is not in valid format\");",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"The response array has at least one element\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData).to.be.an('array').that.is.not.empty;",
+							"});"
+						],
+						"type": "text/javascript",
+						"id": "da2da8cd-a574-40ad-aa1f-ca20591bad75"
+					}
+				}
+			],
+			"id": "4978e46c-4268-4610-8117-603449487c55",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/rns",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"rns"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "busca por id",
+			"id": "06d3c152-e087-44df-9988-c5c992f8f4e0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/rns/64ee21238f91de73c6df4b22",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"rns",
+						"64ee21238f91de73c6df4b22"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "busca por proposta",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response array is empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array').that.is.empty;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response does not contain any errors or error messages\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    pm.expect(responseData).to.have.lengthOf(0);",
+							"});"
+						],
+						"type": "text/javascript",
+						"id": "0dcd3ee6-761b-43c5-8ea0-c6e6fe64d83a"
+					}
+				}
+			],
+			"id": "da1efb3f-c869-41de-94fe-6fe7ab6c0185",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/pedido/32131212",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"pedido",
+						"32131212"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"  ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response array is empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    pm.expect(responseData).to.have.lengthOf(0);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response contains the required fields\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('array');",
+							"",
+							"  responseData.forEach(function(report) {",
+							"    pm.expect(report).to.have.property('field1');",
+							"    pm.expect(report).to.have.property('field2');",
+							"    // Add more required fields here",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript",
+						"id": "cc5324ba-51af-42d1-8bb4-5aa6ca0fcc58"
+					}
+				}
+			],
+			"id": "c29e27b3-0fd4-40f5-8723-d994e49bae77",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/report",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"report"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "atualizar rn",
+			"id": "1935f88e-d64f-42a7-b69f-d47aed1e9d25",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64ee21238f91de73c6df4b22\",\r\n    \"dataContato1\": \"dataContato1\",\r\n    \"dataContato2\": \"dataContato2\",\r\n    \"dataContato3\": \"dataContato3\",\r\n    \"horarioContato1\": \"horarioContato1\",\r\n    \"horarioContato2\": \"horarioContato2\",\r\n    \"horarioContato3\": \"horarioContato3\",\r\n    \"observacoes\": \"observacoes\",\r\n    \"email\": \"email\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/rns/update",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"rns",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "concluir",
+			"id": "7bab5d6d-db58-416b-ad27-294ffe1e285f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64ee21238f91de73c6df4b22\",\r\n    \"observacoes\": \"observacoes\",\r\n    \"email\": \"email\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/rns/concluir",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"rns",
+						"concluir"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "atualizar rns confirmadas",
+			"id": "91091171-6a8f-4034-8468-a1edcfbb3a63",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/updateConfirmadas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"updateConfirmadas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rns não agendadas",
+			"id": "86661331-2547-4c3e-87be-c0c4b4d6c874",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/naoAgendadas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"naoAgendadas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deletar rn",
+			"id": "991fc9ca-82c2-411e-8912-03e9d3df0666",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/delete/64ee21238f91de73c6df4b22",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"delete",
+						"64ee21238f91de73c6df4b22"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reagendar",
+			"id": "7df29a22-3408-40c9-9a84-5e67af059fed",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64ee21238f91de73c6df4b22\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/reagendar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"reagendar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "alterar telefone",
+			"id": "912f8224-c32f-490f-b11c-8d362c51c6e9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64ee21238f91de73c6df4b22\",\r\n    \"telefone\": \"123098120391\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/alterarTelefone",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"alterarTelefone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "concluidas",
+			"id": "e27d902d-9c46-4103-928c-36d9ab589f82",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/concluidas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"concluidas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tentativa de contato",
+			"id": "8142f8e8-f1bf-46f1-9cdb-52f08181efb3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64ee21238f91de73c6df4b22\",\r\n    \"tentativa\": \"tentativa 1\" //1 a 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/tentativaContato",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"tentativaContato"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RN duplicada",
+			"id": "ad465614-86d3-4db5-bbd2-b375c40c0571",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64ee21238f91de73c6df4b22\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/rn/duplicada",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"rn",
+						"duplicada"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
