@@ -67,22 +67,7 @@ module.exports = {
     update: async (req, res) => {
         try {
 
-            const { nome, plataforma, link, prazo, id } = req.body
-
-            if (nome === '' || plataforma === '' || link === '' || prazo === '' || id === '') {
-                return res.status(400).json({
-                    msg: 'Alguma informação está em branco'
-                })
-            }
-
-            await Treinamento.updateOne({
-                _id: id
-            }, {
-                nome,
-                plataforma,
-                link,
-                prazo
-            })
+            //Rota para editar infos
 
             return res.json({
                 msg: 'ok'
