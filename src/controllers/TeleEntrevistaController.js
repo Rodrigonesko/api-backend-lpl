@@ -494,9 +494,10 @@ module.exports = {
 
             const result = await DadosEntrevista.findByIdAndUpdate({
                 _id: id,
-                quemImplantou: req.user
             }, {
-                implantado: 'Sim'
+                implantado: 'Sim',
+                quemImplantou: req.user,
+                dataImplantado: moment().format('YYYY-MM-DD')
             })
 
             return res.status(200).json(result)
@@ -2498,6 +2499,138 @@ module.exports = {
         }
     },
 
+    producaoMensalAnexos: async (req, res) => {
+        try {
+
+            const { analista, mes } = req.params
+
+            const resultAnexos = await DadosEntrevista.find({
+                $or: [
+                    {
+                        quemAnexou: analista,
+                        dataAnexado: { $regex: mes }
+                    }
+                ]
+            })
+
+            const resultImplantado = await DadosEntrevista.find({
+                $or: [
+                    {
+                        quemImplantou: analista,
+                        dataImplantado: { $regex: mes }
+                    }
+                ]
+            })
+
+
+            const resultMandouImplantacao = await DadosEntrevista.find({
+                $or: [
+                    {
+                        quemMandouImplantacao: analista,
+                        dataMandouImplantacao: { $regex: mes }
+                    }
+                ]
+            })
+
+
+            let objAnexos = {}
+            let arrAnexos = [['Data', 'Quantidade',]]
+            let objImplantados = {}
+            let arrImplantados = [['Data', 'Quantidade']]
+            let objMandouImplantacao = {}
+            let arrMandouImplantacao = [['Data', 'Quantidade']]
+
+            for (const item of resultAnexos) {
+                const key = moment(item.dataAnexado).format('DD/MM/YYYY')
+
+                if (objAnexos[key]) {
+                    objAnexos[key].quantidade += 1
+                } else {
+                    objAnexos[key] = {
+                        quantidade: 1
+                    }
+                }
+            }
+
+            for (const item of Object.entries(objAnexos)) {
+                arrAnexos.push([
+                    item[0],
+                    item[1].quantidade,
+                ])
+            }
+
+            arrAnexos.sort((a, b) => {
+                const dateA = new Date(a[0].split('/').reverse().join('-'));
+                const dateB = new Date(b[0].split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            for (const item of resultImplantado) {
+                const key = moment(item.dataImplantado).format('DD/MM/YYYY')
+
+                if (objImplantados[key]) {
+                    objImplantados[key].quantidade += 1
+                } else {
+                    objImplantados[key] = {
+                        quantidade: 1
+                    }
+                }
+            }
+
+            for (const item of Object.entries(objImplantados)) {
+                arrImplantados.push([
+                    item[0],
+                    item[1].quantidade,
+                ])
+            }
+
+            arrImplantados.sort((a, b) => {
+                const dateA = new Date(a[0].split('/').reverse().join('-'));
+                const dateB = new Date(b[0].split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            for (const item of resultMandouImplantacao) {
+                const key = moment(item.dataMandouImplantacao).format('DD/MM/YYYY')
+
+                if (objMandouImplantacao[key]) {
+                    objMandouImplantacao[key].quantidade += 1
+                } else {
+                    objMandouImplantacao[key] = {
+                        quantidade: 1
+                    }
+                }
+            }
+
+
+            for (const item of Object.entries(objMandouImplantacao)) {
+                arrMandouImplantacao.push([
+                    item[0],
+                    item[1].quantidade,
+                ])
+            }
+
+            arrMandouImplantacao.sort((a, b) => {
+                const dateA = new Date(a[0].split('/').reverse().join('-'));
+                const dateB = new Date(b[0].split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            return res.json({
+                anexos: arrAnexos,
+                implantados: arrImplantados,
+                mandouImplantacao: arrMandouImplantacao
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
     reportAnexos: async (req, res) => {
         try {
 
@@ -2542,8 +2675,6 @@ module.exports = {
             })
         }
     },
-
-
 }
 
 const feriados = [

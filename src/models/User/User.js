@@ -19,6 +19,10 @@ const userScheema = new mongoose.Schema({
     ajusteHorarios: Boolean,
     politicasLidas: [],
     dataAdmissao: String,
+    treinamentos: [],
+    bancoHoras: String,
+    vencimentoFerias: [],
+    nomeCompleto: String
 },
     {
         versionKey: false

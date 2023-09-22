@@ -8,7 +8,7 @@ module.exports = {
     create: async (req, res) => {
         try {
 
-            const { email, name, accessLevel, atividade } = req.body
+            const { email, name, accessLevel, atividade, nomeCompleto } = req.body
 
             const user = await User.findOne({ email })
 
@@ -24,7 +24,8 @@ module.exports = {
                 password: encryptedPassword,
                 accessLevel,
                 firstAccess: 'Sim',
-                atividadePrincipal: atividade
+                atividadePrincipal: atividade,
+                nomeCompleto
             })
 
             return res.status(201).json(newUser)
@@ -122,20 +123,19 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd } = req.body
-
-            console.log(entrada1, saida1, entrada2, saida2, coren);
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto } = req.body
 
             const result = await User.findOneAndUpdate({ email: email }, {
-                enfermeiro: enfermeiro,
-                elegibilidade: elegibilidade,
+                enfermeiro,
+                elegibilidade,
                 horarioEntrada1: entrada1,
                 horarioSaida1: saida1,
                 horarioEntrada2: entrada2,
                 horarioSaida2: saida2,
                 rsd,
                 atividadePrincipal,
-                coren
+                coren,
+                nomeCompleto
             })
 
             return res.status(200).json({
@@ -306,6 +306,33 @@ module.exports = {
             return res.json({
                 msg: 'ok'
             })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    updateBancoHoras: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            for (const item of dados) {
+
+                if (!item.Nome) {
+                    continue
+                }
+
+                await User.updateOne({
+                    nomeCompleto: item.Nome
+                }, {
+                    bancoHoras: item.BTotal
+                })
+            }
+
+            return res.json(dados)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
