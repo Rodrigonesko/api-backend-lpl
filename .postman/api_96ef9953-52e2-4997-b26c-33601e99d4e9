@@ -12,6 +12,8 @@ rootDirectory = postman/collections
 files[] = {"id":"28011380-ee46b737-7d44-4883-9345-2b861c61be9c","path":"API TELE.json","metaData":{}}
 files[] = {"id":"28011380-69357a1d-a631-4475-a809-a0779cd59f76","path":"Controle de atividades.json","metaData":{}}
 files[] = {"id":"28011380-9e069dc8-04ff-4312-8c5f-a62451b90bc0","path":"Elegibilidade.json","metaData":{}}
+files[] = {"id":"28011380-96474fd7-cea4-4bd3-b6bd-9f717aa368d9","path":"Login.json","metaData":{}}
+files[] = {"id":"28011380-aef88d2c-1d66-4cfd-a719-13434fae6509","path":"Rn.json","metaData":{}}
 files[] = {"id":"28011380-e06afc61-9eeb-4129-8c0d-c838481752d7","path":"Rotas publicas.json","metaData":{}}
 
 [config.relations.collections.metaData]
