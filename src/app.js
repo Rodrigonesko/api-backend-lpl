@@ -9,11 +9,9 @@ const corsOptions = {
 
 //Tasks
 
-// const lembreteMensagem = require('./tasks/mensagemLembrente')
-// lembreteMensagem()
-// setInterval(lembreteMensagem, 300000)
-
-// lembreteMensagem()
+const verificarFerias = require('./tasks/verificarFerias')
+verificarFerias()
+setInterval(verificarFerias, 300000)
 
 //JWT Related
 const jwt = require('jsonwebtoken')
@@ -22,43 +20,6 @@ const secret = process.env.JWT_SECRET
 //Mongo 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL)
-
-const User = require('./models/User/User')
-const Rn = require('./models/TeleEntrevista/Rn')
-
-//Models Entrevista
-
-const Proposta = require("./models/TeleEntrevista/PropostaEntrevista")
-const Pergunta = require('./models/TeleEntrevista/Pergunta')
-const Horario = require('./models/TeleEntrevista/Horario')
-const DadosEntrevista = require('./models/TeleEntrevista/DadosEntrevista')
-const Cid = require("./models/TeleEntrevista/Cid")
-
-//Models RSD
-
-const Agenda = require('./models/Rsd/Agenda')
-const Clinica = require('./models/Rsd/Clinica')
-const FormaPagamento = require('./models/Rsd/FormaPagamento')
-const Gravacao = require('./models/Rsd/Gravacao')
-const Operador = require('./models/Rsd/Operador')
-const Pacote = require('./models/Rsd/Pacote')
-const Pedido = require('./models/Rsd/Pedido')
-const Pessoa = require('./models/Rsd/Pessoa')
-const Protocolo = require('./models/Rsd/Protocolo')
-const StatusFinalizacao = require('./models/Rsd/StatusFinalizacao')
-const StatusPacote = require('./models/Rsd/StatusPacote')
-const StatusPedido = require('./models/Rsd/StatusPedido')
-const StatusProtocolo = require('./models/Rsd/StatusProtocolo')
-
-//Models Elegibilidade
-
-const PropostasElegiblidade = require('./models/Elegibilidade/PropostasElegiblidade')
-const AgendaElegibilidade = require('./models/Elegibilidade/AgendaElegibilidade')
-const Prc = require('./models/Elegibilidade/Prc')
-
-//Model Urgencia Emergencia 
-
-const UrgenciasEmergencia = require('./models/UrgenciasEmergencias/UrgenciasEmergencia')
 
 const routes = require('./config/routes')
 

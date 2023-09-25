@@ -44,6 +44,7 @@ router.put('/users/lerPolitica', auth, userController.lerPolitica)
 router.get('/celulas', auth, userController.getAllCelulas)
 router.post('/celulas', auth, userController.createCelula)
 router.patch('/bancoHoras', auth, userController.updateBancoHoras)
+router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 
 //Rotas das células
 
@@ -59,6 +60,5 @@ router.use('/politicas', politicasRoutes)
 router.use('/patologias', patologiasRoutes)
 router.use('/vacation', vacationRequestRoutes)
 router.use('/treinamento', treinamentoRoutes)
-
 
 module.exports = router

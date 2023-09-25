@@ -1,11 +1,10 @@
-const mongoose = require('mongoose')
-const Pergunta = mongoose.model('Pergunta')
-const Propostas = mongoose.model('PropostaEntrevista')
-const Cid = mongoose.model('Cid')
+const Pergunta = require('../models/TeleEntrevista/Pergunta')
+const Propostas = require('../models/TeleEntrevista/PropostaEntrevista')
+const Cid = require('../models/TeleEntrevista/Cid')
 const DadosEntrevista = require('../models/TeleEntrevista/DadosEntrevista')
-const Rn = mongoose.model('Rn')
-const User = mongoose.model('User')
-const UrgenciasEmergencia = mongoose.model('UrgenciasEmergencia')
+const Rn = require('../models/TeleEntrevista/Rn')
+const User = require('../models/User/User')
+const UrgenciasEmergencia = require('../models/UrgenciasEmergencias/UrgenciasEmergencia')
 
 const moment = require('moment')
 const fs = require('fs')
@@ -67,6 +66,7 @@ module.exports = {
             console.log(cidsAjustados);
 
 
+            
             /*
                 respostas = array das respostas refenente as perguntas principais
                 subRespostas = array de respostas referente a subPerguntas

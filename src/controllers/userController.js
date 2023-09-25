@@ -1,14 +1,15 @@
 const mongoose = require('mongoose')
-const User = mongoose.model('User')
+const User = require('../models/User/User')
 const Celula = require('../models/User/Celula')
 const bcrypt = require('bcrypt')
+const moment = require('moment')
 
 module.exports = {
 
     create: async (req, res) => {
         try {
 
-            const { email, name, accessLevel, atividade, nomeCompleto } = req.body
+            const { email, name, accessLevel, atividade, nomeCompleto, dataAdmissao } = req.body
 
             const user = await User.findOne({ email })
 
@@ -25,7 +26,8 @@ module.exports = {
                 accessLevel,
                 firstAccess: 'Sim',
                 atividadePrincipal: atividade,
-                nomeCompleto
+                nomeCompleto,
+                dataAdmissao
             })
 
             return res.status(201).json(newUser)
@@ -40,10 +42,6 @@ module.exports = {
     index: async (req, res) => {
         try {
             const users = await User.find()
-
-            users.forEach(e => {
-                console.log(e.name);
-            })
 
             return res.json(users)
         } catch (error) {
@@ -123,7 +121,8 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao } = req.body
+            const vencimentoFerias = atualizarVencimentos(dataAdmissao)
 
             const result = await User.findOneAndUpdate({ email: email }, {
                 enfermeiro,
@@ -135,14 +134,19 @@ module.exports = {
                 rsd,
                 atividadePrincipal,
                 coren,
-                nomeCompleto
+                nomeCompleto,
+                dataAdmissao
             })
+
+
+            console.log('aaa');
 
             return res.status(200).json({
                 result
             })
 
         } catch (error) {
+            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
@@ -333,6 +337,37 @@ module.exports = {
             }
 
             return res.json(dados)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    getFeriasElegiveis: async (req, res) => {
+        try {
+
+            const users = await User.find()
+
+            const feriasElegiveis = []
+
+            for (const user of users) {
+                if (user.vencimentoFerias.length) {
+                    for (const item of user.vencimentoFerias) {
+                        if (!item.tirouFerias) {
+                            feriasElegiveis.push({
+                                nome: user.nomeCompleto || user.name,
+                                anoFerias: moment(user.dataAdmissao).year(item.anoVencimento).format('DD/MM/YYYY'),
+                                vencimento: moment(user.dataAdmissao).year(item.anoVencimento + 1).format('DD/MM/YYYY')
+                            })
+                        }
+                    }
+                }
+            }
+
+            return res.json(feriasElegiveis)
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({

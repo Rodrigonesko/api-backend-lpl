@@ -7,16 +7,11 @@ module.exports = {
 
     findAll: async (req, res) => {
         try {
-            //Busque todas as solicitacoes
             const encontrarTodos = await VacationRequest.find({
             })
-
-            console.log(encontrarTodos)
-
             return res.status(200).json({
                 encontrarTodos
             })
-
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -27,13 +22,9 @@ module.exports = {
 
     setStatusRh: async (req, res) => {
         try {
-            console.log(req.body)
-            const pegarStatus = await VacationRequest.updateOne({_id: req.body._id}, {statusRh: req.body.statusRh})
-
-            console.log(pegarStatus)
-
+            const result = await VacationRequest.updateOne({ _id: req.body._id }, { statusRh: req.body.statusRh })
             return res.status(200).json({
-                msg: 'OK'
+                msg: result
             })
 
         } catch (error) {
@@ -46,13 +37,43 @@ module.exports = {
 
     createVacationRequest: async (req, res) => {
         try {
+
             //Crie uma solicitação
+
             const body = req.body
+
+            const find = await User.findOne({
+                $or: [
+                    { nomeCompleto: body.colaborador },
+                    { name: body.colaborador }
+                ]
+            })
+
+            const indexVencimento = find.vencimentoFerias.length - 1
+            const vencimentoFerias = find.vencimentoFerias
+
+            const dataVencimento = moment(find.dataAdmissao).year(vencimentoFerias[indexVencimento].anoVencimento)
+
+            if (vencimentoFerias[indexVencimento].tirouFerias) {
+                return res.status(400).json({
+                    msg: 'Colaborador ja retirou as ferias'
+                })
+            }
+
+            await User.updateOne({
+                _id: find._id,
+                "vencimentoFerias.anoVencimento": vencimentoFerias[0].anoVencimento
+            }, {
+                $set: {
+                    'vencimentoFerias.$.tirouFerias': true
+                }
+            })
+
             if (body.totalDias === '30 dias') {
                 const data = moment(body.dataInicio).add(30, 'day').format('DD/MM/YYYY')
                 const criarRequisicao = await VacationRequest.create({
                     mes: data,
-                    vencimento: body.vencimento,
+                    vencimento: dataVencimento.format('YYYY-MM-DD'),
                     colaborador: body.colaborador,
                     dataInicio: body.dataInicio,
                     dataRetorno: data,
@@ -64,7 +85,7 @@ module.exports = {
                 const data2 = moment(body.dataInicio).add(15, 'day').format('DD/MM/YYYY')
                 const criarRequisicao = await VacationRequest.create({
                     mes: body.mes,
-                    vencimento: body.vencimento,
+                    vencimento: dataVencimento.format('YYYY-MM-DD'),
                     colaborador: body.colaborador,
                     dataInicio: body.dataInicio,
                     dataRetorno: (body.totalDias === '20/10 dias' ? (data) : (data2)),
@@ -75,7 +96,7 @@ module.exports = {
                 const data4 = moment(body.dataInicio2).add(15, 'day').format('DD/MM/YYYY')
                 const criarRequisicao2 = await VacationRequest.create({
                     mes: body.mes,
-                    vencimento: body.vencimento,
+                    vencimento: dataVencimento.format('YYYY-MM-DD'),
                     colaborador: body.colaborador,
                     dataInicio: body.dataInicio2,
                     dataRetorno: (body.totalDias === '20/10 dias' ? (data3) : (data4)),
@@ -83,7 +104,6 @@ module.exports = {
                     statusRh: body.statusRh
                 })
             }
-            //console.log(criarRequisicao)
             return res.json({
                 msg: 'OK'
             })

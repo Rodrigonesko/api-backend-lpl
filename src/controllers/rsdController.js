@@ -1,13 +1,12 @@
-const mongoose = require('mongoose')
-const Pedido = mongoose.model('Pedido')
-const Pessoa = mongoose.model('Pessoa')
-const Pacote = mongoose.model('Pacote')
-const Operador = mongoose.model('Operador')
-const Clinica = mongoose.model('Clinica')
-const Gravacao = mongoose.model('Gravacao')
-const FormaPagamento = mongoose.model('FormaPagamento')
-const StatusFinalizacao = mongoose.model('StatusFinalizacao')
-const Agenda = mongoose.model('AgendaRsd')
+const Pedido = require('../models/Rsd/Pedido')
+const Pessoa = require('../models/Rsd/Pessoa')
+const Pacote = require('../models/Rsd/Pacote')
+const Operador = require('../models/Rsd/Operador')
+const Clinica = require('../models/Rsd/Clinica')
+const Gravacao = require('../models/Rsd/Gravacao')
+const FormaPagamento = require('../models/Rsd/FormaPagamento')
+const StatusFinalizacao = require('../models/Rsd/StatusFinalizacao')
+const Agenda = require('../models/Rsd/Agenda')
 
 const path = require('path')
 const moment = require('moment')
@@ -2820,12 +2819,12 @@ module.exports = {
                 const key = moment(item.dataConclusao).format('DD/MM/YYYY');
                 const isAnalista = item.analista === analista;
                 const entry = objComparativo[key] || { analista: 0, melhor: 0 };
-              
+
                 objComparativo[key] = {
-                  analista: isAnalista ? entry.analista + 1 : entry.analista,
-                  melhor: isAnalista ? entry.melhor : entry.melhor + 1,
+                    analista: isAnalista ? entry.analista + 1 : entry.analista,
+                    melhor: isAnalista ? entry.melhor : entry.melhor + 1,
                 };
-              }
+            }
 
             for (const item of Object.entries(objComparativo)) {
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const Rn = mongoose.model('Rn')
-const Horario = mongoose.model('Horario')
+const Rn = require('../models/TeleEntrevista/Rn')
+const Horario = require('../models/TeleEntrevista/Horario')
 const moment = require('moment')
 const momentBusiness = require('moment-business-days')
 
