@@ -52,7 +52,14 @@ module.exports = {
             const indexVencimento = find.vencimentoFerias.length - 1
             const vencimentoFerias = find.vencimentoFerias
 
+            if (!vencimentoFerias[indexVencimento]?.anoVencimento) {
+                return res.status(400).json({
+                    msg: 'Colaborador não tem direito as férias por enquanto, verifique a data de admissão'
+                })
+            }
+
             const dataVencimento = moment(find.dataAdmissao).year(vencimentoFerias[indexVencimento].anoVencimento)
+
 
             if (vencimentoFerias[indexVencimento].tirouFerias) {
                 return res.status(400).json({
@@ -115,5 +122,32 @@ module.exports = {
             })
         }
 
+    },
+
+    getFeriasByFilter: async (req, res) => {
+        try {
+
+            const { colaborador, mes, vencimento } = req.query
+
+            console.log(req.query);
+            
+            const result = await VacationRequest.find({
+                $or: [
+                    { colaborador: { $regex: colaborador } },
+                    { dataInicio: { $regex: mes } },
+                    { dataVencimento: { $regex: vencimento } }
+                ]
+            })
+
+            console.log(result);
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }

@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const User = require('../models/User/User')
 const Celula = require('../models/User/Celula')
 const bcrypt = require('bcrypt')
@@ -122,7 +121,6 @@ module.exports = {
         try {
 
             const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao } = req.body
-            const vencimentoFerias = atualizarVencimentos(dataAdmissao)
 
             const result = await User.findOneAndUpdate({ email: email }, {
                 enfermeiro,
