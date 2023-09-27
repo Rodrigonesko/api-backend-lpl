@@ -130,13 +130,13 @@ module.exports = {
             const { colaborador, mes, vencimento } = req.query
 
             console.log(req.query);
-            
+
             const result = await VacationRequest.find({
-                $or: [
-                    { colaborador: { $regex: colaborador } },
-                    { dataInicio: { $regex: mes } },
-                    { dataVencimento: { $regex: vencimento } }
-                ]
+
+                colaborador: { $regex: colaborador },
+                dataInicio: { $regex: mes },
+                vencimento: { $regex: vencimento }
+
             })
 
             console.log(result);
