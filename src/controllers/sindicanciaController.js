@@ -6,21 +6,23 @@ const configTedious = {
 }
 
 const config = {
-    user: '',
-    password: '',
-    server: '',
-    database: 'LPLSeuros',
+    user: 'AdminAPI',
+    password: '*Sl2u8h73',
+    server: 'lplseguros.com',
+    database: 'LPLSeguros',
     options: {
-        encrypt: false,
-        trustedConnection: true,
+        cryptoCredentialsDetails: {
+            minVersion: 'TLSv1'
+        }
     }
 }
 
 module.exports = {
     show: async (req, res) => {
         try {
+            const connStr = "Server=lplseguros.com;Database=LPL;User Id=AdminAPI;Password=*Sl2u8h73;TrustServerCertificate=True";
 
-            const conn = await sql.connect(config)
+            const conn = await sql.connect(connStr)
 
             console.log(conn);
 

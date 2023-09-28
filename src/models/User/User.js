@@ -22,7 +22,8 @@ const userScheema = new mongoose.Schema({
     treinamentos: [],
     bancoHoras: String,
     vencimentoFerias: [],
-    nomeCompleto: String
+    nomeCompleto: String,
+    dataBancoHoras: String
 },
     {
         versionKey: false

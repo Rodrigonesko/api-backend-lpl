@@ -330,7 +330,8 @@ module.exports = {
                 await User.updateOne({
                     nomeCompleto: item.Nome
                 }, {
-                    bancoHoras: item.BTotal
+                    bancoHoras: item.BTotal || '',
+                    dataBancoHoras: moment().format('YYYY-MM-DD')
                 })
             }
 
