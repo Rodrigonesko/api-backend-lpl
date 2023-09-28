@@ -51,4 +51,6 @@ router.delete('/planosBlacklist/:id', auth, elegibilidadeController.removerPlano
 router.get('/producaoMensal/:mes/:analista', auth, elegibilidadeController.produtividadeMensal)
 router.put('/voltarProposta', auth, elegibilidadeController.voltarProposta)
 
+router.post('/alterarBase', elegibilidadeController.corrigirBase)
+
 module.exports = router
