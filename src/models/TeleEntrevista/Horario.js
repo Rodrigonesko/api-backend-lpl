@@ -6,7 +6,8 @@ const horariosSCheema = new mongoose.Schema({
     horario: String,
     agendado: String,
     proposta: String,
-    nome: String
+    nome: String,
+    quemReabriu: String
 })
 
 module.exports = mongoose.model('Horario', horariosSCheema)

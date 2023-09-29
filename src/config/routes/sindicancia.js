@@ -3,6 +3,6 @@ const router = express.Router()
 const sindicanciaController = require('../../controllers/sindicanciaController')
 const auth = require('../../middlewares/auth')
 
-router.get('/',  sindicanciaController.show)
+router.get('/',  sindicanciaController.produtividade)
 
 module.exports = router

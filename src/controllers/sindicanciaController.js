@@ -6,22 +6,18 @@ const username = process.env.MSSQL_USER
 const password = process.env.MSSQL_PASSWORD
 
 module.exports = {
-    show: async (req, res) => {
+    produtividade: async (req, res) => {
         try {
 
             const connStr = `Server=${server};Database=${database};User Id=${username};Password=${password};TrustServerCertificate=true`
 
-            const conn = await sql.connect(connStr)
+            await sql.connect(connStr)
 
-            const result = await sql.query("SELECT * FROM usuario")
+            const demandas = await sql.query("SELECT * FROM Demanda")
+            const usuarios = await sql.query("SELECT * FROM usuario")
 
-
-            Object.keys(result).forEach(e => {
-                console.log(e);
-            })
-
-            result.recordset.forEach(e => {
-                console.log(e);
+            demandas.recordset.forEach(demanda => {
+                console.log(demanda);
             })
 
             return res.json({
