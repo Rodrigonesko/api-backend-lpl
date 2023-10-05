@@ -7,7 +7,7 @@ module.exports = {
     findAll: async (req, res) => {
         try {
             const encontrarTodos = await TaskRequest.find({
-            }).sort({createdAt: -1})
+            }).sort({ createdAt: -1 })
             return res.status(200).json({
                 encontrarTodos
             })
@@ -26,8 +26,11 @@ module.exports = {
             if (req.body.status === 'finalizado') {
                 const result = await TaskRequest.updateOne({ _id: req.body._id }, { dataFinalizado: moment().format('YYYY-MM-DD') })
                 console.log(result);
+            } else if (req.body.status === 'tratando' || req.body.status === 'verificado') {
+                const result = await TaskRequest.updateOne({ _id: req.body._id }, { dataFinalizado: '' })
+                console.log(result);
             }
-            
+
             return res.status(200).json({
                 msg: resultado
             })
@@ -59,6 +62,7 @@ module.exports = {
         try {
             const resultado = await TaskRequest.updateOne({ _id: req.body._id }, { retorno: req.body.retorno })
 
+            console.log(resultado)
             console.log(req.body)
             return res.status(200).json({
                 msg: 'OK'
@@ -95,7 +99,7 @@ module.exports = {
                 setor: findActivity.atividadePrincipal,
                 assunto: body.assunto,
                 descricao: body.descricao,
-                dataFinalizado: moment().format('YYYY-MM-DD'),
+                dataFinalizado: body.dataFinalizado,
                 analista: body.analista,
                 status: body.status,
                 retorno: body.retorno
@@ -117,12 +121,14 @@ module.exports = {
         try {
 
             const { colaborador } = req.query
+            const { analista } = req.query
 
             console.log(req.query);
 
             const result = await TaskRequest.find({
 
-                colaborador: { $regex: colaborador }
+                colaborador: { $regex: colaborador },
+                analista: { $regex: analista }
             })
 
             console.log(result);
