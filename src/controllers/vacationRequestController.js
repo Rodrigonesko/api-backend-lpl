@@ -136,13 +136,28 @@ module.exports = {
                 colaborador: { $regex: colaborador },
                 dataInicio: { $regex: mes },
                 vencimento: { $regex: vencimento }
-
             })
 
             console.log(result);
 
             return res.json(result)
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    updateVacationTable: async (req, res) => {
+        try {
+            const find = await VacationRequest.findOne({_id: req.body._id})
+            const quatidadeDias = find.totalDias
+            const data = moment(req.body.data).add(quatidadeDias.split(' ')[0], 'day').format('DD/MM/YYYY')
+            console.log(quatidadeDias)
+            const criarRequisicao = await VacationRequest.updateOne({ _id: req.body._id }, { dataInicio: req.body.data, dataRetorno: data})
+            return res.json(criarRequisicao)
         } catch (error) {
             console.log(error);
             return res.status(500).json({

@@ -9,6 +9,7 @@ const auth = require('../../middlewares/auth')
 router.get('/findAll', auth, vacationRequestController.findAll)
 router.post('/request', vacationRequestController.createVacationRequest)
 router.put('/status', vacationRequestController.setStatusRh)
+router.put('/update', vacationRequestController.updateVacationTable)
 router.get('/filter', vacationRequestController.getFeriasByFilter)
 
 module.exports = router
