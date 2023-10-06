@@ -14,7 +14,7 @@ async function verificarFerias() {
         const indexVenc = user.vencimentoFerias.length - 1
         const anoVencimento = (user.vencimentoFerias[indexVenc]?.anoVencimento);
 
-        if (anoAtual - anoDeAdmissao >= 1 && (anoVencimento < anoAtual || !anoVencimento)) {
+        if (moment().year(anoAtual) - dataAdmissao.year(anoDeAdmissao) >= 31536000000 && (anoVencimento < anoAtual || !anoVencimento)) {
             const obj = {
                 tirouFerias: false,
                 dataDesejada: '',
