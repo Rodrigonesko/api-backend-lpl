@@ -201,19 +201,6 @@ module.exports = {
                 })
             }
 
-            const findReagendado = await Horario.findOne({
-                enfermeiro: responsavel,
-                dia: dataAjustada,
-                horario,
-                agendado: 'Reaberto',
-            })
-
-            if (!findReagendado.quemReabriu || findReagendado.quemReabriu !== req.user) {
-                return res.status(400).json({
-                    msg: `Somente quem reabriu o horário pode reagender, reaberto por: ${findReagendado.quemReabriu}`
-                })
-            }
-
             const update = await Horario.findOneAndUpdate({
                 enfermeiro: responsavel,
                 dia: dataAjustada,
