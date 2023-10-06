@@ -330,7 +330,8 @@ module.exports = {
                 await User.updateOne({
                     nomeCompleto: item.Nome
                 }, {
-                    bancoHoras: item.BTotal
+                    bancoHoras: item.BTotal || '',
+                    dataBancoHoras: moment().format('YYYY-MM-DD')
                 })
             }
 
@@ -356,13 +357,19 @@ module.exports = {
                         if (!item.tirouFerias) {
                             feriasElegiveis.push({
                                 nome: user.nomeCompleto || user.name,
-                                anoFerias: moment(user.dataAdmissao).year(item.anoVencimento).format('DD/MM/YYYY'),
-                                vencimento: moment(user.dataAdmissao).year(item.anoVencimento + 1).format('DD/MM/YYYY')
+                                anoFerias: moment(user.dataAdmissao).year(item.anoVencimento).format('YYYY-MM-DD'),
+                                vencimento: moment(user.dataAdmissao).year(item.anoVencimento + 1).format('YYYY-MM-DD')
                             })
                         }
                     }
                 }
             }
+
+            feriasElegiveis.sort((a, b) => {
+                const dataA =  moment(a.vencimento);
+                const dataB = moment(b.vencimento);
+                return dataA - dataB;
+            });
 
             return res.json(feriasElegiveis)
 

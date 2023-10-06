@@ -1,7 +1,6 @@
-const mongoose = require('mongoose')
-const Horario = mongoose.model('Horario')
-const User = mongoose.model('User')
-const Rn = mongoose.model('Rn')
+const Horario = require('../models/TeleEntrevista/Horario')
+const User = require('../models/User/User')
+const Rn = require('../models/TeleEntrevista/Rn')
 const moment = require('moment')
 const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
@@ -202,6 +201,19 @@ module.exports = {
                 })
             }
 
+            const findReagendado = await Horario.findOne({
+                enfermeiro: responsavel,
+                dia: dataAjustada,
+                horario,
+                agendado: 'Reaberto',
+            })
+
+            if (!findReagendado.quemReabriu || findReagendado.quemReabriu !== req.user) {
+                return res.status(400).json({
+                    msg: `Somente quem reabriu o horário pode reagender, reaberto por: ${findReagendado.quemReabriu}`
+                })
+            }
+
             const update = await Horario.findOneAndUpdate({
                 enfermeiro: responsavel,
                 dia: dataAjustada,
@@ -300,7 +312,7 @@ module.exports = {
                         }, {
                             horario: e
                         }, {
-                            nome: {$ne: 'Fechado'}
+                            nome: { $ne: 'Fechado' }
                         }
                     ]
                 }, {
@@ -344,11 +356,10 @@ module.exports = {
                     ]
                 }, {
                     agendado: 'Reaberto',
-                    nome: ''
+                    nome: '',
+                    quemReabriu: req.user
                 })
             }))
-
-            console.log(result);
 
             return res.status(200).json({
                 result

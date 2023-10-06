@@ -1823,8 +1823,58 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
 
+    corrigirBase: async (req, res) => {
+        try {
+
+            uploadPropostas(req, res, async (err) => {
+
+                // const { name, ext } = path.parse(req.file.originalname)
+
+                let file = fs.readFileSync(req.file.path)
+
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                for (const item of result) {
+                    const categoriaCancelamento = (item['Motivo do Cancelamento Amil']);
+                    const entidade = item['Entidade']
+                    const motivoCancelamento = item['Motivo do Cancelamento']
+                    const proposta = item.Proposta
+
+                    await Proposta.updateOne({
+                        proposta
+                    }, {
+                        entidade,
+                        motivoCancelamento,
+                        categoriaCancelamento
+                    })
+
+                    console.log(proposta, entidade,
+                        motivoCancelamento,
+                        categoriaCancelamento);
+                }
+
+                return res.json({
+                    msg: 'ok'
+                })
+
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 }
 
 const feriados = [
