@@ -8,7 +8,7 @@ module.exports = {
     findAll: async (req, res) => {
         try {
             const encontrarTodos = await VacationRequest.find({
-            })
+            }).sort({ dataInicio: -1 })
             return res.status(200).json({
                 encontrarTodos
             })
@@ -136,7 +136,7 @@ module.exports = {
                 colaborador: { $regex: colaborador },
                 dataInicio: { $regex: mes },
                 vencimento: { $regex: vencimento }
-            })
+            }).sort({ dataInicio: -1 })
 
             console.log(result);
 
@@ -152,11 +152,11 @@ module.exports = {
 
     updateVacationTable: async (req, res) => {
         try {
-            const find = await VacationRequest.findOne({_id: req.body._id})
+            const find = await VacationRequest.findOne({ _id: req.body._id })
             const quatidadeDias = find.totalDias
             const data = moment(req.body.data).add(quatidadeDias.split(' ')[0], 'day').format('DD/MM/YYYY')
             console.log(quatidadeDias)
-            const criarRequisicao = await VacationRequest.updateOne({ _id: req.body._id }, { dataInicio: req.body.data, dataRetorno: data})
+            const criarRequisicao = await VacationRequest.updateOne({ _id: req.body._id }, { dataInicio: req.body.data, dataRetorno: data })
             return res.json(criarRequisicao)
         } catch (error) {
             console.log(error);

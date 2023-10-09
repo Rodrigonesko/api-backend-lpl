@@ -12,14 +12,22 @@ async function verificarFerias() {
         const anoDeAdmissao = dataAdmissao.year(); // Obtém o ano de admissão do usuário
 
         const indexVenc = user.vencimentoFerias.length - 1
-        const anoVencimento = (user.vencimentoFerias[indexVenc]?.anoVencimento);
+        const ultimoAnoVencimento = (user.vencimentoFerias[indexVenc]?.anoVencimento);
 
-        if (moment().year(anoAtual) - dataAdmissao.year(anoDeAdmissao) >= 31536000000 && (anoVencimento < anoAtual || !anoVencimento)) {
+        const isMaiorSeisMeses = moment().year(anoAtual) - dataAdmissao.year(anoDeAdmissao) >= 15768000000
+
+        let anoVencimento = anoAtual
+
+        if (isMaiorSeisMeses && !ultimoAnoVencimento) {
+            anoVencimento = dataAdmissao.add(1, 'year').year()
+        }
+
+        if (isMaiorSeisMeses && (ultimoAnoVencimento < anoAtual || !ultimoAnoVencimento)) {
             const obj = {
                 tirouFerias: false,
                 dataDesejada: '',
                 dataDesejada2: '',
-                anoVencimento: anoAtual
+                anoVencimento
             }
 
             await User.updateOne({
@@ -29,7 +37,6 @@ async function verificarFerias() {
                     vencimentoFerias: obj
                 }
             })
-
         }
     }
 
