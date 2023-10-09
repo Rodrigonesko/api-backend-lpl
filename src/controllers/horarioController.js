@@ -396,63 +396,69 @@ module.exports = {
     buscarHorarioDisponiveis: async (req, res) => {
         try {
 
-            let horarios = await Horario.find()
 
-            horarios = horarios.filter(e => {
-                return e.agendado == 'Reaberto' || e.agendado == undefined
+            let horarios = await Horario.find({  //Buscando horarios filtrados
+                $or: [
+                    { agendado: 'Reaberto' },
+                    { agendado: undefined }
+                ]
             })
 
             const today = new Date()
 
             horarios = horarios.filter(e => {
-
                 return moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD') === true
             })
 
             let obj = {}
 
-            horarios.forEach(e => {
-                if (!obj.hasOwnProperty(moment(e.dia).format('DD/MM/YYYY'))) {
-                    obj[moment(e.dia).format('DD/MM/YYYY')] = []
-                    obj[moment(e.dia).format('DD/MM/YYYY')].push(e.horario)
-                } else {
-                    obj[moment(e.dia).format('DD/MM/YYYY')].push(e.horario)
+            horarios.forEach((e) => {  //Agrupando horarios por data
+                const dateKey = moment(e.dia).format('DD/MM/YYYY');
+                if (!obj.hasOwnProperty(dateKey)) {
+                    obj[dateKey] = [];
                 }
-            })
+                obj[dateKey].push(e.horario);
+            });
 
-            Object.keys(obj).forEach(e => {
-                obj[e] = obj[e].filter((el, i) => {
-                    return obj[e].indexOf(el) === i
-                })
-            })
+            Object.keys(obj).forEach((e) => {   //Removendo duplicatas e ordenando
+                obj[e] = [...new Set(obj[e])].filter((el) => el !== undefined).sort();
+            });
 
-            Object.keys(obj).forEach(e => {
-                obj[e] = obj[e].map((el) => {
-                    if (e === moment(today).format('DD/MM/YYYY')) {
-                        const date1 = new Date(`${moment(today).format('YYYY-MM-DD')} ${el}`)
-                        if (date1.getTime() > today.getTime()) {
-                            return el
-                        }
-                    } else {
-                        return el
-                    }
-                })
-            })
+            Object.keys(obj).forEach((e) => {   //Filtrando horarios de acordo com a data de hj
+                if (e === today) {
+                    obj[e] = obj[e].filter((el) => {
+                        const date1 = moment(`${today} ${el}`, 'YYYY-MM-DD HH:mm').tz('America/Sao_Paulo');
+                        return date1.isAfter(moment(), 'minute');
+                    });
+                }
+            });
 
-            Object.keys(obj).forEach(e => {
-                obj[e] = obj[e].filter((el) => {
-                    return el != undefined
-                })
-            })
+            const analistasDisponiveis = {};
 
-            Object.keys(obj).forEach(e => {
-                obj[e].sort()
-            })
+            // Itere sobre o array de horários e organize-os no objeto
+            horarios.forEach((horario) => {
+                const data = moment(horario.dia).format('DD/MM/YYYY');
+                const horarioObj = {
+                    horario: horario.horario,
+                    analistas: [horario.enfermeiro] // Inicialmente, adicione o enfermeiro atual
+                };
 
-            console.log(obj);
+                if (!analistasDisponiveis[data]) {
+                    analistasDisponiveis[data] = [];
+                }
+
+                // Verifique se já existe um horário com a mesma data, e se sim, adicione o analista atual
+                const index = analistasDisponiveis[data].findIndex((item) => item.horario === horario.horario);
+                if (index !== -1) {
+                    analistasDisponiveis[data][index].analistas.push(horario.enfermeiro);
+                } else {
+                    analistasDisponiveis[data].push(horarioObj);
+                }
+            });
 
             return res.status(200).json({
-                obj
+                obj,
+                analistasDisponiveis
             })
 
         } catch (error) {
