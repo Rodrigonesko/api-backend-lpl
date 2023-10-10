@@ -25,7 +25,7 @@ module.exports = {
 
             const { nome, plataforma, link, prazo, observacoes } = req.body
 
-            if (nome === '' || plataforma === '' || link === '' || prazo === '') {
+            if (nome === '' || plataforma === '' || prazo === '') {
                 return res.status(400).json({
                     msg: 'Alguma informação está em branco'
                 })
@@ -70,7 +70,7 @@ module.exports = {
 
             const { nome, plataforma, link, prazo, observacoes } = req.body
 
-            if (nome === '' || plataforma === '' || link === '' || prazo === '') {
+            if (nome === '' || plataforma === '' || prazo === '') {
                 return res.status(400).json({
                     msg: 'Alguma informação está em branco'
                 })
