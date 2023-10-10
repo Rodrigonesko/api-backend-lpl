@@ -110,6 +110,17 @@ module.exports = {
                     totalDias: (body.totalDias === '20/10 dias' ? ('10 dias') : ('15 dias')),
                     statusRh: body.statusRh
                 })
+            } else if (body.totalDias === '20/10 dias vendidos') {
+                const data = moment(body.dataInicio).add(20, 'day').format('DD/MM/YYYY')
+                const criarRequisicao3 = await VacationRequest.create({
+                    mes: data,
+                    vencimento: dataVencimento.format('YYYY-MM-DD'),
+                    colaborador: body.colaborador,
+                    dataInicio: body.dataInicio,
+                    dataRetorno: data,
+                    totalDias: body.totalDias,
+                    statusRh: body.statusRh
+                })
             }
             return res.json({
                 msg: 'OK'
