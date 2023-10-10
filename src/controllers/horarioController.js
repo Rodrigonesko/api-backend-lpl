@@ -439,8 +439,8 @@ module.exports = {
             horarios.forEach((horario) => {
                 const data = moment(horario.dia).format('DD/MM/YYYY');
                 const horarioObj = {
-                    horario: horario.horario,
-                    analistas: [horario.enfermeiro] // Inicialmente, adicione o enfermeiro atual
+                    horarios: [horario.horario],
+                    analista: horario.enfermeiro // Inicialmente, adicione o enfermeiro atual
                 };
 
                 if (!analistasDisponiveis[data]) {
@@ -448,13 +448,15 @@ module.exports = {
                 }
 
                 // Verifique se já existe um horário com a mesma data, e se sim, adicione o analista atual
-                const index = analistasDisponiveis[data].findIndex((item) => item.horario === horario.horario);
+                const index = analistasDisponiveis[data].findIndex((item) => item.analista === horario.enfermeiro);
                 if (index !== -1) {
-                    analistasDisponiveis[data][index].analistas.push(horario.enfermeiro);
+                    analistasDisponiveis[data][index].horarios.push(horario.horario);
                 } else {
                     analistasDisponiveis[data].push(horarioObj);
                 }
             });
+
+            console.log(analistasDisponiveis);
 
             return res.status(200).json({
                 obj,
