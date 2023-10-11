@@ -77,7 +77,7 @@ module.exports = {
             })
 
             if (body.totalDias === '30 dias') {
-                const data = moment(body.dataInicio).add(30, 'day').format('DD/MM/YYYY')
+                const data = moment(body.dataInicio).add(29, 'day').format('DD/MM/YYYY')
                 const criarRequisicao = await VacationRequest.create({
                     mes: data,
                     vencimento: dataVencimento.format('YYYY-MM-DD'),
@@ -88,8 +88,8 @@ module.exports = {
                     statusRh: body.statusRh
                 })
             } else if (body.totalDias === '20/10 dias' || body.totalDias === '15/15 dias') {
-                const data = moment(body.dataInicio).add(20, 'day').format('DD/MM/YYYY')
-                const data2 = moment(body.dataInicio).add(15, 'day').format('DD/MM/YYYY')
+                const data = moment(body.dataInicio).add(19, 'day').format('DD/MM/YYYY')
+                const data2 = moment(body.dataInicio).add(14, 'day').format('DD/MM/YYYY')
                 const criarRequisicao = await VacationRequest.create({
                     mes: body.mes,
                     vencimento: dataVencimento.format('YYYY-MM-DD'),
@@ -99,8 +99,8 @@ module.exports = {
                     totalDias: (body.totalDias === '20/10 dias' ? ('20 dias') : ('15 dias')),
                     statusRh: body.statusRh
                 })
-                const data3 = moment(body.dataInicio2).add(10, 'day').format('DD/MM/YYYY')
-                const data4 = moment(body.dataInicio2).add(15, 'day').format('DD/MM/YYYY')
+                const data3 = moment(body.dataInicio2).add(9, 'day').format('DD/MM/YYYY')
+                const data4 = moment(body.dataInicio2).add(14, 'day').format('DD/MM/YYYY')
                 const criarRequisicao2 = await VacationRequest.create({
                     mes: body.mes,
                     vencimento: dataVencimento.format('YYYY-MM-DD'),
@@ -111,7 +111,7 @@ module.exports = {
                     statusRh: body.statusRh
                 })
             } else if (body.totalDias === '20/10 dias vendidos') {
-                const data = moment(body.dataInicio).add(20, 'day').format('DD/MM/YYYY')
+                const data = moment(body.dataInicio).add(19, 'day').format('DD/MM/YYYY')
                 const criarRequisicao3 = await VacationRequest.create({
                     mes: data,
                     vencimento: dataVencimento.format('YYYY-MM-DD'),
