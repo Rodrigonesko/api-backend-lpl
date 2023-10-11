@@ -38,7 +38,7 @@ module.exports = {
                     });
                 }
 
-                const { texto } = req.body;
+                const { texto, titulo } = req.body;
                 const files = req.files; // Aqui você pode acessar os arquivos enviados
 
                 const fileNames = files.map(file => {
@@ -48,7 +48,8 @@ module.exports = {
                 await Recados.create({
                     texto,
                     arquivos: fileNames,
-                    responsavel: req.user
+                    responsavel: req.user,
+                    titulo
                 })
 
                 // Faça o que precisar com os arquivos e outros dados
@@ -69,7 +70,7 @@ module.exports = {
     getAllRecados: async (req, res) => {
         try {
 
-            const result = await Recados.find({}).lean()
+            const result = await Recados.find({}).sort({createdAt: -1}).lean()
 
             return res.json(result)
 

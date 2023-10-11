@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const scheme = new mongoose.Schema({
     arquivos: [],
     texto: String,
-    responsavel: String
+    responsavel: String,
+    titulo: String
 }, {
     timestamps: true
 })
