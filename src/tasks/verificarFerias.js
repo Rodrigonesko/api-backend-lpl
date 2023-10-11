@@ -29,7 +29,7 @@ async function verificarFerias() {
                 dataDesejada2: '',
                 anoVencimento
             }
-
+            console.log(`entrou`);
             await User.updateOne({
                 _id: user._id
             }, {

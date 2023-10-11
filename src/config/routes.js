@@ -20,6 +20,7 @@ const treinamentoRoutes = require('./routes/treinamento')
 
 const taskRequestRoutes = require('./routes/taskRequest')
 const sindicanciaRoutes = require('./routes/sindicancia')
+const muralRoutes = require('./routes/mural')
 
 
 const router = express.Router()
@@ -66,5 +67,7 @@ router.use('/vacation', vacationRequestRoutes)
 router.use('/treinamento', treinamentoRoutes)
 router.use('/tasks', taskRequestRoutes)
 router.use('/sindicancia', sindicanciaRoutes)
+router.use('/mural', muralRoutes)
+
 
 module.exports = router
