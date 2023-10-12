@@ -154,7 +154,7 @@ module.exports = {
     treinamentoRealizado: async (req, res) => {
         try {
 
-            const { idTreinamento, nome } = req.body
+            const { idTreinamento, nome, data } = req.body
 
             await Treinamento.updateOne({
                 _id: idTreinamento,
@@ -162,7 +162,7 @@ module.exports = {
             }, {
                 $set: {
                     'realizados.$.realizado': true,
-                    'realizados.$.data': moment().format('YYYY-MM-DD'),
+                    'realizados.$.data': data,
                 }
             })
 

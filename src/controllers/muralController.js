@@ -70,7 +70,26 @@ module.exports = {
     getAllRecados: async (req, res) => {
         try {
 
-            const result = await Recados.find({}).sort({createdAt: -1}).lean()
+            const result = await Recados.find({}).sort({ createdAt: -1 }).lean()
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    destroy: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            const result = await Recados.deleteOne({
+                _id: id
+            })
 
             return res.json(result)
 
