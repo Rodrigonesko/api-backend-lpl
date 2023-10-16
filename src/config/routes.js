@@ -17,6 +17,7 @@ const politicasRoutes = require('./routes/politicas')
 const patologiasRoutes = require('./routes/patologia')
 const vacationRequestRoutes = require('./routes/vacationRequest')
 const treinamentoRoutes = require('./routes/treinamento')
+const inventarioRoutes = require('./routes/inventario')
 
 const taskRequestRoutes = require('./routes/taskRequest')
 const sindicanciaRoutes = require('./routes/sindicancia')
@@ -67,6 +68,7 @@ router.use('/vacation', vacationRequestRoutes)
 router.use('/treinamento', treinamentoRoutes)
 router.use('/tasks', taskRequestRoutes)
 router.use('/sindicancia', sindicanciaRoutes)
+router.use('/inventario', inventarioRoutes)
 router.use('/mural', muralRoutes)
 
 
