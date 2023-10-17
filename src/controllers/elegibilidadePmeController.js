@@ -369,7 +369,8 @@ module.exports = {
 
             // Procura as propostas com a data de conclusão fornecida
             const propostas = await Proposta.find({
-                dataConclusao: moment(data).format('DD/MM/YYYY')
+                dataConclusao: moment(data).format('DD/MM/YYYY'),
+                status: {$ne: 'Retrocedido'}
             });
 
             let analistas = [];
