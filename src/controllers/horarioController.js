@@ -568,6 +568,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
+
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
@@ -600,6 +601,35 @@ module.exports = {
             })
         }
     },
+
+    verificarReaberto: async (req, res) => {
+        try {
+
+            const { enfermeiro, dia, horario } = req.query
+
+            const result = await Horario.findOne({
+                enfermeiro,
+                dia,
+                horario
+            })
+
+            if (result.agendado === 'Reaberto') {
+                return res.json({
+                    quemReabriu: result.quemReabriu
+                })
+            }
+
+            return res.json({
+                quemReabriu: false
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 
 }
 
