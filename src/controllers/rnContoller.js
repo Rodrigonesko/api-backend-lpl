@@ -51,7 +51,7 @@ module.exports = {
 
                 const cid = e.CID
 
-                const periodo = e['PERÍODO DA DOENÇA']
+                const periodo = e['PERÍODO DA DOENÇA'] || e['PERIODO DA DOENÇA'] || e['ARGUMENTOS P/ CTTO"PERÍODO DA DOENÇA']
 
                 const prc = e.PRC
 
