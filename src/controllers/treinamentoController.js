@@ -38,7 +38,8 @@ module.exports = {
                     nome: user.name,
                     realizado: false,
                     id: user._id,
-                    data: null
+                    data: null,
+                    ativo: true
                 }
             })
 
@@ -190,15 +191,19 @@ module.exports = {
     naoPrecisaTreinamento: async (req, res) => {
         try {
 
-            const { idTreinamento, nome } = req.body
+            const { idTreinamento, nome, ativo } = req.body
 
             const result = await Treinamento.updateOne({
                 _id: idTreinamento,
+                "realizados.nome": nome
             }, {
-                $pull: {
-                    realizados: { nome }
+                $set: {
+                    'realizados.$.ativo': !ativo,
                 }
             })
+
+            console.log(result);
+            console.log(ativo);
 
             return res.json(result)
 
@@ -226,7 +231,7 @@ module.exports = {
             })
 
             const treinamentosNaoRealizados = treinamentos.filter(treinamento => {
-                return !treinamento.realizados[0].realizado
+                return !treinamento.realizados[0].realizado && treinamento.realizados[0].ativo
             })
 
             return res.json(treinamentosNaoRealizados)

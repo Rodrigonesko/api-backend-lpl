@@ -6,7 +6,8 @@ const Scheema = new mongoose.Schema({
     link: String,
     prazo: String,
     observacoes: String,
-    realizados: []
+    realizados: [],
+    
 }, {
     timestamps: true
 })
