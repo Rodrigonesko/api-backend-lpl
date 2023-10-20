@@ -613,11 +613,16 @@ module.exports = {
                 horario
             })
 
-            if (result.agendado === 'Reaberto') {
+            console.log(enfermeiro, dia, horario);
+
+            if (result?.quemReabriu) {
+                console.log('reaberto');
                 return res.json({
                     quemReabriu: result.quemReabriu
                 })
             }
+
+            console.log('nao reaberto');
 
             return res.json({
                 quemReabriu: false
