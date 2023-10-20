@@ -120,7 +120,7 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, dataAniversario } = req.body
 
             const result = await User.findOneAndUpdate({ email: email }, {
                 enfermeiro,
@@ -133,7 +133,8 @@ module.exports = {
                 atividadePrincipal,
                 coren,
                 nomeCompleto,
-                dataAdmissao
+                dataAdmissao,
+                dataAniversario
             })
 
 

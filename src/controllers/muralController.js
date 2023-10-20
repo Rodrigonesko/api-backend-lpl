@@ -99,5 +99,22 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    getAllAniversariantes: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            await Recados.find()
+
+            return res.json(dados)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }
