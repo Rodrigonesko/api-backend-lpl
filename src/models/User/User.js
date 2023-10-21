@@ -23,7 +23,11 @@ const userScheema = new mongoose.Schema({
     bancoHoras: String,
     vencimentoFerias: [],
     nomeCompleto: String,
-    dataBancoHoras: String
+    dataBancoHoras: String,
+    acessos: {
+        administrador: Boolean,
+        agendamento: Boolean
+    }
 },
     {
         versionKey: false

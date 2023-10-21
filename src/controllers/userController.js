@@ -120,7 +120,12 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, administrador, agendamento } = req.body
+
+            const acessos = {
+                agendamento,
+                administrador
+            }
 
             const result = await User.findOneAndUpdate({ email: email }, {
                 enfermeiro,
@@ -133,11 +138,12 @@ module.exports = {
                 atividadePrincipal,
                 coren,
                 nomeCompleto,
-                dataAdmissao
+                dataAdmissao,
+                $set: {
+                    acessos
+                }
+
             })
-
-
-            console.log('aaa');
 
             return res.status(200).json({
                 result
@@ -366,7 +372,7 @@ module.exports = {
             }
 
             feriasElegiveis.sort((a, b) => {
-                const dataA =  moment(a.vencimento);
+                const dataA = moment(a.vencimento);
                 const dataB = moment(b.vencimento);
                 return dataA - dataB;
             });
