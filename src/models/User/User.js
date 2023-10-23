@@ -24,7 +24,7 @@ const userScheema = new mongoose.Schema({
     vencimentoFerias: [],
     nomeCompleto: String,
     dataBancoHoras: String,
-    dataAniversario: String
+    dataAniversario: String,
     acessos: {
         administrador: Boolean,
         agendamento: Boolean
