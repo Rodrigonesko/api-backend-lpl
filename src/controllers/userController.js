@@ -99,6 +99,7 @@ module.exports = {
             })
         }
     },
+
     searchEmail: async (req, res) => {
         try {
             const { email } = req.params
@@ -146,17 +147,17 @@ module.exports = {
                 }
             })
 
-        return res.status(200).json({
-            result
-        })
+            return res.status(200).json({
+                result
+            })
 
-    } catch(error) {
-        console.log(error);
-        return res.status(500).json({
-            error: "Internal server error."
-        })
-    }
-},
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
 
     enfermeiros: async (req, res) => {
         try {
@@ -175,218 +176,245 @@ module.exports = {
         }
     },
 
-        analistasElegi: async (req, res) => {
-            try {
-                const analistas = await User.find({
-                    elegibilidade: 'true'
-                })
+    analistasElegi: async (req, res) => {
+        try {
+            const analistas = await User.find({
+                elegibilidade: 'true'
+            })
 
-                return res.status(200).json({
-                    analistas
-                })
-            } catch (error) {
-                console.log(error);
-                return res.status(500).json({
-                    error: "Internal server error."
+            return res.status(200).json({
+                analistas
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    analistasRsd: async (req, res) => {
+        try {
+
+            const analistas = await User.find({
+                rsd: true
+            })
+
+            return res.json(analistas)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    resetPassword: async (req, res) => {
+        try {
+
+            const { email } = req.body
+
+            const encryptedPassword = await bcrypt.hash('123', 8)
+
+            const update = await User.updateOne({
+                email
+            }, {
+                password: encryptedPassword,
+                firstAccess: 'Sim'
+            })
+
+            return res.status(200).json({
+                update
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    coren: async (req, res) => {
+        try {
+
+            const { name } = req.params
+
+            const result = await User.findOne({
+                name
+            })
+
+            const coren = result.coren
+
+            return res.json(coren)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    lerPolitica: async (req, res) => {
+        try {
+
+            const { id } = req.body
+
+            await User.updateOne({
+                name: req.user
+            }, {
+                $push: { politicasLidas: id }
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    getAllCelulas: async (req, res) => {
+        try {
+            const result = await Celula.find()
+            return res.json(result)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    createCelula: async (req, res) => {
+        try {
+            const { celula } = req.body
+            await Celula.create({
+                celula
+            })
+            return res.json({
+                msg: 'ok'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    deleteCelula: async (req, res) => {
+        try {
+            const { celula } = req.params
+            await Celula.deleteOne({
+                celula
+            })
+            return res.json({
+                msg: 'ok'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    updateBancoHoras: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            for (const item of dados) {
+
+                if (!item.Nome) {
+                    continue
+                }
+
+                await User.updateOne({
+                    nomeCompleto: item.Nome
+                }, {
+                    bancoHoras: item.BTotal || '',
+                    dataBancoHoras: moment().format('YYYY-MM-DD')
                 })
             }
-        },
 
-            analistasRsd: async (req, res) => {
-                try {
+            return res.json(dados)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
 
-                    const analistas = await User.find({
-                        rsd: true
-                    })
+    getFeriasElegiveis: async (req, res) => {
+        try {
 
-                    return res.json(analistas)
+            const users = await User.find()
 
-                } catch (error) {
-                    console.log(error);
-                    return res.status(500).json({
-                        error: "Internal server error."
-                    })
-                }
-            },
+            const feriasElegiveis = []
 
-                resetPassword: async (req, res) => {
-                    try {
-
-                        const { email } = req.body
-
-                        const encryptedPassword = await bcrypt.hash('123', 8)
-
-                        const update = await User.updateOne({
-                            email
-                        }, {
-                            password: encryptedPassword,
-                            firstAccess: 'Sim'
-                        })
-
-                        return res.status(200).json({
-                            update
-                        })
-
-                    } catch (error) {
-                        console.log(error);
-                        return res.status(500).json({
-                            error: "Internal server error."
-                        })
-                    }
-                },
-
-                    coren: async (req, res) => {
-                        try {
-
-                            const { name } = req.params
-
-                            const result = await User.findOne({
-                                name
-                            })
-
-                            const coren = result.coren
-
-                            return res.json(coren)
-
-                        } catch (error) {
-                            console.log(error);
-                            return res.status(500).json({
-                                error: "Internal server error."
+            for (const user of users) {
+                if (user.vencimentoFerias.length) {
+                    for (const item of user.vencimentoFerias) {
+                        if (!item.tirouFerias) {
+                            feriasElegiveis.push({
+                                nome: user.nomeCompleto || user.name,
+                                anoFerias: moment(user.dataAdmissao).year(item.anoVencimento).format('YYYY-MM-DD'),
+                                vencimento: moment(user.dataAdmissao).year(item.anoVencimento + 1).format('YYYY-MM-DD')
                             })
                         }
-                    },
+                    }
+                }
+            }
 
-                        lerPolitica: async (req, res) => {
-                            try {
+            feriasElegiveis.sort((a, b) => {
+                const dataA = moment(a.vencimento);
+                const dataB = moment(b.vencimento);
+                return dataA - dataB;
+            });
 
-                                const { id } = req.body
+            return res.json(feriasElegiveis)
 
-                                await User.updateOne({
-                                    name: req.user
-                                }, {
-                                    $push: { politicasLidas: id }
-                                })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
 
-                                return res.json({
-                                    msg: 'ok'
-                                })
-
-                            } catch (error) {
-                                console.log(error);
-                                return res.status(500).json({
-                                    error: "Internal server error."
-                                })
-                            }
-                        },
-
-                            getAllCelulas: async (req, res) => {
-                                try {
-                                    const result = await Celula.find()
-                                    return res.json(result)
-                                } catch (error) {
-                                    console.log(error);
-                                    return res.status(500).json({
-                                        error: "Internal server error."
-                                    })
-                                }
-                            },
-
-                                createCelula: async (req, res) => {
-                                    try {
-                                        const { celula } = req.body
-                                        await Celula.create({
-                                            celula
-                                        })
-                                        return res.json({
-                                            msg: 'ok'
-                                        })
-                                    } catch (error) {
-                                        console.log(error);
-                                        return res.status(500).json({
-                                            error: "Internal server error."
-                                        })
-                                    }
-                                },
-
-                                    deleteCelula: async (req, res) => {
-                                        try {
-                                            const { celula } = req.params
-                                            await Celula.deleteOne({
-                                                celula
-                                            })
-                                            return res.json({
-                                                msg: 'ok'
-                                            })
-                                        } catch (error) {
-                                            console.log(error);
-                                            return res.status(500).json({
-                                                error: "Internal server error."
-                                            })
-                                        }
-                                    },
-
-                                        updateBancoHoras: async (req, res) => {
-                                            try {
-
-                                                const { dados } = req.body
-
-                                                for (const item of dados) {
-
-                                                    if (!item.Nome) {
-                                                        continue
-                                                    }
-
-                                                    await User.updateOne({
-                                                        nomeCompleto: item.Nome
-                                                    }, {
-                                                        bancoHoras: item.BTotal || '',
-                                                        dataBancoHoras: moment().format('YYYY-MM-DD')
-                                                    })
-                                                }
-
-                                                return res.json(dados)
-                                            } catch (error) {
-                                                console.log(error);
-                                                return res.status(500).json({
-                                                    error: "Internal server error."
-                                                })
-                                            }
-                                        },
-
-                                            getFeriasElegiveis: async (req, res) => {
-                                                try {
-
-                                                    const users = await User.find()
-
-                                                    const feriasElegiveis = []
-
-                                                    for (const user of users) {
-                                                        if (user.vencimentoFerias.length) {
-                                                            for (const item of user.vencimentoFerias) {
-                                                                if (!item.tirouFerias) {
-                                                                    feriasElegiveis.push({
-                                                                        nome: user.nomeCompleto || user.name,
-                                                                        anoFerias: moment(user.dataAdmissao).year(item.anoVencimento).format('YYYY-MM-DD'),
-                                                                        vencimento: moment(user.dataAdmissao).year(item.anoVencimento + 1).format('YYYY-MM-DD')
-                                                                    })
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-
-                                                    feriasElegiveis.sort((a, b) => {
-                                                        const dataA = moment(a.vencimento);
-                                                        const dataB = moment(b.vencimento);
-                                                        return dataA - dataB;
-                                                    });
-
-                                                    return res.json(feriasElegiveis)
-
-                                                } catch (error) {
-                                                    console.log(error);
-                                                    return res.status(500).json({
-                                                        error: "Internal server error."
-                                                    })
-                                                }
-                                            }
+    getAllAniversariantes: async (req, res) => {
+        try {
+            const result = await User.find()
+    
+            const aniversarios = []
+    
+            for (const user of result) {
+                if (user.dataAniversario) { // Verifique se o usuário possui uma data de aniversário definida
+                    aniversarios.push({
+                        nome: user.nomeCompleto || user.name,
+                        dataAniversario: moment(user.dataAniversario).format('YYYY-MM-DD'),
+                    })
+                }
+            }
+    
+            return res.json(aniversarios)
+    
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
+        }
+    }
+    
 }
