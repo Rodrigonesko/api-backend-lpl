@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET
+const User = require('../models/User/User')
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
     let token = req.cookies['token'] ? req.cookies['token'] : ""
 
     if (!token) {
@@ -10,9 +11,15 @@ const auth = (req, res, next) => {
 
     try {
         const data = jwt.verify(token, secret)
+
+        const userData = await User.findOne({
+            email: data.email
+        })
+
         req.user = data.username
         req.email = data.email
         req.userAcessLevel = data.accessLevel
+        req.acessos = userData.acessos
 
         next()
     } catch (error) {

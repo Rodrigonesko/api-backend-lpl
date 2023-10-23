@@ -25,6 +25,10 @@ const userScheema = new mongoose.Schema({
     nomeCompleto: String,
     dataBancoHoras: String,
     dataAniversario: String
+    acessos: {
+        administrador: Boolean,
+        agendamento: Boolean
+    }
 },
     {
         versionKey: false
