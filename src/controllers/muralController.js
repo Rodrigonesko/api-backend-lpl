@@ -2,6 +2,7 @@ const Recados = require('../models/Mural/Recado')
 const path = require('path')
 const fs = require('fs')
 const multer = require('multer')
+const User = require('../models/User/User')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -97,23 +98,6 @@ module.exports = {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    getAllAniversariantes: async (req, res) => {
-        try {
-
-            const { dados } = req.body
-
-            await Recados.find()
-
-            return res.json(dados)
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
             })
         }
     }
