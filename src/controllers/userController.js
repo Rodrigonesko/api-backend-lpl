@@ -28,8 +28,7 @@ module.exports = {
                 nomeCompleto,
                 dataAdmissao
             })
-
-            return res.status(201).json(newUser)
+          return res.status(201).json(newUser)
 
         } catch (error) {
             console.error(error);
