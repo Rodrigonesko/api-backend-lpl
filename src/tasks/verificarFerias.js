@@ -8,6 +8,9 @@ async function verificarFerias() {
     const anoAtual = moment().year(); // Obtém o ano atual
 
     for (const user of users) {
+        if (!user.dataAdmissao) {
+            continue
+        }
         const dataAdmissao = moment(user.dataAdmissao);
         const anoDeAdmissao = dataAdmissao.year(); // Obtém o ano de admissão do usuário
 
@@ -16,20 +19,26 @@ async function verificarFerias() {
 
         const isMaiorSeisMeses = moment().year(anoAtual) - dataAdmissao.year(anoDeAdmissao) >= 15768000000
 
-        let anoVencimento = anoAtual
+        let isProxVencimento = moment() - moment(dataAdmissao).year(ultimoAnoVencimento) >= 15768000000
+
+        if (!ultimoAnoVencimento) {
+            isProxVencimento = false
+        }
+
+        let anoVencimento = ultimoAnoVencimento + 1
 
         if (isMaiorSeisMeses && !ultimoAnoVencimento) {
             anoVencimento = dataAdmissao.add(1, 'year').year()
         }
 
-        if (isMaiorSeisMeses && (ultimoAnoVencimento < anoAtual || !ultimoAnoVencimento)) {
+        if (isMaiorSeisMeses && (isProxVencimento || !ultimoAnoVencimento)) {
             const obj = {
                 tirouFerias: false,
                 dataDesejada: '',
                 dataDesejada2: '',
                 anoVencimento
             }
-            console.log(`entrou`);
+            console.log(`entrou`, obj);
             await User.updateOne({
                 _id: user._id
             }, {
