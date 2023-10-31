@@ -28,7 +28,7 @@ module.exports = {
                 nomeCompleto,
                 dataAdmissao
             })
-          return res.status(201).json(newUser)
+            return res.status(201).json(newUser)
 
         } catch (error) {
             console.error(error);
@@ -353,6 +353,41 @@ module.exports = {
         }
     },
 
+    updateHorarioPonto: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            for (const item of dados) {
+                const entrada1 = moment(item['ENTRADA 1'], 'HH:mm')
+                const saida1 = moment(item['SAÍDA 1'], 'HH:mm')
+                const entrada2 = moment(item['ENTRADA 2'], 'HH:mm')
+
+                const horasTrabalhadas = calcularDiferencaEntreHorarios(entrada1, saida1)
+
+                const horasFaltantes = calcularDiferencaEntreHorarios(horasTrabalhadas, '08:00')
+
+                const horarioSaida = entrada2.add(moment(horasFaltantes, 'HH:mm').hours(), 'hours').add(moment(horasFaltantes, 'HH:mm').minutes(), 'minutes').format('YYYY-MM-DD HH:mm');
+
+                await User.updateOne({
+                    nomeCompleto: item.NOME
+                }, {
+                    horarioSaida
+                })
+
+                console.log(horasTrabalhadas, horasFaltantes, horarioSaida, item.NOME);
+            }
+
+            return res.json(dados)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     getFeriasElegiveis: async (req, res) => {
         try {
 
@@ -393,9 +428,9 @@ module.exports = {
     getAllAniversariantes: async (req, res) => {
         try {
             const result = await User.find()
-    
+
             const aniversarios = []
-    
+
             for (const user of result) {
                 if (user.dataAniversario) { // Verifique se o usuário possui uma data de aniversário definida
                     aniversarios.push({
@@ -404,9 +439,9 @@ module.exports = {
                     })
                 }
             }
-    
+
             return res.json(aniversarios)
-    
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -415,5 +450,22 @@ module.exports = {
             });
         }
     }
-    
+
+}
+
+function calcularDiferencaEntreHorarios(horaString1, horaString2) {
+
+    const hora1 = moment(horaString1, "HH:mm:ss");
+    const hora2 = moment(horaString2, "HH:mm:ss");
+
+    const diferencaEmMilissegundos = hora2.diff(hora1);
+
+    const diferencaEmMinutos = moment.duration(diferencaEmMilissegundos).asMinutes();
+
+    const horas = Math.floor(diferencaEmMinutos / 60);
+    const minutos = Math.floor(diferencaEmMinutos % 60);
+
+    const diferencaFormatada = moment({ hours: horas, minutes: minutos }).format("HH:mm");
+
+    return diferencaFormatada;
 }

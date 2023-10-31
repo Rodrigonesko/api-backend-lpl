@@ -28,7 +28,8 @@ const userScheema = new mongoose.Schema({
     acessos: {
         administrador: Boolean,
         agendamento: Boolean
-    }
+    },
+    horarioSaida: String
 },
     {
         versionKey: false
