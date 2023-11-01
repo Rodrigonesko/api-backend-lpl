@@ -179,7 +179,8 @@ module.exports = {
                 entrevistaQualidade,
                 filial: updateProposta.filial,
                 idProposta: updateProposta._id,
-                tea: subRespostas['espectro-Diagnostico:']
+                tea: subRespostas['espectro-Diagnostico:'],
+                administradora: updateProposta.administradora
             }, {
                 upsert: true
             })
@@ -647,7 +648,9 @@ module.exports = {
                 tipoContrato: proposta.tipoContrato,
                 dataRecebimento: proposta.dataRecebimento,
                 responsavel: motivoCancelamento,
-                filial: proposta.filial
+                filial: proposta.filial,
+                idProposta: proposta._id,
+                administradora: proposta.administradora
             })
 
             return res.status(200).json({
@@ -2975,7 +2978,43 @@ module.exports = {
 
                 console.log(result.data, proposta.data.proposta, nome);
             }
- 
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    adicionarAdministradora: async (req, res) => {
+        try {
+
+            const result = await axios.get(`http://localhost:3002/show`, {
+                headers: {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${req.cookies['token']}`
+                    }
+                }
+            })
+
+            for (const item of result.data.propostas) {
+                const teste = await DadosEntrevista.updateOne({
+                    nome: item.nome,
+                    proposta: item.proposta
+                }, {
+                    administradora: item.administradora
+                })
+
+                console.log(moment(item.createdAt).format('DD/MM/YYYY'));
+
+            }
+
             return res.json({
                 msg: 'ok'
             })

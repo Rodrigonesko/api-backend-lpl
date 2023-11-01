@@ -58,5 +58,6 @@ router.get('/producao/anexos/:analista/:mes', auth, teleEntrevistaController.pro
 router.get('/verificarHorarioReaberto', auth, horarioController.verificarReaberto)
 
 router.get('/reenviarMensagensLote', teleEntrevistaController.reenviarSegundaMensagem)
+router.get('/adicionarAdministradora', teleEntrevistaController.adicionarAdministradora)
 
 module.exports = router
