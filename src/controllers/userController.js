@@ -434,7 +434,7 @@ module.exports = {
             for (const user of result) {
                 if (user.dataAniversario) { // Verifique se o usuário possui uma data de aniversário definida
                     aniversarios.push({
-                        nome: user.nomeCompleto || user.name,
+                        nome: user.name,    
                         dataAniversario: moment(user.dataAniversario).format('YYYY-MM-DD'),
                     })
                 }
