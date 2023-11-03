@@ -16,6 +16,28 @@ const { default: axios } = require('axios')
 
 const uploadPerguntas = multer({ dest: os.tmpdir() }).single('file')
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = './uploads/entrevistas/'
+        if (!fs.existsSync(dir)) {
+            fs.mkdir(dir, (err) => {
+                if (err) {
+                    console.log("Algo deu errado", err);
+                    return
+                }
+                console.log("Diretório criado!")
+            })
+        }
+        cb(null, dir)
+    },
+
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+})
+
+const multerUploadImplantacao = multer({ storage }).single('file')
+
 module.exports = {
 
 
@@ -2679,304 +2701,28 @@ module.exports = {
         }
     },
 
-    reenviarSegundaMensagem: async (req, res) => {
+    adicionarAdministradora: async (req, res) => {
         try {
 
-            const array = [
-                ['19404636', 'LUANA BARCELLOS PEREIRA RIBEIRO'],
-                ['19404754', 'ACACIA PEDRONEZ TREVISAN'],
-                ['19404754', 'EDUARDO TREVISAN'],
-                ['19404754', 'ENRICO PEDRONEZ BEZERRA TREVISAN'],
-                ['19404862', 'LEO DIAS PEREIRA FILHO'],
-                ['19404862', 'LUKE PEREIRA'],
-                ['19405016', 'CAMILA VENTURA DA SILVA'],
-                ['19405100', 'LUCAS GAZETA PASSOS'],
-                ['19405178', 'SERGIO COLONIA CACIATORE'],
-                ['19405238', 'GIULIA ATAIDE PEIXOTO MORAES DA SILVA'],
-                ['19405238', 'VALERIA ATAIDE PEIXOTO'],
-                ['19405313', 'LEONARDO KIOSHI YOKOTA ANANIAS'],
-                ['19405313', 'LEO YURI NUTI YOKOTA'],
-                ['19405313', 'CLARA HARUMI NUTI YOKOTA'],
-                ['19405313', 'CAMILLE QUADRADO NUTI'],
-                ['19405392', 'GIOVANNA FERREIRA BARCELOS'],
-                ['19405429', 'AMANDA MOREIRA PICANCO CRUZ'],
-                ['19405445', 'GRAZIANNE ALESSANDRA SIMOES RAMOS'],
-                ['19405648', 'LETICIA FAUSTINO QUEIROZ'],
-                ['19405651', 'MARCELA PINHEIRO FONTES'],
-                ['19666405', 'CRISTINA MARCIA DE AZEVEDO DIAS'],
-                ['19689463', 'IGOR COELHO SILVA'],
-                ['19689463', 'IAN AVELLAR COELHO'],
-                ['95490915', 'ERONDI KFIATKOVSKI'],
-                ['95490915', 'LEONARDO RIBEIRO KFIATKOVSKI'],
-                ['95490915', 'BIANCA ROSALI RIBEIRO KFIATKOVSKI'],
-                ['95498111', 'ANA LYGIA AGUIAR KNUST LIMA'],
-                ['95501562', 'CAMILA GUEDES XAVIER'],
-                ['95501562', 'RONALDO XAVIER'],
-                ['95506925', 'CINTIA MENEGAZZO'],
-                ['95506925', 'ANA LUIZA MENEGAZZO CAMPOS'],
-                ['95511920', 'JUAN PABLO MATIAS DE MELLO DE MATTOS'],
-                ['95514362', 'RAVI BRYAN GIMENES DE SOUZA'],
-                ['95518246', 'MAYRAN KATIPIAM GIRON ABBUD'],
-                ['95518791', 'ANDRE LUIS DE OLIVEIRA JUNIOR'],
-                ['95518791', 'BARBARA SOARES ALVES GONCALVES'],
-                ['95519624', 'FRANCISLEY MARCOS DE SOUZA'],
-                ['95519624', 'BRASILEU AGNALDO PEREIRA'],
-                ['95519965', 'WILTON PAMFILIO'],
-                ['95519965', 'LIVIA ELISSA OSORIO PAMFILIO'],
-                ['95519965', 'ROSAMARIA BLANCO OSORIO PAMFILIO'],
-                ['95520018', 'VIVIAN MARIA FERREIRA DE BRITO'],
-                ['95520143', 'WANDA SILVEIRA CINTRA CAVASSA'],
-                ['95520143', 'LUIZ ANTONIO CAVASSA'],
-                ['95520321', 'YAGO CESAR PEREIRA DA SILVA TEIXEIRA'],
-                ['95520550', 'CARLOS JOSE MARIN DIAZ'],
-                ['95521034', 'CAROLINE PINHEIRO SCHULTZ DE AZEVEDO'],
-                ['95521034', 'REJANE MARA DA COSTA DE ALMEIDA'],
-                ['95521034', 'CARLOS ALBERTO SILVEIRA DE ALMEIDA'],
-                ['95521034', 'GABRIEL DA COSTA DE ALMEIDA'],
-                ['95521034', 'NATALIA CRISTINA FERREIRA PIRES BARBOSA'],
-                ['95521034', 'HENRIQUE PIRES BARBOSA'],
-                ['95521034', 'JEFERSON CARLOS DOS SANTOS'],
-                ['95521034', 'CINTIA SILVA LEANDRO'],
-                ['95521034', 'ANDRE PINHEIRO SCHULZ'],
-                ['95521034', 'MARCELO DE AMORIM SANTANA'],
-                ['95521034', 'RAQUEL CRISTINA DE FATIMA'],
-                ['95521582', 'GABRIELA LOPES DOS SANTOS'],
-                ['95521582', 'GABRIEL LOPES DOS SANTOS'],
-                ['95521582', 'APARECIDA DE SOUZA LOPES'],
-                ['95521582', 'FABIANA CAROLINE LOPES DOS SANTOS'],
-                ['95521582', 'JULIA LOPES DIAS'],
-                ['95524050', 'ROSENI PEREIRA DE OLIVEIRA BORGES'],
-                ['95524050', 'JOSE CLAUDIO DA SILVA BORGES'],
-                ['95524050', 'ANA CARLA QUINTANILHA BORGES'],
-                ['95524172', 'HELENA MENEZES DE LIMA'],
-                ['95524172', 'CECILIA MENEZES DE LIMA'],
-                ['95524172', 'RAFAELA MENEZES GOMES DE SOUZA'],
-                ['95524172', 'FRANCISCO VALDO DE LIMA'],
-                ['95524793', 'RICARDO FERREIRA POLLINI'],
-                ['95525294', 'MARIANA EMILY MARTINS DOS SANTOS'],
-                ['95525822', 'VIVIANNE GEVAERD MARTINS'],
-                ['95525822', 'IZADORA DE SOUZA SILVA'],
-                ['95525822', 'LUCYANA APARECIDA BANE CAMPOS FLORENTINO'],
-                ['95526163', 'MURILO MACEDO DE MATOS'],
-                ['95526163', 'GUSTAVO LEON DALCIN MATOS'],
-                ['95526163', 'MAICON DE MATOS SILVA'],
-                ['95526291', 'RAFAEL MONTEIRO DIAS'],
-                ['95526291', 'MONICA COSTA DA SILVA'],
-                ['95526291', 'LARA COSTA MONTEIRO'],
-                ['95526486', 'ALLANE CHIARELLI'],
-                ['95526486', 'LARISSA IRACEMA LIMA SIMOES DA SILVA VIEIRA'],
-                ['95526486', 'MAURA SABRINA PAIVA PIMENTEL'],
-                ['95526486', 'LARISSA DA SILVA PEREIRA'],
-                ['95526576', 'JORGE GERALDO'],
-                ['95526576', 'JEFFERSON FARIAS DA SILVA'],
-                ['95526576', 'MARQUES ANTONIO PEREIRA'],
-                ['95526576', 'GLAUCIA DE LOURDES DA SILVA PEREIRA'],
-                ['95526576', 'REBECA DA SILVA PEREIRA'],
-                ['95526576', 'MATEUS DOS SANTOS'],
-                ['95526576', 'MAURICIO DA FONSECA MOREIRA'],
-                ['95526576', 'THAIS ESTEVES FIGUEIRAS REGA'],
-                ['95526576', 'MONICA ESTEVES FIGUEIRAS REGA'],
-                ['95526576', 'ALEX SANDRO DE ALMEIDA AMARAL'],
-                ['95526576', 'ANDERSON DOS SANTOS GERALDO'],
-                ['95526576', 'CARLOS ALBERTO JOAO DA SILVA'],
-                ['95526576', 'CLAUDECY JESUINO CAETANO'],
-                ['95526732', 'RAFAEL NUNES KILIPPER'],
-                ['95526732', 'THAIS VALIM KILIPPER'],
-                ['95526732', 'ANTHONY VALIM KILIPPER'],
-                ['95526807', 'ERNANE ANTONIO FRIAS'],
-                ['95526807', 'REGIANE PIOVANELI FRIAS'],
-                ['95526980', 'MAYA DA ROCHA MARQUES'],
-                ['95526980', 'MAYARA DA ROCHA MOURA'],
-                ['95527048', 'ARIELLA BACELAR LIMA'],
-                ['95527048', 'ROBERTA BACELAR DE SOUZA'],
-                ['95527354', 'GABRIEL GOMES DA SILVA RODRIGUES'],
-                ['95527354', 'LUCAS GOMES DA SILVA RODRIGUES'],
-                ['95527354', 'LEILA GOMES DA SILVA RODRIGUES'],
-                ['95527482', 'JACKSON CESAR PEREIRA SILVA'],
-                ['95527482', 'JULIANO CESAR PEREIRA SILVA'],
-                ['95527482', 'JULIA PIERMATEI SILVA'],
-                ['95527482', 'FERNANDA ALVES PIERMATEI'],
-                ['95527533', 'BRENA DUARTE OGIBOWSKI'],
-                ['95527551', 'THEO LEVY FERNANDES SOARES DE MACEDO'],
-                ['95527551', 'DAVI LEVY FERNANDES SOARES DE MACEDO'],
-                ['95527551', 'SAMUEL LEVY RIBEIRO SOARES DE MACEDO'],
-                ['95527551', 'CRISTIANE GONCALVES FERNANDES'],
-                ['95527598', 'MAITE LANDRE VASCONCELOS'],
-                ['95527598', 'ANTONIO LANDRE VASCONCELOS'],
-                ['95527598', 'MAINA MONTEIRO VASCONCELOS'],
-                ['95527598', 'HELOISE MONTEIRO VASCONCELOS'],
-                ['95527598', 'FELIPE MONTEIRO VASCONCELOS'],
-                ['95527598', 'PIERA LANDRE VASCONCELOS'],
-                ['95527598', 'SIMONE LANDRE VASCONCELOS'],
-                ['95527598', 'HELIO DE CASTRO VASCONCELOS NETTO'],
-                ['95527598', 'LUCIA LIMA BASTOS'],
-                ['95527598', 'ISABELA BASTOS VASCONCELOS'],
-                ['95528891', 'ANA KARYNE REBOUCAS DE QUEIROZ'],
-                ['95528891', 'ANA VLADIA REBOUCS DE QUEIROZ'],
-                ['95528891', 'ADRIANO REBOUCAS DE QUEIROZ'],
-                ['95528891', 'ANA PATRICIA REBOUCAS DE QUEIROZ'],
-                ['95528891', 'LEVI REBOUCAS DE QUEIROZ'],
-                ['95528972', 'KALEB AZEREDO DE LUCA'],
-                ['95528972', 'BRYAN AZEREDO TUMBA'],
-                ['95528972', 'JESSICA DE AZEREDO RIBEIRO'],
-                ['95529448', 'JULLIANO SOARES PEDERSOLI MARTINS'],
-                ['95529448', 'MARIA DAS GRACAS SOARES MARTINS'],
-                ['95529584', 'FRANCIELLE AMARO GOMES TEIXEIRA'],
-                ['95529584', 'BENICIO AMARO GOMES PAIVA'],
-                ['95529584', 'MARIA FLOR AMARO GOMES PAIVA'],
-                ['95529584', 'RICK DE PAIVA SILVA'],
-                ['95529617', 'ANA CRISTINA LINO NEVES'],
-                ['95529617', 'MICHEL LINO NEVES CARDOSO DO NASCIMENTO'],
-                ['95529687', 'VICTORIA BARBOSA CARNEIRO'],
-                ['95529687', 'MURILLO BARBOSA DOS SANTOS'],
-                ['95529724', 'DEBORA FERNANDES SILVA'],
-                ['95529724', 'THEODORO VALENTIM FERNANDES MURDA'],
-                ['95529827', 'REGINA FONSECA'],
-                ['95529866', 'CASSIA LORENA CORDEIRO SANTOS CARNEIRO'],
-                ['95529866', 'JOAO BATISTA OLIVEIRA CARNEIRO'],
-                ['95529909', 'MATILDE ANDRADE DE MELO'],
-                ['95529909', 'MARIA DOS PRAZERES ANDRADE DE MELO'],
-                ['95529909', 'MARCELA ANDRADE DE MELO'],
-                ['95530474', 'BENJAMIN OLIVEIRA'],
-                ['95530474', 'JUSSARA ELIANE FERREIRA'],
-                ['95530516', 'JOEY ANTONIO DIAS DE CARVALHO TAYLOR'],
-                ['95530516', 'SEAN TAYLOR'],
-                ['95530516', 'ADRIANA MEIRELLES DIAS DE CARVALHO'],
-                ['95530516', 'RAFAEL PATRICK DIAS DE CARVALHO TAYLOR'],
-                ['95530528', 'LUCIO FERRAZ DE NIGRIS'],
-                ['95530539', 'ALEXANDRE SAVIO BRAGA SOARES'],
-                ['95530539', 'SAVIO CARVALHO NOGUEIRA'],
-                ['95530539', 'SILVAMAR CARVALHO LIMA'],
-                ['95530848', 'EDISLAINE ALMEIDA DOS REIS'],
-                ['95530848', 'JORGE HENRIQUE ALMEIDA NASCIMENTO'],
-                ['95530909', 'YASMINE KREUTZFELDT PIRES'],
-                ['95530909', 'LUIZA KREUTZFELDT BOVE'],
-                ['95530909', 'EDUARDO ROCHA BOVE'],
-                ['95531255', 'LAIZ LEITE BALIEIRO'],
-                ['95531255', 'LEONARDO LEITE BALIEIRO'],
-                ['95531255', 'LARISSA LEITE BALIEIRO'],
-                ['95531417', 'HELOISE VEBER GOMES'],
-                ['95531417', 'MAUREEN CATERINE VEBER XAVIER'],
-                ['95531543', 'MARIA CLARA COSTA RAMOS'],
-                ['95531543', 'JOAO PAULO RAMOS DE LIMA'],
-                ['95531694', 'ADRIANO DE OLIVEIRA DUARTE'],
-                ['95531694', 'IARA MERELL MARCELINO'],
-                ['95531694', 'LUANA SOARES DA SILVA'],
-                ['95531694', 'LUIS ALFREDO HIPAMO MASABI'],
-                ['95531694', 'PAULO RENAN DE AZEVEDO FERREIRA'],
-                ['95531694', 'CLAUDIA DE ALMEIDA BISPO'],
-                ['95531860', 'SANDRO SINHORIGNO'],
-                ['95531860', 'LUCAS GIURIATI SINHORIGNO'],
-                ['95532087', 'JULIO CESAR VARGAS DOS SANTOS'],
-                ['95532087', 'MARIA DE FATIMA PEREIRA SANTOS'],
-                ['95532351', 'JULIO CESAR GRANGEIRO LOPES'],
-                ['95532351', 'MATHEUS GRANGEIRO LOPES'],
-                ['95532351', 'JULIO CESAR LOPES JUNIOR'],
-                ['95532351', 'ADRIANA GRANGEIRO LOPES'],
-                ['95532752', 'BRUNA MELO HURTADO'],
-                ['95532752', 'MANOEL HURTADO SOTO'],
-                ['95532752', 'RITA DOS SANTOS MELO HURTADO'],
-                ['95532752', 'MARIA DA CONCEICAO HURTADO'],
-                ['95532752', 'EMERSON HURTADO'],
-                ['95532966', 'BRUNO RODRIGUES DIAS'],
-                ['95532966', 'BRYAN MACHADO DIAS'],
-                ['95532977', 'SABRYNE EVELYN LEANDRO NUNES'],
-                ['95532977', 'THIAGO DA SILVA COSTA'],
-                ['95532977', 'MELANIE NUNES COSTA'],
-                ['95532977', 'MIGUEL NUNES COSTA'],
-                ['95533006', 'NATAN ANDRADE CUNHA'],
-                ['95533216', 'WELLINGTON SANTANA NORBERTO'],
-                ['95533364', 'ANTONIO DOMINGOS TORRES'],
-                ['95533364', 'IGOR DOS SANTOS TORRES'],
-                ['95533364', 'VERONICA DE VASCONCELLOS DOMINGOS TORRES'],
-                ['95533395', 'THIAGO EMANUEL CUNHA ALMEIDA'],
-                ['95533395', 'MURILO JOSE CUNHA ALMEIDA'],
-                ['95533395', 'FAUSTO ALMEIDA CRUZ'],
-                ['95533395', 'SAMUEL TADEU CUNHA ALMEIDA'],
-                ['95533395', 'THAIS APARECIDA GUIMARAES CUNHA'],
-                ['95533401', 'REBECA MORAES FRANCISCO'],
-                ['95533417', 'GUILHERME FELIX DE SOUZA ROSSINI'],
-                ['95533417', 'THEO DE OLIVEIRA FELIX ROSSINI'],
-                ['95533417', 'LAURA DE OLIVEIRA VIEIRA'],
-                ['95533670', 'LAVINIA SABINO ALVES'],
-                ['95533670', 'DENISE BENEDETTI SABINO ALVES'],
-                ['95533670', 'LORENZO SABINO ALVES'],
-                ['95533670', 'GLAUBER BORBA ALVES'],
-                ['95533800', 'PEDRO HENRIQUE AMANCIO AFONSO'],
-                ['95533899', 'YAN LUCCA MORAES VIEIRA'],
-                ['95533899', 'ARTUR DOS SANTOS RODRIGUES VIEIRA'],
-                ['95533899', 'MATTEO ROCHA TAGLIATI VIEIRA'],
-                ['95534041', 'HELENILCE RIBEIRO GONCALVES DAS CHAGAS'],
-                ['95534041', 'HARIEL GONCALVES CHACAR'],
-                ['95534674', 'ADRIANA SANTOS SPINI SILVA'],
-                ['95534674', 'EDERSON GUIMARAES SILVA'],
-                ['95534915', 'RICARDO AQUINO CECCON RIBEIRO'],
-                ['95534919', 'VALENTINA KADOWAKI MOREIRA'],
-                ['95534919', 'RAVI KADOWAKI MOREIRA'],
-                ['95534919', 'BENICIO KADOWAKI MOREIRA'],
-                ['95534919', 'EDUARDA HARUMI KADOWAKI MOREIRA'],
-                ['95535060', 'MARIANGELA SILVA BANDEIRA'],
-                ['95535060', 'JULIO CESAR PORTO BANDEIRA'],
-                ['95535067', 'CLAUDIO SOUZA FIUZA PEQUENO'],
-                ['95535128', 'MARINA LOURENCO DE MEDEIROS'],
-                ['95535128', 'RENATO JORGE PALMEIRA DE MEDEIROS'],
-                ['95535128', 'MONICA LOURENCO DE MEDEIROS'],
-                ['95535128', 'RENATO LOURENCO DE MEDEIROS'],
-                ['95535210', 'LORENZO DE FREITAS ALBUQUERQUE CAMPOS'],
-                ['95535210', 'JULIANO ALBUQUERQUE CAMPOS'],
-                ['95535267', 'VIRGINIA BATISTA GUSMAO FALONE'],
-                ['95535267', 'ESTER GUSMAO FALONE'],
-                ['95535374', 'LAURA MIRANDA DE OLIVEIRA'],
-                ['95535374', 'WAGNER PEREIRA DE OLIVEIRA'],
-                ['95535374', 'THAMIRIS MIRANDA FONSECA'],
-                ['95535971', 'WALTER TEIXEIRA NETO'],
-                ['95535971', 'ISABELA CENTRONE TEIXEIRA'],
-                ['95535971', 'MARCELLA ZANONI CENTRONE'],
-                ['95536390', 'ANTONIO LUIS GONCALVES SAMPAIO GARCIA'],
-                ['95536390', 'PAULA GONCALVES DE ALMEIDA SAMPAIO GARCIA'],
-                ['95536390', 'ELISA GONCALVES SAMPAIO GARCIA'],
-                ['95536399', 'AGNES HADASSA CHAVES DE LIMA'],
-                ['95536399', 'ARDEN BARBOSA DE LIMA'],
-                ['95536399', 'ANA MARIA ROSENIR CHAVES DE LIMA'],
-                ['95536399', 'ADNA SOUSA CHAVES DE LIMA'],
-                ['95536451', 'BRUNO ALEXANDRE DE LIMA CORREA'],
-                ['95536451', 'EMILLY CORREA DE SOUZA'],
-                ['95536451', 'LUANA CAMPOS DE SOUZA'],
-                ['95536604', 'FREDERICO CAIO RIBEIRO COSTA'],
-                ['95536604', 'GABRIEL REZENDE COSTA'],
-                ['95536647', 'LUIZA LEANDRO GARRIDO'],
-                ['95536647', 'GABRIEL LEANDRO GARRIDO'],
-                ['95536647', 'MARCELA LEANDRO'],
-                ['95536779', 'DENNIS LINCOLN DIAS MOREIRA'],
-                ['95536779', 'JUNOR SANTOS MOREIRA'],
-                ['95536937', 'PAULA ALMEIDA BRUNO GOMES'],
-                ['95536937', 'MARTIN BRUNO GOMES JOSE'],
-                ['95538135', 'MARIANA OZORIO CERQUEIRA'],
-                ['95538135', 'LUANA OZORIO CERQUEIRA'],
-                ['95538135', 'CARLOS EDUARDO PEREIRA VIANA'],
-                ['95538135', 'MARCOS CESAR LESSA CERQUEIRA'],
-                ['95538581', 'MIGUEL ARGENTO ALVES DE SOUZA'],
-                ['95538581', 'PATRICIA ARGENTO'],
-            ]
-
-
-            for (const item of array) {
-
-                const nome = item[1]
-                const proposta = await axios.get(`http://localhost:3002/dadosProposta/${item[0]}/${nome}`)
-
-                const result = await axios.put(`http://localhost:3002/enviarMensagem`, {
-                    proposta: proposta.data, modeloEscolhido: 'Modelo 2', data1: '23/10/2023', data2: '23/10/2023'
-                }, {
+            const result = await axios.get(`http://localhost:3002/show`, {
+                headers: {
+                    withCredentials: true,
                     headers: {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: `Bearer ${req.cookies['token']}`
-                        }
+                        Authorization: `Bearer ${req.cookies['token']}`
                     }
+                }
+            })
+
+            for (const item of result.data.propostas) {
+                await DadosEntrevista.updateOne({
+                    nome: item.nome,
+                    proposta: item.proposta
+                }, {
+                    administradora: item.administradora
                 })
 
-                console.log(result.data, proposta.data.proposta, nome);
+                console.log(moment(item.createdAt).format('DD/MM/YYYY'));
+
             }
 
             return res.json({
@@ -2991,32 +2737,54 @@ module.exports = {
         }
     },
 
-    adicionarAdministradora: async (req, res) => {
+    uploadImplantacao: async (req, res) => {
         try {
 
-            const result = await axios.get(`http://localhost:3002/show`, {
-                headers: {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${req.cookies['token']}`
-                    }
-                }
-            })
+            multerUploadImplantacao(req, res, async (err) => {
+                let file = fs.readFileSync(req.file.path)
 
-            for (const item of result.data.propostas) {
-                const teste = await DadosEntrevista.updateOne({
-                    nome: item.nome,
-                    proposta: item.proposta
-                }, {
-                    administradora: item.administradora
+                const workbook = xlsx.read(file, { type: 'array' })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                // Obtém a planilha
+                const worksheet = workbook.Sheets[firstSheetName]
+
+                // Converte a planilha em JSON
+                let result = xlsx.utils.sheet_to_json(worksheet)
+
+                const propostasBanco = await DadosEntrevista.find({
+                    implantado: { $ne: 'Sim' },
+                    implantacao: 'Sim'
                 })
 
-                console.log(moment(item.createdAt).format('DD/MM/YYYY'));
+                const propostasAjustadas = propostasBanco.map(proposta => {
+                    return ({
+                        _id: proposta._id,
+                        proposta: +extrairNumerosJuntos(proposta.proposta)
+                    })
+                })
 
-            }
+                let count = 0
 
-            return res.json({
-                msg: 'ok'
+                for (const item of result) {
+                    const index = propostasAjustadas.findIndex(proposta => proposta.proposta === item['Número da Proposta'])
+                    if (index !== -1) {
+                        count++
+                        await DadosEntrevista.updateMany({
+                            proposta: propostasAjustadas[index].proposta
+                        }, {
+                            situacaoAmil: item['Situação']
+                        })
+                    }
+                }
+
+                console.log(count);
+
+                return res.json({
+                    msg: 'ok'
+                })
+
             })
 
         } catch (error) {
@@ -3064,4 +2832,13 @@ function calcularDiasUteis(dataInicio, dataFim, feriados) {
     }
 
     return diasUteis - 1;
+}
+
+function extrairNumerosJuntos(str) {
+    const numeros = str.match(/\d+/g);
+    if (numeros) {
+        return numeros.join('');
+    } else {
+        return '';
+    }
 }
