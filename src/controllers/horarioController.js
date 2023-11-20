@@ -22,6 +22,8 @@ module.exports = {
             const data = req.body.dataGerar
 
             const horarios = [
+                '08:00',
+                '08:20',
                 '08:40',
                 '09:00',
                 '09:20',
