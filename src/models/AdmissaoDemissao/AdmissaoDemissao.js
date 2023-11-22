@@ -9,7 +9,6 @@ const Scheema = new mongoose.Schema({
     pendente: Boolean,
     emAndamento: Boolean,
     concluido: Boolean,
-    realizado: Boolean,
     data: String,
 }, {
     timestamps: true

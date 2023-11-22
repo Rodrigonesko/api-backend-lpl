@@ -7,6 +7,9 @@ const auth = require('../../middlewares/auth')
 
 router.get('/findAll', auth, admissaoDemissaoController.findAll)
 router.put('/status', admissaoDemissaoController.setStatus)
+router.put('/setNumero', admissaoDemissaoController.setNumero)
+router.post('/create', admissaoDemissaoController.createNewAdmissao)
 router.put('/infoUser', admissaoDemissaoController.infoUser)
+router.put('/infoUser/:nome', admissaoDemissaoController.searchName)
 
 module.exports = router
