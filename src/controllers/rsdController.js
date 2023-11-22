@@ -1976,59 +1976,6 @@ module.exports = {
         }
     },
 
-    subirPedidosAntigos: async (req, res) => {
-        try {
-
-            uploadPedidosAntigos(req, res, async (err) => {
-
-                console.log('oi?');
-
-                let file = fs.readFileSync(req.file.path)
-
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                console.log(result.length);
-
-                for (const item of result) {
-
-                    if (!item.data_conclusao) {
-                        continue
-                    }
-
-                    let dataConclusao = ExcelDateToJSDate(item.data_conclusao)
-                    dataConclusao.setDate(dataConclusao.getDate() + 1)
-                    dataConclusao = moment(dataConclusao).format('YYYY-MM-DD')
-
-
-                    console.log(item.id, dataConclusao);
-
-                    await Pedido.findByIdAndUpdate({
-                        _id: item.id
-                    }, {
-                        dataConclusao
-                    })
-                }
-
-            })
-
-            return res.status(200).json({
-                msg: 'oi'
-            })
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     // Volta o pacote e todos os pedidos dentro dele para a fase Aguardando Docs
 
     voltarFase: async (req, res) => {
@@ -2271,28 +2218,6 @@ module.exports = {
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
-        }
-    },
-
-    atulizarProdutos: async (req, res) => {
-        try {
-            const result = await Pessoa.find()
-
-            for (const item of result) {
-                await Pedido.updateMany({
-                    mo: item.mo
-                }, {
-                    contratoEmpresa: item.contratoEmpresa
-                })
-            }
-
-            console.log(result.length);
-            return res.status(200).json({
-                result: result.length
-            })
-
-        } catch (error) {
-            console.log(error);
         }
     },
 

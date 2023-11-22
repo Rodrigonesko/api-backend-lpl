@@ -5,7 +5,6 @@ const auth = require('../../middlewares/auth')
 
 //RSD
 
-router.get('/atualizarProdutos', rsdController.atulizarProdutos)
 router.post('/upload', auth, rsdController.upload)
 router.post('/uploadQuarentena', auth, rsdController.uploadQuarentena)
 router.post('/subir', auth, rsdController.subir)
@@ -38,8 +37,7 @@ router.get('/operadora/:id', auth, rsdController.buscarOperadora)
 router.get('/concluidos/:pesquisa', auth, rsdController.buscarPedidosFinalizados)
 router.put('/pedido/devolverAmil', auth, rsdController.devolverAmil)
 router.post('/agenda/novoParecer', auth, rsdController.escrevarAgenda)
-router.post('/pedidosAntigos', auth, rsdController.subirPedidosAntigos)
-router.put('/pacote/voltarFase', auth, rsdController.voltarFase)
+router.put('/pacote/voltarFase', auth, rsdController.voltarFase) //parei aqui na doc
 router.put('/pedido/voltarFase', auth, rsdController.voltarFasePedido)
 router.put('/pedido/prioridadeDossie', auth, rsdController.adicionarPrioridadeDossie)
 router.put('/pacote/prioridadeDossie', auth, rsdController.prioridadeDossiePacote)

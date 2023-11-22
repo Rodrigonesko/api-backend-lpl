@@ -157,16 +157,21 @@ module.exports = {
         try {
             const { data, enfermeiro } = req.params
 
+            console.log(data, enfermeiro);
+
             const result = await Horario.find({
                 enfermeiro: enfermeiro,
                 dia: moment(data).format('YYYY-MM-DD')
             })
+
+            console.log(result);
 
             const horariosObj = result.filter(e => {
                 return e.agendado != 'Agendado'
             })
 
             const horarios = horariosObj.map(e => e.horario)
+
 
             return res.status(200).json({
                 horarios
@@ -181,7 +186,7 @@ module.exports = {
     agendar: async (req, res) => {
         try {
 
-            const { id, responsavel, data, horario } = req.body
+            const { id, responsavel, data, horario, canal } = req.body
 
             console.log(id, responsavel, data, horario);
 
@@ -226,7 +231,8 @@ module.exports = {
                     id,
                     dataEHora,
                     responsavel,
-                    quemAgendou: req.user
+                    quemAgendou: req.user,
+                    canal
                 }, {
                     withCredentials: true,
                     headers: {
