@@ -325,8 +325,11 @@ module.exports = {
 
             const { id } = req.params
 
-            const proposta = await DadosEntrevista.findById({
-                _id: id
+            const proposta = await DadosEntrevista.findOne({
+                $or: [
+                    { _id: id },
+                    { idProposta: id }
+                ]
             })
 
             return res.status(200).json({
@@ -1815,13 +1818,17 @@ module.exports = {
 
             const { id } = req.body
 
-            const dados = await DadosEntrevista.findById({
-                _id: id
+            const dados = await DadosEntrevista.find({
+                $or: [
+                    { _id: id },
+                    { idProposta: id }
+                ]
             })
 
             const resp = await axios.put(`${process.env.API_TELE}/voltarEntrevista`, {
-                nome: dados.nome,
-                proposta: dados.proposta
+                nome: dados[dados.length - 1].nome,
+                proposta: dados[dados.length - 1].proposta,
+
             }, {
                 withCredentials: true,
                 headers: {
@@ -1829,10 +1836,12 @@ module.exports = {
                 }
             })
 
-            await DadosEntrevista.findByIdAndUpdate({
-                _id: id
+            await DadosEntrevista.updateOne({
+                $or: [
+                    { _id: dados[dados.length - 1]._id },
+                ]
             }, {
-                proposta: `${dados.proposta} - Retrocedido`,
+                proposta: `${dados[dados.length - 1].proposta} - Retrocedido`,
             })
 
             return res.status(200).json({

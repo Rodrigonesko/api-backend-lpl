@@ -172,7 +172,7 @@ module.exports = {
 
                             //Alguns casos vem com &apos e é preciso fazer uma verificação e corrigir esses casos
 
-                            if (beneficiario.indexOf('&apos') == 10 || beneficiario.indexOf('&apos') == 5) {
+                            if (beneficiario.indexOf('&apos') !== -1) {
                                 beneficiario = `${beneficiario}${e[14]}`
                                 e[14] = e[15]
                                 e[15] = e['Tipo Envelope']
