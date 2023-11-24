@@ -30,7 +30,9 @@ const userScheema = new mongoose.Schema({
         administrador: Boolean,
         agendamento: Boolean
     },
-    horarioSaida: String
+    horarioSaida: String,
+    online: Boolean,
+    socketId: String
 },
     {
         versionKey: false
