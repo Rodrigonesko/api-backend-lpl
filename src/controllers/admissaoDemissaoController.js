@@ -1,5 +1,4 @@
 const AdmissaoDemissao = require('../models/AdmissaoDemissao/AdmissaoDemissao')
-const User = require('../models/User/User')
 
 module.exports = {
 
@@ -22,6 +21,21 @@ module.exports = {
     setStatus: async (req, res) => {
         try {
             const result = await AdmissaoDemissao.updateOne({ _id: req.body._id }, { status: req.body.status })
+            return res.status(200).json({
+                msg: result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    setEmail: async (req, res) => {
+        try {
+            const result = await AdmissaoDemissao.updateOne({ _id: req.body._id }, { email: req.body.email })
             return res.status(200).json({
                 msg: result
             })
@@ -87,11 +101,32 @@ module.exports = {
     searchName: async (req, res) => {
         try {
             const { nome } = req.params
-            const user = await AdmissaoDemissao.findOne({ nome: { $regex: new RegExp(nome, 'i') } })
 
-            return res.status(200).json({ user })
+            console.log(nome);
+
+            const user = await AdmissaoDemissao.findOne({ nome: nome })
+
+            return res.status(200).json({
+                user
+            })
         } catch (error) {
-            return res.status(500).json({ error: "Internal server error.", error })
+            return res.status(500).json({
+                error: "Internal server error.",
+                error
+            })
+        }
+    },
+
+    index: async (req, res) => {
+        try {
+            const users = await AdmissaoDemissao.find()
+
+            return res.json(users)
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 }
