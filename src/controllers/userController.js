@@ -2,6 +2,31 @@ const User = require('../models/User/User')
 const Celula = require('../models/User/Celula')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = `./uploads/profilePic/`
+        if (!fs.existsSync(dir)) {
+            fs.mkdir(dir, (err) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log('diretório criado com sucesso');
+            });
+        }
+        cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+        const { ext } = path.parse(file.originalname)
+        cb(null, `${req.user}-${Date.now()}${ext}`)
+    }
+})
+
+const upload = multer({ storage: storage }).single('file')
 
 module.exports = {
 
@@ -434,7 +459,7 @@ module.exports = {
             for (const user of result) {
                 if (user.dataAniversario) { // Verifique se o usuário possui uma data de aniversário definida
                     aniversarios.push({
-                        nome: user.name,    
+                        nome: user.name,
                         dataAniversario: moment(user.dataAniversario).format('YYYY-MM-DD'),
                     })
                 }
@@ -449,8 +474,39 @@ module.exports = {
                 error: error.message // Melhor captura do erro, pegando a mensagem de erro
             });
         }
-    }
+    },
 
+    updateProfilePic: async (req, res) => {
+        try {
+
+            upload(req, res, async (err) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({
+                        error: "Internal server error."
+                    })
+                }
+
+                const { filename } = req.file
+
+                const result = await User.updateOne({
+                    email: req.email
+                }, {
+                    profilePic: filename
+                })
+
+                return res.status(200).json({
+                    result
+                })
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
+        }
+    }
 }
 
 function calcularDiferencaEntreHorarios(horaString1, horaString2) {

@@ -54,6 +54,7 @@ router.patch('/bancoHoras', auth, userController.updateBancoHoras)
 router.patch('/horarioPonto', auth, userController.updateHorarioPonto)
 router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 router.get('/aniversariantes', auth, userController.getAllAniversariantes)
+router.patch('/updateProfilePic', auth, userController.updateProfilePic)
 
 //Rotas das células
 

@@ -32,7 +32,8 @@ const userScheema = new mongoose.Schema({
     },
     horarioSaida: String,
     online: Boolean,
-    socketId: String
+    socketId: String,
+    profilePic: String,
 },
     {
         versionKey: false
