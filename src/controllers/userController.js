@@ -5,6 +5,7 @@ const moment = require('moment')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
+const { Mongoose, default: mongoose } = require('mongoose')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -498,6 +499,216 @@ module.exports = {
                 return res.status(200).json({
                     result
                 })
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
+        }
+    },
+
+    createAdmissao: async (req, res) => {
+        try {
+            const { _id } = req.body
+
+            const admissao = [
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Agendamento Exame Admissional',
+                    fornecedor: 'Clinimerces',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Planilha Contratação',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Assinar Documentos',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Foto 3x4',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'Conta Salário',
+                    fornecedor: 'CEF',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VR',
+                    fornecedor: 'Site Caixa',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VC',
+                    fornecedor: 'Site VR',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VT/Metrocard',
+                    fornecedor: 'URBS',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Email',
+                    fornecedor: 'Localweb',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Assinatura Email',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Linux',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Notebook',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Ramal',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Portal LPL',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Ponto',
+                    fornecedor: 'Voux',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Crachá',
+                    fornecedor: 'Perfect Design',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Digital Sala',
+                    fornecedor: 'You Do',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Transunion',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Sisamil',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Treinamentos Obrigatórios',
+                    fornecedor: 'Clinimerces',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+            ]
+            console.log(_id);
+            
+            const result = await User.updateOne(
+                {
+                    _id: _id
+                    
+                },
+                {
+                    admissao
+                }
+                
+            )
+            return res.status(200).json({
+                result
             })
 
         } catch (error) {
