@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const userScheema = new mongoose.Schema({
     name: String,
-    numero: String,
+    matricula: String,
     email: String,
     password: String,
     accessLevel: String,
@@ -34,6 +34,8 @@ const userScheema = new mongoose.Schema({
     online: Boolean,
     socketId: String,
     profilePic: String,
+    admissao: [],
+    demissao: [],
 },
     {
         versionKey: false

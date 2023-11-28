@@ -7,9 +7,11 @@ const auth = require('../../middlewares/auth')
 
 router.get('/findAll', auth, admissaoDemissaoController.findAll)
 router.put('/status', admissaoDemissaoController.setStatus)
-router.put('/setNumero', admissaoDemissaoController.setNumero)
+router.post('/email', admissaoDemissaoController.setEmail)
+router.post('/setNumero', admissaoDemissaoController.setNumero)
 router.post('/create', admissaoDemissaoController.createNewAdmissao)
-router.put('/infoUser', admissaoDemissaoController.infoUser)
-router.put('/infoUser/:nome', admissaoDemissaoController.searchName)
+router.get('/infoUser', admissaoDemissaoController.infoUser)
+router.get('/infoUser/:nome', admissaoDemissaoController.searchName)
+router.get('/users', admissaoDemissaoController.index)
 
 module.exports = router
