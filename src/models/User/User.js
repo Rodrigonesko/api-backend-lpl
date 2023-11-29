@@ -36,6 +36,10 @@ const userScheema = new mongoose.Schema({
     profilePic: String,
     admissao: [],
     demissao: [],
+    status: String,
+    pendente: Boolean,
+    emAndamento: Boolean,
+    concluido: Boolean,
 },
     {
         versionKey: false

@@ -696,16 +696,16 @@ module.exports = {
                 },
             ]
             console.log(_id);
-            
+
             const result = await User.updateOne(
                 {
                     _id: _id
-                    
+
                 },
                 {
                     admissao
                 }
-                
+
             )
             return res.status(200).json({
                 result
@@ -717,7 +717,220 @@ module.exports = {
                 error: error.message // Melhor captura do erro, pegando a mensagem de erro
             });
         }
-    }
+    },
+
+    createDemissao: async (req, res) => {
+        try {
+            const { _id } = req.body
+
+            const demissao = [
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Entrega Carta Pedido de Demissão ou Assinatura de Rescisão do Contrato',
+                    fornecedor: 'Próprio punho ou Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Agendamento Exame Demissional',
+                    fornecedor: 'Clinimerces',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Envio docs assinados para baixa',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Assinar Documentos/Acerto',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'Conta Salário',
+                    fornecedor: 'CEF',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VR',
+                    fornecedor: 'Site Caixa',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VC',
+                    fornecedor: 'Site VR',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VT/Metrocard',
+                    fornecedor: 'URBS',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Cancelar Email',
+                    fornecedor: 'Localweb',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Cancelar Linux',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Notebook',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Ramal',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Rodrigo Onesko Dias',
+                    acao: 'Cancelar Portal LPL',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Fechar e Cancelar Ponto',
+                    fornecedor: 'Voux',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Acesso Crachá',
+                    fornecedor: 'You Do',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Digital Sala',
+                    fornecedor: 'You Do',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Transunion',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Sisamil',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                }
+            ]
+            console.log(_id);
+
+            const result = await User.updateOne(
+                {
+                    _id: _id
+
+                },
+                {
+                    demissao
+                }
+
+            )
+            return res.status(200).json({
+                result
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
+        }
+    },
+
+    setStatus: async (req, res) => {
+        try {
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.updateOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { 'admissao.$.status': req.body.status } })
+            return res.status(200).json({
+                msg: result
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
 }
 
 function calcularDiferencaEntreHorarios(horaString1, horaString2) {
