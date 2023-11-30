@@ -52,17 +52,7 @@ module.exports = {
                 '17:00',
                 '17:20',
                 '17:40',
-                '18:00',
-                '18:20',
-                '18:40',
-                '19:00',
-                '19:20',
-                '19:40',
-                '20:00',
-                '20:20',
-                '20:40',
-                '21:00',
-                '21:20',
+                '18:00'
             ]
 
             const find = await Horario.findOne({
@@ -118,7 +108,6 @@ module.exports = {
     },
     search: async (req, res) => {
         try {
-
             const { enfermeiro } = req.params
 
             const result = await Horario.find({
@@ -126,55 +115,71 @@ module.exports = {
             })
 
             const arr = result.map(e => {
-
                 const today = new Date()
 
                 if (moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD')) {
-                    //console.log();
-                    //return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
-                    console.log(moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD'));
                     return moment(e.dia).tz('America/Sao_Paulo').format('DD/MM/YYYY')
                 }
-
             })
 
-            const dias = arr.filter((el, i) => {
-                return arr.indexOf(el) === i
-            })
+            const dias = [...new Set(arr)]
 
             return res.status(200).json({
                 dias
             })
 
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
         }
     },
+
     searchHorarios: async (req, res) => {
         try {
             const { data, enfermeiro } = req.params
 
-            console.log(data, enfermeiro);
-
             const result = await Horario.find({
                 enfermeiro: enfermeiro,
-                dia: moment(data).format('YYYY-MM-DD')
+                dia: moment(data).format('YYYY-MM-DD'),
+                agendado: { $ne: 'Agendado' }
+            })
+
+            const horarios = result.map(e => e.horario)
+
+            return res.status(200).json({
+                horarios
+            })
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    verificarAgendamento: async (req, res) => {
+        try {
+
+            const { data, horario, enfermeiro } = req.params
+
+            console.log(data, horario, enfermeiro);
+
+            const result = await Horario.findOne({
+                enfermeiro,
+                dia: moment(data).format('YYYY-MM-DD'),
+                horario
             })
 
             console.log(result);
 
-            const horariosObj = result.filter(e => {
-                return e.agendado != 'Agendado'
-            })
-
-            const horarios = horariosObj.map(e => e.horario)
-
+            if (result?.agendado == 'Agendado') {
+                return res.status(500).json({
+                    msg: 'Horario já agendado'
+                })
+            }
 
             return res.status(200).json({
-                horarios
+                msg: 'ok'
             })
         } catch (error) {
             console.log(error);
@@ -183,6 +188,7 @@ module.exports = {
             })
         }
     },
+
     agendar: async (req, res) => {
         try {
 
@@ -195,18 +201,30 @@ module.exports = {
             const dataEHora = `${dataAjustada} ${horario}`
 
             const find = await Horario.findOne({
-                nome: id
+                dia: ajustarData(data),
+                horario: horario,
+                enfermeiro: responsavel
             })
 
-            if (find) {
-
-                await Horario.findOneAndUpdate({
-                    nome: id
-                }, {
-                    agendado: 'Reaberto',
-                    nome: ''
+            if (find?.agendado == 'Agendado') {
+                return res.status(500).json({
+                    msg: 'Horario já agendado'
                 })
             }
+
+            // const find = await Horario.findOne({
+            //     nome: id
+            // })
+
+            // if (find) {
+
+            //     await Horario.findOneAndUpdate({
+            //         nome: id
+            //     }, {
+            //         agendado: 'Reaberto',
+            //         nome: ''
+            //     })
+            // }
 
             const update = await Horario.findOneAndUpdate({
                 enfermeiro: responsavel,
@@ -516,30 +534,20 @@ module.exports = {
 
     diasDisponiveis: async (req, res) => {
         try {
-
             const result = await Horario.find()
 
             const arr = result.map(e => {
-
                 const today = new Date()
 
                 if (moment(today).tz('America/Sao_Paulo').format('YYYY-MM-DD') <= moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD')) {
-                    //console.log();
-                    //return moment(e.dia).add(1, 'days').format('DD/MM/YYYY')
-                    console.log(moment(e.dia).tz('America/Sao_Paulo').format('YYYY-MM-DD'));
                     return moment(e.dia).tz('America/Sao_Paulo').format('DD/MM/YYYY')
                 }
-
             })
 
-            const dias = arr.filter((el, i) => {
-                return arr.indexOf(el) === i
-            })
+            const dias = [...new Set(arr)]
 
             return res.status(200).json(dias)
-
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
@@ -548,23 +556,21 @@ module.exports = {
 
     buscarHorariosDisponiveis: async (req, res) => {
         try {
-
             const { data } = req.params
 
             const result = await Horario.find({
-                dia: data
+                dia: data,
+                agendado: { $ne: 'Agendado' }
             })
 
             let arr = []
 
             result.forEach(e => {
-                if ((e.agendado !== 'Agendado')) {
-                    if (e.dia != moment().format('YYYY-MM-DD')) {
-                        arr.push(e.horario)
-                    }
-                    if (e.horario >= moment().format('HH:mm:ss')) {
-                        arr.push(e.horario)
-                    }
+                if (e.dia != moment().format('YYYY-MM-DD')) {
+                    arr.push(e.horario)
+                }
+                if (e.horario >= moment().format('HH:mm:ss')) {
+                    arr.push(e.horario)
                 }
             })
 
@@ -573,19 +579,14 @@ module.exports = {
             uniqueArr.sort()
 
             return res.json(uniqueArr)
-
         } catch (error) {
-            console.log(error);
-
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
         }
     },
-
     buscarAnalistasDisponiveis: async (req, res) => {
         try {
-
             const { data, horario } = req.params
 
             const result = await Horario.find({
@@ -594,16 +595,10 @@ module.exports = {
                 agendado: { $ne: 'Agendado' }
             })
 
-            let arr = []
-
-            result.forEach(e => {
-                arr.push(e.enfermeiro)
-            })
+            const arr = result.map(e => e.enfermeiro)
 
             return res.json(arr)
-
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })

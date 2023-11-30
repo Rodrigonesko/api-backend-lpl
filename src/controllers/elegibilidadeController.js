@@ -474,8 +474,6 @@ module.exports = {
                 }).sort('vigencia')
             }
 
-
-
             if (fase === 'Analise') {
                 propostas = propostas.filter(e => {
                     return e.status === 'A iniciar' || e.status === 'Em andamento'
