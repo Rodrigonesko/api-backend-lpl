@@ -58,6 +58,7 @@ router.patch('/updateProfilePic', auth, userController.updateProfilePic)
 router.post('/createAdmissao', auth, userController.createAdmissao)
 router.post('/createDemissao', auth, userController.createDemissao)
 router.put('/status', auth, userController.setStatus)
+router.put('/obs', auth, userController.setObs)
 
 //Rotas das células
 

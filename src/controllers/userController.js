@@ -697,7 +697,7 @@ module.exports = {
             ]
             console.log(_id);
 
-            const result = await User.updateOne(
+            const result = await User.findOneAndUpdate(
                 {
                     _id: _id
 
@@ -707,9 +707,8 @@ module.exports = {
                 }
 
             )
-            return res.status(200).json({
-                result
-            })
+            const find = await User.findOne({_id})
+            return res.status(200).json(find)
 
         } catch (error) {
             return res.status(500).json({
@@ -889,7 +888,7 @@ module.exports = {
             ]
             console.log(_id);
 
-            const result = await User.updateOne(
+            const result = await User.findOneAndUpdate(
                 {
                     _id: _id
 
@@ -898,10 +897,13 @@ module.exports = {
                     demissao
                 }
 
+                
+
             )
-            return res.status(200).json({
-                result
-            })
+
+            const find = await User.findOne({_id})
+
+            return res.status(200).json(find)
 
         } catch (error) {
             return res.status(500).json({
@@ -918,11 +920,30 @@ module.exports = {
             if (req.body.tipoExame === 'demissao') {
                 tipoExame = 'demissao.id'
             }
-            const result = await User.updateOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { 'admissao.$.status': req.body.status } })
-            return res.status(200).json({
-                msg: result
-            })
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
+            const find = await User.findOne({_id: req.body._id})
 
+            return res.status(200).json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    setObs: async (req, res) => {
+        try {
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.obs`]: req.body.obs } })
+            const find = await User.findOne({_id: req.body._id})
+
+            return res.status(200).
+            json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
