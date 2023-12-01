@@ -9,6 +9,8 @@ router.get('/findAll', auth, inventarioController.findAll)
 router.post('/request', inventarioController.createInventario)
 router.put('/status', inventarioController.setStatus)
 router.get('/filter', inventarioController.getInventarioByFilter)
+router.put('/update', inventarioController.updateInventarioTable)
+
 
 
 module.exports = router

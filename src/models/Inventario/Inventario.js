@@ -10,7 +10,6 @@ const Scheema = new mongoose.Schema({
     descontinuado: Boolean,
     status: String
 
-
 }, {
     timestamps: true
 })

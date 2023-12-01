@@ -59,6 +59,7 @@ router.post('/createAdmissao', auth, userController.createAdmissao)
 router.post('/createDemissao', auth, userController.createDemissao)
 router.put('/status', auth, userController.setStatus)
 router.put('/obs', auth, userController.setObs)
+router.put('/data', auth, userController.setData)
 
 //Rotas das células
 
