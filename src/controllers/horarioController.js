@@ -110,6 +110,8 @@ module.exports = {
         try {
             const { enfermeiro } = req.params
 
+            //Preciso de um find com apenas o enfermeiro e os dias a partir de hoje
+
             const result = await Horario.find({
                 enfermeiro: enfermeiro
             })

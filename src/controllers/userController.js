@@ -22,8 +22,7 @@ const storage = multer.diskStorage({
         cb(null, dir);
     },
     filename: function (req, file, cb) {
-        const { ext } = path.parse(file.originalname)
-        cb(null, `${req.user}-${Date.now()}${ext}`)
+        cb(null, `${req.user}.jpg`)
     }
 })
 
@@ -493,7 +492,7 @@ module.exports = {
                 const result = await User.updateOne({
                     email: req.email
                 }, {
-                    profilePic: filename
+                    profilePic: `${req.user}.jpg`
                 })
 
                 return res.status(200).json({
@@ -707,7 +706,7 @@ module.exports = {
                 }
 
             )
-            const find = await User.findOne({_id})
+            const find = await User.findOne({ _id })
             return res.status(200).json(find)
 
         } catch (error) {
@@ -897,11 +896,11 @@ module.exports = {
                     demissao
                 }
 
-                
+
 
             )
 
-            const find = await User.findOne({_id})
+            const find = await User.findOne({ _id })
 
             return res.status(200).json(find)
 
@@ -921,7 +920,7 @@ module.exports = {
                 tipoExame = 'demissao.id'
             }
             const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
-            const find = await User.findOne({_id: req.body._id})
+            const find = await User.findOne({ _id: req.body._id })
 
             return res.status(200).json(find)
         } catch (error) {
@@ -940,10 +939,10 @@ module.exports = {
                 tipoExame = 'demissao.id'
             }
             const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.obs`]: req.body.obs } })
-            const find = await User.findOne({_id: req.body._id})
+            const find = await User.findOne({ _id: req.body._id })
 
             return res.status(200).
-            json(find)
+                json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
