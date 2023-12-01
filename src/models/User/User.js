@@ -41,6 +41,7 @@ const userScheema = new mongoose.Schema({
     emAndamento: Boolean,
     concluido: Boolean,
     obs: String,
+    data: String,
 },
     {
         versionKey: false

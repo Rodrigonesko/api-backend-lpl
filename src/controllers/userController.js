@@ -707,7 +707,7 @@ module.exports = {
                 }
 
             )
-            const find = await User.findOne({_id})
+            const find = await User.findOne({ _id })
             return res.status(200).json(find)
 
         } catch (error) {
@@ -897,11 +897,11 @@ module.exports = {
                     demissao
                 }
 
-                
+
 
             )
 
-            const find = await User.findOne({_id})
+            const find = await User.findOne({ _id })
 
             return res.status(200).json(find)
 
@@ -921,7 +921,7 @@ module.exports = {
                 tipoExame = 'demissao.id'
             }
             const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
-            const find = await User.findOne({_id: req.body._id})
+            const find = await User.findOne({ _id: req.body._id })
 
             return res.status(200).json(find)
         } catch (error) {
@@ -940,10 +940,30 @@ module.exports = {
                 tipoExame = 'demissao.id'
             }
             const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.obs`]: req.body.obs } })
-            const find = await User.findOne({_id: req.body._id})
+            const find = await User.findOne({ _id: req.body._id })
 
             return res.status(200).
-            json(find)
+                json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    setData: async (req, res) => {
+        try {
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.data`]: req.body.data } })
+            const find = await User.findOne({ _id: req.body._id })
+
+            return res.status(200).
+                json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
