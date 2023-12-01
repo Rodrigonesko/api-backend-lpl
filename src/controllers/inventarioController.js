@@ -85,4 +85,22 @@ module.exports = {
         }
     },
 
+    updateInventarioTable: async (req, res) => {
+        try {
+            const find = await Inventario.findOne({ _id: req.body._id })
+            const criarRequisicao = await Inventario.updateOne({ _id: req.body._id }, { 
+                nome: req.body.nome, 
+                etiqueta: req.body.etiqueta,
+                ondeEsta: req.body.ondeEsta,
+                descricao: req.body.descricao
+            })
+            return res.json(criarRequisicao)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    }
+
 }

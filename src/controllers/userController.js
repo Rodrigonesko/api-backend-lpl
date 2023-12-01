@@ -22,7 +22,8 @@ const storage = multer.diskStorage({
         cb(null, dir);
     },
     filename: function (req, file, cb) {
-        cb(null, `${req.user}.jpg`)
+        const { ext } = path.parse(file.originalname)
+        cb(null, `${req.user}-${Date.now()}${ext}`)
     }
 })
 
@@ -492,7 +493,7 @@ module.exports = {
                 const result = await User.updateOne({
                     email: req.email
                 }, {
-                    profilePic: `${req.user}.jpg`
+                    profilePic: filename
                 })
 
                 return res.status(200).json({
@@ -939,6 +940,26 @@ module.exports = {
                 tipoExame = 'demissao.id'
             }
             const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.obs`]: req.body.obs } })
+            const find = await User.findOne({ _id: req.body._id })
+
+            return res.status(200).
+                json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    setData: async (req, res) => {
+        try {
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.data`]: req.body.data } })
             const find = await User.findOne({ _id: req.body._id })
 
             return res.status(200).
