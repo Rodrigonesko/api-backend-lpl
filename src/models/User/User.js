@@ -42,6 +42,7 @@ const userScheema = new mongoose.Schema({
     concluido: Boolean,
     obs: String,
     data: String,
+    inativo: Boolean,
 },
     {
         versionKey: false

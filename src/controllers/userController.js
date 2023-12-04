@@ -34,7 +34,22 @@ module.exports = {
     create: async (req, res) => {
         try {
 
-            const { email, name, accessLevel, atividade, nomeCompleto, dataAdmissao } = req.body
+            const { email, name, accessLevel, atividade, nomeCompleto, dataAdmissao, matricula } = req.body
+
+
+            let emailAutomatico = '';
+
+            if (email === '') {
+                const nome = name.split(' ').join('.').toLowerCase().replace(/\s/g, '') + '@lplseguros.com.br';
+                console.log(nome);
+
+                // Construir o e-mail automático com o nome da pessoa
+                emailAutomatico = `${nome}`;
+                console.log(emailAutomatico);
+            } else {
+                console.log(email);
+                emailAutomatico = email;
+            }
 
             const user = await User.findOne({ email })
 
@@ -45,14 +60,15 @@ module.exports = {
             const encryptedPassword = await bcrypt.hash('123', 8)
 
             const newUser = await User.create({
-                email,
+                email: emailAutomatico,
                 name,
                 password: encryptedPassword,
                 accessLevel,
                 firstAccess: 'Sim',
                 atividadePrincipal: atividade,
                 nomeCompleto,
-                dataAdmissao
+                dataAdmissao,
+                matricula
             })
             return res.status(201).json(newUser)
 
@@ -147,7 +163,7 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, administrador, agendamento, dataAniversario } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, administrador, agendamento, dataAniversario, matricula } = req.body
 
             const acessos = {
                 agendamento,
@@ -167,6 +183,7 @@ module.exports = {
                 nomeCompleto,
                 dataAdmissao,
                 dataAniversario,
+                matricula,
                 $set: {
                     acessos
                 }
@@ -964,6 +981,27 @@ module.exports = {
 
             return res.status(200).
                 json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    setInativo: async (req, res) => {
+        try {
+            setInativarEmail(true); // Supondo que você deseje definir inativarEmail como true
+
+            const result = await User.findOneAndUpdate(
+                { _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) },
+                { $set: { [`${req.body.tipoExame}.$.data`]: req.body.data, inativo: inativarEmail } },
+                { new: true } // Para retornar o documento atualizado
+            );
+
+            const find = await User.findOne({ _id: req.body._id });
+
+            return res.status(200).json(find);
         } catch (error) {
             console.log(error);
             return res.status(500).json({
