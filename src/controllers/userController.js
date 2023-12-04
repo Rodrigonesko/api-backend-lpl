@@ -3,12 +3,12 @@ const Celula = require('../models/User/Celula')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
 const multer = require('multer')
-const path = require('path')
 const fs = require('fs')
 const { Mongoose, default: mongoose } = require('mongoose')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        console.log(req.user);
         const dir = `./uploads/profilePic/`
         if (!fs.existsSync(dir)) {
             fs.mkdir(dir, (err) => {
@@ -22,12 +22,11 @@ const storage = multer.diskStorage({
         cb(null, dir);
     },
     filename: function (req, file, cb) {
-        const { ext } = path.parse(file.originalname)
-        cb(null, `${req.user}-${Date.now()}${ext}`)
+        cb(null, `${req.user}.jpg`)
     }
 })
 
-const upload = multer({ storage: storage }).single('file')
+const upload = multer({ storage }).single('file')
 
 module.exports = {
 
@@ -488,16 +487,22 @@ module.exports = {
                     })
                 }
 
-                const { filename } = req.file
+                console.log(req.file);
 
-                const result = await User.updateOne({
-                    email: req.email
-                }, {
-                    profilePic: filename
-                })
+                // const { filename } = req.file
+
+                // console.log(filename);
+
+                // const result = await User.updateOne({
+                //     email: req.email
+                // }, {
+                //     profilePic: filename
+                // })
+
+                // console.log(result);
 
                 return res.status(200).json({
-                    result
+                    msg: 'ok'
                 })
             })
 
