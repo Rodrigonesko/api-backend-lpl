@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-const User = mongoose.model('User')
+const User = require('../models/User/User')
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET
 
@@ -24,6 +24,8 @@ module.exports = {
             const checkPassword = await bcrypt.compare(password, user.password)
 
             if (!checkPassword) return res.status(422).json({ message: `Usuario ou senha incorretos` })
+
+            if (user.inativo) return res.status(422).json({ message: `Usuario inativo` })
 
 
             //Criando token de autenticação
