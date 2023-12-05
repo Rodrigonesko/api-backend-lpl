@@ -162,7 +162,7 @@ module.exports = {
     modules: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, administrador, agendamento, dataAniversario, matricula } = req.body
+            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, administrador, agendamento, dataAniversario, matricula, contaInativada } = req.body
 
             const acessos = {
                 agendamento,
@@ -183,6 +183,7 @@ module.exports = {
                 dataAdmissao,
                 dataAniversario,
                 matricula,
+                inativo: contaInativada,
                 $set: {
                     acessos
                 }
@@ -993,28 +994,6 @@ module.exports = {
             })
         }
     },
-
-    setInativo: async (req, res) => {
-        try {
-            setInativarEmail(true); // Supondo que você deseje definir inativarEmail como true
-
-            const result = await User.findOneAndUpdate(
-                { _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) },
-                { $set: { [`${req.body.tipoExame}.$.data`]: req.body.data, inativo: inativarEmail } },
-                { new: true } // Para retornar o documento atualizado
-            );
-
-            const find = await User.findOne({ _id: req.body._id });
-
-            return res.status(200).json(find);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
-
 }
 
 function calcularDiferencaEntreHorarios(horaString1, horaString2) {
