@@ -37,12 +37,14 @@ const userScheema = new mongoose.Schema({
     admissao: [],
     demissao: [],
     status: String,
+    naoSeAplica: Boolean,
     pendente: Boolean,
     emAndamento: Boolean,
     concluido: Boolean,
     obs: String,
     data: String,
     inativo: Boolean,
+    prorrogacao: Boolean,
 },
     {
         versionKey: false

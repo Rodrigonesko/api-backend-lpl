@@ -38,16 +38,26 @@ module.exports = {
             //Crie uma solicitação
 
             const body = req.body
-            
-                const criarRequisicao = await Inventario.create({
-                    nome: body.nome,
-                    quantidade: body.quantidade,
-                    etiqueta: body.etiqueta,
-                    ondeEsta: body.ondeEsta,
-                    descricao: body.descricao,
-                    status: body.status
+
+            const result = await Inventario.findOne({
+                etiqueta: body.etiqueta,
+            })
+
+            if (result) {
+                return res.status(403).json({
+                    msg: "Etiqueta already exists."
                 })
-            
+            }
+
+            const criarRequisicao = await Inventario.create({
+                nome: body.nome,
+                quantidade: body.quantidade,
+                etiqueta: body.etiqueta,
+                ondeEsta: body.ondeEsta,
+                descricao: body.descricao,
+                status: body.status
+            })
+
             return res.json({
                 msg: 'OK'
             })
@@ -88,8 +98,8 @@ module.exports = {
     updateInventarioTable: async (req, res) => {
         try {
             const find = await Inventario.findOne({ _id: req.body._id })
-            const criarRequisicao = await Inventario.updateOne({ _id: req.body._id }, { 
-                nome: req.body.nome, 
+            const criarRequisicao = await Inventario.updateOne({ _id: req.body._id }, {
+                nome: req.body.nome,
                 etiqueta: req.body.etiqueta,
                 ondeEsta: req.body.ondeEsta,
                 descricao: req.body.descricao
