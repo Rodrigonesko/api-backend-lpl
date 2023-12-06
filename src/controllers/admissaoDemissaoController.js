@@ -1,30 +1,423 @@
-const AdmissaoDemissao = require('../models/AdmissaoDemissao/AdmissaoDemissao')
+const { default: mongoose } = require('mongoose');
+const User = require('../models/User/User')
 
 module.exports = {
 
-    findAll: async (req, res) => {
+    createAdmissao: async (req, res) => {
         try {
-            const encontrarTodos = await AdmissaoDemissao.find({
-            })
+            const { _id } = req.body
 
-            return res.status(200).json({
-                encontrarTodos
-            })
+            const admissao = [
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Agendamento Exame Admissional',
+                    fornecedor: 'Clinimerces',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Planilha Contratação',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Assinar Documentos',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Foto 3x4',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'Conta Salário',
+                    fornecedor: 'CEF',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VR',
+                    fornecedor: 'Site Caixa',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VC',
+                    fornecedor: 'Site VR',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VT/Metrocard',
+                    fornecedor: 'URBS',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Email',
+                    fornecedor: 'Localweb',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Assinatura Email',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Linux',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Notebook',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Ramal',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Portal LPL',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Ponto',
+                    fornecedor: 'Voux',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Crachá',
+                    fornecedor: 'Perfect Design',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Digital Sala',
+                    fornecedor: 'You Do',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Transunion',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Sisamil',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Treinamentos Obrigatórios',
+                    fornecedor: 'Clinimerces',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+            ]
+            console.log(_id);
+
+            const result = await User.findOneAndUpdate(
+                {
+                    _id: _id
+
+                },
+                {
+                    admissao
+                }
+
+            )
+            const find = await User.findOne({ _id })
+            return res.status(200).json(find)
+
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
-                error: "Internal server error."
-            })
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
+        }
+    },
+
+    createDemissao: async (req, res) => {
+        try {
+            const { _id } = req.body
+
+            const demissao = [
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Entrega Carta Pedido de Demissão ou Assinatura de Rescisão do Contrato',
+                    fornecedor: 'Próprio punho ou Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Agendamento Exame Demissional',
+                    fornecedor: 'Clinimerces',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Envio docs assinados para baixa',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Assinar Documentos/Acerto',
+                    fornecedor: 'Eniltec',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'Conta Salário',
+                    fornecedor: 'CEF',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VR',
+                    fornecedor: 'Site Caixa',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VC',
+                    fornecedor: 'Site VR',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Administrador',
+                    acao: 'VT/Metrocard',
+                    fornecedor: 'URBS',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Cancelar Email',
+                    fornecedor: 'Localweb',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Cancelar Linux',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Notebook',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Gerson Douglas',
+                    acao: 'Ramal',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Rodrigo Onesko Dias',
+                    acao: 'Cancelar Portal LPL',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Fechar e Cancelar Ponto',
+                    fornecedor: 'Voux',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Acesso Crachá',
+                    fornecedor: 'You Do',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Digital Sala',
+                    fornecedor: 'You Do',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Transunion',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                },
+                {
+                    responsavel: 'Samantha Maciel Giazzon',
+                    acao: 'Cancelar Sisamil',
+                    fornecedor: '',
+                    obs: '',
+                    status: '',
+                    data: '',
+                    id: mongoose.Types.ObjectId()
+                }
+            ]
+            console.log(_id);
+
+            const result = await User.findOneAndUpdate(
+                {
+                    _id: _id
+
+                },
+                {
+                    demissao
+                }
+
+
+
+            )
+
+            const find = await User.findOne({ _id })
+
+            return res.status(200).json(find)
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
         }
     },
 
     setStatus: async (req, res) => {
         try {
-            const result = await AdmissaoDemissao.updateOne({ _id: req.body._id }, { status: req.body.status })
-            return res.status(200).json({
-                msg: result
-            })
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
+            const find = await User.findOne({ _id: req.body._id })
 
+            return res.status(200).json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -33,13 +426,18 @@ module.exports = {
         }
     },
 
-    setEmail: async (req, res) => {
+    setObs: async (req, res) => {
         try {
-            const result = await AdmissaoDemissao.updateOne({ _id: req.body._id }, { email: req.body.email })
-            return res.status(200).json({
-                msg: result
-            })
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.obs`]: req.body.obs } })
+            const find = await User.findOne({ _id: req.body._id })
 
+            return res.status(200).
+                json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -48,13 +446,18 @@ module.exports = {
         }
     },
 
-    setNumero: async (req, res) => {
+    setData: async (req, res) => {
         try {
-            const result = await AdmissaoDemissao.updateOne({ _id: req.body._id }, { numero: req.body.numero })
-            return res.status(200).json({
-                msg: result
-            })
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.data`]: req.body.data } })
+            const find = await User.findOne({ _id: req.body._id })
 
+            return res.status(200).
+                json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -63,70 +466,24 @@ module.exports = {
         }
     },
 
-    createNewAdmissao: async (req, res) => {
+    prorrogacao: async (req, res) => {
         try {
-            const body = req.body
-            await AdmissaoDemissao.create({
-                nome: body.nome,
-                numero: body.numero,
-                email: body.email,
-                observacao: body.observacao,
-                status: body.status,
-                data: body.data,
+
+            const { name, prorrogacao } = req.body
+
+            const result = await User.findOneAndUpdate({ nome: name }, {
+                prorrogacao: prorrogacao,
             })
-            return res.status(200).json({ message: 'Requisição criada com sucesso.' })
+
+            return res.status(200).json({
+                result
+            })
+
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: "Internal server error." })
-        }
-    },
-
-    infoUser: async (req, res) => {
-        try {
-
-            const user = await AdmissaoDemissao.findOne({ nomeCompleto: req.name })
-
-            return res.status(200).json({
-                user
-            })
-
-        } catch (error) {
-            console.error(error);
             return res.status(500).json({
                 error: "Internal server error."
             })
         }
-    },
-
-    searchName: async (req, res) => {
-        try {
-            const { nome } = req.params
-
-            console.log(nome);
-
-            const user = await AdmissaoDemissao.findOne({ nome: nome })
-
-            return res.status(200).json({
-                user
-            })
-        } catch (error) {
-            return res.status(500).json({
-                error: "Internal server error.",
-                error
-            })
-        }
-    },
-
-    index: async (req, res) => {
-        try {
-            const users = await AdmissaoDemissao.find()
-
-            return res.json(users)
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
+    }
 }

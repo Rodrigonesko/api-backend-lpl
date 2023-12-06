@@ -1,6 +1,7 @@
 const express = require('express')
 const publicController = require('../controllers/publicController')
 const userController = require('../controllers/userController')
+const admissaoDemissaoController = require('../controllers/admissaoDemissaoController')
 const verifyToken = require('../middlewares/verifyToken')
 const auth = require('../middlewares/auth')
 
@@ -16,14 +17,13 @@ const elegibilidadePmeRoutes = require("./routes/elegibilidadePme")
 const politicasRoutes = require('./routes/politicas')
 const patologiasRoutes = require('./routes/patologia')
 const vacationRequestRoutes = require('./routes/vacationRequest')
-const admissaoDemissaoRoutes = require('./routes/admissaoDemissao')
 const treinamentoRoutes = require('./routes/treinamento')
 const inventarioRoutes = require('./routes/inventario')
+const toDoRoutes = require('./routes/toDo')
 
 const taskRequestRoutes = require('./routes/taskRequest')
 const sindicanciaRoutes = require('./routes/sindicancia')
 const muralRoutes = require('./routes/mural')
-
 
 const router = express.Router()
 
@@ -55,11 +55,13 @@ router.patch('/horarioPonto', auth, userController.updateHorarioPonto)
 router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 router.get('/aniversariantes', auth, userController.getAllAniversariantes)
 router.patch('/updateProfilePic', auth, userController.updateProfilePic)
-router.post('/createAdmissao', auth, userController.createAdmissao)
-router.post('/createDemissao', auth, userController.createDemissao)
-router.put('/status', auth, userController.setStatus)
-router.put('/obs', auth, userController.setObs)
-router.put('/data', auth, userController.setData)
+router.post('/createAdmissao', auth, admissaoDemissaoController.createAdmissao)
+router.post('/createDemissao', auth, admissaoDemissaoController.createDemissao)
+router.put('/status', auth, admissaoDemissaoController.setStatus)
+router.put('/obs', auth, admissaoDemissaoController.setObs)
+router.put('/data', auth, admissaoDemissaoController.setData)
+router.put('/prorrogacao', auth, admissaoDemissaoController.prorrogacao)
+
 
 //Rotas das células
 
@@ -74,11 +76,11 @@ router.use('/elegibilidadePme', elegibilidadePmeRoutes)
 router.use('/politicas', politicasRoutes)
 router.use('/patologias', patologiasRoutes)
 router.use('/vacation', vacationRequestRoutes)
-router.use('/admissaoDemissao', admissaoDemissaoRoutes)
 router.use('/treinamento', treinamentoRoutes)
 router.use('/tasks', taskRequestRoutes)
 router.use('/sindicancia', sindicanciaRoutes)
 router.use('/inventario', inventarioRoutes)
+router.use('/toDo', toDoRoutes)
 router.use('/mural', muralRoutes)
 
 
