@@ -202,17 +202,17 @@ module.exports = {
 
             const dataEHora = `${dataAjustada} ${horario}`
 
-            const find = await Horario.findOne({
-                dia: ajustarData(data),
-                horario: horario,
-                enfermeiro: responsavel
-            })
+            // const find = await Horario.findOne({
+            //     dia: ajustarData(data),
+            //     horario: horario,
+            //     enfermeiro: responsavel
+            // })
 
-            if (find?.agendado == 'Agendado') {
-                return res.status(500).json({
-                    msg: 'Horario já agendado'
-                })
-            }
+            // if (find?.agendado == 'Agendado') {
+            //     return res.status(500).json({
+            //         msg: 'Horario já agendado'
+            //     })
+            // }
 
             // const find = await Horario.findOne({
             //     nome: id
