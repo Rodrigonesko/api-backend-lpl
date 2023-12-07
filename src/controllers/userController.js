@@ -78,6 +78,7 @@ module.exports = {
             })
         }
     },
+    
     index: async (req, res) => {
         try {
             const users = await User.find()
@@ -90,6 +91,7 @@ module.exports = {
             })
         }
     },
+
     infoUser: async (req, res) => {
         try {
 
@@ -106,6 +108,7 @@ module.exports = {
             })
         }
     },
+
     firstAccess: async (req, res) => {
         try {
 
