@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 const moment = require('moment')
 const multer = require('multer')
 const fs = require('fs')
-const { Mongoose, default: mongoose } = require('mongoose')
+const Treinamentos = require('../models/Treinamentos/Treinamento')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -69,6 +69,27 @@ module.exports = {
                 dataAdmissao,
                 matricula
             })
+
+            const treinamentos = await Treinamentos.find()
+
+            for (const treinamento of treinamentos) {
+                const treinamentoRealizado = {
+                    nome: newUser.name,
+                    realizado: false,
+                    id: newUser._id,
+                    data: null,
+                    ativo: true
+                }
+
+                await Treinamentos.updateOne({
+                    _id: treinamento._id
+                }, {
+                    $push: {
+                        realizados: treinamentoRealizado
+                    }
+                })
+            }
+
             return res.status(201).json(newUser)
 
         } catch (error) {
@@ -78,7 +99,7 @@ module.exports = {
             })
         }
     },
-    
+
     index: async (req, res) => {
         try {
             const users = await User.find()

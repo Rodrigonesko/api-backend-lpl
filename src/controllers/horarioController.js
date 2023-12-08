@@ -66,7 +66,8 @@ module.exports = {
             }
 
             const users = await User.find({
-                enfermeiro: 'true'
+                enfermeiro: 'true',
+                inativo: { $ne: true }
             })
 
             for (const item of users) {
