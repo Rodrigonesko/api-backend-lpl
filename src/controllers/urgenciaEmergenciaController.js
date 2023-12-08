@@ -89,7 +89,7 @@ module.exports = {
                         const email = item.EMAIL
                         const prc = item.COD_PRC
                         const pedido = item.PEDIDO
-                        
+
                         const nomePrestador = item.PRESTADOR
                         const cidPrin = item.CID
                         const relatorioMedico = item.PATOLOGIA
@@ -98,6 +98,12 @@ module.exports = {
                         dataAtendimento = moment(dataAtendimento).format('YYYY-MM-DD')
 
                         const dataRecebimento = moment().format('YYYY-MM-DD')
+
+                        if (cidPrin === undefined || relatorioMedico === undefined) {
+                            return res.status(500).json({
+                                error: "CID ou Relatório médico não informado"
+                            })
+                        }
 
                         const obj = {
                             mes,

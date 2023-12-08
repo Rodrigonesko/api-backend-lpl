@@ -6,7 +6,6 @@ const userScheema = new mongoose.Schema({
     dataConclusao: String,
     tarefa: String,
     tipoCriacao: String,
-
 },
     {
         versionKey: false
