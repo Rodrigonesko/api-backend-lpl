@@ -1,5 +1,6 @@
 const { default: mongoose } = require('mongoose');
 const User = require('../models/User/User')
+const moment = require('moment')
 
 module.exports = {
 
@@ -471,9 +472,10 @@ module.exports = {
 
             const { name, prorrogacao } = req.body
 
-            const result = await User.findOneAndUpdate({ nome: name }, {
+            const result = await User.findOneAndUpdate({ name: name }, {
                 prorrogacao: prorrogacao,
             })
+            console.log(name, prorrogacao);
 
             return res.status(200).json({
                 result
@@ -485,5 +487,52 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
+
+    getAllItens: async (req, res) => {
+        try {
+            const users = await User.find();
+            const itens = [];
+
+            for (const user of users) {
+                if (user.admissao) {
+                    const passouTrintaDias = moment(user.dataAdmissao).add(29, 'days').isBefore(moment()) && !user.prorrogacao;
+
+                    if (req.user === 'Samantha Maciel Giazzon' && passouTrintaDias) {
+                        itens.push({
+                            nome: user.name,
+                            acao: `É necessário assinar o Contrato de Prorrogação para o Colaborador ${user.name}`,
+                        });
+                    }
+                    for (const item of user.admissao) {
+                        if (req.user === item.responsavel && (item.status !== 'concluido' && item.status !== 'naoSeAplica')) {
+                            itens.push({
+                                nome: user.name,
+                                acao: item.acao,
+                            });
+                        }
+                    }
+                }
+
+                if (user.demissao) {
+                    for (const item of user.demissao) {
+                        if (req.user === item.responsavel && (item.status !== 'concluido' && item.status !== 'naoSeAplica')) {
+                            itens.push({
+                                nome: user.name,
+                                acao: item.acao,
+                            });
+                        }
+                    }
+                }
+            }
+
+            return res.json(itens);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message,
+            });
+        }
+    },
 }
