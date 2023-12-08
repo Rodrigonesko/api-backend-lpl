@@ -501,7 +501,7 @@ module.exports = {
                     if (req.user === 'Samantha Maciel Giazzon' && passouTrintaDias) {
                         itens.push({
                             nome: user.name,
-                            acao: `É necessário assinar o Contrato de Prorrogação para o Colaborador ${user.name}`,
+                            acao: `É necessário assinar o Contrato de Prorrogação para o Colaborador ${user.name} no dia ${moment(user.dataAdmissao).add(30, 'days').format('DD/MM/YYYY')}`,
                         });
                     }
                     for (const item of user.admissao) {

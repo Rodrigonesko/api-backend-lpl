@@ -12,7 +12,8 @@ const Scheema = new mongoose.Schema({
     solicitado: Boolean,
     assinado: Boolean,
     realizado: Boolean,
-    status: String
+    status: String,
+    gestorAprovou: Boolean,
 }, {
     timestamps: true
 })
