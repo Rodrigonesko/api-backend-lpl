@@ -12,6 +12,7 @@ rootDirectory = postman/collections
 files[] = {"id":"28011380-b565a2a9-756a-4345-907f-9139e8a56d72","path":"API TELE.json","metaData":{}}
 files[] = {"id":"28011380-69357a1d-a631-4475-a809-a0779cd59f76","path":"Controle de atividades.json","metaData":{}}
 files[] = {"id":"28011380-9e069dc8-04ff-4312-8c5f-a62451b90bc0","path":"Elegibilidade.json","metaData":{}}
+files[] = {"id":"29415055-6e891c32-8a07-4780-857a-32bb9e683c6a","path":"Férias.json","metaData":{}}
 files[] = {"id":"28011380-96474fd7-cea4-4bd3-b6bd-9f717aa368d9","path":"Login.json","metaData":{}}
 files[] = {"id":"28011380-aef88d2c-1d66-4cfd-a719-13434fae6509","path":"Rn.json","metaData":{}}
 files[] = {"id":"28011380-e06afc61-9eeb-4129-8c0d-c838481752d7","path":"Rotas publicas.json","metaData":{}}
