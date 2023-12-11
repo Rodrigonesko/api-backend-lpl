@@ -11,5 +11,6 @@ router.put('/treinamentoRealizado', auth, treinamentoController.treinamentoReali
 router.get('/:id', auth, treinamentoController.getById)
 router.get('/verificar/treinamento', auth, treinamentoController.verificarTreinamento)
 router.put('/naoPrecisaTreinamento', auth, treinamentoController.naoPrecisaTreinamento)
+router.post('/adicionarUsuarioTreinamento', treinamentoController.adicionarUsuarioNoTreinamento)
 
 module.exports = router

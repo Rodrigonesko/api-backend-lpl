@@ -70,7 +70,7 @@ module.exports = {
                 })
             }
 
-            await Treinamento.updateOne({_id: req.body.id}, {
+            await Treinamento.updateOne({ _id: req.body.id }, {
                 nome,
                 plataforma,
                 link,
@@ -236,6 +236,59 @@ module.exports = {
                 error
             })
         }
+    },
+
+    adicionarUsuarioNoTreinamento: async (req, res) => {
+        try {
+
+            const { idTreinamento, nome } = req.body
+
+            const treinamento = await Treinamento.findOne({
+                _id: idTreinamento
+            })
+
+            const user = await User.findOne({
+                name: nome
+            })
+
+            const treinamentoJaExiste = treinamento.realizados.filter(user => {
+                return user.nome === nome
+            })
+
+            if (treinamentoJaExiste.length > 0) {
+                return res.json({
+                    msg: 'Usuário já existe no treinamento'
+                })
+            }
+
+            const novoUsuario = {
+                nome: user.name,
+                realizado: false,
+                id: user._id,
+                data: null,
+                ativo: true
+            }
+
+            await Treinamento.updateOne({
+                _id: idTreinamento
+            }, {
+                $push: {
+                    realizados: novoUsuario
+                }
+            })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log('error')
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+
     }
 
 }
