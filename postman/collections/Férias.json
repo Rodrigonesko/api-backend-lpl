@@ -1,0 +1,187 @@
+{
+	"info": {
+		"_postman_id": "6e891c32-8a07-4780-857a-32bb9e683c6a",
+		"name": "Férias",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "29415055-6e891c32-8a07-4780-857a-32bb9e683c6a"
+	},
+	"item": [
+		{
+			"name": "Buscar todas as Férias",
+			"id": "d358abb3-784b-4bec-939c-a1073aa37c29",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/findAll",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"findAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar Solicitação de Férias",
+			"id": "5d2aa670-c954-4fdd-9d74-1997776b6f10",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"colaborador\": \"Nome do Colaborador\",\r\n    \"dataInicio\": \"2023-01-01\",\r\n    \"totalDias\": \"30 dias\",\r\n    \"statusRh\": \"Aprovado\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/request",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar o status da solicitação de Férias",
+			"id": "01b2e126-4a85-4436-a4dc-7b7a4027e440",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\": \"_id\",\r\n    \"statusRh\": \"StatusRh\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/status",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar Data de Inicio das Férias",
+			"id": "212c32dc-eb0f-4112-a3b8-31af82cb7c1a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\": \"_id\",\r\n    \"dataInicio\": \"20/01/2023\",\r\n    \"dataRetorno\": \"data\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/update",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtrar Férias por nome, mês ou vencimento",
+			"id": "28c691eb-2236-4d07-bd43-adc80df4b4f1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"colaborador\": \"colaborador\",\r\n    \"mes\": \"Mês das Férias\",\r\n    \"vencimento\": \"Dia de Vencimento das Férias\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/filter",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"filter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verificar se o Gestor Aprovou as Férias do Colaborador",
+			"id": "819c7fe0-913e-4660-a33b-8d742cf739e8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gestorAprovou\": \"true\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/gestorAceitou",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"gestorAceitou"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

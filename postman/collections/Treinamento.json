@@ -1,0 +1,272 @@
+{
+	"info": {
+		"_postman_id": "ede67874-3a2b-42c8-bdde-2f7667fb4c81",
+		"name": "Treinamento",
+		"description": "Rotas para o modulo de treinamento",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-ede67874-3a2b-42c8-bdde-2f7667fb4c81"
+	},
+	"item": [
+		{
+			"name": "Busca todos os treinamentos",
+			"id": "3f8c1298-2917-4f03-a610-1809f9ddc35d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentos",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentos"
+					]
+				},
+				"description": "Esta rota retorna todos os registros de treinamento."
+			},
+			"response": []
+		},
+		{
+			"name": "Busca treinamento pelo id",
+			"id": "43671ba7-1ed2-4d78-b16c-910f927ff70f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentos/:id",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentos",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica se o usuario ja realizou o treinamento",
+			"id": "f345a95d-278b-41e8-bbb5-d91e5ce6e3bd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentos/verificar/treinamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentos",
+						"verificar",
+						"treinamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cria um novo treinamento",
+			"id": "e35b7286-9c2a-4a4a-bfe6-d9dac7bbd254",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"Nome do Treinamento\",\r\n    \"plataforma\": \"Platataforma\",\r\n    \"link\": \"https://...\",\r\n    \"prazo\": \"2023-12-12\",\r\n    \"observacoes\": \"observacoes\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentos",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adicionar pessoa a treinamento",
+			"id": "f4ae65bc-ee32-485a-8f93-022fb175e678",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idTreinamento\": \"652d411bbbda8c10aeeebd1e\",\r\n    \"nome\": \"Suelen Barros\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamento/adicionarUsuarioTreinamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamento",
+						"adicionarUsuarioTreinamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deletar treinamento",
+			"id": "f0578b0a-c097-4bfc-87db-6d2c780f9fd6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentos/:id",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentos",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1234"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Editar treinamento",
+			"id": "35a21747-4312-4b65-9873-d188dc938c1c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"Nome do Treinamento\",\r\n    \"plataforma\": \"Platataforma\",\r\n    \"link\": \"https://...\",\r\n    \"prazo\": \"2023-12-12\",\r\n    \"observacoes\": \"observacoes\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentos",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Treinamento realizado",
+			"id": "a364981f-00b5-4bec-9387-23ccbce78623",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idTreinamento\": \"1234\",\r\n    \"nome\": \"Nome de quem fez\",\r\n    \"data\": \"2023-12-12\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/treinamentoRealizado",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"treinamentoRealizado"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Muda o status se precisa ou n de treinamento",
+			"id": "e3308c7a-c75e-4a88-aa4c-008ce24bf3a1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idTreinamento\": \"1234\",\r\n    \"nome\": \"Nome de quem fez\",\r\n    \"ativo\": false //ou true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/naoPrecisaTreinamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"naoPrecisaTreinamento"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
