@@ -15,6 +15,7 @@ files[] = {"id":"28011380-9e069dc8-04ff-4312-8c5f-a62451b90bc0","path":"Elegibil
 files[] = {"id":"28011380-96474fd7-cea4-4bd3-b6bd-9f717aa368d9","path":"Login.json","metaData":{}}
 files[] = {"id":"28011380-aef88d2c-1d66-4cfd-a719-13434fae6509","path":"Rn.json","metaData":{}}
 files[] = {"id":"28011380-e06afc61-9eeb-4129-8c0d-c838481752d7","path":"Rotas publicas.json","metaData":{}}
+files[] = {"id":"28011380-ede67874-3a2b-42c8-bdde-2f7667fb4c81","path":"Treinamento.json","metaData":{}}
 
 [config.relations.collections.metaData]
 
