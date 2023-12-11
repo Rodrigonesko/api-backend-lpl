@@ -11,4 +11,4 @@ const scheme = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mongoose.model('ContingenciaIncidentes', scheme)
+module.exports = mongoose.model('ContingenciasIncidentes', scheme)

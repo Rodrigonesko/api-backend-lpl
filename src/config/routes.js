@@ -20,6 +20,7 @@ const vacationRequestRoutes = require('./routes/vacationRequest')
 const treinamentoRoutes = require('./routes/treinamento')
 const inventarioRoutes = require('./routes/inventario')
 const toDoRoutes = require('./routes/toDo')
+const contingenciasRoutes = require('./routes/contingencias')
 
 const taskRequestRoutes = require('./routes/taskRequest')
 const sindicanciaRoutes = require('./routes/sindicancia')
@@ -86,6 +87,7 @@ router.use('/sindicancia', sindicanciaRoutes)
 router.use('/inventario', inventarioRoutes)
 router.use('/toDo', toDoRoutes)
 router.use('/mural', muralRoutes)
+router.use('/contingencias', contingenciasRoutes)
 
 
 module.exports = router
