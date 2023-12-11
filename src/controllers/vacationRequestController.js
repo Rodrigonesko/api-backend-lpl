@@ -137,27 +137,24 @@ module.exports = {
 
     getFeriasByFilter: async (req, res) => {
         try {
-
-            const { colaborador, mes, vencimento } = req.query
+            const { colaborador, mes, vencimento } = req.query;
 
             console.log(req.query);
 
             const result = await VacationRequest.find({
-
-                colaborador: { $regex: colaborador },
+                colaborador: { $regex: new RegExp(colaborador, 'i') },
                 dataInicio: { $regex: mes },
                 vencimento: { $regex: vencimento }
-            }).sort({ dataInicio: -1 })
+            }).sort({ dataInicio: -1 });
 
             console.log(result);
 
-            return res.json(result)
-
+            return res.json(result);
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
-            })
+            });
         }
     },
 
@@ -175,5 +172,26 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
+
+    getGestorAceitou: async (req, res) => {
+        try {
+
+            const { gestorAprovou } = req.body
+
+            const find = await VacationRequest.updateOne({ _id: req.body._id }, {
+                gestorAprovou: gestorAprovou,
+            })
+
+            console.log(find);
+
+            return res.json(find);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message,
+            });
+        }
+    },
 }
