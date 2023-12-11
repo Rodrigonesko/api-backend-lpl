@@ -9,7 +9,7 @@ id = 96ef9953-52e2-4997-b26c-33601e99d4e9
 
 [config.relations.collections]
 rootDirectory = postman/collections
-files[] = {"id":"28011380-ee46b737-7d44-4883-9345-2b861c61be9c","path":"API TELE.json","metaData":{}}
+files[] = {"id":"28011380-b565a2a9-756a-4345-907f-9139e8a56d72","path":"API TELE.json","metaData":{}}
 files[] = {"id":"28011380-69357a1d-a631-4475-a809-a0779cd59f76","path":"Controle de atividades.json","metaData":{}}
 files[] = {"id":"28011380-9e069dc8-04ff-4312-8c5f-a62451b90bc0","path":"Elegibilidade.json","metaData":{}}
 files[] = {"id":"28011380-96474fd7-cea4-4bd3-b6bd-9f717aa368d9","path":"Login.json","metaData":{}}

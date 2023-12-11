@@ -1,41 +1,1806 @@
 {
 	"info": {
-		"_postman_id": "ee46b737-7d44-4883-9345-2b861c61be9c",
+		"_postman_id": "b565a2a9-756a-4345-907f-9139e8a56d72",
 		"name": "API TELE",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "28011380-ee46b737-7d44-4883-9345-2b861c61be9c"
+		"_uid": "28011380-b565a2a9-756a-4345-907f-9139e8a56d72"
 	},
 	"item": [
 		{
-			"name": "DevolverPropostas",
-			"id": "a498172d-4793-4c39-99cc-7a15b40e88ad",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ29fb25lc2tvQGhvdG1haWwuY29tIiwiYWNjZXNzTGV2ZWwiOiIxIiwiaWF0IjoxNjg3MTc5NDYwLCJleHAiOjE2ODcyMjI2NjB9.eKq6oltxtsk9BP0y3oNneGBuW9EOKZFELLAARwlUQlQ",
-							"type": "string"
+			"name": "comentarios",
+			"item": [
+				{
+					"name": "Novo Comentario",
+					"id": "cc9e8e8a-1ee9-4aa9-a316-d5376608af5f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"Comentario...\",\r\n    \"cpfTitular\": \"12345678910\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/comentario",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"comentario"
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{TELE_API}}/devolverPropostas",
-					"host": [
-						"{{TELE_API}}"
-					],
-					"path": [
-						"devolverPropostas"
-					]
+				{
+					"name": "Comentarios por cpf",
+					"id": "e7a415bf-6034-4cf5-90e9-3fccec5bf4f2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_TELE_IP}}/comentario/:cpf?123456789",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"comentario",
+								":cpf"
+							],
+							"query": [
+								{
+									"key": "123456789",
+									"value": null,
+									"type": "text"
+								}
+							],
+							"variable": [
+								{
+									"key": "cpf",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletetar comentario",
+					"id": "ba77a8ec-c95a-4ee1-89ba-92218fd7be89",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_TELE_IP}}/comentario/:id",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"comentario",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1234987931"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			],
+			"id": "eeaa3518-228d-44c0-ac4a-27be2ae628df"
+		},
+		{
+			"name": "Propostas",
+			"item": [
+				{
+					"name": "Upload de novas propostas",
+					"id": "999788c6-526c-4721-8149-7ee851a21653",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\": [\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"1234\"\r\n            //...\r\n        },\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"3214\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/upload",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mostrar todas as propostas",
+					"id": "deb28e11-816d-42c4-96f5-768d0474b727",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\": [\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"1234\"\r\n            //...\r\n        },\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"3214\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/show",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"show"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mostrar propostas entre duas datas",
+					"id": "e34732e7-a057-4e38-9fea-5190305c1b82",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\": [\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"1234\"\r\n            //...\r\n        },\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"3214\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/dadosEntreDatas?startDate=2023-10-10&endDate=2023-12-11&tipoRelatorio=Data Conclusão",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"dadosEntreDatas"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2023-10-10",
+									"type": "text"
+								},
+								{
+									"key": "endDate",
+									"value": "2023-12-11",
+									"type": "text"
+								},
+								{
+									"key": "tipoRelatorio",
+									"value": "Data Conclusão",
+									"type": "text"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mostrar propostas pendentes agendar/agendadas",
+					"id": "5ed3bab2-18c9-4c94-baa0-f464455604d4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\": [\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"1234\"\r\n            //...\r\n        },\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"3214\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/naoRealizadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"naoRealizadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca proposta por id",
+					"id": "1cf142e6-e6ae-4963-afc1-223ec0663412",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\": [\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"1234\"\r\n            //...\r\n        },\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"3214\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/proposta/:id",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"proposta",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1234"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca proposta por nome e proposta",
+					"id": "3a606fd9-e202-49c4-a366-10e054f944c1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\": [\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"1234\"\r\n            //...\r\n        },\r\n        {\r\n            \"proposta\": \"1234\",\r\n            \"cpf\": \"3214\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/buscaPorPropostaENome/:nome/:proposta",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"buscaPorPropostaENome",
+								":nome",
+								":proposta"
+							],
+							"variable": [
+								{
+									"key": "nome",
+									"value": "TESTE NAO MEXER"
+								},
+								{
+									"key": "proposta",
+									"value": "1234"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Agendar propostas",
+					"id": "002462d8-bc0f-4765-9671-1fae4f2214aa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"12354\",\r\n    \"dataEHora\": \"2023-10-11 10:00\",\r\n    \"responsavel\": \"Leonardo Lonque\",\r\n    \"quemAgendou\": \"Rodrigo Onesko Dias\",\r\n    \"canal\": \"whatsapp\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/agendar",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"agendar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Agendar propostas Copy",
+					"id": "ed208ba0-8241-47d7-a92e-a626100b7c1d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"12354\",\r\n    \"dataEHora\": \"2023-10-11 10:00\",\r\n    \"responsavel\": \"Leonardo Lonque\",\r\n    \"quemAgendou\": \"Rodrigo Onesko Dias\",\r\n    \"canal\": \"whatsapp\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/agendar",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"agendar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Proposta",
+					"id": "42e092ca-5a15-4fe2-9e0c-c33bec0c144f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/cancelar",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"cancelar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Proposta",
+					"id": "54ebb985-b96a-4e7f-8eac-b2ae5f19127b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/delete/:id",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1234"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Telefone da Proposta",
+					"id": "5157d8ef-8734-4a35-9e70-275c14e65cf9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"telefone\": \"(11) 999999999\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarTelefone",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarTelefone"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Whatsapp",
+					"id": "8eda9d7b-a890-4e66-9b14-aff21f049040",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"1234\",\r\n    \"whatsapp\": \"whatsapp:+5511912345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarTelefone",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarTelefone"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas agendadas",
+					"id": "ed5f2a26-c986-47bc-bfd3-7e66454ec734",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"1234\",\r\n    \"whatsapp\": \"whatsapp:+5511912345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/agendadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"agendadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas nao agendadas",
+					"id": "ba31a75e-7f45-46c8-93ee-1753e8b00c55",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"1234\",\r\n    \"whatsapp\": \"whatsapp:+5511912345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/naoAgendadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"naoAgendadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar vigencia da proposta",
+					"id": "aaca603f-8619-43b3-9dab-083ac5ea2ca8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"vigencia\": \"2023-11-12\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarVigencia",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarVigencia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Vigencia das propostas com determinado cpf titular",
+					"id": "02e7baf7-07cd-4d87-928c-93de0933b0a9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cpfTitular\": \"1234\",\r\n    \"vigencia\": \"2023-11-12\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarVigenciaPorCpfTitular",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarVigenciaPorCpfTitular"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar formulario",
+					"id": "f9c59fe3-3e90-4037-a81d-09c6c64552bb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"formulario\": \"adulto-m\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarFormulario",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarFormulario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Sexo",
+					"id": "170f26ae-0a1d-441c-8b56-7e5a9c3ebe99",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"sexo\": \"F\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarSexo",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarSexo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Voltar entrevista cancelada para agendar",
+					"id": "30a4d7a9-bd58-47ae-afd4-19d8b43060ed",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"TESTE NAO MEXER\",\r\n    \"proposta\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/voltarEntrevista",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"voltarEntrevista"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar tentativa de contato para proposta",
+					"id": "2c32e925-1068-49e7-8122-272d37bd3b49",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tentativa\": \"tentativa 1\",\r\n    \"tipo\": \"whatsapp\", //ou telefone\r\n    \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/tentativaContato",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"tentativaContato"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Concluir entrevista com sucesso",
+					"id": "8546eabb-e9b0-448a-88bd-d9c86cfee009",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"houveDivergencia\": \"sim\", //ou nao\r\n    \"cids\": [ \"...lista de cids\"],\r\n    \"divergencia\": \"Descricao da divergencia\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/concluir",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"concluir"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas que ainda n foi enviado as mensagnes",
+					"id": "6c614340-872b-48b5-9ba3-6cc1762fd864",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"houveDivergencia\": \"sim\", //ou nao\r\n    \"cids\": [ \"...lista de cids\"],\r\n    \"divergencia\": \"Descricao da divergencia\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/naoEnviadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"naoEnviadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas para ajustar o cpf",
+					"id": "e01c3993-274f-4ff3-a3f0-abc543e2ee69",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1234\",\r\n    \"houveDivergencia\": \"sim\", //ou nao\r\n    \"cids\": [ \"...lista de cids\"],\r\n    \"divergencia\": \"Descricao da divergencia\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/ajustar",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"ajustar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ajusta cpf titular da propostas",
+					"id": "b10c857f-4d92-49f7-9987-931e8fe37e33",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/ajustar",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"ajustar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas que as janelas foram escolhidas",
+					"id": "6ca8172a-7636-4f68-a42b-7429d8dfad51",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/janelasEscolhidas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"janelasEscolhidas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas que deram erro ao mandar mensagem",
+					"id": "dd1e33aa-f989-44dc-a459-4712772e98d7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/erroMensagem",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"erroMensagem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas no atendimento humanizado",
+					"id": "d167713b-82b0-4da5-ac9d-b3b60f02f71b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/atendimentoHumanizado",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"atendimentoHumanizado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas pelo whatsapp, proposta ou nome",
+					"id": "804a5cc4-c2a9-4fca-a340-04f9f85e0e55",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/conversas/:pesquisa",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"conversas",
+								":pesquisa"
+							],
+							"variable": [
+								{
+									"key": "pesquisa",
+									"value": "1234"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gera mensagens baseada nos horarios atuais",
+					"id": "c0b05bbb-8894-498b-b38e-5ca7d25249b7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/gerarMensagens",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"gerarMensagens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas pendendes",
+					"id": "e75132ff-569f-40cf-8f95-10e153711e43",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propostas\": [\r\n        {\r\n            \"id\": \"1234\",\r\n            \"cpfTitular\": \"1234\"\r\n        },\r\n        {\r\n            \"id\": \"12345\",\r\n            \"cpfTitular\": \"1234\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/naoRealizadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"naoRealizadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manda proposta para o ajustar",
+					"id": "d81ce834-61a2-40e6-ae4f-ce333ddd7a2f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/voltarAjuste",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"voltarAjuste"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manda proposta para o atendimento humanizado",
+					"id": "6e0e78aa-3178-4082-aa81-5d9b87486e97",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/mandarAtendimentoHumanizado",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"mandarAtendimentoHumanizado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Encerra atendimento nas janelas escolhidas",
+					"id": "201ae284-39e0-4ce0-b6b8-05a9ff644b45",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/encerrarAtendimento",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"encerrarAtendimento"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Encerra atendimento humanizado",
+					"id": "5b39c4d5-5745-428e-963a-7de6887a71d1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/encerrarHumanizado",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"encerrarHumanizado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assume conversa",
+					"id": "8a89dd74-4282-4d3f-9846-11d0dd7183a8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/assumirConversa",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"assumirConversa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar dados da proposta",
+					"id": "5bc77216-1da6-4823-a34d-1aa140e690c2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dados\": {\r\n        \"nome\": \"nome novo\",\r\n        \"proposta\": \"proposta\",\r\n        \"nomeAntigo\": \"nome antigo da pessoa\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/alterarDadosProposta",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"alterarDadosProposta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas para serem devolvidas para a amil",
+					"id": "d43efbbd-9995-4862-bfae-f3db8cad751c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/devolverPropostas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"devolverPropostas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca o rendimento mensal de determinado analista",
+					"id": "c3fdc586-1652-4eca-89b0-cd6eed932987",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/rendimentoMensal/:mes/:analista",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"rendimentoMensal",
+								":mes",
+								":analista"
+							],
+							"variable": [
+								{
+									"key": "mes",
+									"value": "2023-12"
+								},
+								{
+									"key": "analista",
+									"value": "Rodrigo Onesko Dias"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca o rendimento mensal de determinado analista Copy",
+					"id": "baffc643-0a6d-4f81-bb58-73a776c8beb3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/producaoMensal/:mes",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"producaoMensal",
+								":mes"
+							],
+							"variable": [
+								{
+									"key": "mes",
+									"value": "2023-12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca a producao do analista que realiza os agendamentos",
+					"id": "9f39cc41-0cd3-4ba7-ac3a-b3b851b863de",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/producaoAgendamento/:analista/:mes",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"producaoAgendamento",
+								":analista",
+								":mes"
+							],
+							"variable": [
+								{
+									"key": "analista",
+									"value": "Rodrigo Onesko Dias"
+								},
+								{
+									"key": "mes",
+									"value": "2023-12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca propostas com determinado cpfTitular",
+					"id": "5aea52f8-3ecb-44cb-b429-b6199a1ae819",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/cpfTitular/:cpfTitular",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"cpfTitular",
+								":cpfTitular"
+							],
+							"variable": [
+								{
+									"key": "cpfTitular",
+									"value": "12345678910"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filtro de propostas",
+					"id": "b8e280b9-4262-486d-826b-ffd3828773dd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": {\r\n        \"agendar\": true,\r\n        \"humanizado\": true,\r\n        \"janelas\": true,\r\n        \"ajustar\": true,\r\n        \"semWhats\": true,\r\n        \"agendado\": true\r\n    },\r\n    \"tipoContrato\": {\r\n        \"pme\": true,\r\n        \"pf\": true,\r\n        \"adesao\": true\r\n    },\r\n    \"vigencia\": {\r\n        \"noPrazo\": true,\r\n        \"foraDoPrazo\": true\r\n    },\r\n    \"altoRisco\": {\r\n        \"baixo\": true,\r\n        \"medio\": true,\r\n        \"alto\": true\r\n    },\r\n    \"idade\": {\r\n        \"maior60\": true,\r\n        \"menor60\": true\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/filterPropostas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"filterPropostas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retorna a quantidade de propostas pendentes",
+					"id": "64e85202-58bb-4ba8-b287-fc095fe0ef7a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": {\r\n        \"agendar\": true,\r\n        \"humanizado\": true,\r\n        \"janelas\": true,\r\n        \"ajustar\": true,\r\n        \"semWhats\": true,\r\n        \"agendado\": true\r\n    },\r\n    \"tipoContrato\": {\r\n        \"pme\": true,\r\n        \"pf\": true,\r\n        \"adesao\": true\r\n    },\r\n    \"vigencia\": {\r\n        \"noPrazo\": true,\r\n        \"foraDoPrazo\": true\r\n    },\r\n    \"altoRisco\": {\r\n        \"baixo\": true,\r\n        \"medio\": true,\r\n        \"alto\": true\r\n    },\r\n    \"idade\": {\r\n        \"maior60\": true,\r\n        \"menor60\": true\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/totalPropostasNaoRealizadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"totalPropostasNaoRealizadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filtro de propostas de acordo com a pesqsuisa",
+					"id": "1834386e-5eaa-4fd3-8444-736f6d7e86b2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pesquisa\": \"Nome ou proposta\",\r\n    \"page\": 1,\r\n    \"limit\": 100,\r\n    \"filters\": {\r\n        \r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/filterPropostasNaoRealizadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"filterPropostasNaoRealizadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filtro de propostas agendadas pelo analista responsavel",
+					"id": "2dfd9b21-1a07-419d-b669-63e2193256e2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"responsavel\": \"Responsavel pela proposta\",\r\n    \"page\": 1,\r\n    \"limit\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/filterPropostasAgendadas",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"filterPropostasAgendadas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filtro de propostas agendadas pelo analista responsavel Copy",
+					"id": "b58ea050-425e-4ff2-a53d-67033d792109",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"whatsapp\": \"whatsapp:+5511912345678\",\r\n    \"wppSender\": \"novo numero de envio\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/changeWhatsappSender",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"changeWhatsappSender"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "7604bcb7-bda9-46f1-bc13-cda45a2efdd6"
+		},
+		{
+			"name": "whatsapp",
+			"item": [
+				{
+					"name": "Envia primeira mensagem para o beneficiario",
+					"id": "55206a3d-1aba-4a6e-8567-0b57e91623f0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"proposta\": \"proposta\",\r\n    \"modeloEscolhido\": \"1\",\r\n    \"data1\": \"2023-12-12\",\r\n    \"data2\": \"2023-12-13\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/enviarMensagem",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"enviarMensagem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca conversas com determinado numero de whatsapp",
+					"id": "42d01b4c-b5fc-45ee-8de7-d36caeebe3b2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"proposta\": \"proposta\",\r\n    \"modeloEscolhido\": \"1\",\r\n    \"data1\": \"2023-12-12\",\r\n    \"data2\": \"2023-12-13\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/chat/:whatsapp",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"chat",
+								":whatsapp"
+							],
+							"variable": [
+								{
+									"key": "whatsapp",
+									"value": "whatsapp:+5511912345678"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Busca conversas com determinado numero de whatsapp Copy",
+					"id": "7efc2c9a-2a28-44f3-a51d-40c66932391c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"whatsapp\": \"whatsapp:+5511912345678\",\r\n   \"mensagem\": \"Mensagem para o beneficiario\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/sendMessage",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Visualiza mensagem do beneficiario",
+					"id": "528cfa93-b4fa-40b5-b038-017e01e09e76",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"whatsapp\": \"whatsapp:+5511912345678\",\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/visualizarMensagem",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"visualizarMensagem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reenvia mensagem com os horarios disponiveis",
+					"id": "7daad874-ac0b-4c64-9243-70f9aabd10ec",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"proposta\": \"1234\",\r\n   \"horarios\": \"horarios\",\r\n   \"dia\": \"2023-12-11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/reenviarMensagens",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"reenviarMensagens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reenvia mensagem com os horarios disponiveis",
+					"id": "d4a3a119-0e93-4aa4-93f4-fad1145f5c5f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"whatsapps\": \"1234\",\r\n   \"horarios\": [\"...horarios\"],\r\n   \"data\": \"2023-12-11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/reenviarHorariosDisponiveis",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"reenviarHorariosDisponiveis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar o status da mensagem enviada",
+					"id": "cd5799d2-2612-4775-8bf1-d123eea94bf8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"SmsSid\": \"\",\r\n    \"SmsStatus\": \"\",\r\n    \"To\": \"\",\r\n    \"From\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_TELE_IP}}/hookStatusMessage",
+							"host": [
+								"{{API_TELE_IP}}"
+							],
+							"path": [
+								"hookStatusMessage"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "108e4be3-f0d4-4071-99ff-ba5629d88feb"
 		}
 	]
 }
