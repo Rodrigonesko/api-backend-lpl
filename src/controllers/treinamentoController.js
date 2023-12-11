@@ -6,11 +6,8 @@ module.exports = {
 
     getAll: async (req, res) => {
         try {
-
             const result = await Treinamento.find()
-
             return res.json(result)
-
         } catch (error) {
             console.log('error')
             return res.json({
@@ -22,17 +19,13 @@ module.exports = {
 
     create: async (req, res) => {
         try {
-
             const { nome, plataforma, link, prazo, observacoes } = req.body
-
             if (nome === '' || plataforma === '' || prazo === '') {
                 return res.status(400).json({
                     msg: 'Alguma informação está em branco'
                 })
             }
-
             const users = await User.find()
-
             const realizados = users.map(user => {
                 return {
                     nome: user.name,
