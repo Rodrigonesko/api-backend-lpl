@@ -85,7 +85,8 @@ module.exports = {
                     dataInicio: body.dataInicio,
                     dataRetorno: data,
                     totalDias: body.totalDias,
-                    statusRh: body.statusRh
+                    statusRh: body.statusRh,
+                    setor: find.atividadePrincipal
                 })
             } else if (body.totalDias === '20/10 dias' || body.totalDias === '15/15 dias') {
                 const data = moment(body.dataInicio).add(19, 'day').format('DD/MM/YYYY')
@@ -97,7 +98,8 @@ module.exports = {
                     dataInicio: body.dataInicio,
                     dataRetorno: (body.totalDias === '20/10 dias' ? (data) : (data2)),
                     totalDias: (body.totalDias === '20/10 dias' ? ('20 dias') : ('15 dias')),
-                    statusRh: body.statusRh
+                    statusRh: body.statusRh,
+                    setor: find.atividadePrincipal
                 })
                 const data3 = moment(body.dataInicio2).add(9, 'day').format('DD/MM/YYYY')
                 const data4 = moment(body.dataInicio2).add(14, 'day').format('DD/MM/YYYY')
@@ -108,7 +110,8 @@ module.exports = {
                     dataInicio: body.dataInicio2,
                     dataRetorno: (body.totalDias === '20/10 dias' ? (data3) : (data4)),
                     totalDias: (body.totalDias === '20/10 dias' ? ('10 dias') : ('15 dias')),
-                    statusRh: body.statusRh
+                    statusRh: body.statusRh,
+                    setor: find.atividadePrincipal
                 })
             } else if (body.totalDias === '20/10 dias vendidos') {
                 const data = moment(body.dataInicio).add(19, 'day').format('DD/MM/YYYY')
@@ -119,7 +122,8 @@ module.exports = {
                     dataInicio: body.dataInicio,
                     dataRetorno: data,
                     totalDias: body.totalDias,
-                    statusRh: body.statusRh
+                    statusRh: body.statusRh,
+                    setor: find.atividadePrincipal
                 })
             }
             return res.json({
@@ -137,14 +141,15 @@ module.exports = {
 
     getFeriasByFilter: async (req, res) => {
         try {
-            const { colaborador, mes, vencimento } = req.query;
+            const { colaborador, mes, vencimento, setor } = req.query;
 
             console.log(req.query);
 
             const result = await VacationRequest.find({
                 colaborador: { $regex: new RegExp(colaborador, 'i') },
                 dataInicio: { $regex: mes },
-                vencimento: { $regex: vencimento }
+                vencimento: { $regex: vencimento },
+                setor: { $regex: new RegExp(setor, 'i') }
             }).sort({ dataInicio: -1 });
 
             console.log(result);
