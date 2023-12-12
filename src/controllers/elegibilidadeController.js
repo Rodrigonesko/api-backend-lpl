@@ -1872,6 +1872,30 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProducaoMensal: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+            const start = new Date(mes);
+            const end = new Date(mes);
+            end.setMonth(end.getMonth() + 1);
+
+            const startStr = start.toISOString().split('T')[0];
+            const endStr = end.toISOString().split('T')[0];
+
+            const result = await Proposta.find({
+                dataConclusao: { $gte: startStr, $lt: endStr }
+            }).lean().sort({ dataConclusao: 1 })
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 

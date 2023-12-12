@@ -529,20 +529,6 @@ module.exports = {
                     })
                 }
 
-                console.log(req.file);
-
-                // const { filename } = req.file
-
-                // console.log(filename);
-
-                // const result = await User.updateOne({
-                //     email: req.email
-                // }, {
-                //     profilePic: filename
-                // })
-
-                // console.log(result);
-
                 return res.status(200).json({
                     msg: 'ok'
                 })
@@ -555,6 +541,23 @@ module.exports = {
             });
         }
     },
+
+    getAnalistasAgendamento: async (req, res) => {
+        try {
+
+            const result = await User.find({
+                atividadePrincipal: 'Agendamento'
+            })
+
+            return res.json(result)
+
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error: error.message // Melhor captura do erro, pegando a mensagem de erro
+            });
+        }
+    }
 }
 
 function calcularDiferencaEntreHorarios(horaString1, horaString2) {

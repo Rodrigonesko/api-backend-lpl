@@ -56,6 +56,7 @@ router.patch('/horarioPonto', auth, userController.updateHorarioPonto)
 router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 router.get('/aniversariantes', auth, userController.getAllAniversariantes)
 router.patch('/updateProfilePic', auth, userController.updateProfilePic)
+router.get('/users/agendamento', auth, userController.getAnalistasAgendamento)
 
 //AdmissaoDemissao
 

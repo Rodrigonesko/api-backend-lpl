@@ -2786,6 +2786,66 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProducaoMensal: async (req, res) => {
+        try {
+            const { mes } = req.params;
+            const start = new Date(mes);
+            const end = new Date(mes);
+            end.setMonth(end.getMonth() + 1);
+
+            const startStr = start.toISOString().split('T')[0];
+            const endStr = end.toISOString().split('T')[0];
+
+            const pedidos = await Pedido.find({
+                dataConclusao: { $gte: startStr, $lt: endStr }
+            }).lean().sort({ dataConclusao: 1 });
+
+            let arrProd = {};
+
+            console.log(pedidos);
+
+            for (const pedido of pedidos) {
+                if (pedido.dataConclusao) {
+                    const dataConclusao = pedido.dataConclusao;
+                    const key = `${pedido.analista}-${dataConclusao}`;
+
+                    if (!arrProd[key]) {
+                        arrProd[key] = {
+                            analista: pedido.analista,
+                            data: dataConclusao,
+                            quantidade: 0,
+                            indeferidos: 0,
+                            naoIndeferidos: 0,
+                            cancelados: 0,
+                            naoCancelados: 0
+                        };
+                    }
+
+                    arrProd[key].quantidade += 1;
+
+                    if (pedido.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento') {
+                        arrProd[key].indeferidos += 1;
+                    } else {
+                        arrProd[key].naoIndeferidos += 1;
+                    }
+
+                    if (pedido.statusGerencial === 'Protocolo Cancelado') {
+                        arrProd[key].cancelados += 1;
+                    } else {
+                        arrProd[key].naoCancelados += 1;
+                    }
+                }
+            }
+
+            return res.json(Object.values(arrProd));
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            });
+        }
     }
 }
 

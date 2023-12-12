@@ -54,5 +54,6 @@ router.post('/formaPagamento', auth, rsdController.adicionarFormaPagamento)
 router.delete('/formaPagamento/:id', auth, rsdController.deleteFormaPagamento)
 router.post('/finalizacao', auth, rsdController.adicionarStatusFinalizacao)
 router.delete('/finalizacao/:id', auth, rsdController.deleteStatusFinalizacao)
+router.get('/relatorioProducaoMensal/:mes', auth, rsdController.relatorioProducaoMensal)
 
 module.exports = router
