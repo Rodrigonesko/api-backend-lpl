@@ -14,6 +14,7 @@ const Scheema = new mongoose.Schema({
     realizado: Boolean,
     status: String,
     gestorAprovou: Boolean,
+    setor: String,
 }, {
     timestamps: true
 })

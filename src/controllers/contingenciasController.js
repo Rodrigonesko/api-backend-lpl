@@ -91,40 +91,4 @@ module.exports = {
             })
         }
     },
-
-    showActive: async (req, res) => {
-        try {
-
-            const result = await ContingenciasIncidentes.find({
-                inativo: { $ne: true }
-            })
-
-            return res.json(result)
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    showContingencia: async (req, res) => {
-        try {
-
-            const { id } = req.params
-
-            const result = await ContingenciasIncidentes.findOne({
-                _id: id
-            })
-
-            return res.json(result)
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
 }
