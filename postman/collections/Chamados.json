@@ -1,0 +1,187 @@
+{
+	"info": {
+		"_postman_id": "3df9c05f-43a9-4374-a1f2-9a060003f1a9",
+		"name": "Chamados",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "29415055-3df9c05f-43a9-4374-a1f2-9a060003f1a9"
+	},
+	"item": [
+		{
+			"name": "Encontrar todos os chamados",
+			"id": "429dac5f-ad10-4471-b32e-55f0402dbf86",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/tasks/findAll",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"tasks",
+						"findAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar os chamados",
+			"id": "1d2f9cff-2aec-4dac-9931-46b85627a7f2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"assunto\": \"Assunto da Tarefa\",\r\n    \"descricao\": \"Descrição detalhada da tarefa.\",\r\n    \"dataFinalizado\": \"2023-12-31\",\r\n    \"analista\": \"Nome do Analista\",\r\n    \"status\": \"Em Andamento\",\r\n    \"retorno\": \"Comentário ou observação sobre a tarefa\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/tasks/request",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"tasks",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar o status Chamados",
+			"id": "bb67c971-c057-4a24-af40-8b0ee9dd1403",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\": \"id_da_tarefa\",\r\n    \"status\": \"Novo Status\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/tasks/status",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"tasks",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar o analista Chamados",
+			"id": "94c42a59-00cc-4075-95f8-84d90911830c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\": \"id_da_tarefa\",\r\n    \"analista\": \"Novo Analista\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/tasks/analist",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"tasks",
+						"analist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar o retorno Chamados",
+			"id": "e44789fd-807a-4c35-9cac-81b7a2e5d004",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"_id\": \"id_da_tarefa\",\r\n    \"retorno\": \"Novo Retorno\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/tasks/retorno",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"tasks",
+						"retorno"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtrar o Chamados pelo nome e analista",
+			"id": "5245f9de-8c6e-4a02-94a7-bc1c3fed19fc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"colaborador\": \"Nome do Colaborador\",\r\n    \"analista\": \"Nome do Analista\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/tasks/filter",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"tasks",
+						"filter"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

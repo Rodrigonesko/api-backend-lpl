@@ -1,0 +1,83 @@
+{
+	"info": {
+		"_postman_id": "56d4784d-edf0-4803-b00a-f31cc46bcc7f",
+		"name": "Contingência",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "29415055-56d4784d-edf0-4803-b00a-f31cc46bcc7f"
+	},
+	"item": [
+		{
+			"name": "Criar Novo arquivo de Contingência",
+			"id": "2d96b47b-0d9c-43d5-bfd7-4648026f8396",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contingencia\": \"nome_da_contingencia\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/contingencias/:contingencia/:versao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"contingencias",
+						":contingencia",
+						":versao"
+					],
+					"variable": [
+						{
+							"key": "contingencia",
+							"value": ""
+						},
+						{
+							"key": "versao",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Mostrar arquivos criados",
+			"id": "34f5de6e-4775-4eaf-9fda-1b295ee09a16",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/contingencias/",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"contingencias",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
