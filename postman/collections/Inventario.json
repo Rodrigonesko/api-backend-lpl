@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "ac9ee735-d9e3-44ca-ae8d-709092742c9b",
+		"name": "Inventario",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "29415055-ac9ee735-d9e3-44ca-ae8d-709092742c9b"
+	},
+	"item": [
+		{
+			"name": "Encontrar todos os itens inseridos no Inventario",
+			"id": "cfc50e50-45bc-49de-be4f-6a36d8ca8f6c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/inventario/findAll",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"inventario",
+						"findAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar itens no Inventario",
+			"id": "31680187-6d4f-4449-b0f0-91b93dd93cb4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Nome do Item\",\r\n  \"quantidade\": 10,\r\n  \"etiqueta\": \"ETQ123\",\r\n  \"ondeEsta\": \"Localização\",\r\n  \"descricao\": \"Descrição do Item\",\r\n  \"status\": \"Disponível\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/inventario/request",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"inventario",
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar status do item",
+			"id": "3f68250e-ed90-4ab0-afe7-28e95bd8a66f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_item\",\r\n  \"status\": \"Novo Status\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/inventario/status",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"inventario",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar status do item Copy",
+			"id": "d4940cf4-b1c2-4ac1-a29f-2835684ab040",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nomeItem\": \"Nome do Item\",\r\n  \"ondeEsta\": \"Localização\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/inventario/filter",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"inventario",
+						"filter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar os dados do item",
+			"id": "713b7135-1e12-4835-a9a3-4f3e5e6d3b2f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_item\",\r\n  \"nome\": \"Novo Nome\",\r\n  \"etiqueta\": \"Nova Etiqueta\",\r\n  \"ondeEsta\": \"Nova Localização\",\r\n  \"descricao\": \"Nova Descrição\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/inventario/status",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"inventario",
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

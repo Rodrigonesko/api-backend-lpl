@@ -7,28 +7,6 @@
 	},
 	"item": [
 		{
-			"name": "Buscar todas as Férias",
-			"id": "d358abb3-784b-4bec-939c-a1073aa37c29",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{SERVER_IP}}/vacation/findAll",
-					"host": [
-						"{{SERVER_IP}}"
-					],
-					"path": [
-						"vacation",
-						"findAll"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Criar Solicitação de Férias",
 			"id": "5d2aa670-c954-4fdd-9d74-1997776b6f10",
 			"protocolProfileBehavior": {
@@ -54,6 +32,28 @@
 					"path": [
 						"vacation",
 						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar todas as Férias",
+			"id": "d358abb3-784b-4bec-939c-a1073aa37c29",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation/findAll",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"findAll"
 					]
 				}
 			},

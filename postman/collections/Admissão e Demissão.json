@@ -1,0 +1,224 @@
+{
+	"info": {
+		"_postman_id": "31ff85e2-cf12-4421-9211-33bbac46e2f1",
+		"name": "Admissão e Demissão",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "29415055-31ff85e2-cf12-4421-9211-33bbac46e2f1"
+	},
+	"item": [
+		{
+			"name": "Criar Admissional",
+			"id": "9783d7df-34b3-4f33-ade5-1549e3a20b72",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_usuario\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/createAdmissao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"createAdmissao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar Demissional",
+			"id": "f4effbb0-16aa-441a-84e6-0ab0195dfe5f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_usuario\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/createDemissao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"createDemissao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar status Admissional/Demissional",
+			"id": "429f9f7f-e0e1-42f4-9ed4-606f7a7909c6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_usuario\",\r\n  \"tipoExame\": \"admissao\", // ou \"demissao\" conforme necessário\r\n  \"id\": \"id_do_exame\",\r\n  \"status\": \"Novo Status\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/status",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar observação Admissional/Demissional",
+			"id": "b29d306d-e218-4eae-8757-5c41127c8a88",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_usuario\",\r\n  \"tipoExame\": \"admissao\", // ou \"demissao\" conforme necessário\r\n  \"id\": \"id_do_exame\",\r\n  \"obs\": \"Nova Observação\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "/admissaoDemissao/obs",
+					"path": [
+						"admissaoDemissao",
+						"obs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alterar data Admissional/Demissional",
+			"id": "90359756-c633-411a-bfc4-958f881a9fc9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"_id\": \"id_do_usuario\",\r\n  \"tipoExame\": \"admissao\", // ou \"demissao\" conforme necessário\r\n  \"id\": \"id_do_exame\",\r\n  \"data\": \"Nova Data\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verificar se foi assinado a prorrogação do Admissional/Demissional",
+			"id": "65afcfd8-a00b-4738-906b-a005bd9cf44a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"nome_do_usuario\",\r\n  \"prorrogacao\": \"Nova Prorrogação\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/prorrogacao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"prorrogacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Puxar todos os dados inseridos no Admissional/Demissional",
+			"id": "dcc7c3a9-e33d-4e3f-a290-dc366595ba84",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/itens",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"itens"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
