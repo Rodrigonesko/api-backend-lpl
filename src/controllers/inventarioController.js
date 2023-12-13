@@ -74,13 +74,14 @@ module.exports = {
     getInventarioByFilter: async (req, res) => {
         try {
 
-            const { nomeItem, ondeEsta } = req.query
+            const { nomeItem, ondeEsta, etiqueta } = req.query
 
             console.log(req.query);
 
             const result = await Inventario.find({
-                nome: { $regex: nomeItem },
-                ondeEsta: { $regex: ondeEsta }
+                nome: { $regex: new RegExp(nomeItem, 'i') },
+                ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
+                etiqueta: { $regex: etiqueta }
             })
 
             console.log(result);

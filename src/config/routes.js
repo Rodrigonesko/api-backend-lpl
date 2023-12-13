@@ -1,7 +1,6 @@
 const express = require('express')
 const publicController = require('../controllers/publicController')
 const userController = require('../controllers/userController')
-const admissaoDemissaoController = require('../controllers/admissaoDemissaoController')
 const verifyToken = require('../middlewares/verifyToken')
 const auth = require('../middlewares/auth')
 
@@ -58,17 +57,6 @@ router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 router.get('/aniversariantes', auth, userController.getAllAniversariantes)
 router.patch('/updateProfilePic', auth, userController.updateProfilePic)
 router.get('/users/agendamento', auth, userController.getAnalistasAgendamento)
-
-//AdmissaoDemissao
-
-router.post('/createAdmissao', auth, admissaoDemissaoController.createAdmissao)
-router.post('/createDemissao', auth, admissaoDemissaoController.createDemissao)
-router.put('/status', auth, admissaoDemissaoController.setStatus)
-router.put('/obs', auth, admissaoDemissaoController.setObs)
-router.put('/data', auth, admissaoDemissaoController.setData)
-router.put('/prorrogacao', auth, admissaoDemissaoController.prorrogacao)
-router.get('/itens', auth, admissaoDemissaoController.getAllItens)
-
 
 //Rotas das células
 

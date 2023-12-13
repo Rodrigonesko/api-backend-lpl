@@ -327,7 +327,7 @@ module.exports = {
                     id: mongoose.Types.ObjectId()
                 },
                 {
-                    responsavel: 'Rodrigo Onesko Dias',
+                    responsavel: 'Samantha Maciel Giazzon',
                     acao: 'Cancelar Portal LPL',
                     fornecedor: '',
                     obs: '',
@@ -502,6 +502,7 @@ module.exports = {
                         itens.push({
                             nome: user.name,
                             acao: `É necessário assinar o Contrato de Prorrogação para o Colaborador ${user.name} no dia ${moment(user.dataAdmissao).add(30, 'days').format('DD/MM/YYYY')}`,
+                            negrito: true,
                         });
                     }
                     for (const item of user.admissao) {
