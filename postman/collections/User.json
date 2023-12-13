@@ -1,0 +1,533 @@
+{
+	"info": {
+		"_postman_id": "100a2ea2-f0b1-4b63-a954-c5d04c80da19",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "29415055-100a2ea2-f0b1-4b63-a954-c5d04c80da19"
+	},
+	"item": [
+		{
+			"name": "Criar Usuario",
+			"id": "9b43f57c-56c9-4295-b563-a2c08e39c4c6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"email@example.com\",\r\n  \"name\": \"Nome do Usuário\",\r\n  \"accessLevel\": \"Nível de Acesso\",\r\n  \"atividade\": \"Atividade Principal\",\r\n  \"nomeCompleto\": \"Nome Completo do Usuário\",\r\n  \"dataAdmissao\": \"2023-12-31\",\r\n  \"matricula\": \"Número de Matrícula\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca os Usuarios",
+			"id": "b51ce76f-0142-41e1-a777-80a0845d1248",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca os e-mails do Usuario",
+			"id": "caf55dbc-e9d5-4567-a193-66e71fe7673d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"email@example.com\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/infoUser",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"infoUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca os e-mails do Usuario na URL",
+			"id": "f8d57b0f-82ba-46cd-9121-99cf2b4ebfde",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"URL\": \"/searchEmail/email@example.com\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/infoUser/:email",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"infoUser",
+						":email"
+					],
+					"variable": [
+						{
+							"key": "email",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca os Usuarios que são Enfermeiros",
+			"id": "356cd9e8-4a76-4348-a43e-18c783b0a3f4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/enfermeiros",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"enfermeiros"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca os Usuarios que são Elegibilidade",
+			"id": "bf1e925e-9e1b-4353-bb35-f7301e9e0232",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/elegibilidade",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"elegibilidade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca os Usuarios que são RSD",
+			"id": "d6666466-998c-4747-8644-1bd2b231506c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/rsd",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"rsd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualiza senha no primeiro acesso do Usuario",
+			"id": "26a37fae-cf61-4133-b2f4-191b115b348b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"password\": \"novaSenha\",\r\n  \"confirmPassword\": \"novaSenha\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/updatePassword",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"updatePassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica os Módulos do Usuário",
+			"id": "38e4f9ff-0382-42e6-be36-62b9ce0e911d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"email@example.com\",\r\n  \"enfermeiro\": true,\r\n  \"elegibilidade\": true,\r\n  \"entrada1\": \"08:00\",\r\n  \"saida1\": \"17:00\",\r\n  \"entrada2\": \"13:00\",\r\n  \"saida2\": \"18:00\",\r\n  \"atividadePrincipal\": \"Atividade Principal do Usuário\",\r\n  \"coren\": \"12345\",\r\n  \"rsd\": \"RSD123\",\r\n  \"nomeCompleto\": \"Nome Completo do Usuário\",\r\n  \"dataAdmissao\": \"2023-12-31\",\r\n  \"administrador\": true,\r\n  \"agendamento\": true,\r\n  \"dataAniversario\": \"1990-01-01\",\r\n  \"matricula\": \"M12345\",\r\n  \"contaInativada\": false\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/modules",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"modules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Troca a senha do Usuario",
+			"id": "705d948e-7ebf-490c-be70-8b028b64cebd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"email@example.com\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/resetPassword",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"resetPassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Encontrar o número do Coren pela URL",
+			"id": "a54d56f9-b3a1-4a67-8873-c35b62631706",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"URL\": \"/coren/nomeDoUsuario\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/coren/:name",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"coren",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualiza as politicas lidas pelo Usuario",
+			"id": "189b60a6-8a7f-4e60-be86-5134c5f55203",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"identificadorDaPolitica\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/lerPolitica",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"lerPolitica"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Encontra todas as Células",
+			"id": "f4888a17-35a4-4ca8-bc85-c002c240b850",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/celulas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"celulas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar célula",
+			"id": "f5d21890-fe61-468d-a96e-8809346c2d83",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"celula\": \"NomeDaNovaCelula\"\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/celulas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"celulas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar o Banco de Horas",
+			"id": "851d528b-62b3-426a-b6ef-37057f829d0c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dados\": [\r\n    {\r\n      \"Nome\": \"NomeDoUsuario1\",\r\n      \"BTotal\": \"NovoValor1\"\r\n    },\r\n    {\r\n      \"Nome\": \"NomeDoUsuario2\",\r\n      \"BTotal\": \"NovoValor2\"\r\n    },\r\n    // Adicione mais objetos para outros usuários, se necessário\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/bancoHoras",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"bancoHoras"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar o horário de Saída do Usuário",
+			"id": "7deaaa36-9893-4d2e-82dd-d7710d85b271",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dados\": [\r\n    {\r\n      \"NOME\": \"NomeDoUsuario1\",\r\n      \"ENTRADA 1\": \"09:00\",\r\n      \"SAÍDA 1\": \"18:00\",\r\n      \"ENTRADA 2\": \"09:00\"\r\n    },\r\n    {\r\n      \"NOME\": \"NomeDoUsuario2\",\r\n      \"ENTRADA 1\": \"08:30\",\r\n      \"SAÍDA 1\": \"17:30\",\r\n      \"ENTRADA 2\": \"09:00\"\r\n    }\r\n    // Adicione mais objetos para outros usuários, se necessário\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/horarioPonto",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"horarioPonto"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica os Usuários elegíveis para tirar Férias",
+			"id": "bfb2bb46-7877-4893-850d-bcfc51d2d80c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/feriasElegiveis",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"feriasElegiveis"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica os aniversariantes do mês atual",
+			"id": "94878799-53fa-4576-bd2c-83fabd596e6a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/aniversariantes",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"aniversariantes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualiza a imagem do Usuário",
+			"id": "55cdbfb3-8e3a-44bf-916e-575ea0e5b0d4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/updateProfilePic",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"updateProfilePic"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica quais Usuários são agendamento",
+			"id": "d2153b90-7c5f-47ba-b05f-f4128244fc0a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/users/agendamento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"users",
+						"agendamento"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
