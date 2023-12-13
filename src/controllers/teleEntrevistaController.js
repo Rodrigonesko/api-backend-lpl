@@ -2802,7 +2802,148 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProdutividadeMes: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const result = await axios.get(`${process.env.API_TELE}/propostasPorMes/${mes}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${req.cookies['token']}`
+                }
+            })
+
+            const arrProd = {}
+
+            for (const item of result.data) {
+
+                if (item.dataConclusao) {
+
+                    const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
+
+                    if(item.enfermeiro === '' || !item.enfermeiro) {
+                        continue
+                    }
+
+                    const key = `${item.enfermeiro}-${dataConclusao}`
+
+                    if (!arrProd[key]) {
+                        arrProd[key] = {
+                            analista: item.enfermeiro,
+                            data: dataConclusao,
+                            quantidade: 0,
+                            houveDivergencia: 0,
+                            naoHouveDivergencia: 0,
+                            agendado: 0,
+                            naoAgendado: 0,
+                            tentativa1: 0,
+                            tentativa2: 0,
+                            tentativa3: 0,
+                        }
+                    }
+
+                    arrProd[key].quantidade += 1
+
+                    if (item.houveDivergencia === 'Sim') {
+                        arrProd[key].houveDivergencia += 1
+                    } else {
+                        arrProd[key].naoHouveDivergencia += 1
+                    }
+
+                    if (item.agendado === 'agendado') {
+                        arrProd[key].agendado += 1
+                    } else {
+                        arrProd[key].naoAgendado += 1
+                    }
+
+                    if (item.contato1) {
+                        arrProd[key].tentativa1 += 1
+                    }
+
+                    if (item.contato2) {
+                        arrProd[key].tentativa2 += 1
+                    }
+
+                    if (item.contato3) {
+                        arrProd[key].tentativa3 += 1
+                    }
+                }
+            }
+
+            return res.json(Object.values(arrProd))
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+
+    relatorioProdutivdadeMensalRnUe: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const rns = await Rn.find({
+                dataConclusao: { $regex: mes }
+            }).lean().sort({ dataConclusao: 1 })
+
+            const ues = await UrgenciasEmergencia.find({
+                dataConclusao: { $regex: mes }
+            }).lean().sort({ dataConclusao: 1 })
+
+            const arr = {}
+
+            for (const item of rns) {
+                const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
+
+                const key = `${item.responsavel}-${dataConclusao}`
+
+                if (!arr[key]) {
+                    arr[key] = {
+                        analista: item.responsavel,
+                        data: dataConclusao,
+                        quantidadeRn: 0,
+                        quantidadeUe: 0,
+                    }
+                }
+
+                arr[key].quantidadeRn += 1
+            }
+
+            for (const item of ues) {
+                const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
+
+                const key = `${item.analista}-${dataConclusao}`
+
+                if (!arr[key]) {
+                    arr[key] = {
+                        analista: item.analista,
+                        data: dataConclusao,
+                        quantidadeUe: 0,
+                        quantidadeRn: 0,
+                    }
+                }
+
+                arr[key].quantidadeUe += 1
+            }
+
+            return res.json(Object.values(arr))
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
+
+
 }
 
 const feriados = [

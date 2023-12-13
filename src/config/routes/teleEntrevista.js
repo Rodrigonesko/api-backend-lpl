@@ -58,6 +58,8 @@ router.get('/producao/anexos/:analista/:mes', auth, teleEntrevistaController.pro
 router.get('/verificarHorarioReaberto', auth, horarioController.verificarReaberto)
 router.post('/uploadImplantacao', auth, teleEntrevistaController.uploadImplantacao)
 router.get('/verificarAgendamento/:data/:horario/:enfermeiro', auth, horarioController.verificarAgendamento)
+router.get('/relatorioPropostasMes/:mes', auth, teleEntrevistaController.relatorioProdutividadeMes)
+router.get('/relatorioRnUePorMes/:mes', auth, teleEntrevistaController.relatorioProdutivdadeMensalRnUe)
 
 router.get('/adicionarAdministradora', teleEntrevistaController.adicionarAdministradora)
 

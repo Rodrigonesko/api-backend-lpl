@@ -50,7 +50,6 @@ router.post('/planosBlacklist', auth, elegibilidadeController.adicionarPlanoBlac
 router.delete('/planosBlacklist/:id', auth, elegibilidadeController.removerPlanoBlacklist)
 router.get('/producaoMensal/:mes/:analista', auth, elegibilidadeController.produtividadeMensal)
 router.put('/voltarProposta', auth, elegibilidadeController.voltarProposta)
-
-router.post('/alterarBase', elegibilidadeController.corrigirBase)
+router.get('/relatorioProducaoMensal/:mes', auth, elegibilidadeController.relatorioProducaoMensal)
 
 module.exports = router

@@ -370,7 +370,7 @@ module.exports = {
             // Procura as propostas com a data de conclusão fornecida
             const propostas = await Proposta.find({
                 dataConclusao: moment(data).format('DD/MM/YYYY'),
-                status: {$ne: 'Redistribuído'}
+                status: { $ne: 'Redistribuído' }
             });
 
             let analistas = [];
@@ -551,6 +551,56 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProducaoMensal: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const mesAjustado = moment(mes).format('MM/YYYY')
+
+            const result = await Proposta.find({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                }
+            });
+
+
+            let arrProd = {}
+
+            for (const proposta of result) {
+                if (proposta.dataConclusao) {
+                    const key = `${proposta.analista}-${proposta.dataConclusao}`
+                    if (!arrProd[key]) {
+                        arrProd[key] = {
+                            analista: proposta.analista,
+                            data: proposta.dataConclusao,
+                            quantidade: 0,
+                            devolvidas: 0,
+                            naoDevolvidas: 0
+                        }
+                    }
+
+                    arrProd[key].quantidade++
+
+                    if (proposta.status === 'Devolvida') {
+                        arrProd[key].devolvidas++
+                    } else {
+                        arrProd[key].naoDevolvidas++
+                    }
+                }
+            }
+
+            return res.json(Object.values(arrProd))
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+
     }
 }
 

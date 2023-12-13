@@ -2799,12 +2799,10 @@ module.exports = {
             const endStr = end.toISOString().split('T')[0];
 
             const pedidos = await Pedido.find({
-                dataConclusao: { $gte: startStr, $lt: endStr }
+                dataConclusao: { $regex: mes }
             }).lean().sort({ dataConclusao: 1 });
 
             let arrProd = {};
-
-            console.log(pedidos);
 
             for (const pedido of pedidos) {
                 if (pedido.dataConclusao) {

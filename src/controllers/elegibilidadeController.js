@@ -1823,57 +1823,6 @@ module.exports = {
         }
     },
 
-    corrigirBase: async (req, res) => {
-        try {
-
-            uploadPropostas(req, res, async (err) => {
-
-                // const { name, ext } = path.parse(req.file.originalname)
-
-                let file = fs.readFileSync(req.file.path)
-
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                for (const item of result) {
-                    const categoriaCancelamento = (item['Motivo do Cancelamento Amil']);
-                    const entidade = item['Entidade']
-                    const motivoCancelamento = item['Motivo do Cancelamento']
-                    const proposta = item.Proposta
-
-                    await Proposta.updateOne({
-                        proposta
-                    }, {
-                        entidade,
-                        motivoCancelamento,
-                        categoriaCancelamento
-                    })
-
-                    console.log(proposta, entidade,
-                        motivoCancelamento,
-                        categoriaCancelamento);
-                }
-
-                return res.json({
-                    msg: 'ok'
-                })
-
-            })
-
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
     relatorioProducaoMensal: async (req, res) => {
         try {
 
@@ -1886,9 +1835,45 @@ module.exports = {
             const endStr = end.toISOString().split('T')[0];
 
             const result = await Proposta.find({
-                dataConclusao: { $gte: startStr, $lt: endStr }
+                dataConclusao: { $regex: mes }
             }).lean().sort({ dataConclusao: 1 })
 
+            let arrProd = {}
+
+            for (const proposta of result) {
+                if (proposta.dataConclusao) {
+                    const dataConclusao = proposta.dataConclusao
+                    const key = `${proposta.analista}-${dataConclusao}`
+
+                    if (!arrProd[key]) {
+                        arrProd[key] = {
+                            analista: proposta.analista,
+                            data: dataConclusao,
+                            quantidade: 0,
+                            canceladas: 0,
+                            naoCanceladas: 0,
+                            ligadas: 0,
+                            naoLigadas: 0
+                        }
+                    }
+
+                    arrProd[key].quantidade += 1
+
+                    if (proposta.status === 'Cancelada') {
+                        arrProd[key].canceladas += 1
+                    } else {
+                        arrProd[key].naoCanceladas += 1
+                    }
+
+                    if (proposta.ligacao) {
+                        arrProd[key].ligadas += 1
+                    } else {
+                        arrProd[key].naoLigadas += 1
+                    }
+                }
+            }
+
+            return res.json(Object.values(arrProd))
 
         } catch (error) {
             console.log(error);
