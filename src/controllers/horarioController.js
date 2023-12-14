@@ -1,6 +1,7 @@
 const Horario = require('../models/TeleEntrevista/Horario')
 const User = require('../models/User/User')
 const Rn = require('../models/TeleEntrevista/Rn')
+const CloseSchedule = require('../models/TeleEntrevista/CloseSchedule')
 const moment = require('moment')
 const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
@@ -279,7 +280,7 @@ module.exports = {
     fecharDia: async (req, res) => {
         try {
 
-            const { data, responsavel } = req.body
+            const { data, responsavel, motivo } = req.body
 
             const update = await Horario.updateMany({
                 $and: [
@@ -294,10 +295,15 @@ module.exports = {
                 nome: 'Fechado'
             })
 
-            console.log(update);
+            await CloseSchedule.create({
+                analista: responsavel,
+                data: data,
+                fechadoPor: req.user,
+                motivo: motivo
+            })
 
             return res.status(200).json({
-                msg: 'oi'
+                msg: 'ok'
             })
 
         } catch (error) {
@@ -307,6 +313,27 @@ module.exports = {
             })
         }
     },
+
+    getAgendasFechadas: async (req, res) => {
+        try {
+
+            const today = moment().format('YYYY-MM-DD')
+
+            const result = (await CloseSchedule.find({}).lean()).filter(e => {
+                return e.data >= today
+            })
+
+            return res.status(200).json(
+                result
+            )
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     fecharHorarios: async (req, res) => {
         try {
 
