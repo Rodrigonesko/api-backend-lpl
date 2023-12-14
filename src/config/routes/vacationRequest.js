@@ -12,5 +12,6 @@ router.put('/status', vacationRequestController.setStatusRh)
 router.put('/update', vacationRequestController.updateVacationTable)
 router.get('/filter', vacationRequestController.getFeriasByFilter)
 router.put('/gestorAceitou', vacationRequestController.getGestorAceitou)
+router.get('/setorFerias/:colaborador/:dataInicio', vacationRequestController.getSetorFerias)
 
 module.exports = router
