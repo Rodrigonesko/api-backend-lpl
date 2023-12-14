@@ -199,4 +199,29 @@ module.exports = {
             });
         }
     },
+
+    getSetorFerias: async (req, res) => {
+        try {
+
+            const { dataInicio, colaborador } = req.params
+
+            const find = await User.findOne({
+                $or: [
+                    { nomeCompleto: colaborador },
+                    { name: colaborador }
+                ]
+            })
+            const colleaguesOnVacation = await VacationRequest.find({
+                setor: find.atividadePrincipal,
+                dataInicio: { $regex: moment(dataInicio).format('YYYY-MM') }
+            });
+
+            console.log(colleaguesOnVacation)
+
+            return res.json(colleaguesOnVacation);
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    },
 }
