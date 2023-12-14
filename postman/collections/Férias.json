@@ -182,6 +182,50 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Verificar se existe algum colaborador do mesmo setor que está com férias agendadas no mês",
+			"id": "12a05915-1092-4294-8936-611bd59f7689",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/vacation//setorFerias/:colaborador/:dataInicio",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"vacation",
+						"",
+						"setorFerias",
+						":colaborador",
+						":dataInicio"
+					],
+					"variable": [
+						{
+							"key": "colaborador",
+							"value": ""
+						},
+						{
+							"key": "dataInicio",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
