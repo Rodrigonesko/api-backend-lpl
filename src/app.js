@@ -21,6 +21,14 @@ const secret = process.env.JWT_SECRET
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL)
 
+const db = mongoose.connection
+
+db.once('open', async () => {
+    console.log('MongoDB connected!')
+    const dbName = 'lpl'
+    const dbExists = await mongoose.connection.db.admin().listDatabases();
+})
+
 const routes = require('./config/routes')
 
 app.use(express.json({ limit: '100mb' }))
