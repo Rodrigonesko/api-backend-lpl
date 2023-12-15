@@ -1525,6 +1525,14 @@ module.exports = {
 
             console.log(cid, descricao);
 
+            const resultado = await Cid.find({ subCategoria: cid })
+
+            if (resultado.length > 0) {
+                return res.status(401).json({
+                    msg: 'Cid ja registrado!'
+                })
+            }
+
             const result = await Cid.create({
                 subCategoria: cid,
                 descricao: descricao
@@ -2824,7 +2832,7 @@ module.exports = {
 
                     const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
 
-                    if(item.enfermeiro === '' || !item.enfermeiro) {
+                    if (item.enfermeiro === '' || !item.enfermeiro) {
                         continue
                     }
 
