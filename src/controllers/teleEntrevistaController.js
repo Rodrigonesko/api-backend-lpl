@@ -357,6 +357,8 @@ module.exports = {
 
             const { dados, id, houveDivergencia, dataNascimento, nome, cpf } = req.body
 
+            console.log(dados);
+
             const update = await Promise.all(Object.keys(dados).map(async key => {
                 return await DadosEntrevista.findOneAndUpdate({
                     _id: id
@@ -2911,11 +2913,14 @@ module.exports = {
             for (const item of rns) {
                 const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
 
-                const key = `${item.responsavel}-${dataConclusao}`
+                // Se o retorno for 'Sem sucesso de contato', atribua o analista como 'Cancelado'
+                const responsavel = item.retorno === 'Sem sucesso de contato' ? 'Cancelado' : item.responsavel;
+
+                const key = `${responsavel}-${dataConclusao}`
 
                 if (!arr[key]) {
                     arr[key] = {
-                        analista: item.responsavel,
+                        analista: responsavel,
                         data: dataConclusao,
                         quantidadeRn: 0,
                         quantidadeUe: 0,
@@ -2928,11 +2933,14 @@ module.exports = {
             for (const item of ues) {
                 const dataConclusao = moment(item.dataConclusao).format('DD/MM/YYYY')
 
-                const key = `${item.analista}-${dataConclusao}`
+                // Se o retorno for 'Sem sucesso de contato', atribua o analista como 'Cancelado'
+                const analista = item.retorno === 'Sem sucesso de contato' ? 'Cancelado' : item.analista;
+
+                const key = `${analista}-${dataConclusao}`
 
                 if (!arr[key]) {
                     arr[key] = {
-                        analista: item.analista,
+                        analista: analista,
                         data: dataConclusao,
                         quantidadeUe: 0,
                         quantidadeRn: 0,
@@ -2949,7 +2957,74 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    relatorioProdutividadeAnexosMensal: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const result = await DadosEntrevista.find({
+                $or: [
+                    { dataAnexado: { $regex: mes } },
+                    { dataMandouImplantacao: { $regex: mes } }
+                ]
+            })
+
+            const arr = {}
+
+            for (const item of result) {
+                const dataAnexado = moment(item.dataAnexado).format('DD/MM/YYYY')
+                const dataMandouImplantacao = moment(item.dataMandouImplantacao).format('DD/MM/YYYY')
+
+                if (item.quemAnexou) {
+                    const keyAnexado = `${item.quemAnexou}-${dataAnexado}`
+
+                    if (!arr[keyAnexado]) {
+                        arr[keyAnexado] = {
+                            analista: item.quemAnexou,
+                            data: dataAnexado,
+                            quantidadeAnexado: 0,
+                            quantidadeImplantado: 0,
+                            quantidadeMandouImplantacao: 0,
+                        }
+                    }
+
+                    arr[keyAnexado].quantidadeAnexado += 1
+
+                    if (item.implantado === 'Sim') {
+                        arr[keyAnexado].quantidadeImplantado += 1
+                    }
+                }
+
+                if (item.quemMandouImplantacao) {
+                    const keyMandouImplantacao = `${item.quemMandouImplantacao}-${dataMandouImplantacao}`
+
+                    if (!arr[keyMandouImplantacao]) {
+                        arr[keyMandouImplantacao] = {
+                            analista: item.quemMandouImplantacao,
+                            data: dataMandouImplantacao,
+                            quantidadeAnexado: 0,
+                            quantidadeImplantado: 0,
+                            quantidadeMandouImplantacao: 0,
+                        }
+                    }
+
+                    arr[keyMandouImplantacao].quantidadeMandouImplantacao += 1
+                }
+            }
+
+            return res.json(Object.values(arr))
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
     }
+
 
 
 }

@@ -460,6 +460,11 @@ module.exports = {
             arrQuantidadeTotalMes = []
 
             pedidos.forEach(e => {
+                // Se o retorno for 'Sem sucesso de contato', atribua o analista como 'cancelado'
+                if (e.retorno === 'Sem sucesso de contato') {
+                    e.analista = 'cancelado';
+                }
+
                 let index = arrQuantidadeTotalMes.findIndex(val => val.data == moment(e.dataConclusao).format('MM/YYYY'))
 
                 if (index < 0) {
@@ -498,8 +503,6 @@ module.exports = {
                 }
 
                 let indexDiaAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataConclusao).format('YYYY-MM-DD'))
-
-                // console.log(indexDiaAnalista);
 
                 if (indexDiaAnalista < 0) {
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({

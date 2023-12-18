@@ -60,6 +60,8 @@ router.post('/uploadImplantacao', auth, teleEntrevistaController.uploadImplantac
 router.get('/verificarAgendamento/:data/:horario/:enfermeiro', auth, horarioController.verificarAgendamento)
 router.get('/relatorioPropostasMes/:mes', auth, teleEntrevistaController.relatorioProdutividadeMes)
 router.get('/relatorioRnUePorMes/:mes', auth, teleEntrevistaController.relatorioProdutivdadeMensalRnUe)
+router.get('/agendasFechadas', auth, horarioController.getAgendasFechadas)
+router.get('/relatorioProdutividadeAnexosMensal/:mes', auth, teleEntrevistaController.relatorioProdutividadeAnexosMensal)
 
 router.get('/adicionarAdministradora', teleEntrevistaController.adicionarAdministradora)
 
