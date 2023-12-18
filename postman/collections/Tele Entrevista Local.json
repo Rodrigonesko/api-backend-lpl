@@ -1,0 +1,2450 @@
+{
+	"info": {
+		"_postman_id": "0bb53cfa-6325-43f0-838b-1f40006cf7b5",
+		"name": "Tele Entrevista Local",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "28011380-0bb53cfa-6325-43f0-838b-1f40006cf7b5"
+	},
+	"item": [
+		{
+			"name": "Gerar horarios",
+			"id": "72f6823c-c11c-439e-ae1c-860a7d5748dd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"dataGerar\":\"2023-12-18\" //Data para ser gerado os horarios\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/gerarHorarios",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"gerarHorarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Envia respostas do formulario",
+			"id": "a6aea1fc-1ddf-4f64-b3db-5b8c37201b47",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"respostas\": {\r\n        \"pergunta\":\"Reposta\"\r\n    },\r\n    \"subRespostas\": {\r\n        \"pergunta\": \"Resposta\"\r\n    },\r\n    \"pessoa\": \"Nome\",\r\n    \"SimOuNao\": {\"Pergunta\": \"Sim\", \"Pergunta2\": \"Não\"}, //Ou Não\r\n    \"cids\": [\"cid 1\", \"cid 2\", \"cid 3\"],\r\n    \"divergencia\": \"Sim\", //Ou Não\r\n    \"entrevistaQualidade\": true //false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/formulario",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"formulario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adiciona novo Cid",
+			"id": "03fdacf2-57bc-48c4-a85a-3fd80e147ccd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cid\": \"123\",\r\n    \"descricao\": \"Cid x\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/cid/adicionar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"cid",
+						"adicionar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cria novo horario",
+			"id": "c59efa3d-73aa-40dc-98cc-966576815ea4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"responsavel\": \"Analista\",\r\n    \"dia\": \"2023-12-18\",\r\n    \"horario\": \"09:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/horario/novo",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"horario",
+						"novo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload para atualizar status de implantacao da amil",
+			"id": "151fd2d4-bec5-4efc-8df3-93565fbfec03",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"responsavel\": \"Analista\",\r\n    \"dia\": \"2023-12-18\",\r\n    \"horario\": \"09:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/uploadImplantacao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"uploadImplantacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca dias disponiveis dos analistas",
+			"id": "373f56b9-7afd-4311-b3c6-4c87fbb76b41",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/buscarDiasDisponiveis/:enfermeiro",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"buscarDiasDisponiveis",
+						":enfermeiro"
+					],
+					"variable": [
+						{
+							"key": "enfermeiro",
+							"value": "Gislaine Alberton Almeida"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca horarios disponiveis basesado no analisa e data",
+			"id": "c8ca87bd-e5ef-47d1-908d-f2a6f78d750c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/buscarHorariosDisponiveis/:enfermeiro/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"buscarHorariosDisponiveis",
+						":enfermeiro",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "enfermeiro",
+							"value": "Gislaine Alberton Almeida"
+						},
+						{
+							"key": "data",
+							"value": "2023-12-2023"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca todos os horarios disponiveis",
+			"id": "5f220756-651d-451f-a427-389697da6f9e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/horarios/disponiveis",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"horarios",
+						"disponiveis"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca perguntas todas as perguntas do formulario",
+			"id": "37257304-ed73-4257-863e-8451ba423b93",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/perguntas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"perguntas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca cid pela descricao ou subcategoria",
+			"id": "40974e95-4fd6-44d3-9645-fd2f20811670",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/cids/pesquisa/:pesquisa",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"cids",
+						"pesquisa",
+						":pesquisa"
+					],
+					"variable": [
+						{
+							"key": "pesquisa",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca dados da entrevista pelo nome e proposta",
+			"id": "4e2c9b3a-9802-4faa-8341-417acd71a4c6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/dadosEntrevista/:proposta/:nome",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"dadosEntrevista",
+						":proposta",
+						":nome"
+					],
+					"variable": [
+						{
+							"key": "proposta",
+							"value": ""
+						},
+						{
+							"key": "nome",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca todas as entrevistas realizadas",
+			"id": "13df322f-c0d8-4f03-b827-cdc6b0bf54b0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/dadosEntrevista",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"dadosEntrevista"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca dados da entrevista pelo id",
+			"id": "701d1ae8-678b-4983-a3b9-7663efd8e8cf",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/buscar/dadosEntrevista/:id",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"buscar",
+						"dadosEntrevista",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca propostas não anexadas",
+			"id": "30336c2d-0e3d-47fc-bb0d-5e508312c476",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/propostas/anexar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"propostas",
+						"anexar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca propostas que ainda nao foram faturadas",
+			"id": "80dd63be-669a-4b71-9f36-321ec7303409",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/naoFaturadas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"naoFaturadas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtro do faturamento",
+			"id": "2e2a6fdf-06ff-4fb2-a8c5-4581261ef4c6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/faturamento/filtros/:status/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"faturamento",
+						"filtros",
+						":status",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "status",
+							"value": ""
+						},
+						{
+							"key": "data",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report das propostas agendadas",
+			"id": "6c680460-b2c3-4b02-9c14-dfb98340541c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/report/agendadas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"report",
+						"agendadas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Produção diaria dos analistas pela data",
+			"id": "ed3fdf84-a293-4da5-8b97-30c57979e412",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/producao/diaria/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"producao",
+						"diaria",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gera mensagens a partir de horarios",
+			"id": "8c9fc71d-bd10-442c-ae8f-a3dcfa156f02",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/mensagens/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"mensagens",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca propostas a partir do nome ou proposta",
+			"id": "132f5b27-3cc6-4294-aa10-44e3e0a87f48",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/realizadas/:pesquisa",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"realizadas",
+						":pesquisa"
+					],
+					"variable": [
+						{
+							"key": "pesquisa",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca propostas não implantadas",
+			"id": "c8330320-f561-4f5b-b3af-69fe8d950f0e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/naoImplantadas",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"naoImplantadas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca entrevistas de qualidade",
+			"id": "7819c2ff-3dfc-488d-89a9-4bc54795089e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/qualidade",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"qualidade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca todos os dias disponiveis",
+			"id": "16ca3bfc-7a3c-4361-b7fe-36f4703c050c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/diasDisponiveis",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"diasDisponiveis"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca todos os horarios disponiveis a partir de uma data",
+			"id": "8863320c-b9fb-48eb-9b63-b7d40d945b74",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/horariosDisponiveis/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"horariosDisponiveis",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca todos os analistas disponiveis a partir da data e horario",
+			"id": "a816b35b-988f-46bd-b805-aca63a25a215",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/analistasDisponiveis/:data/:horario",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"analistasDisponiveis",
+						":data",
+						":horario"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						},
+						{
+							"key": "horario",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca toda a producao dos analistas",
+			"id": "1d4f3200-63b6-4150-978b-7a47d3eac634",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/teste/producao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"teste",
+						"producao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Produção detalhada de um deteminado analista por mes",
+			"id": "893fc796-34b0-4a63-924c-d9a175d407ad",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/rendimentoIndividualMensal/:mes/:analista",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"rendimentoIndividualMensal",
+						":mes",
+						":analista"
+					],
+					"variable": [
+						{
+							"key": "mes",
+							"value": ""
+						},
+						{
+							"key": "analista",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca produção de todos os anlistas por mes",
+			"id": "f7fa303c-684f-47ec-abea-598d983de41d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/producaoMensal/:mes",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"producaoMensal",
+						":mes"
+					],
+					"variable": [
+						{
+							"key": "mes",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report dos anexos a partir de uma data",
+			"id": "758b5b99-c398-41e0-ad86-5917c7e7f54d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/reportAnexos/:data",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"reportAnexos",
+						":data"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca entrevistas entre duas datas",
+			"id": "3ab6cd93-b44a-4ba3-b134-37105821dd17",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/entrevistasEntreDatas?startDate&endDate",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"entrevistasEntreDatas"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": null,
+							"type": "text"
+						},
+						{
+							"key": "endDate",
+							"value": null,
+							"type": "text"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Produção referente aos anexos por analista e mes",
+			"id": "ab4ad7ec-4b3a-4be0-97f4-6aa74dc9e4f5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/producao/anexos/:analista/:mes",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"producao",
+						"anexos",
+						":analista",
+						":mes"
+					],
+					"variable": [
+						{
+							"key": "analista",
+							"value": ""
+						},
+						{
+							"key": "mes",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica se o horario foi reaberto",
+			"id": "3183dd43-c1fe-4c43-bbca-027a9a1546ef",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/verificarHorarioReaberto?enfermeiro&dia&horario",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"verificarHorarioReaberto"
+					],
+					"query": [
+						{
+							"key": "enfermeiro",
+							"value": null,
+							"type": "text"
+						},
+						{
+							"key": "dia",
+							"value": null,
+							"type": "text"
+						},
+						{
+							"key": "horario",
+							"value": null,
+							"type": "text"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifica se o horario ja foi agendado",
+			"id": "38d0676c-6570-40cc-b748-c46a1a0f4d41",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/verificarAgendamento/:data/:horario/:enfermeiro",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"verificarAgendamento",
+						":data",
+						":horario",
+						":enfermeiro"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						},
+						{
+							"key": "horario",
+							"value": ""
+						},
+						{
+							"key": "enfermeiro",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Relatorio de produtividade por mês",
+			"id": "6e067941-4d33-4bbc-9610-c87095e37a2c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/verificarAgendamento/:data/:horario/:enfermeiro",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"verificarAgendamento",
+						":data",
+						":horario",
+						":enfermeiro"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						},
+						{
+							"key": "horario",
+							"value": ""
+						},
+						{
+							"key": "enfermeiro",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Relatorio de produtividade das Rns e Ues por mês",
+			"id": "f9fac5c5-776f-42d4-9814-d2eb127de7a8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/verificarAgendamento/:data/:horario/:enfermeiro",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"verificarAgendamento",
+						":data",
+						":horario",
+						":enfermeiro"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						},
+						{
+							"key": "horario",
+							"value": ""
+						},
+						{
+							"key": "enfermeiro",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca agendas fechadas",
+			"id": "08bc5584-1c2b-4894-bd70-febf6ba4ffb4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/verificarAgendamento/:data/:horario/:enfermeiro",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"verificarAgendamento",
+						":data",
+						":horario",
+						":enfermeiro"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						},
+						{
+							"key": "horario",
+							"value": ""
+						},
+						{
+							"key": "enfermeiro",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Relatorio de produtividade mensal dos anexos",
+			"id": "69c300cc-e4ce-488b-a616-ef3d854d8491",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/verificarAgendamento/:data/:horario/:enfermeiro",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"verificarAgendamento",
+						":data",
+						":horario",
+						":enfermeiro"
+					],
+					"variable": [
+						{
+							"key": "data",
+							"value": ""
+						},
+						{
+							"key": "horario",
+							"value": ""
+						},
+						{
+							"key": "enfermeiro",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agendar horario para analista",
+			"id": "9cc49395-7488-4644-b1b0-f7ee9c270e18",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\",\r\n    \"responsavel\": \"Gislaine Alberton Almeida\",\r\n    \"data\": \"2023-12-18\",\r\n    \"horario\": \"09:00\",\r\n    \"canal\": \"whatsapp\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/agendar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"agendar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fechar dia para analista",
+			"id": "38c002fa-df4e-4247-a6d6-f3b88805a3a7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": \"2023-12-18\",\r\n    \"responsavel\": \"Gislaine Alberton Almeida\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/fecharDia",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"fecharDia"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fechar horarios do analista",
+			"id": "1d9f2d45-547f-4212-840d-586780d525e4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": \"2023-12-18\",\r\n    \"responsavel\": \"Gislaine Alberton Almeida\",\r\n    \"horarios\": [\"08:00\", \"08:20\", \"etc...\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/fecharHorarios",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"fecharHorarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reabrir horarios do analista",
+			"id": "208636dc-d76e-41d4-9c9a-26b76a51d117",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": \"2023-12-18\",\r\n    \"responsavel\": \"Gislaine Alberton Almeida\",\r\n    \"horarios\": [\"08:00\", \"08:20\", \"etc...\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/reabrirHorarios",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"reabrirHorarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Editar dados da proposta",
+			"id": "8b6e5b57-6ee5-49c1-ace8-6089386d6ddc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"respostas\": {\r\n        \"pergunta\":\"Reposta\"\r\n    },\r\n    \"subRespostas\": {\r\n        \"pergunta\": \"Resposta\"\r\n    },\r\n    \"pessoa\": \"Nome\",\r\n    \"SimOuNao\": {\"Pergunta\": \"Sim\", \"Pergunta2\": \"Não\"}, //Ou Não\r\n    \"cids\": [\"cid 1\", \"cid 2\", \"cid 3\"],\r\n    \"divergencia\": \"Sim\", //Ou Não\r\n    \"entrevistaQualidade\": true //false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/editar/dadosEntrevista",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"editar",
+						"dadosEntrevista"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualiza proposta para anexado",
+			"id": "beb4ad5b-e47d-439c-96e0-45dba2c0afbc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/propostas/anexar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"propostas",
+						"anexar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Volta para o status de agendar",
+			"id": "c74ef2a6-5ae2-48fd-a070-20c9a3a3f8b3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/reagendar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"reagendar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancela proposta",
+			"id": "b097dcf4-f4e8-461c-b89a-4d0e2cc9255f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\",\r\n    \"motivoCancelamento\" : \"Motivo do cancelamento\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/cancelar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"cancelar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Realiza faturamento das enrevistas",
+			"id": "1a0958dd-7930-4463-83cd-c439e410fb73",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"entrevistas\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/faturar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"faturar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar vigencia da proposta pelo id",
+			"id": "87d68271-b084-440d-a2da-8c1309a9a8e2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vigencia\": \"2023-12-18\",\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/propostas/vigencia/update",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"propostas",
+						"vigencia",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar data de nascimento",
+			"id": "c16889f8-b797-45f9-84f6-e8f688dca63d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dataNascimento\": \"2023-12-18\",\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/propostas/dadosEntrevista/dataNascimento",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"propostas",
+						"dadosEntrevista",
+						"dataNascimento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Altera sexo de entrevista ja realizada",
+			"id": "f6e9d446-345b-469d-8260-894b210f4f21",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sexo\": \"F\", //Ou M\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/realizadas/alterarSexo",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"realizadas",
+						"alterarSexo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Manda proposta para implantacao",
+			"id": "1d1e99cd-66e5-43f1-81ee-f74ce77c1f8c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/mandarImplatacao",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"mandarImplatacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Implanta proposta",
+			"id": "1060ac67-43df-4b6d-bc2d-f69a728860e7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/implantar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"implantar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "voltar proposta",
+			"id": "59ebf274-fe32-4ada-aa1e-44b45d48884f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/voltar",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"voltar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reenvia horarios disponiveis",
+			"id": "7e04692e-6dad-4090-b10f-418132ed7664",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvZHJpZ28iLCJlbWFpbCI6InJvZHJpZ28uZGlhc0BscGxzZWd1cm9zLmNvbS5iciIsImFjY2Vzc0xldmVsIjoidHJ1ZSIsImlhdCI6MTY5MTA2MjI0MywiZXhwIjoxNjkxMTA1NDQzfQ.hByTOpuBesL6ruGJ6ej0eCu__scowRkUbOP8PEv3Zi0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"_id\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/entrevistas/reenviarHorariosDisponiveis",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"entrevistas",
+						"reenviarHorariosDisponiveis"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
