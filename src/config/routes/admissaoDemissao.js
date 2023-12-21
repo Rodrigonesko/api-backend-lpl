@@ -12,5 +12,6 @@ router.put('/obs', auth, admissaoDemissaoController.setObs)
 router.put('/data', auth, admissaoDemissaoController.setData)
 router.put('/prorrogacao', auth, admissaoDemissaoController.prorrogacao)
 router.get('/itens', auth, admissaoDemissaoController.getAllItens)
+router.get('/filterTable', auth, admissaoDemissaoController.filterTable)
 
 module.exports = router

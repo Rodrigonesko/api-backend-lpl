@@ -195,7 +195,6 @@ module.exports = {
             const result = await User.findOneAndUpdate(
                 {
                     _id: _id
-
                 },
                 {
                     admissao
@@ -386,14 +385,10 @@ module.exports = {
             const result = await User.findOneAndUpdate(
                 {
                     _id: _id
-
                 },
                 {
                     demissao
                 }
-
-
-
             )
 
             const find = await User.findOne({ _id })
@@ -534,6 +529,25 @@ module.exports = {
                 msg: 'Internal Server Error',
                 error: error.message,
             });
+        }
+    },
+
+    filterTable: async (req, res) => {
+        try {
+            console.log(req.body)
+            let tipoExame = 'admissao.id'
+            if (req.body.tipoExame === 'demissao') {
+                tipoExame = 'demissao.id'
+            }
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $get: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
+            const find = await User.findOne({ _id: req.body._id })
+
+            return res.status(200).json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
         }
     },
 }
