@@ -29,7 +29,6 @@ router.put('/cancelar', auth, teleEntrevistaController.cancelarProposta)
 router.get('/naoFaturadas', auth, teleEntrevistaController.buscarNaoFaturados)
 router.put('/faturar', auth, teleEntrevistaController.realizarFaturamento)
 router.get('/faturamento/filtros/:status/:data', auth, teleEntrevistaController.filtrosFaturamento)
-router.post('/upload/perguntas', auth, teleEntrevistaController.subirPerguntas)
 router.get('/report/agendadas', auth, teleEntrevistaController.reportAgendadas)
 router.put('/propostas/vigencia/update', auth, teleEntrevistaController.atualizarVigencia)
 router.get('/producao/diaria/:data', auth, teleEntrevistaController.producaoDiaria)
@@ -62,7 +61,4 @@ router.get('/relatorioPropostasMes/:mes', auth, teleEntrevistaController.relator
 router.get('/relatorioRnUePorMes/:mes', auth, teleEntrevistaController.relatorioProdutivdadeMensalRnUe)
 router.get('/agendasFechadas', auth, horarioController.getAgendasFechadas)
 router.get('/relatorioProdutividadeAnexosMensal/:mes', auth, teleEntrevistaController.relatorioProdutividadeAnexosMensal)
-
-router.get('/adicionarAdministradora', teleEntrevistaController.adicionarAdministradora)
-
 module.exports = router

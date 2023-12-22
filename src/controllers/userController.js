@@ -113,6 +113,32 @@ module.exports = {
         }
     },
 
+    getUsersByFilter: async (req, res) => {
+        try {
+            // Obter parâmetros de consulta
+            let query = req.post;
+
+            // Construir consulta de banco de dados
+            let dbQuery = [];
+            for (let key in query) {
+                let obj = {};
+                obj[key] = query[key];
+                dbQuery.push(obj);
+            }
+
+            // Obter usuários que correspondem à consulta
+            let users = await User.find({ $or: dbQuery });
+
+            return res.json(users);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            });
+        }
+
+    },
+
     infoUser: async (req, res) => {
         try {
 

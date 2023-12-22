@@ -45,6 +45,7 @@ const userScheema = new mongoose.Schema({
     data: String,
     inativo: Boolean,
     prorrogacao: Boolean,
+    deFerias: Boolean
 },
     {
         versionKey: false

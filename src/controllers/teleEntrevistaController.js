@@ -14,8 +14,6 @@ const xlsx = require('xlsx')
 const Horario = require('../models/TeleEntrevista/Horario')
 const { default: axios } = require('axios')
 
-const uploadPerguntas = multer({ dest: os.tmpdir() }).single('file')
-
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const dir = './uploads/entrevistas/'
@@ -1115,60 +1113,6 @@ module.exports = {
         }
     },
 
-    subirPerguntas: async (req, res) => {
-        try {
-
-            uploadPerguntas(req, res, async (err) => {
-                let file = fs.readFileSync(req.file.path)
-
-                const workbook = xlsx.read(file, { type: 'array' })
-
-                const firstSheetName = workbook.SheetNames[0]
-
-                const worksheet = workbook.Sheets[firstSheetName]
-
-                let result = xlsx.utils.sheet_to_json(worksheet)
-
-                for (const item of result) {
-
-                    let subPerguntasNao = item.subPerguntasNao?.split(',')
-                    let subPerguntasSim = item.subPerguntasSim?.split(',')
-
-                    if (subPerguntasNao == undefined && subPerguntasSim == undefined) {
-                        console.log('nao insere subPergunta');
-                        const create = await Pergunta.create({
-                            pergunta: item.pergunta,
-                            formulario: item.formulario,
-                            categoria: item.categoria,
-                            existeSub: item.existeSub,
-                            name: item.name,
-                            sexo: item.sexo
-                        })
-                    } else {
-                        const create = await Pergunta.create({
-                            pergunta: item.pergunta,
-                            formulario: item.formulario,
-                            categoria: item.categoria,
-                            existeSub: item.existeSub,
-                            subPerguntasSim: subPerguntasSim,
-                            name: item.name,
-                            sexo: item.sexo
-                        })
-                    }
-                }
-
-                return res.status(200).json({
-                    msg: 'oii'
-                })
-
-            })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
 
     /**
 * Mostra produção das teles e rns
@@ -2703,42 +2647,6 @@ module.exports = {
             })
 
             return res.json(result)
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: 'Internal Server Error'
-            })
-        }
-    },
-
-    adicionarAdministradora: async (req, res) => {
-        try {
-
-            const result = await axios.get(`http://localhost:3002/show`, {
-                headers: {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${req.cookies['token']}`
-                    }
-                }
-            })
-
-            for (const item of result.data.propostas) {
-                await DadosEntrevista.updateOne({
-                    nome: item.nome,
-                    proposta: item.proposta
-                }, {
-                    administradora: item.administradora
-                })
-
-                console.log(moment(item.createdAt).format('DD/MM/YYYY'));
-
-            }
-
-            return res.json({
-                msg: 'ok'
-            })
 
         } catch (error) {
             console.log(error);

@@ -57,6 +57,7 @@ router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 router.get('/aniversariantes', auth, userController.getAllAniversariantes)
 router.patch('/updateProfilePic', auth, userController.updateProfilePic)
 router.get('/users/agendamento', auth, userController.getAnalistasAgendamento)
+router.post('/users/filter', auth, userController.getUsersByFilter)
 
 //Rotas das células
 

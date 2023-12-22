@@ -19,14 +19,17 @@ const secret = process.env.JWT_SECRET
 
 //Mongo 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.MONGODB_URL)
+mongoose.connect(process.env.MONGODB_URL + '/lpl', {
+    authSource: 'admin',
+    authMechanism: 'SCRAM-SHA-256',
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 
 const db = mongoose.connection
 
 db.once('open', async () => {
     console.log('MongoDB connected!')
-    const dbName = 'lpl'
-    const dbExists = await mongoose.connection.db.admin().listDatabases();
 })
 
 const routes = require('./config/routes')
