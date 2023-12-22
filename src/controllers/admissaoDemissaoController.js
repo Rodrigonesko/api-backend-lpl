@@ -534,15 +534,104 @@ module.exports = {
 
     filterTable: async (req, res) => {
         try {
-            console.log(req.body)
-            let tipoExame = 'admissao.id'
-            if (req.body.tipoExame === 'demissao') {
-                tipoExame = 'demissao.id'
-            }
-            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $get: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
-            const find = await User.findOne({ _id: req.body._id })
 
-            return res.status(200).json(find)
+            const { status, responsavel } = req.body
+
+            if (Object.values(status).every(e => e === true) && Object.values(responsavel).every(e => e === true)) {
+                console.log('entrou aqui');
+
+                const result = await User.find()
+                return res.json({ result })
+            }
+            if (Object.values(responsavel).every(e => e === false) && Object.values(status).every(e => e === false)) {
+                console.log('entrou aqui');
+
+                const result = await User.find()
+                return res.json({ result })
+            }
+
+            let filter = {
+
+                $or: []
+            }
+
+            let filterConditions = []
+
+            if (status.naoSeAplica) {
+                filterConditions.push({ 'admissao.status': 'naoSeAplica' })
+            }
+
+            if (status.pendente) {
+                filterConditions.push({ 'admissao.status': 'pendente' })
+                filterConditions.push({ 'admissao.status': '' })
+            }
+
+            if (status.emAndamento) {
+                filterConditions.push({ 'admissao.status': 'emAndamento' })
+            }
+
+            if (status.concluido) {
+                filterConditions.push({ 'admissao.status': 'concluido' })
+            }
+
+            if (responsavel.samanthaMacielGiazzon) {
+                filterConditions.push({ 'admissao.responsavel': 'Samantha Maciel Giazzon' })
+            }
+
+            if (responsavel.administrador) {
+                filterConditions.push({ 'admissao.responsavel': 'Administrador' })
+            }
+
+            if (responsavel.rodrigoDias) {
+                filterConditions.push({ 'admissao.responsavel': 'Rodrigo Dias' })
+            }
+
+            if (responsavel.gersonDouglas) {
+                filterConditions.push({ 'admissao.responsavel': 'Gerson Douglas' })
+            }
+
+            if (filterConditions.length > 0) {
+                filter.$or = filterConditions
+            }
+
+            const result = await User.find(filter).lean()
+
+            const resultFiltrado = result.map(user => {
+                const admissao = user.admissao.filter(item => {
+                    let statusMatch = false;
+                    let responsavelMatch = false;
+
+                    if (status.naoSeAplica && item.status === 'naoSeAplica' ||
+                        status.pendente && item.status === 'pendente' ||
+                        status.pendente && item.status === '' ||
+                        status.emAndamento && item.status === 'emAndamento' ||
+                        status.concluido && item.status === 'concluido' ||
+                        Object.values(status).every(e => e === false)
+                    ) {
+                        statusMatch = true;
+                    }
+
+                    if (responsavel.samanthaMacielGiazzon && item.responsavel === 'Samantha Maciel Giazzon' ||
+                        responsavel.administrador && item.responsavel === 'Administrador' ||
+                        responsavel.rodrigoDias && item.responsavel === 'Rodrigo Dias' ||
+                        responsavel.gersonDouglas && item.responsavel === 'Gerson Douglas' ||
+                        Object.values(responsavel).every(e => e === false)
+                    ) {
+                        responsavelMatch = true;
+                    }
+
+                    return statusMatch && responsavelMatch;
+                })
+
+                return {
+                    ...user,
+                    admissao
+                }
+            })
+
+            console.log(resultFiltrado)
+
+            return res.json({ result: resultFiltrado })
         } catch (error) {
             console.log(error);
             return res.status(500).json({
