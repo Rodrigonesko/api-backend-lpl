@@ -21,7 +21,7 @@ const secret = process.env.JWT_SECRET
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL + '/lpl', {
     authSource: 'admin',
-    authMechanism: 'SCRAM-SHA-256',
+    //authMechanism: 'SCRAM-SHA-256',
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
