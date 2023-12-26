@@ -216,6 +216,8 @@ module.exports = {
         try {
             const { _id } = req.body
 
+            console.log(_id);
+            
             const demissao = [
                 {
                     responsavel: 'Samantha Maciel Giazzon',
@@ -532,7 +534,7 @@ module.exports = {
         }
     },
 
-    filterTable: async (req, res) => {
+    filterTableAdmissional: async (req, res) => {
         try {
 
             const { status, responsavel } = req.body
@@ -626,6 +628,114 @@ module.exports = {
                 return {
                     ...user,
                     admissao
+                }
+            })
+
+            console.log(resultFiltrado)
+
+            return res.json({ result: resultFiltrado })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    filterTableDemissional: async (req, res) => {
+        try {
+
+            const { status, responsavel } = req.body
+
+            if (Object.values(status).every(e => e === true) && Object.values(responsavel).every(e => e === true)) {
+                console.log('entrou aqui');
+
+                const result = await User.find()
+                return res.json({ result })
+            }
+            if (Object.values(responsavel).every(e => e === false) && Object.values(status).every(e => e === false)) {
+                console.log('entrou aqui');
+
+                const result = await User.find()
+                return res.json({ result })
+            }
+
+            let filter = {
+
+                $or: []
+            }
+
+            let filterConditions = []
+
+            if (status.naoSeAplica) {
+                filterConditions.push({ 'demissao.status': 'naoSeAplica' })
+            }
+
+            if (status.pendente) {
+                filterConditions.push({ 'demissao.status': 'pendente' })
+                filterConditions.push({ 'demissao.status': '' })
+            }
+
+            if (status.emAndamento) {
+                filterConditions.push({ 'demissao.status': 'emAndamento' })
+            }
+
+            if (status.concluido) {
+                filterConditions.push({ 'demissao.status': 'concluido' })
+            }
+
+            if (responsavel.samanthaMacielGiazzon) {
+                filterConditions.push({ 'demissao.responsavel': 'Samantha Maciel Giazzon' })
+            }
+
+            if (responsavel.administrador) {
+                filterConditions.push({ 'demissao.responsavel': 'Administrador' })
+            }
+
+            if (responsavel.rodrigoDias) {
+                filterConditions.push({ 'demissao.responsavel': 'Rodrigo Dias' })
+            }
+
+            if (responsavel.gersonDouglas) {
+                filterConditions.push({ 'demissao.responsavel': 'Gerson Douglas' })
+            }
+
+            if (filterConditions.length > 0) {
+                filter.$or = filterConditions
+            }
+
+            const result = await User.find(filter).lean()
+
+            const resultFiltrado = result.map(user => {
+                const demissao = user.demissao.filter(item => {
+                    let statusMatch = false;
+                    let responsavelMatch = false;
+
+                    if (status.naoSeAplica && item.status === 'naoSeAplica' ||
+                        status.pendente && item.status === 'pendente' ||
+                        status.pendente && item.status === '' ||
+                        status.emAndamento && item.status === 'emAndamento' ||
+                        status.concluido && item.status === 'concluido' ||
+                        Object.values(status).every(e => e === false)
+                    ) {
+                        statusMatch = true;
+                    }
+
+                    if (responsavel.samanthaMacielGiazzon && item.responsavel === 'Samantha Maciel Giazzon' ||
+                        responsavel.administrador && item.responsavel === 'Administrador' ||
+                        responsavel.rodrigoDias && item.responsavel === 'Rodrigo Dias' ||
+                        responsavel.gersonDouglas && item.responsavel === 'Gerson Douglas' ||
+                        Object.values(responsavel).every(e => e === false)
+                    ) {
+                        responsavelMatch = true;
+                    }
+
+                    return statusMatch && responsavelMatch;
+                })
+
+                return {
+                    ...user,
+                    demissao
                 }
             })
 
