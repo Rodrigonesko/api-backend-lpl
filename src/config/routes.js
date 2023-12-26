@@ -21,6 +21,7 @@ const inventarioRoutes = require('./routes/inventario')
 const toDoRoutes = require('./routes/toDo')
 const contingenciasRoutes = require('./routes/contingencias')
 const admissaoDemissaoRoutes = require('./routes/admissaoDemissao')
+const celulaRoutes = require('./routes/celula')
 
 const taskRequestRoutes = require('./routes/taskRequest')
 const sindicanciaRoutes = require('./routes/sindicancia')
@@ -57,6 +58,7 @@ router.get('/feriasElegiveis', auth, userController.getFeriasElegiveis)
 router.get('/aniversariantes', auth, userController.getAllAniversariantes)
 router.patch('/updateProfilePic', auth, userController.updateProfilePic)
 router.get('/users/agendamento', auth, userController.getAnalistasAgendamento)
+router.post('/users/filter', auth, userController.getUsersByFilter)
 
 //Rotas das células
 
@@ -79,6 +81,7 @@ router.use('/toDo', toDoRoutes)
 router.use('/mural', muralRoutes)
 router.use('/contingencias', contingenciasRoutes)
 router.use('/admissaoDemissao', admissaoDemissaoRoutes)
+router.use('/celulas', celulaRoutes)
 
 
 module.exports = router

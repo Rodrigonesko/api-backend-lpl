@@ -33,33 +33,50 @@ module.exports = {
     create: async (req, res) => {
         try {
 
-            const { email, name, accessLevel, atividade, nomeCompleto, dataAdmissao, matricula } = req.body
+            const { email, name, accessLevel, atividade, nomeCompleto, dataAdmissao, matricula, administrador } = req.body
 
 
             let emailAutomatico = '';
 
             if (email === '') {
-                const nome = name.split(' ').join('.').toLowerCase().replace(/\s/g, '') + '@lplseguros.com.br';
-                console.log(nome);
-
+                let nome = name.split(' ').join('.').toLowerCase().replace(/\s/g, '');
+                // Remover acentos
+                nome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "") + '@lplseguros.com.br';
                 // Construir o e-mail automático com o nome da pessoa
                 emailAutomatico = `${nome}`;
-                console.log(emailAutomatico);
             } else {
-                console.log(email);
                 emailAutomatico = email;
             }
 
-            const user = await User.findOne({ email })
+            const user = await User.findOne({ email: email || emailAutomatico })
 
             if (user) {
-                return res.status(422).json({ message: `O email ${email} ja foi registrado` })
+                console.log(user);
+                return res.status(422).json({ msg: 'Email ja cadastrado' })
             }
 
-            const encryptedPassword = await bcrypt.hash('123', 8)
+            const saltRounds = 10; // Aumente o número de rodadas de hashing
+            const plainPassword = '123';
+
+            let encryptedPassword = '';
+
+            bcrypt.genSalt(saltRounds, function (err, salt) {
+                bcrypt.hash(plainPassword, salt, function (err, hash) {
+                    encryptedPassword = hash;
+                });
+            });
+
+            let acessos = {
+                agendamento: false,
+                administrador: false
+            }
+
+            if (administrador) {
+                acessos.administrador = true
+            }
 
             const newUser = await User.create({
-                email: emailAutomatico,
+                email: email || emailAutomatico,
                 name,
                 password: encryptedPassword,
                 accessLevel,
@@ -67,7 +84,8 @@ module.exports = {
                 atividadePrincipal: atividade,
                 nomeCompleto,
                 dataAdmissao,
-                matricula
+                matricula,
+                acessos
             })
 
             const treinamentos = await Treinamentos.find()
@@ -111,6 +129,32 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    getUsersByFilter: async (req, res) => {
+        try {
+            // Obter parâmetros de consulta
+            let query = req.post;
+
+            // Construir consulta de banco de dados
+            let dbQuery = [];
+            for (let key in query) {
+                let obj = {};
+                obj[key] = query[key];
+                dbQuery.push(obj);
+            }
+
+            // Obter usuários que correspondem à consulta
+            let users = await User.find({ $or: dbQuery });
+
+            return res.json(users);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            });
+        }
+
     },
 
     infoUser: async (req, res) => {
