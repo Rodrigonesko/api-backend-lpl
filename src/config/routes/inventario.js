@@ -10,6 +10,7 @@ router.post('/request', inventarioController.createInventario)
 router.put('/status', inventarioController.setStatus)
 router.get('/filter', inventarioController.getInventarioByFilter)
 router.put('/update', inventarioController.updateInventarioTable)
+router.post('/filterInv', inventarioController.filterInv)
 
 
 

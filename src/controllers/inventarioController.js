@@ -112,6 +112,30 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
 
+    filterInv: async (req, res) => {
+        try {
+
+            const { nomeItem, ondeEsta, etiqueta } = req.query
+
+            console.log(req.query);
+
+            const result = await Inventario.find({
+                nome: { $regex: new RegExp(nomeItem, 'i') },
+                ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
+                etiqueta: { $regex: etiqueta }
+            })
+
+            console.log(result);
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
 }
