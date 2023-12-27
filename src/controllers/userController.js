@@ -134,18 +134,21 @@ module.exports = {
     getUsersByFilter: async (req, res) => {
         try {
             // Obter parâmetros de consulta
-            let query = req.post;
+            let query = req.body;
 
-            // Construir consulta de banco de dados
-            let dbQuery = [];
-            for (let key in query) {
-                let obj = {};
-                obj[key] = query[key];
-                dbQuery.push(obj);
-            }
+            // Converter parâmetros de consulta em uma matriz
+            let dbQuery = Object.keys(query).map(key => {
+                return {
+                    [key]: query[key]
+                }
+            });
+
+            console.log(dbQuery);
 
             // Obter usuários que correspondem à consulta
-            let users = await User.find({ $or: dbQuery });
+            let users = await User.find({ $and: dbQuery });
+
+            console.log(users);
 
             return res.json(users);
         } catch (error) {
@@ -227,38 +230,22 @@ module.exports = {
         }
     },
 
-    modules: async (req, res) => {
+    update: async (req, res) => {
         try {
 
-            const { email, enfermeiro, elegibilidade, entrada1, saida1, entrada2, saida2, atividadePrincipal, coren, rsd, nomeCompleto, dataAdmissao, administrador, agendamento, dataAniversario, matricula, contaInativada } = req.body
+            const { data } = req.body
 
-            const acessos = {
-                agendamento,
-                administrador
-            }
+            console.log(data);
 
-            const result = await User.findOneAndUpdate({ email: email }, {
-                enfermeiro,
-                elegibilidade,
-                horarioEntrada1: entrada1,
-                horarioSaida1: saida1,
-                horarioEntrada2: entrada2,
-                horarioSaida2: saida2,
-                rsd,
-                atividadePrincipal,
-                coren,
-                nomeCompleto,
-                dataAdmissao,
-                dataAniversario,
-                matricula,
-                inativo: contaInativada,
-                $set: {
-                    acessos
-                }
-            })
+            // const acessos = {
+            //     agendamento,
+            //     administrador
+            // }
+
+            const result = await User.updateOne({ _id: data._id }, data)
 
             return res.status(200).json({
-                result
+                msg: 'ok'
             })
 
         } catch (error) {
