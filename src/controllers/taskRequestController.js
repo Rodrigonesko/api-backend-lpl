@@ -112,13 +112,13 @@ module.exports = {
                     port: 465,
                     secure: true,
                     auth: {
-                        user: "leonardo.lonque@lplseguros.com.br",
-                        pass: "LtiS987%$",
+                        user: process.env.EMAIL,
+                        pass: process.env.PASSWORD,
                     }
                 })
 
                 transporter.sendMail({
-                    from: "Leonardo Lonque <leonardo.lonque@lplseguros.com.br>",
+                    from: `Leonardo Lonque <${process.env.EMAIL}>`,
                     to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br",
                     subject: body.assunto,
                     text: body.descricao,
