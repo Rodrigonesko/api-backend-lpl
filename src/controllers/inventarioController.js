@@ -5,6 +5,9 @@ module.exports = {
     findAll: async (req, res) => {
         try {
             const { page = 1, limit = 25 } = req.query
+
+            console.log(req.query);
+
             let skip = (page - 1) * limit
 
             const total = await Inventario.find().countDocuments()
