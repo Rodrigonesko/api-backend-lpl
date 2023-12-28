@@ -8,7 +8,9 @@ const Scheema = new mongoose.Schema({
     emUso: Boolean,
     emEstoque: Boolean,
     descontinuado: Boolean,
-    status: String
+    status: String,
+    page: String,
+    limit: String,
 
 }, {
     timestamps: true

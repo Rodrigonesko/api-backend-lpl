@@ -11,6 +11,4 @@ router.put('/status', inventarioController.setStatus)
 router.get('/filter', inventarioController.getInventarioByFilter)
 router.put('/update', inventarioController.updateInventarioTable)
 
-
-
 module.exports = router

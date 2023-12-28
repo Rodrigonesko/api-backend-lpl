@@ -4,10 +4,14 @@ module.exports = {
 
     findAll: async (req, res) => {
         try {
-            const encontrarTodos = await Inventario.find()
+            const { page = 1, limit = 25 } = req.query
+            let skip = (page - 1) * limit
+
+            const total = await Inventario.find().countDocuments()
+            const result = await Inventario.find().skip(skip).limit(limit)
 
             return res.status(200).json({
-                encontrarTodos
+                result, total
             })
         } catch (error) {
             console.log(error);
@@ -78,15 +82,24 @@ module.exports = {
 
             console.log(req.query);
 
+            const { page = 1, limit = 25 } = req.query
+            let skip = (page - 1) * limit
+
             const result = await Inventario.find({
                 nome: { $regex: new RegExp(nomeItem, 'i') },
                 ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
                 etiqueta: { $regex: etiqueta }
-            })
+            }).skip(skip).limit(limit)
+
+            const total = await Inventario.find({
+                nome: { $regex: new RegExp(nomeItem, 'i') },
+                ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
+                etiqueta: { $regex: etiqueta }
+            }).countDocuments()
 
             console.log(result);
 
-            return res.json(result)
+            return res.json({ result, total })
 
         } catch (error) {
             console.log(error);
@@ -112,6 +125,5 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
-
+    },
 }

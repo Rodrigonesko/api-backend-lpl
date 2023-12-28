@@ -217,7 +217,7 @@ module.exports = {
             const { _id } = req.body
 
             console.log(_id);
-            
+
             const demissao = [
                 {
                     responsavel: 'Samantha Maciel Giazzon',
@@ -554,7 +554,7 @@ module.exports = {
 
             let filter = {
 
-                $or: []
+                $and: []
             }
 
             let filterConditions = []
@@ -584,16 +584,12 @@ module.exports = {
                 filterConditions.push({ 'admissao.responsavel': 'Administrador' })
             }
 
-            if (responsavel.rodrigoDias) {
-                filterConditions.push({ 'admissao.responsavel': 'Rodrigo Dias' })
-            }
-
             if (responsavel.gersonDouglas) {
                 filterConditions.push({ 'admissao.responsavel': 'Gerson Douglas' })
             }
 
             if (filterConditions.length > 0) {
-                filter.$or = filterConditions
+                filter.$and = filterConditions
             }
 
             const result = await User.find(filter).lean()
@@ -615,7 +611,6 @@ module.exports = {
 
                     if (responsavel.samanthaMacielGiazzon && item.responsavel === 'Samantha Maciel Giazzon' ||
                         responsavel.administrador && item.responsavel === 'Administrador' ||
-                        responsavel.rodrigoDias && item.responsavel === 'Rodrigo Dias' ||
                         responsavel.gersonDouglas && item.responsavel === 'Gerson Douglas' ||
                         Object.values(responsavel).every(e => e === false)
                     ) {
@@ -662,7 +657,7 @@ module.exports = {
 
             let filter = {
 
-                $or: []
+                $and: []
             }
 
             let filterConditions = []
@@ -692,16 +687,12 @@ module.exports = {
                 filterConditions.push({ 'demissao.responsavel': 'Administrador' })
             }
 
-            if (responsavel.rodrigoDias) {
-                filterConditions.push({ 'demissao.responsavel': 'Rodrigo Dias' })
-            }
-
             if (responsavel.gersonDouglas) {
                 filterConditions.push({ 'demissao.responsavel': 'Gerson Douglas' })
             }
 
             if (filterConditions.length > 0) {
-                filter.$or = filterConditions
+                filter.$and = filterConditions
             }
 
             const result = await User.find(filter).lean()
@@ -723,7 +714,6 @@ module.exports = {
 
                     if (responsavel.samanthaMacielGiazzon && item.responsavel === 'Samantha Maciel Giazzon' ||
                         responsavel.administrador && item.responsavel === 'Administrador' ||
-                        responsavel.rodrigoDias && item.responsavel === 'Rodrigo Dias' ||
                         responsavel.gersonDouglas && item.responsavel === 'Gerson Douglas' ||
                         Object.values(responsavel).every(e => e === false)
                     ) {
