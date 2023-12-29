@@ -61,5 +61,6 @@ router.get('/relatorioPropostasMes/:mes', auth, teleEntrevistaController.relator
 router.get('/relatorioRnUePorMes/:mes', auth, teleEntrevistaController.relatorioProdutivdadeMensalRnUe)
 router.get('/agendasFechadas', auth, horarioController.getAgendasFechadas)
 router.get('/relatorioProdutividadeAnexosMensal/:mes', auth, teleEntrevistaController.relatorioProdutividadeAnexosMensal),
-    router.post('/criarHorarios', horarioController.gerarHorarioIndividual)
+router.post('/criarHorarios', horarioController.gerarHorarioIndividual)
+router.get('/quantidadeAnalistasPorMes/:mes', auth, teleEntrevistaController.quantidadeAnalistasPorMes)
 module.exports = router
