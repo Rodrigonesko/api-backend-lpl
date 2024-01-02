@@ -109,6 +109,94 @@ module.exports = {
             })
         }
     },
+
+    gerarHorarioIndividual: async (req, res) => {
+        try {
+
+            const { enfermeiro, data } = req.body
+
+            const horarios = [
+                '08:00',
+                '08:20',
+                '08:40',
+                '09:00',
+                '09:20',
+                '09:40',
+                '10:00',
+                '10:20',
+                '10:40',
+                '11:00',
+                '11:20',
+                '11:40',
+                '12:00',
+                '12:20',
+                '12:40',
+                '13:00',
+                '13:20',
+                '13:40',
+                '14:00',
+                '14:20',
+                '14:40',
+                '15:00',
+                '15:20',
+                '15:40',
+                '16:00',
+                '16:20',
+                '16:40',
+                '17:00',
+                '17:20',
+                '17:40',
+                '18:00'
+            ]
+
+            const find = await Horario.findOne({
+                dia: data,
+                enfermeiro: enfermeiro
+            }).lean()
+
+            if (find) {
+                return res.status(500).json({
+                    msg: 'Ja foi gerado horario para este dia!'
+                })
+            }
+
+            const user = await User.findOne({
+                name: enfermeiro
+            })
+
+            const entrada1 = user.horarioEntrada1
+            const saida1 = user.horarioSaida1
+            const entrada2 = user.horarioEntrada2
+            const saida2 = user.horarioSaida2
+
+            for (const horario of horarios) {
+                if (entrada1 <= horario) {
+                    if (saida1 <= horario && entrada2 >= horario) {
+                        continue
+                    }
+                    if (saida2 <= horario) {
+                        break
+                    }
+
+                    await Horario.create({
+                        enfermeiro: enfermeiro,
+                        horario: horario,
+                        dia: moment(data).format('YYYY-MM-DD')
+                    })
+                }
+            }
+
+            return res.status(200).json({
+                msg: 'Horarios Gerados com Sucesso!'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
     search: async (req, res) => {
         try {
             const { enfermeiro } = req.params

@@ -2931,10 +2931,61 @@ module.exports = {
                 error
             })
         }
+    },
+
+    quantidadeAnalistasPorMes: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const diasUteis = countWeekdaysInMonth(mes.split('-')[0], mes.split('-')[1] - 1, holidays)
+
+            let result = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataEntrevista: { $regex: mes },
+                        responsavel: { $nin: ['Sem Sucesso de Contato!', 'Beneficiario Solicitou o Cancelamento'] },
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$responsavel',
+                        total: { $sum: 1 },
+                        diasTrabalhados: { $addToSet: "$dataEntrevista" } // Adiciona a data (primeiros 10 caracteres de dataEntrevista) ao conjunto se ainda não estiver presente
+                    }
+                }
+            ])
+
+            result = result.map(item => {
+                return ({
+                    analista: item._id,
+                    total: item.total,
+                    media: (item.total / diasUteis),
+                    diasTrabalhados: item.diasTrabalhados,
+                    mediaDiasTrabalhados: (item.total / item.diasTrabalhados.length)
+                })
+            }).sort((a, b) => b.total - a.total)
+
+            const media = result.reduce((acc, item) => acc + item.media, 0) / result.length
+            const mediaDiasTrabalhados = result.reduce((acc, item) => acc + item.mediaDiasTrabalhados, 0) / result.length
+            const mediaTotal = result.reduce((acc, item) => acc + item.total, 0) / result.length
+
+            console.log(mediaTotal, mediaDiasTrabalhados);
+
+            return res.json({
+                result,
+                mediaTotal,
+                mediaDiasTrabalhados,
+                media
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
     }
-
-
-
 }
 
 const feriados = [
@@ -2958,7 +3009,57 @@ const feriados = [
     moment('2023-10-12'),
     moment('2023-11-02'),
     moment('2023-11-15'),
-    moment('2023-12-25')
+    moment('2023-12-25'),
+    moment('2024-01-01'),
+    moment('2024-02-12'),
+    moment('2024-02-13'),
+    moment('2024-03-29'),
+    moment('2024-04-21'),
+    moment('2024-05-01'),
+    moment('2024-05-30'),
+    moment('2024-09-07'),
+    moment('2024-10-12'),
+    moment('2024-11-02'),
+    moment('2024-11-15'),
+    moment('2024-11-20'),
+    moment('2024-12-25'),
+];
+
+const holidays = [
+    '2022-01-01',
+    '2022-04-21',
+    '2022-05-01',
+    '2022-09-07',
+    '2022-10-12',
+    '2022-11-02',
+    '2022-11-15',
+    '2022-12-25',
+    '2023-01-01',
+    '2023-02-20',
+    '2023-02-21',
+    '2023-02-22',
+    '2023-04-07',
+    '2023-04-21',
+    '2023-05-01',
+    '2023-06-08',
+    '2023-09-07',
+    '2023-10-12',
+    '2023-11-02',
+    '2023-11-15',
+    '2023-12-25',
+    '2024-01-01',
+    '2024-02-12',
+    '2024-02-13',
+    '2024-03-29',
+    '2024-04-21',
+    '2024-05-01',
+    '2024-05-30',
+    '2024-09-07',
+    '2024-10-12',
+    '2024-11-02',
+    '2024-11-15',
+    '2024-11-20',
+    '2024-12-25',
 ];
 
 function calcularDiasUteis(dataInicio, dataFim, feriados) {
@@ -2973,6 +3074,23 @@ function calcularDiasUteis(dataInicio, dataFim, feriados) {
     }
 
     return diasUteis - 1;
+}
+
+function countWeekdaysInMonth(year, month, holidays) {
+    let count = 0;
+    let date = new Date(year, month, 1);
+    while (date.getMonth() === month) {
+        if (date.getDay() !== 0 && date.getDay() !== 6) {
+            // Dia da semana não é sábado nem domingo
+            let dateString = date.toISOString().split('T')[0]; // Formato: 'yyyy-mm-dd'
+            if (!holidays.includes(dateString)) {
+                // A data não é um feriado
+                count++;
+            }
+        }
+        date.setDate(date.getDate() + 1);
+    }
+    return count;
 }
 
 function extrairNumerosJuntos(str) {
