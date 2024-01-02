@@ -219,6 +219,68 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Filtrar Admissional",
+			"id": "24eb26cd-710d-4f3c-8ac8-2a5e5b74ad89",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": {\r\n        \"naoSeAplica\": true,\r\n        \"pendente\": false,\r\n        \"emAndamento\": true,\r\n        \"concluido\": false\r\n    },\r\n    \"responsavel\": {\r\n        \"samanthaMacielGiazzon\": true,\r\n        \"administrador\": false,\r\n        \"gersonDouglas\": true\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/filterTableAdmi",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"filterTableAdmi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtrar Demissional",
+			"id": "59d0045a-f6df-42cc-a40e-1c1b71b058fa",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": {\r\n        \"naoSeAplica\": true,\r\n        \"pendente\": false,\r\n        \"emAndamento\": true,\r\n        \"concluido\": false\r\n    },\r\n    \"responsavel\": {\r\n        \"samanthaMacielGiazzon\": true,\r\n        \"administrador\": false,\r\n        \"gersonDouglas\": true\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_IP}}/admissaoDemissao/filterTableDemi",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"admissaoDemissao",
+						"filterTableDemi"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
