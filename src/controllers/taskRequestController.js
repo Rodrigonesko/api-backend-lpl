@@ -1,6 +1,7 @@
 const TaskRequest = require('../models/Chamados/TaskRequest')
 const User = require('../models/User/User')
 const moment = require('moment')
+const nodemailer = require('nodemailer')
 
 module.exports = {
 
@@ -104,6 +105,29 @@ module.exports = {
                 status: body.status,
                 retorno: body.retorno
             })
+
+            if (criarRequisicao) {
+                let transporter = nodemailer.createTransport({
+                    host: "email-ssl.com.br",
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        user: process.env.EMAIL,
+                        pass: process.env.PASSWORD,
+                    }
+                })
+
+                transporter.sendMail({
+                    from: `Leonardo Lonque <${process.env.EMAIL}>`,
+                    to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br",
+                    subject: body.assunto,
+                    text: body.descricao,
+                }).then(message => {
+                    console.log(message);
+                }).catch(err => {
+                    console.log(err);
+                })
+            }
 
             return res.json({
                 msg: 'OK'

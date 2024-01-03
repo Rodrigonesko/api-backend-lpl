@@ -17,5 +17,6 @@ router.get('/producao/:data', auth, urgenciaEmergenciaController.producao)
 router.put('/salvarContato', auth, urgenciaEmergenciaController.salvarContato)
 router.put('/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
 router.get('/producaoTotal', auth, urgenciaEmergenciaController.producaoTotal)
+router.get('/filter', auth, urgenciaEmergenciaController.filter)
 
 module.exports = router

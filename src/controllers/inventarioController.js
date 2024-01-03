@@ -10,6 +10,8 @@ module.exports = {
 
             let skip = (page - 1) * limit
 
+            console.log(req.query);
+
             const total = await Inventario.find().countDocuments()
             const result = await Inventario.find().skip(skip).limit(limit)
 
