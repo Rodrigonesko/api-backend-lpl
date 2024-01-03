@@ -26,7 +26,7 @@ const storageRSd = multer.diskStorage({
                     return
                 }
                 console.log("Diretório criado!")
-            });
+            }); h
         }
 
         cb(null, dir)
@@ -130,7 +130,7 @@ module.exports = {
 
                 console.log(valorCorte);
 
-                if (req.file.originalname.indexOf('PF') === 10 || req.file.originalname.indexOf('PF') === 5) {
+                if (req.file.originalname.indexOf('PF') !== -1) {
 
                     let file = fs.readFileSync(req.file.path, { encoding: 'latin1' })
 

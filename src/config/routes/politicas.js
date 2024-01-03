@@ -11,5 +11,5 @@ router.get('/ativos', auth, politicaController.showActive)
 router.put('/update', auth, politicaController.updateActive)
 router.get('/politica/:id', auth, politicaController.showPolitica)
 router.put('/assinar', auth, politicaController.assinarPolitica)
-
+ 
 module.exports = router
