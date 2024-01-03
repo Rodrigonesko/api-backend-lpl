@@ -218,12 +218,19 @@ module.exports = {
     mostrarConcluidas: async (req, res) => {
         try {
 
+            const { page = 1, limit = 25 } = req.query
+            let skip = (page - 1) * limit
+
             const propostas = await UrgenciasEmergencia.find({
                 status: { $ne: 'Andamento' }
-            })
+            }).skip(skip).limit(limit)
+            const total = await UrgenciasEmergencia.find({
+                status: { $ne: 'Andamento' }
+            }).countDocuments()
 
             return res.status(200).json({
-                propostas
+                propostas,
+                total
             })
 
         } catch (error) {
@@ -247,9 +254,7 @@ module.exports = {
 
             const propostas = await UrgenciasEmergencia.find()
 
-            return res.status(200).json({
-                propostas
-            })
+            return res.status(200).json({ propostas })
 
         } catch (error) {
             console.log(error);
@@ -577,8 +582,46 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
 
+    filter: async (req, res) => {
+        try {
+
+            const { page = 1, limit = 25, pesquisa } = req.query
+            console.log(pesquisa);
+            let skip = (page - 1) * limit
+
+            const result = await UrgenciasEmergencia.find({
+                $or: [
+                    { nomeAssociado: { $regex: new RegExp(pesquisa, 'i') } },
+                    { numAssociado: { $regex: pesquisa } },
+                    { proposta: { $regex: pesquisa } },
+                ]
+            }).skip(skip).limit(limit)
+
+            const total = await UrgenciasEmergencia.find({
+                $or: [
+                    { nomeAssociado: { $regex: new RegExp(pesquisa, 'i') } },
+                    { numAssociado: { $regex: pesquisa } },
+                    { proposta: { $regex: pesquisa } },
+                ]
+            }).countDocuments()
+
+            console.log(result);
+            console.log(total);
+
+            return res.json({
+                result,
+                total
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    }
 }
 
 function ExcelDateToJSDate(serial) {
