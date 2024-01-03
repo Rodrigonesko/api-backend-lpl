@@ -91,7 +91,7 @@
 			"response": []
 		},
 		{
-			"name": "Alterar status do item Copy",
+			"name": "Filtrar os itens",
 			"id": "d4940cf4-b1c2-4ac1-a29f-2835684ab040",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
