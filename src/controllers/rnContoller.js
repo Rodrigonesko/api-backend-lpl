@@ -531,7 +531,7 @@ module.exports = {
 
             const rns = await Rn.find({
                 $or: [
-                    { beneficiario: { $regex: pesquisa } },
+                    { beneficiario: { $regex: new RegExp(pesquisa, 'i') } },
                     { mo: { $regex: pesquisa } },
                     { proposta: { $regex: pesquisa } },
                     { pedido: { $regex: pesquisa } }
