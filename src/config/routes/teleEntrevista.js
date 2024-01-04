@@ -60,7 +60,8 @@ router.get('/verificarAgendamento/:data/:horario/:enfermeiro', auth, horarioCont
 router.get('/relatorioPropostasMes/:mes', auth, teleEntrevistaController.relatorioProdutividadeMes)
 router.get('/relatorioRnUePorMes/:mes', auth, teleEntrevistaController.relatorioProdutivdadeMensalRnUe)
 router.get('/agendasFechadas', auth, horarioController.getAgendasFechadas)
-router.get('/relatorioProdutividadeAnexosMensal/:mes', auth, teleEntrevistaController.relatorioProdutividadeAnexosMensal),
+router.get('/relatorioProdutividadeAnexosMensal/:mes', auth, teleEntrevistaController.relatorioProdutividadeAnexosMensal)
 router.post('/criarHorarios', horarioController.gerarHorarioIndividual)
 router.get('/quantidadeAnalistasPorMes/:mes', auth, teleEntrevistaController.quantidadeAnalistasPorMes)
+router.post('/filterEntrevistasRealizdas', auth, teleEntrevistaController.filterEntrevistasRealizadas)
 module.exports = router

@@ -2985,7 +2985,72 @@ module.exports = {
                 msg: "Internal Server Error"
             })
         }
-    }
+    },
+
+    filterEntrevistasRealizadas: async (req, res) => {
+        try {
+
+            const { pesquisa, limit, page, entrevistaQualidade } = req.body
+
+            const skip = (page - 1) * limit
+
+            if (entrevistaQualidade) {
+
+                const result = await DadosEntrevista.find({
+                    $or: [
+                        { proposta: pesquisa },
+                        { nome: { $regex: pesquisa, $options: 'i' } },
+                        { cpf: { $regex: pesquisa, $options: 'i' } },
+                    ],
+                    entrevistaQualidade: true
+                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 })
+
+                const total = await DadosEntrevista.countDocuments({
+                    $or: [
+                        { proposta: pesquisa },
+                        { nome: { $regex: pesquisa, $options: 'i' } },
+                        { cpf: { $regex: pesquisa, $options: 'i' } },
+                    ],
+                    entrevistaQualidade: true
+                })
+
+                return res.json({
+                    result,
+                    total
+                })
+
+            } else {
+                const result = await DadosEntrevista.find({
+                    $or: [
+                        { proposta: pesquisa },
+                        { nome: { $regex: pesquisa, $options: 'i' } },
+                        { cpf: { $regex: pesquisa, $options: 'i' } },
+                    ]
+                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 })
+
+                const total = await DadosEntrevista.countDocuments({
+                    $or: [
+                        { proposta: pesquisa },
+                        { nome: { $regex: pesquisa, $options: 'i' } },
+                        { cpf: { $regex: pesquisa, $options: 'i' } },
+                    ]
+                })
+
+                return res.json({
+                    result,
+                    total
+                })
+            }
+
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    },
 }
 
 const feriados = [
