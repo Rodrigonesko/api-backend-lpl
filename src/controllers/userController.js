@@ -143,8 +143,6 @@ module.exports = {
                 }
             });
 
-            console.log(dbQuery);
-
             // Obter usuários que correspondem à consulta
             let users = await User.find({ $and: dbQuery });
 
@@ -186,8 +184,6 @@ module.exports = {
                 return res.status(401).json({ message: `As senhas não conferem` })
             }
 
-            console.log(req.email);
-
             const encryptedPassword = await bcrypt.hash(password, 8)
 
             const updatePass = await User.findOneAndUpdate({
@@ -215,8 +211,6 @@ module.exports = {
         try {
             const { email } = req.params
 
-            console.log(email);
-
             const user = await User.findOne({ email: email })
 
             return res.status(200).json({
@@ -235,14 +229,7 @@ module.exports = {
 
             const { data } = req.body
 
-            console.log(data);
-
-            // const acessos = {
-            //     agendamento,
-            //     administrador
-            // }
-
-            const result = await User.updateOne({ _id: data._id }, data)
+            await User.updateOne({ _id: data._id }, data)
 
             return res.status(200).json({
                 msg: 'ok'
@@ -472,8 +459,6 @@ module.exports = {
                 }, {
                     horarioSaida
                 })
-
-                console.log(horasTrabalhadas, horasFaltantes, horarioSaida, item.NOME);
             }
 
             return res.json(dados)

@@ -255,15 +255,12 @@ module.exports = {
 
             const { data, horario, enfermeiro } = req.params
 
-            console.log(data, horario, enfermeiro);
 
             const result = await Horario.findOne({
                 enfermeiro,
                 dia: moment(data).format('YYYY-MM-DD'),
                 horario
             })
-
-            console.log(result);
 
             if (result?.agendado == 'Agendado') {
                 return res.status(500).json({
@@ -287,39 +284,11 @@ module.exports = {
 
             const { id, responsavel, data, horario, canal } = req.body
 
-            console.log(id, responsavel, data, horario);
-
             const dataAjustada = ajustarData(data)
 
             const dataEHora = `${dataAjustada} ${horario}`
 
-            // const find = await Horario.findOne({
-            //     dia: ajustarData(data),
-            //     horario: horario,
-            //     enfermeiro: responsavel
-            // })
-
-            // if (find?.agendado == 'Agendado') {
-            //     return res.status(500).json({
-            //         msg: 'Horario já agendado'
-            //     })
-            // }
-
-            // const find = await Horario.findOne({
-            //     nome: id
-            // })
-
-            // if (find) {
-
-            //     await Horario.findOneAndUpdate({
-            //         nome: id
-            //     }, {
-            //         agendado: 'Reaberto',
-            //         nome: ''
-            //     })
-            // }
-
-            const update = await Horario.findOneAndUpdate({
+            await Horario.findOneAndUpdate({
                 enfermeiro: responsavel,
                 dia: dataAjustada,
                 horario: horario
@@ -338,7 +307,7 @@ module.exports = {
 
             if (!updateRn) {
 
-                const updateTele = await axios.put(`${process.env.API_TELE}/agendar`, {
+                await axios.put(`${process.env.API_TELE}/agendar`, {
                     id,
                     dataEHora,
                     responsavel,
@@ -371,7 +340,7 @@ module.exports = {
 
             const { data, responsavel, motivo } = req.body
 
-            const update = await Horario.updateMany({
+            await Horario.updateMany({
                 $and: [
                     {
                         dia: data
@@ -428,7 +397,6 @@ module.exports = {
 
             const { responsavel, data, horarios } = req.body
 
-            console.log(responsavel, horarios, data);
 
             let horariosFiltrados = horarios.filter(e => {
                 return e != null
@@ -452,8 +420,6 @@ module.exports = {
                     nome: 'Fechado'
                 })
             }))
-
-            console.log(result);
 
             return res.status(200).json({
                 msg: 'oii'
@@ -522,10 +488,7 @@ module.exports = {
             const horariosObj = result.filter(e => {
                 return e.agendado == 'Agendado'
             })
-
             const horarios = horariosObj.map(e => e.horario)
-
-            console.log(horarios);
 
             return res.status(200).json({
                 horarios
@@ -601,8 +564,6 @@ module.exports = {
                 }
             });
 
-            console.log(analistasDisponiveis);
-
             return res.status(200).json({
                 obj,
                 analistasDisponiveis
@@ -619,8 +580,6 @@ module.exports = {
         try {
 
             const { responsavel, dia, horario } = req.body
-
-            console.log(responsavel, dia, horario);
 
             const find = await Horario.findOne({
                 enfermeiro: responsavel,
@@ -735,16 +694,12 @@ module.exports = {
                 horario
             })
 
-            console.log(enfermeiro, dia, horario);
-
             if (result?.quemReabriu) {
                 console.log('reaberto');
                 return res.json({
                     quemReabriu: result.quemReabriu
                 })
             }
-
-            console.log('nao reaberto');
 
             return res.json({
                 quemReabriu: false
@@ -762,6 +717,5 @@ module.exports = {
 
 function ajustarData(data) {
     const arr = data.split('/')
-
     return `${arr[2]}-${arr[1]}-${arr[0]}`
 }

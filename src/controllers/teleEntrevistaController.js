@@ -2706,8 +2706,6 @@ module.exports = {
                     }
                 }
 
-                console.log(count);
-
                 return res.json({
                     msg: 'ok'
                 })
@@ -2970,8 +2968,6 @@ module.exports = {
             const mediaDiasTrabalhados = result.reduce((acc, item) => acc + item.mediaDiasTrabalhados, 0) / result.length
             const mediaTotal = result.reduce((acc, item) => acc + item.total, 0) / result.length
 
-            console.log(mediaTotal, mediaDiasTrabalhados);
-
             return res.json({
                 result,
                 mediaTotal,
@@ -2990,7 +2986,7 @@ module.exports = {
     filterEntrevistasRealizadas: async (req, res) => {
         try {
 
-            const { pesquisa, limit, page, entrevistaQualidade } = req.body
+            const { pesquisa = '', limit = 100, page = 1, entrevistaQualidade = false } = req.body
 
             const skip = (page - 1) * limit
 
@@ -3051,6 +3047,37 @@ module.exports = {
             })
         }
     },
+
+    filterQueryDadosEntrevistas: async (req, res) => {
+        try {
+
+            const { query, page, limit } = req.body
+
+            console.log(query, page, limit);
+
+            let resultQuery = DadosEntrevista.find(query).lean().sort({ dataEntrevista: -1 })
+
+            if (page && limit) {
+                const skip = (page - 1) * limit
+                resultQuery = resultQuery.limit(limit).skip(skip)
+            }
+
+            const result = await resultQuery
+
+            const total = await DadosEntrevista.countDocuments(query)
+
+            return res.json({
+                result,
+                total
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    }
 }
 
 const feriados = [
