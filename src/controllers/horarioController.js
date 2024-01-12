@@ -5,6 +5,7 @@ const CloseSchedule = require('../models/TeleEntrevista/CloseSchedule')
 const moment = require('moment')
 const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
+const Log = require('../models/Logs/LogTele')
 
 module.exports = {
 
@@ -96,6 +97,12 @@ module.exports = {
                     }
                 }
             }
+
+            await Log.create({
+                nome: req.user,
+                acao: 'Gerou horarios',
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
 
             return res.status(200).json({
                 msg: 'Horarios Gerados com Sucesso!'
@@ -360,6 +367,12 @@ module.exports = {
                 motivo: motivo
             })
 
+            await Log.create({
+                nome: req.user,
+                acao: `Fechou o dia ${data} do analista ${responsavel}`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json({
                 msg: 'ok'
             })
@@ -421,6 +434,13 @@ module.exports = {
                 })
             }))
 
+            await Log.create({
+                nome: req.user,
+                acao: `Fechou os horarios ${horarios} do dia ${data} do analista ${responsavel}`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
+
             return res.status(200).json({
                 msg: 'oii'
             })
@@ -458,6 +478,13 @@ module.exports = {
                     quemReabriu: req.user
                 })
             }))
+
+            await Log.create({
+                nome: req.user,
+                acao: `Reabriu os horarios ${horarios} do dia ${data} do analista ${responsavel}`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
 
             return res.status(200).json({
                 result
@@ -597,6 +624,12 @@ module.exports = {
                     create
                 })
             }
+
+            await Log.create({
+                nome: req.user,
+                acao: `Abriu o horario ${horario} do dia ${dia} do analista ${responsavel}`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
 
             return res.status(500).json({
                 msg: 'Esse horário já existe'

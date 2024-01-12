@@ -136,6 +136,8 @@ module.exports = {
             // Obter parâmetros de consulta
             let query = req.body;
 
+            console.log(query);
+
             // Converter parâmetros de consulta em uma matriz
             let dbQuery = Object.keys(query).map(key => {
                 return {
@@ -145,8 +147,6 @@ module.exports = {
 
             // Obter usuários que correspondem à consulta
             let users = await User.find({ $and: dbQuery });
-
-            console.log(users);
 
             return res.json(users);
         } catch (error) {

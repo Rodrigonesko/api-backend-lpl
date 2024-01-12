@@ -13,6 +13,7 @@ const os = require('os')
 const xlsx = require('xlsx')
 const Horario = require('../models/TeleEntrevista/Horario')
 const { default: axios } = require('axios')
+const Log = require('../models/Logs/LogTele')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -203,6 +204,13 @@ module.exports = {
                 administradora: updateProposta.administradora
             }, {
                 upsert: true
+            })
+
+            //Cria um log com os dados da proposta e do formulario
+            await Log.create({
+                nome: req.user,
+                acao: `Formulário ${pessoa.formulario} preenchido`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
             })
 
             return res.status(200).json({
@@ -397,7 +405,15 @@ module.exports = {
                         Authorization: `Bearer ${req.cookies['token']}`
                     }
                 })
+
+                await Log.create({
+                    nome: req.user,
+                    acao: `Dados da entrevista ${atualizar.proposta} alterados.`,
+                    data: moment().format('DD/MM/YYYY HH:mm:ss')
+                })
+
             }
+
 
             return res.status(200).json({
                 msg: 'ok'
@@ -460,6 +476,12 @@ module.exports = {
                 dataAnexado: moment().format('YYYY-MM-DD')
             })
 
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${update.proposta} anexada.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json(
                 update
             )
@@ -493,7 +515,12 @@ module.exports = {
                 quemMandouImplantacao: req.user
             })
 
-            console.log(result);
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${result.proposta} enviada para implantação.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
 
             return res.status(200).json(result)
 
@@ -524,6 +551,12 @@ module.exports = {
                 implantado: 'Sim',
                 quemImplantou: req.user,
                 dataImplantado: moment().format('YYYY-MM-DD')
+            })
+
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${result.proposta} implantada.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
             })
 
             return res.status(200).json(result)
@@ -620,6 +653,13 @@ module.exports = {
                 }
             })
 
+            //Cria um log com os dados da proposta e do formulario
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${dadosProposta.proposta} do beneficiario ${dadosProposta.nome} reagendada.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json({ msg: 'reagendado' })
 
         } catch (error) {
@@ -676,6 +716,13 @@ module.exports = {
                 filial: proposta.filial,
                 idProposta: proposta._id,
                 administradora: proposta.administradora
+            })
+
+            //Cria um log com os dados da proposta e do formulario
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${proposta.proposta} do beneficiario ${proposta.nome} cancelada.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
             })
 
             return res.status(200).json({
@@ -1391,6 +1438,12 @@ module.exports = {
 
             const proposta = resp.data
 
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${proposta.proposta} alterada a vigencia para ${vigencia}.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json({
                 proposta
             })
@@ -1482,6 +1535,12 @@ module.exports = {
             const result = await Cid.create({
                 subCategoria: cid,
                 descricao: descricao
+            })
+
+            await Log.create({
+                nome: req.user,
+                acao: `Cid ${cid} adicionado.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
             })
 
             return res.status(200).json({
@@ -1701,6 +1760,12 @@ module.exports = {
                 dataNascimento: dataNascimento
             })
 
+            await Log.create({
+                nome: req.user,
+                acao: `Data de nascimento da proposta ${update.proposta} alterada para ${dataNascimento}.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json({
                 update
             })
@@ -1755,6 +1820,12 @@ module.exports = {
                 sexo
             })
 
+            await Log.create({
+                nome: req.user,
+                acao: `Sexo da proposta ${id} alterado para ${sexo}.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json({
                 msg: 'ok'
             })
@@ -1798,6 +1869,12 @@ module.exports = {
                 proposta: `${dados[dados.length - 1].proposta} - Retrocedido`,
             })
 
+            await Log.create({
+                nome: req.user,
+                acao: `Proposta ${dados[dados.length - 1].proposta} retrocedida.`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
+
             return res.status(200).json({
                 msg: 'ok'
             })
@@ -1818,8 +1895,6 @@ module.exports = {
             let arrAux = entrevistas.filter(e => {
                 return e.houveDivergencia === 'Sim'
             })
-
-            console.log(arrAux.length);
 
             return res.json(arrAux.length)
 
@@ -1885,6 +1960,12 @@ module.exports = {
                         Authorization: `Bearer ${req.cookies['token']}`
                     }
                 }
+            })
+
+            await Log.create({
+                nome: req.user,
+                acao: `Horários disponíveis reenviados para ${whatsapps}`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
             })
 
             return res.json(horarios)

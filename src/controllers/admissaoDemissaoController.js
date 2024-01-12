@@ -475,8 +475,7 @@ module.exports = {
             const result = await User.findOneAndUpdate({ name: name }, {
                 prorrogacao: prorrogacao,
             })
-            console.log(name, prorrogacao);
-
+            
             return res.status(200).json({
                 result
             })
