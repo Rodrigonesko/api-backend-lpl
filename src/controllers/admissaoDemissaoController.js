@@ -413,7 +413,6 @@ module.exports = {
                 console.log('entrou aqui');
                 tipoExame = 'demissao.id'
             }
-            console.log(tipoExame);
             const findOne = await User.findOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) })
             if (findOne) {
                 await User.updateOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { [`${req.body.tipoExame}.$.status`]: req.body.status })
