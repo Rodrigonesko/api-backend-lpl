@@ -65,5 +65,6 @@ router.post('/criarHorarios', horarioController.gerarHorarioIndividual)
 router.get('/quantidadeAnalistasPorMes/:mes', auth, teleEntrevistaController.quantidadeAnalistasPorMes)
 router.post('/filterEntrevistasRealizdas', auth, teleEntrevistaController.filterEntrevistasRealizadas)
 router.post('/filterQueryDadosEntrevistas', auth, teleEntrevistaController.filterQueryDadosEntrevistas)
+router.get('/filterProducao', auth, teleEntrevistaController.filterProducao)
 
 module.exports = router
