@@ -3077,6 +3077,28 @@ module.exports = {
                 msg: "Internal Server Error"
             })
         }
+    },
+
+    filterProducao: async (req, res) => {
+        try {
+
+            const { data } = req.query
+            
+            const entrevistas = await DadosEntrevista.find({
+                dataRecebimento: { $regex: data },
+            })
+
+            console.log(entrevistas)
+
+            return res.status(200).json({
+                entrevistas
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server"
+            })
+        }
     }
 }
 

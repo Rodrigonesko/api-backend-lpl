@@ -410,14 +410,11 @@ module.exports = {
             console.log(req.body)
             let tipoExame = 'admissao.id'
             if (req.body.tipoExame === 'demissao') {
-                console.log('entrou aqui');
                 tipoExame = 'demissao.id'
             }
-            console.log(tipoExame);
-            const findOne = await User.findOne({ _id: req.body._id, [tipoExame]: tipoExame === 'admissao.id' ? req.body.id : mongoose.Types.ObjectId(req.body.id) })
-            console.log(findOne);
-            const result = await User.updateOne({ _id: req.body._id, [tipoExame]: tipoExame === 'admissao.id' ? req.body.id : mongoose.Types.ObjectId(req.body.id) }, { [`${req.body.tipoExame}.$.status`]: req.body.status })
+            const result = await User.findOneAndUpdate({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { $set: { [`${req.body.tipoExame}.$.status`]: req.body.status } })
             const find = await User.findOne({ _id: req.body._id })
+
             return res.status(200).json(find)
         } catch (error) {
             console.log(error);
