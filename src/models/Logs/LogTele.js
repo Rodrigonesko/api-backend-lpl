@@ -9,3 +9,5 @@ const Scheema = new mongoose.Schema({
 });
 
 const Log = mongoose.model('LogTele', Scheema);
+
+module.exports = Log;
