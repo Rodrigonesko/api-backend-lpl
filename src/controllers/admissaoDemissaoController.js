@@ -436,7 +436,7 @@ module.exports = {
             if (req.body.tipoExame === 'demissao') {
                 tipoExame = 'demissao.id'
             }
-
+            const findOne = await User.findOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) })
             if (findOne) {
                 await User.updateOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { [`${req.body.tipoExame}.$.obs`]: req.body.obs })
             } else {
@@ -461,6 +461,7 @@ module.exports = {
             if (req.body.tipoExame === 'demissao') {
                 tipoExame = 'demissao.id'
             }
+            const findOne = await User.findOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) })
             if (findOne) {
                 await User.updateOne({ _id: req.body._id, [tipoExame]: mongoose.Types.ObjectId(req.body.id) }, { [`${req.body.tipoExame}.$.data`]: req.body.data })
             } else {
