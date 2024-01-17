@@ -546,7 +546,30 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-    }
+    },
+
+    filterRns: async (req, res) => {
+        try {
+
+            const { data } = req.query
+
+            console.log(data);
+                
+            const rns = await Rn.find({
+                dataRecebimento: { $regex: moment(data).format('MM/YYYY') },
+            }).countDocuments()
+
+            console.log({ rns })
+
+            return res.status(200).json({ rns })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server"
+            })
+        }
+    },
+
 }
 
 function ExcelDateToJSDate(serial) {

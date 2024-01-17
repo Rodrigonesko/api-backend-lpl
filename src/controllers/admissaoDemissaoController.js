@@ -578,8 +578,14 @@ module.exports = {
             }
 
             if (status.pendente) {
-                filterConditions.push({ 'admissao.status': 'pendente' })
-                filterConditions.push({ 'admissao.status': '' })
+                // filterConditions.push({ 'admissao.status': 'pendente' })
+                // filterConditions.push({ 'admissao.status': '' })
+                filterConditions.push({
+                    '$or': [
+                        { 'admissao.status': 'pendente' },
+                        { 'admissao.status': '' }
+                    ]
+                })
             }
 
             if (status.emAndamento) {
@@ -608,7 +614,9 @@ module.exports = {
 
             const result = await User.find(filter).lean()
 
-            const resultFiltrado = result.map(user => {
+            console.log(filter);
+
+            let resultFiltrado = result.map(user => {
                 const admissao = user.admissao.filter(item => {
                     let statusMatch = false;
                     let responsavelMatch = false;
@@ -640,7 +648,9 @@ module.exports = {
                 }
             })
 
-            console.log(resultFiltrado)
+            resultFiltrado = resultFiltrado.filter((item) => {
+                return item.admissao.length !== 0
+            })
 
             return res.json({ result: resultFiltrado })
         } catch (error) {
@@ -681,8 +691,14 @@ module.exports = {
             }
 
             if (status.pendente) {
-                filterConditions.push({ 'demissao.status': 'pendente' })
-                filterConditions.push({ 'demissao.status': '' })
+                // filterConditions.push({ 'demissao.status': 'pendente' })
+                // filterConditions.push({ 'demissao.status': '' })
+                filterConditions.push({
+                    '$or': [
+                        { 'demissao.status': 'pendente' },
+                        { 'demissao.status': '' }
+                    ]
+                })
             }
 
             if (status.emAndamento) {
@@ -711,7 +727,7 @@ module.exports = {
 
             const result = await User.find(filter).lean()
 
-            const resultFiltrado = result.map(user => {
+            let resultFiltrado = result.map(user => {
                 const demissao = user.demissao.filter(item => {
                     let statusMatch = false;
                     let responsavelMatch = false;
@@ -743,7 +759,9 @@ module.exports = {
                 }
             })
 
-            console.log(resultFiltrado)
+            resultFiltrado = resultFiltrado.filter((item) => {
+                return item.demissao.length !== 0
+            })
 
             return res.json({ result: resultFiltrado })
         } catch (error) {

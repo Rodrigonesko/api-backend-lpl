@@ -3164,23 +3164,22 @@ module.exports = {
         try {
 
             const { data } = req.query
-            
+
             const entrevistas = await DadosEntrevista.find({
                 dataRecebimento: { $regex: data },
-            })
+            }).countDocuments()
 
-            console.log(entrevistas)
+            console.log({ entrevistas })
 
-            return res.status(200).json({
-                entrevistas
-            })
+            return res.status(200).json({ entrevistas })
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 msg: "Internal Server"
             })
         }
-    }
+    },
+
 }
 
 const feriados = [
