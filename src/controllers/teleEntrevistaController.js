@@ -3165,11 +3165,16 @@ module.exports = {
 
             const { data } = req.query
 
+            console.log(data);
+
             const entrevistas = await DadosEntrevista.find({
+                dataRecebimento: { $regex: data },
+            })
+            const contarEntrevistas = await DadosEntrevista.find({
                 dataRecebimento: { $regex: data },
             }).countDocuments()
 
-            console.log({ entrevistas })
+            console.log(entrevistas, contarEntrevistas)
 
             return res.status(200).json({ entrevistas })
         } catch (error) {
