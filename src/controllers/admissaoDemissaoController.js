@@ -551,7 +551,7 @@ module.exports = {
     filterTableAdmissional: async (req, res) => {
         try {
 
-            const { status, responsavel } = req.body
+            const { status, responsavel, acao } = req.body
 
             if (Object.values(status).every(e => e === true) && Object.values(responsavel).every(e => e === true)) {
                 console.log('entrou aqui');
@@ -651,6 +651,8 @@ module.exports = {
             resultFiltrado = resultFiltrado.filter((item) => {
                 return item.admissao.length !== 0
             })
+
+            console.log(acao);
 
             return res.json({ result: resultFiltrado })
         } catch (error) {
@@ -771,4 +773,21 @@ module.exports = {
             })
         }
     },
+
+    findAll: async (req, res) => {
+        try {
+            const result = await User.findOne({ name: 'Thays Bispo' })
+
+            let acoes = result.admissao.map(item => {
+                return [item.acao]
+            })
+
+            console.log(acoes);
+
+            return res.status(200).json({ acoes })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error })
+        }
+    }
 }
