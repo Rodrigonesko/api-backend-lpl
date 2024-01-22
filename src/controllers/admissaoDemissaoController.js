@@ -1,6 +1,7 @@
 const { default: mongoose } = require('mongoose');
 const User = require('../models/User/User')
-const moment = require('moment')
+const moment = require('moment');
+const { response } = require('express');
 
 module.exports = {
 
@@ -553,17 +554,24 @@ module.exports = {
 
             const { status, responsavel, acao } = req.body
 
-            if (Object.values(status).every(e => e === true) && Object.values(responsavel).every(e => e === true)) {
-                console.log('entrou aqui');
+            console.log(req.body);
 
-                const result = await User.find()
-                return res.json({ result })
-            }
             if (Object.values(responsavel).every(e => e === false) && Object.values(status).every(e => e === false)) {
-                console.log('entrou aqui');
+                if (acao.length !== 0) {
+                    const result = await User.find().lean()
 
-                const result = await User.find()
-                return res.json({ result })
+                    let filtrado = result.map(user => {
+                        const admissao = user?.admissao?.find((item) => item.acao === acao[0])
+                        const response = { ...user, admissao: admissao ? [admissao] : [{}] }
+                        console.log(response);
+                        return response
+                    })
+                    return res.json({ result: filtrado })
+
+                } else {
+                    const result = await User.find()
+                    return res.json({ result })
+                }
             }
 
             let filter = {
@@ -652,7 +660,13 @@ module.exports = {
                 return item.admissao.length !== 0
             })
 
-            console.log(acao);
+            // if (acao) {
+            //     resultFiltrado = resultFiltrado.filter((item) => {
+            //         return item.admissao[acao]
+            //     })
+            // }
+
+            console.log(resultFiltrado);
 
             return res.json({ result: resultFiltrado })
         } catch (error) {
@@ -774,7 +788,7 @@ module.exports = {
         }
     },
 
-    findAll: async (req, res) => {
+    findAcoes: async (req, res) => {
         try {
             const result = await User.findOne({ name: 'Thays Bispo' })
 
@@ -785,6 +799,27 @@ module.exports = {
             console.log(acoes);
 
             return res.status(200).json({ acoes })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error })
+        }
+    },
+
+    filterAdmissaoAcoes: async (req, res) => {
+        try {
+
+            const { acao } = req.query
+
+            const result = await User.find()
+
+            const resultado = result.admissao.find({
+                acao: { $regex: acao },
+            })
+
+            console.log(result);
+            console.log(resultado);
+
+            return res.status(200).json({ resultado })
         } catch (error) {
             console.log(error);
             return res.status(500).json({ error })
