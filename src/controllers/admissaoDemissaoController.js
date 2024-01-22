@@ -804,25 +804,4 @@ module.exports = {
             return res.status(500).json({ error })
         }
     },
-
-    filterAdmissaoAcoes: async (req, res) => {
-        try {
-
-            const { acao } = req.query
-
-            const result = await User.find()
-
-            const resultado = result.admissao.find({
-                acao: { $regex: acao },
-            })
-
-            console.log(result);
-            console.log(resultado);
-
-            return res.status(200).json({ resultado })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ error })
-        }
-    }
 }

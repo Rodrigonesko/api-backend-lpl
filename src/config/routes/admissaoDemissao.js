@@ -15,6 +15,5 @@ router.get('/itens', auth, admissaoDemissaoController.getAllItens)
 router.post('/filterTableAdmi', auth, admissaoDemissaoController.filterTableAdmissional)
 router.post('/filterTableDemi', auth, admissaoDemissaoController.filterTableDemissional)
 router.get('/findAcoes', auth, admissaoDemissaoController.findAcoes)
-router.get('/filterAdmissaoAcoes', auth, admissaoDemissaoController.filterAdmissaoAcoes)
 
 module.exports = router
