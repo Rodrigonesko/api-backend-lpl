@@ -14,6 +14,7 @@ router.put('/prorrogacao', auth, admissaoDemissaoController.prorrogacao)
 router.get('/itens', auth, admissaoDemissaoController.getAllItens)
 router.post('/filterTableAdmi', auth, admissaoDemissaoController.filterTableAdmissional)
 router.post('/filterTableDemi', auth, admissaoDemissaoController.filterTableDemissional)
-router.get('/findAll', auth, admissaoDemissaoController.findAll)
+router.get('/findAcoesAdmissional', auth, admissaoDemissaoController.findAcoesAdmissional)
+router.get('/findAcoesDemissional', auth, admissaoDemissaoController.findAcoesDemissional)
 
 module.exports = router
