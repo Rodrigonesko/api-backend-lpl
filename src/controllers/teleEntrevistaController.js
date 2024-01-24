@@ -1169,10 +1169,16 @@ module.exports = {
 * @throws {error} Erro.
 */
 
-    mostrarDadosProducao2: async (req, res) => {
+    mostrarDadosProducaoTele: async (req, res) => {
         try {
 
-            const entrevistas = await DadosEntrevista.find()
+            const { data } = req.body
+
+            console.log(data);
+
+            const entrevistas = await DadosEntrevista.find({
+                dataEntrevista: data
+            })
 
             arrQuantidadeTotalMes = []
 
@@ -1250,11 +1256,30 @@ module.exports = {
                     }
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
                 }
-
             })
 
+            return res.status(200).json({
+                arrQuantidadeTotalMes,
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server"
+            })
+        }
+    },
+
+    mostrarDadosProducaoRns: async (req, res) => {
+        try {
+
+            const { data } = req.body
+
+            console.log(data);
+
             const rns = await Rn.find({
-                status: 'Concluido'
+                status: 'Concluido',
+                dataConclusao: data,
             })
 
             let arrRns = []
@@ -1316,7 +1341,6 @@ module.exports = {
 
             return res.status(200).json({
                 arrRns,
-                arrQuantidadeTotalMes,
             })
 
 
@@ -3165,18 +3189,18 @@ module.exports = {
 
             const { data } = req.query
 
-            console.log(data);
+            // console.log(data);
 
             const entrevistas = await DadosEntrevista.find({
-                dataRecebimento: { $regex: data },
+                dataEntrevista: { $regex: data },
             })
             const contarEntrevistas = await DadosEntrevista.find({
-                dataRecebimento: { $regex: data },
+                dataEntrevista: { $regex: data },
             }).countDocuments()
 
-            console.log(entrevistas, contarEntrevistas)
+            // console.log(contarEntrevistas)
 
-            return res.status(200).json({ entrevistas })
+            return res.status(200).json({ entrevistas, contarEntrevistas })
         } catch (error) {
             console.log(error);
             return res.status(500).json({
