@@ -1172,13 +1172,14 @@ module.exports = {
     mostrarDadosProducaoTele: async (req, res) => {
         try {
 
-            const { data } = req.body
+            const { data } = req.query
 
-            console.log(data);
+            let dataCorrigida = data.split('/').reverse().join('-')
+            console.log(dataCorrigida);
 
             const entrevistas = await DadosEntrevista.find({
-                dataEntrevista: data
-            })
+                dataEntrevista: {$regex: dataCorrigida}
+            }).lean()
 
             arrQuantidadeTotalMes = []
 
@@ -1201,7 +1202,7 @@ module.exports = {
                 ]
             */
 
-            entrevistas.forEach(e => {
+            for (let e of entrevistas) {
                 //Verifica se ja existe aquele mês no array
                 let index = arrQuantidadeTotalMes.findIndex(val => val.data == moment(e.dataEntrevista).format('MM/YYYY'))
 
@@ -1237,7 +1238,7 @@ module.exports = {
                     })
                 } else {
                     if (arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes === undefined) {
-                        return
+                        continue
                     }
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidade++
                 }
@@ -1252,11 +1253,11 @@ module.exports = {
                     })
                 } else {    // Se exister ele irá somar a quantidade em 1
                     if (arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
-                        return
+                        continue
                     }
                     arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
                 }
-            })
+            }
 
             return res.status(200).json({
                 arrQuantidadeTotalMes,

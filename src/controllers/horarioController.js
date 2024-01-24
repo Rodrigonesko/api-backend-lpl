@@ -3,6 +3,7 @@ const User = require('../models/User/User')
 const Rn = require('../models/TeleEntrevista/Rn')
 const CloseSchedule = require('../models/TeleEntrevista/CloseSchedule')
 const moment = require('moment')
+const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
 const Log = require('../models/Logs/LogTele')
 
@@ -744,7 +745,6 @@ module.exports = {
             })
         }
     }
-
 }
 
 function ajustarData(data) {
