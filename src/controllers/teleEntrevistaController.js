@@ -1178,7 +1178,7 @@ module.exports = {
             console.log(dataCorrigida);
 
             const entrevistas = await DadosEntrevista.find({
-                dataEntrevista: {$regex: dataCorrigida}
+                dataEntrevista: { $regex: dataCorrigida }
             }).lean()
 
             arrQuantidadeTotalMes = []
@@ -1203,60 +1203,54 @@ module.exports = {
             */
 
             for (let e of entrevistas) {
-                //Verifica se ja existe aquele mês no array
-                let index = arrQuantidadeTotalMes.findIndex(val => val.data == moment(e.dataEntrevista).format('MM/YYYY'))
 
-                //Caso não exista irá criar um referente as informações
-                if (index < 0) {
-                    arrQuantidadeTotalMes.push({
-                        data: moment(e.dataEntrevista).format('MM/YYYY'),
-                        quantidade: 1,
-                        quantidadeAnalistaMes: [{
-                            analista: e.responsavel,
-                            quantidade: 1,
-                            quantidadeAnalistaDia: [{
-                                data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
-                                quantidade: 1
-                            }]
-                        }]
-                    })
-                } else { //Se ja existe irá aumentar a quantidade em 1
-                    arrQuantidadeTotalMes[index].quantidade++
+                // Formata a data da entrevista para o formato MM/YYYY
+                const formattedMonth = moment(e.dataEntrevista).format('MM/YYYY');
+                // Formata a data da entrevista para o formato YYYY-MM-DD
+                const formattedDay = moment(e.dataEntrevista).format('YYYY-MM-DD');
+
+                // Procura uma entrada no array arrQuantidadeTotalMes que corresponda ao mês formatado
+                let monthEntry = arrQuantidadeTotalMes.find(val => val.data == formattedMonth);
+
+                // Se não encontrar uma entrada para o mês, cria uma nova
+                if (!monthEntry) {
+                    monthEntry = {
+                        data: formattedMonth,
+                        quantidade: 0,
+                        quantidadeAnalistaMes: []
+                    };
+                    arrQuantidadeTotalMes.push(monthEntry);
                 }
 
-                //Verifica se ja existe um analista naquele mês
-                let indexAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes.findIndex(val => val.analista == e.responsavel)
+                // Incrementa a quantidade de entrevistas para o mês
+                monthEntry.quantidade++;
 
-                if (indexAnalista < 0) {    //Se não exister ele cria as informações
-                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes.push({
+                // Procura uma entrada para o analista responsável pela entrevista no mês atual
+                let analistaEntry = monthEntry.quantidadeAnalistaMes.find(val => val.analista == e.responsavel);
+
+                // Se não encontrar uma entrada para o analista, cria uma nova
+                if (!analistaEntry) {
+                    analistaEntry = {
                         analista: e.responsavel,
-                        quantidade: 1,
-                        quantidadeAnalistaDia: [{
-                            data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
-                            quantidade: 1
-                        }]
-                    })
-                } else {
-                    if (arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes === undefined) {
-                        continue
-                    }
-                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidade++
+                        quantidade: 0,
+                        quantidadeAnalistaDia: []
+                    };
+                    monthEntry.quantidadeAnalistaMes.push(analistaEntry);
                 }
 
-                //Verifica se ja existe o analista dentro daquele objeto referente aquele mes e dia
-                let indexDiaAnalista = arrQuantidadeTotalMes[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataEntrevista).format('YYYY-MM-DD'))
+                analistaEntry.quantidade++;
 
-                if (indexDiaAnalista < 0) { //Se não existir ele irá criar as informações
-                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
-                        data: moment(e.dataEntrevista).format('YYYY-MM-DD'),
-                        quantidade: 1
-                    })
-                } else {    // Se exister ele irá somar a quantidade em 1
-                    if (arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
-                        continue
-                    }
-                    arrQuantidadeTotalMes[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
+                let diaEntry = analistaEntry.quantidadeAnalistaDia.find(val => val.data == formattedDay);
+
+                if (!diaEntry) {
+                    diaEntry = {
+                        data: formattedDay,
+                        quantidade: 0
+                    };
+                    analistaEntry.quantidadeAnalistaDia.push(diaEntry);
                 }
+
+                diaEntry.quantidade++;
             }
 
             return res.status(200).json({
