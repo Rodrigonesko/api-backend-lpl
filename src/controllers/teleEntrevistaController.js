@@ -1268,71 +1268,66 @@ module.exports = {
     mostrarDadosProducaoRns: async (req, res) => {
         try {
 
-            const { data } = req.body
+            const { data } = req.query
 
-            console.log(data);
+            let dataCorrigida = data.split('/').reverse().join('-')
+            console.log(dataCorrigida);
 
             const rns = await Rn.find({
                 status: 'Concluido',
-                dataConclusao: data,
-            })
+                dataConclusao: { $regex: dataCorrigida }
+            }).lean()
 
             let arrRns = []
 
-            //A lógica é a mesma para as Rns
+            for (let r of rns) {
+                // Formata a data da rn para o formato MM/YYYY
+                const formattedMonth = moment(r.dataConclusao).format('MM/YYYY');
+                // Formata a data da rn para o formato YYYY-MM-DD
+                const formattedDay = moment(r.dataConclusao).format('YYYY-MM-DD');
 
-            rns.forEach(e => {
-                let index = arrRns.findIndex(val => val.data == moment(e.dataConclusao).format('MM/YYYY'))
+                // Procura uma entrada no array arrRns que corresponda ao mês formatado
+                let monthEntry = arrRns.find(val => val.data == formattedMonth);
 
-                if (index < 0) {
-                    arrRns.push({
-                        data: moment(e.dataConclusao).format('MM/YYYY'),
-                        quantidade: 1,
-                        quantidadeAnalistaMes: [{
-                            analista: e.responsavel,
-                            quantidade: 1,
-                            quantidadeAnalistaDia: [{
-                                data: moment(e.dataConclusao).format('YYYY-MM-DD'),
-                                quantidade: 1
-                            }]
-                        }]
-                    })
-                } else {
-                    arrRns[index].quantidade++
+                if (!monthEntry) {
+                    monthEntry = {
+                        data: formattedMonth,
+                        quantidade: 0,
+                        quantidadeAnalistaMes: []
+                    };
+                    arrRns.push(monthEntry);
                 }
 
-                let indexAnalista = arrRns[index]?.quantidadeAnalistaMes.findIndex(val => val.analista == e.responsavel)
+                // Incrementa a quantidade de entrevistas para o mês
+                monthEntry.quantidade++;
 
-                if (indexAnalista < 0) {
-                    arrRns[index].quantidadeAnalistaMes.push({
-                        analista: e.responsavel,
-                        quantidade: 1,
-                        quantidadeAnalistaDia: [{
-                            data: moment(e.dataConclusao).format('YYYY-MM-DD'),
-                            quantidade: 1
-                        }]
-                    })
-                } else {
-                    if (arrRns[index]?.quantidadeAnalistaMes === undefined) {
-                        return
-                    }
-                    arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidade++
+                // Procura uma entrada para o analista responsável pela entrevista no mês atual
+                let analistaEntry = monthEntry.quantidadeAnalistaMes.find(val => val.analista == r.responsavel);
+
+                // Se não encontrar uma entrada para o analista, cria uma nova
+                if (!analistaEntry) {
+                    analistaEntry = {
+                        analista: r.responsavel,
+                        quantidade: 0,
+                        quantidadeAnalistaDia: []
+                    };
+                    monthEntry.quantidadeAnalistaMes.push(analistaEntry);
                 }
 
-                let indexDiaAnalista = arrRns[index]?.quantidadeAnalistaMes[indexAnalista]?.quantidadeAnalistaDia.findIndex(val => val.data == moment(e.dataConclusao).format('YYYY-MM-DD'))
+                analistaEntry.quantidade++;
 
-                if (indexDiaAnalista < 0) {
-                    arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia.push({
-                        data: moment(e.dataConclusao).format('YYYY-MM-DD'),
-                        quantidade: 1
-                    })
-                } else {
-                    if (arrRns[index].quantidadeAnalistaMes[indexAnalista] === undefined) {
-                        return
-                    }
-                    arrRns[index].quantidadeAnalistaMes[indexAnalista].quantidadeAnalistaDia[indexDiaAnalista].quantidade++
+                let diaEntry = analistaEntry.quantidadeAnalistaDia.find(val => val.data == formattedDay);
+
+                if (!diaEntry) {
+                    diaEntry = {
+                        data: formattedDay,
+                        quantidade: 0
+                    };
+                    analistaEntry.quantidadeAnalistaDia.push(diaEntry);
                 }
-            })
+
+                diaEntry.quantidade++;
+            }
 
             return res.status(200).json({
                 arrRns,
