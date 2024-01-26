@@ -1271,7 +1271,7 @@ module.exports = {
             const { data } = req.query
 
             let dataCorrigida = data.split('/').reverse().join('-')
-            console.log(dataCorrigida);
+            console.log(dataCorrigida)
 
             const rns = await Rn.find({
                 status: 'Concluido',
