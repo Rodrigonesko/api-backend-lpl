@@ -2,6 +2,35 @@ const Treinamento = require('../models/Treinamentos/Treinamento')
 const User = require('../models/User/User')
 const moment = require('moment')
 
+const fs = require('fs')
+const multer = require('multer');
+const upload = (versao) => multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            const dir = `./uploads/certificados/`
+            if (!fs.existsSync(dir)) {
+                fs.mkdir(dir, (err) => {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log('diretório criado com sucesso');
+                });
+            }
+            cb(null, dir);
+        },
+        filename: (req, file, cb) => {
+            const usuario = req.user;
+            const { _id } = req.params
+
+            console.log(req.user, req.params);
+
+            const fileName = `${usuario}-${_id}.pdf`;
+            cb(null, fileName);
+        }
+    })
+}).single('file');
+
 module.exports = {
 
     getAll: async (req, res) => {
@@ -288,7 +317,39 @@ module.exports = {
                 error
             })
         }
+    },
 
-    }
+    updateCertificado: async (req, res) => {
+        try {
 
+            const { _id } = req.params
+
+            upload()(req, res, async (err) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+
+                const result = await Treinamento.updateOne({
+                    _id: _id,
+                    "realizados.nome": req.user
+                }, {
+                    $set: {
+                        'realizados.$.anexado': true,
+                    }
+                })
+                console.log(result);
+
+            });
+            return res.json({
+                msg: 'ok'
+            });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
 }

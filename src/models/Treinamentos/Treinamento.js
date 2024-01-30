@@ -7,6 +7,11 @@ const Scheema = new mongoose.Schema({
     prazo: String,
     observacoes: String,
     realizados: [],
+    certificado: String,
+    versao: String,
+    dataCriacao: String,
+    arquivo: String,
+    colaborador: String
     
 }, {
     timestamps: true
