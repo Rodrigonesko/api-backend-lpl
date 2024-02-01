@@ -663,7 +663,7 @@ module.exports = {
             })
 
             if (acao.length !== 0) {
-                resultFiltrado = result.map(user => {
+                resultFiltrado = resultFiltrado.map(user => {
                     const admissao = user?.admissao?.find((item) => item.acao === acao[0])
                     const response = { ...user, admissao: admissao ? [admissao] : [] }
                     console.log(response);
@@ -795,7 +795,7 @@ module.exports = {
             })
 
             if (acao.length !== 0) {
-                resultFiltrado = result.map(user => {
+                resultFiltrado = resultFiltrado.map(user => {
                     const demissao = user?.demissao?.find((item) => item.acao === acao[0])
                     const response = { ...user, demissao: demissao ? [demissao] : [] }
                     console.log(response);
