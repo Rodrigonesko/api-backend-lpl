@@ -67,5 +67,7 @@ router.get('/quantidadeAnalistasPorMes/:mes', auth, teleEntrevistaController.qua
 router.post('/filterEntrevistasRealizdas', auth, teleEntrevistaController.filterEntrevistasRealizadas)
 router.post('/filterQueryDadosEntrevistas', auth, teleEntrevistaController.filterQueryDadosEntrevistas)
 router.get('/filterProducao', auth, teleEntrevistaController.filterProducao)
+router.get('/produtividadeAnexosIndividual/:mes/:analista', auth, teleEntrevistaController.produtividadeAnexosIndividual)
+router.get('/quantidadeEntrevistasMes/:mes', auth, teleEntrevistaController.quantidadeEntrevistasPorMes)
 
 module.exports = router

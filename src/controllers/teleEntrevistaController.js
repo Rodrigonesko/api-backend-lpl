@@ -3199,6 +3199,138 @@ module.exports = {
         }
     },
 
+    produtividadeAnexosIndividual: async (req, res) => {
+        try {
+
+            const { analista, mes } = req.params
+
+            const totalAnexos = await DadosEntrevista.countDocuments({
+                dataAnexado: { $regex: mes }
+            })
+
+            const totalImplantados = await DadosEntrevista.countDocuments({
+                dataImplantado: { $regex: mes }
+            })
+
+            const totalMandouImplantacao = await DadosEntrevista.countDocuments({
+                dataMandouImplantacao: { $regex: mes }
+            })
+
+            const anexos = await DadosEntrevista.countDocuments({
+                quemAnexou: analista,
+                dataAnexado: { $regex: mes }
+            })
+
+            const implantados = await DadosEntrevista.countDocuments({
+                quemImplantou: analista,
+                dataImplantado: { $regex: mes }
+            })
+
+            const mandouImplantacao = await DadosEntrevista.countDocuments({
+                quemMandouImplantacao: analista,
+                dataMandouImplantacao: { $regex: mes }
+            })
+
+            const analistaQueMaisAnexou = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataAnexado: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$quemAnexou',
+                        total: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { total: -1 }
+                },
+                {
+                    $limit: 1
+                }
+            ])
+
+            const analistaQueMaisImplantou = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataImplantado: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$quemImplantou',
+                        total: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { total: -1 }
+                },
+                {
+                    $limit: 1
+                }
+            ])
+
+            const analistaQueMaisMandouImplantacao = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataMandouImplantacao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$quemMandouImplantacao',
+                        total: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { total: -1 }
+                },
+                {
+                    $limit: 1
+                }
+            ])
+
+
+            return res.json({
+                anexos,
+                implantados,
+                mandouImplantacao,
+                analistaQueMaisAnexou,
+                analistaQueMaisImplantou,
+                analistaQueMaisMandouImplantacao,
+                totalAnexos,
+                totalImplantados,
+                totalMandouImplantacao
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server",
+                error
+            })
+        }
+    },
+
+    quantidadeEntrevistasPorMes: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const result = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes }
+            })
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    }
 }
 
 const feriados = [

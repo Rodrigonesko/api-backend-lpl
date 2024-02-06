@@ -32,8 +32,6 @@ module.exports = {
             const token = jwt.sign({ username: user.name, email: email, accessLevel: user.accessLevel }, secret, { expiresIn: '12h' })
 
             //Setando o token para o cookie
-            console.log(token)
-            res.cookie('token', token)
             return res.status(200).json({ msg: "Logado com sucesso", token: token, user: user.name })
         } catch (error) {
             return res.json(error)

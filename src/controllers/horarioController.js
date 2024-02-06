@@ -7,113 +7,55 @@ const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
 const Log = require('../models/Logs/LogTele')
 
+
+const HORARIOS = [
+    '08:00', '08:20', '08:40', '09:00', '09:20', '09:40', '10:00', '10:20', '10:40', '11:00',
+    '11:20', '11:40', '12:00', '12:20', '12:40', '13:00', '13:20', '13:40', '14:00', '14:20',
+    '14:40', '15:00', '15:20', '15:40', '16:00', '16:20', '16:40', '17:00', '17:20', '17:40', '18:00'
+];
+
+const criarHorario = async (item, data) => {
+    const { horarioEntrada1: entrada1, horarioSaida1: saida1, horarioEntrada2: entrada2, horarioSaida2: saida2 } = item;
+    const horarios = HORARIOS.filter(horario => {
+        return entrada1 <= horario && ((saida1 > horario || entrada2 <= horario) && saida2 > horario);
+    });
+    const horarioPromises = horarios.map(horario => Horario.create({
+        enfermeiro: item.name,
+        horario,
+        dia: moment(data).format('YYYY-MM-DD')
+    }));
+    return Promise.all(horarioPromises);
+};
+
 module.exports = {
-
-
-    /**
-*  Report das atividades em andamento.
-*
-* @route GET /controleAtividade/andamento
-* @returns {object} Report das atividades em andamento.
-* @throws {error} Erro.
-*/
 
     gerar: async (req, res) => {
         try {
-
-            const data = req.body.dataGerar
-
-            const horarios = [
-                '08:00',
-                '08:20',
-                '08:40',
-                '09:00',
-                '09:20',
-                '09:40',
-                '10:00',
-                '10:20',
-                '10:40',
-                '11:00',
-                '11:20',
-                '11:40',
-                '12:00',
-                '12:20',
-                '12:40',
-                '13:00',
-                '13:20',
-                '13:40',
-                '14:00',
-                '14:20',
-                '14:40',
-                '15:00',
-                '15:20',
-                '15:40',
-                '16:00',
-                '16:20',
-                '16:40',
-                '17:00',
-                '17:20',
-                '17:40',
-                '18:00'
-            ]
-
-            const find = await Horario.findOne({
-                dia: data
-            }).lean()
+            const data = req.body.dataGerar;
+            const find = await Horario.findOne({ dia: data }).lean();
 
             if (find) {
-                return res.status(500).json({
-                    msg: 'Ja foi gerado horario para este dia!'
-                })
+                return res.status(500).json({ msg: 'Ja foi gerado horario para este dia!' });
             }
 
             const users = await User.find({
                 enfermeiro: 'true',
                 inativo: { $ne: true },
                 deFerias: { $ne: true }
-            })
+            });
 
-            for (const item of users) {
-
-                const entrada1 = item.horarioEntrada1
-                const saida1 = item.horarioSaida1
-                const entrada2 = item.horarioEntrada2
-                const saida2 = item.horarioSaida2
-
-                for (const horario of horarios) {
-                    if (entrada1 <= horario) {
-                        if (saida1 <= horario && entrada2 >= horario) {
-                            continue
-                        }
-                        if (saida2 <= horario) {
-                            break
-                        }
-
-                        await Horario.create({
-                            enfermeiro: item.name,
-                            horario: horario,
-                            dia: moment(data).format('YYYY-MM-DD')
-                        })
-                    }
-                }
-            }
+            await Promise.all(users.map(user => criarHorario(user, data)));
 
             await Log.create({
                 nome: req.user,
                 acao: 'Gerou horarios',
                 data: moment().format('DD/MM/YYYY HH:mm:ss')
-            })
+            });
 
-            return res.status(200).json({
-                msg: 'Horarios Gerados com Sucesso!'
-            })
-
-
+            return res.status(200).json({ msg: 'Horarios Gerados com Sucesso!' });
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error." });
         }
     },
 
