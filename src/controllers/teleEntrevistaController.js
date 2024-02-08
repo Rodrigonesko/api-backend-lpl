@@ -3318,11 +3318,278 @@ module.exports = {
 
             const { mes } = req.params
 
-            const result = await DadosEntrevista.countDocuments({
+            const total = await DadosEntrevista.countDocuments({
                 dataEntrevista: { $regex: mes }
             })
 
+            const totalConcluidas = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                cancelado: { $ne: true }
+            })
+
+            const totalCanceladas = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                cancelado: true
+            })
+
+            const totalMesPassado = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') }
+            })
+
+            const totalConcluidasMesPassado = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                cancelado: { $ne: true }
+            })
+
+            const totalCanceladasMesPassado = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                cancelado: true
+            })
+
+            const result = {
+                total,
+                totalConcluidas,
+                totalCanceladas,
+                totalMesPassado,
+                totalConcluidasMesPassado,
+                totalCanceladasMesPassado
+            }
+
             return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    },
+
+    dadosAnalaticoAnexos: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const totalAnexos = await DadosEntrevista.countDocuments({
+                dataAnexado: { $regex: mes }
+            })
+
+            const totalEnviadosImplantacao = await DadosEntrevista.countDocuments({
+                dataMandouImplantacao: { $regex: mes }
+            })
+
+            const totalImplantados = await DadosEntrevista.countDocuments({
+                dataImplantado: { $regex: mes }
+            })
+
+            const situacoesAmil = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataMandouImplantacao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$situacaoAmil',
+                        total: { $sum: 1 }
+                    }
+                }
+            ])
+
+            const producaoAnexos = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataAnexado: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$quemAnexou',
+                        total: { $sum: 1 }
+                    }
+                }
+            ])
+
+            const implantacao = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataMandouImplantacao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$quemMandouImplantacao',
+                        total: { $sum: 1 }
+                    }
+                }
+            ])
+
+            const implantados = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataImplantado: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$quemImplantou',
+                        total: { $sum: 1 }
+                    }
+                }
+            ])
+
+            let producao = []
+
+            for (const item of producaoAnexos) {
+                const index = producao.findIndex(implantou => implantou._id === item._id)
+                if (index !== -1) {
+                    producao[index].totalAnexos = item.total
+                } else {
+                    producao.push({
+                        analista: item._id,
+                        totalAnexos: item.total,
+                        totalImplantacao: 0,
+                        totalImplantados: 0
+                    })
+                }
+            }
+
+            for (const item of implantados) {
+                const index = producao.findIndex(producao => producao.analista === item._id)
+                if (index !== -1) {
+                    producao[index].totalImplantados = item.total
+                } else {
+                    producao.push({
+                        analista: item._id,
+                        totalAnexos: 0,
+                        totalImplantacao: 0,
+                        totalImplantados: item.total
+                    })
+                }
+            }
+
+            for (const item of implantacao) {
+                const index = producao.findIndex(producao => producao.analista === item._id)
+                if (index !== -1) {
+                    producao[index].totalImplantacao = item.total
+                } else {
+                    producao.push({
+                        analista: item._id,
+                        totalAnexos: 0,
+                        totalImplantacao: item.total,
+                        totalImplantados: 0
+                    })
+                }
+            }
+
+            producao = producao.sort((a, b) => b.totalAnexos - a.totalAnexos)
+
+            producao = producao.filter(item => item.analista)
+
+            return res.json({
+                totalAnexos,
+                totalEnviadosImplantacao,
+                totalImplantados,
+                situacoesAmil,
+                producao
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    },
+
+    producaoIndividualTele: async (req, res) => {
+        try {
+
+            const { analista, mes } = req.params
+
+            const minhasEntrevistas = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                responsavel: analista
+            })
+
+            const minhasEntrevistasMesPassado = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                responsavel: analista
+            })
+
+            const qtdDiaUtil = countWeekdaysInMonth(mes.split('-')[0], mes.split('-')[1] - 1, holidays)
+
+            const analistaComMelhorDesempenho = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataEntrevista: { $regex: mes },
+                        responsavel: { $ne: 'Sem Sucesso de Contato!' }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$responsavel',
+                        total: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { total: -1 }
+                },
+                {
+                    $limit: 1
+                }
+            ])
+
+            return res.json({
+                minhasEntrevistas,
+                minhasEntrevistasMesPassado,
+                qtdDiaUtil,
+                analistaComMelhorDesempenho
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    },
+
+    comparativoProducao: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const analistaComMaiorDesempenho = await DadosEntrevista.aggregate([
+                {
+                    $match: {
+                        dataEntrevista: { $regex: mes },
+                        responsavel: { $ne: 'Sem Sucesso de Contato!' }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$responsavel',
+                        total: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { total: -1 }
+                },
+                {
+                    $limit: 1
+                }
+            ])
+
+            const totalAnalista = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes },
+                responsavel: analista
+            })
+
+            const entrevistasAnalistaQueMaisAgendou = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes },
+                responsavel: analistaComMaiorDesempenho[0]._id
+            })
 
         } catch (error) {
             console.log(error);
