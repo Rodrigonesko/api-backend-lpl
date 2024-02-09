@@ -71,5 +71,7 @@ router.get('/produtividadeAnexosIndividual/:mes/:analista', auth, teleEntrevista
 router.get('/quantidadeEntrevistasMes/:mes', auth, teleEntrevistaController.quantidadeEntrevistasPorMes)
 router.get('/dadosAnalaticoAnexos/:mes', auth, teleEntrevistaController.dadosAnalaticoAnexos)
 router.get('/producaoIndividualTele/:mes/:analista', auth, teleEntrevistaController.producaoIndividualTele)
+router.get('/comparativoProducao/:mes/:analista', auth, teleEntrevistaController.comparativoProducao)
+router.get('/totalDivergencias/:mes/:analista', auth, teleEntrevistaController.quantidadeDivergenciaPorMes)
 
 module.exports = router

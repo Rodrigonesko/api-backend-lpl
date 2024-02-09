@@ -18,5 +18,6 @@ router.put('/salvarContato', auth, urgenciaEmergenciaController.salvarContato)
 router.put('/concluirAnexo', auth, urgenciaEmergenciaController.concluirAnexo)
 router.get('/producaoTotal', auth, urgenciaEmergenciaController.producaoTotal)
 router.get('/filter', auth, urgenciaEmergenciaController.filter)
+router.get('/producaoMensal/:mes/:analista', auth, urgenciaEmergenciaController.producaoMensal)
 
 module.exports = router

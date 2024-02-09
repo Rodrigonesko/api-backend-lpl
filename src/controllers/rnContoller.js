@@ -554,7 +554,7 @@ module.exports = {
             const { data } = req.query
 
             console.log(data);
-                
+
             const rns = await Rn.find({
                 dataRecebimento: { $regex: moment(data).format('MM/YYYY') },
             }).countDocuments()
@@ -569,6 +569,99 @@ module.exports = {
             })
         }
     },
+
+    producaoMensal: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const totalRns = await Rn.countDocuments({
+                dataRecebimento: { $regex: moment(mes).format('MM/YYYY') }
+            })
+
+            const totalRnsMesPassado = await Rn.countDocuments({
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') }
+            })
+
+            const totalRnsConcluidas = await Rn.countDocuments({
+                dataConclusao: { $regex: mes },
+                status: 'Concluido',
+                responsavel: { $ne: 'Cancelado' }
+            })
+
+            const totalRnsConcluidasMesPassado = await Rn.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                status: 'Concluido',
+                responsavel: { $ne: 'Cancelado' }
+            })
+
+            const totalRnsCanceladas = await Rn.countDocuments({
+                dataConclusao: { $regex: mes },
+                status: 'Concluido',
+                responsavel: 'Cancelado'
+            })
+
+            const totalRnsCanceladasMesPassado = await Rn.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                status: 'Concluido',
+                responsavel: 'Cancelado'
+            })
+
+            const totalRnsAnalista = await Rn.countDocuments({
+                dataConclusao: { $regex: mes },
+                responsavel: analista,
+                status: 'Concluido'
+            })
+
+            const rns = await Rn.find({
+                dataConclusao: { $regex: mes },
+                status: 'Concluido'
+            })
+
+            let dates = []
+
+            for (const item of rns) {
+                if (!dates.includes(item.dataConclusao)) {
+                    dates.push(item.dataConclusao)
+                }
+            }
+            
+            dates = dates.sort()
+
+            let series = [
+                {
+                    name: analista,
+                    data: []
+                }
+            ]
+
+            for (const date of dates) {
+                const total = rns.filter(e => e.dataConclusao === date).length
+                series[0].data.push(total)
+            }
+
+            dates = dates.map(e => moment(e).format('DD/MM/YYYY'))
+
+            return res.status(200).json({
+                totalRns,
+                totalRnsMesPassado,
+                totalRnsConcluidas,
+                totalRnsConcluidasMesPassado,
+                totalRnsCanceladas,
+                totalRnsCanceladasMesPassado,
+                totalRnsAnalista,
+                series,
+                dates
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server"
+            })
+        }
+
+    }
 
 }
 

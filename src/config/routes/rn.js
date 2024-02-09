@@ -24,5 +24,5 @@ router.put('/tentativaContato', auth, rnContoller.tentativaContato)
 router.put('/duplicada', auth, rnContoller.duplicada)
 router.get('/filter/:pesquisa', auth, rnContoller.filter)
 router.get('/filterRns', auth, rnContoller.filterRns)
-
+router.get('/producaoMensal/:mes/:analista', auth, rnContoller.producaoMensal)
 module.exports = router;

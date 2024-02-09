@@ -3581,20 +3581,107 @@ module.exports = {
                 }
             ])
 
+            const datasEntrevistas = await DadosEntrevista.find({
+                dataEntrevista: { $regex: mes },
+            }, {
+                dataEntrevista: 1
+            }).lean()
+
             const totalAnalista = await DadosEntrevista.find({
                 dataEntrevista: { $regex: mes },
                 responsavel: analista
-            })
+            }).lean()
 
             const entrevistasAnalistaQueMaisAgendou = await DadosEntrevista.find({
                 dataEntrevista: { $regex: mes },
                 responsavel: analistaComMaiorDesempenho[0]._id
+            }).lean()
+
+            let dates = []
+
+            for (const item of datasEntrevistas) {
+                if (!dates.includes(item.dataEntrevista)) {
+                    dates.push(item.dataEntrevista)
+                }
+            }
+
+            dates = dates.sort((a, b) => {
+                return new Date(a) - new Date(b)
+            })
+
+            let series = [
+                {
+                    name: analista,
+                    data: []
+                },
+                {
+                    name: analistaComMaiorDesempenho[0]._id,
+                    data: []
+                }
+            ]
+
+            for (const date of dates) {
+                const total = totalAnalista.filter(item => item.dataEntrevista === date).length
+                const totalComMaiorDesempenho = entrevistasAnalistaQueMaisAgendou.filter(item => item.dataEntrevista === date).length
+
+                series[0].data.push(total)
+                series[1].data.push(totalComMaiorDesempenho)
+            }
+
+            dates = dates.map(date => moment(date).format('DD/MM/YYYY'))
+
+            return res.json({
+                dates,
+                series
             })
 
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 msg: "Internal Server Error"
+            })
+        }
+    },
+
+    quantidadeDivergenciaPorMes: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const totalDivergenciaAnalista = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                responsavel: analista,
+                houveDivergencia: 'Sim'
+            })
+
+            const totalSemDivergenciaAnalista = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                responsavel: analista,
+                houveDivergencia: 'Não'
+            })
+
+            const totalDivergencia = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                houveDivergencia: 'Sim'
+            })
+
+            const totalSemDivergencia = await DadosEntrevista.countDocuments({
+                dataEntrevista: { $regex: mes },
+                houveDivergencia: 'Não'
+            })
+
+            return res.json({
+                totalDivergenciaAnalista,
+                totalSemDivergenciaAnalista,
+                totalDivergencia,
+                totalSemDivergencia
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error",
+                error
             })
         }
     }

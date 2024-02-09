@@ -621,6 +621,80 @@ module.exports = {
                 error: "Internal server error."
             })
         }
+    },
+
+    producaoMensal: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const totalUe = await UrgenciasEmergencia.countDocuments({
+                dataRecebimento: { $regex: mes }
+            })
+
+            const totalUeMesPassado = await UrgenciasEmergencia.countDocuments({
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') }
+            })
+
+            const totalUeConcluido = await UrgenciasEmergencia.countDocuments({
+                dataRecebimento: { $regex: mes },
+                status: 'Concluído'
+            })
+
+            const totalUeConcluidoMesPassado = await UrgenciasEmergencia.countDocuments({
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
+                status: 'Concluído'
+            })
+
+            const totalUeAnalista = await UrgenciasEmergencia.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista
+            })
+
+            const ues = await UrgenciasEmergencia.find({
+                dataRecebimento: { $regex: mes },
+            }).lean()
+
+            let dates = []
+
+            for (const item of ues) {
+                if (!dates.includes(moment(item.dataRecebimento).format('YYYY-MM-DD'))) {
+                    dates.push(moment(item.dataRecebimento).format('YYYY-MM-DD'))
+                }
+            }
+
+            dates = dates.sort()
+
+            let series = [
+                {
+                    name: analista,
+                    date: []
+                }
+            ]
+
+            for (const date of dates) {
+                const count = ues.filter(e => moment(e.dataRecebimento).format('YYYY-MM-DD') === date && e.analista === analista).length
+                series[0].date.push(count)
+            }
+
+            dates = dates.map(e => moment(e).format('DD/MM'))
+
+            return res.status(200).json({
+                totalUe,
+                totalUeMesPassado,
+                totalUeConcluido,
+                totalUeConcluidoMesPassado,
+                totalUeAnalista,
+                dates,
+                series
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
     }
 }
 
