@@ -633,7 +633,7 @@ module.exports = {
             })
 
             const totalUeMesPassado = await UrgenciasEmergencia.countDocuments({
-                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') }
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') }
             })
 
             const totalUeConcluido = await UrgenciasEmergencia.countDocuments({
@@ -668,13 +668,13 @@ module.exports = {
             let series = [
                 {
                     name: analista,
-                    date: []
+                    data: []
                 }
             ]
 
             for (const date of dates) {
                 const count = ues.filter(e => moment(e.dataRecebimento).format('YYYY-MM-DD') === date && e.analista === analista).length
-                series[0].date.push(count)
+                series[0].data.push(count)
             }
 
             dates = dates.map(e => moment(e).format('DD/MM'))

@@ -615,7 +615,8 @@ module.exports = {
 
             const rns = await Rn.find({
                 dataConclusao: { $regex: mes },
-                status: 'Concluido'
+                status: 'Concluido',
+                responsavel: analista,
             })
 
             let dates = []
