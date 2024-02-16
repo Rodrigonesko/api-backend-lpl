@@ -1897,22 +1897,32 @@ module.exports = {
             })
 
             const totalConcluidas = await Proposta.countDocuments({
-                dataConclusao: { $regex: mes },
-                status: 'Concluída'
+                dataImportacao: { $regex: mes },
+                $or: [
+                    { status: 'Concluída' },
+                    { status: 'Implantada' },
+                    { status: 'Devolvida' },
+                    { status: 'Enviada para Under' }
+                ]
             })
 
             const totalConcluidasMesPassado = await Proposta.countDocuments({
-                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
-                status: 'Concluída'
+                dataImportacao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                $or: [
+                    { status: 'Concluída' },
+                    { status: 'Implantada' },
+                    { status: 'Devolvida' },
+                    { status: 'Enviada para Under' }
+                ]
             })
 
             const totalCanceladas = await Proposta.countDocuments({
-                dataConclusao: { $regex: mes },
+                dataImportacao: { $regex: mes },
                 status: 'Cancelada'
             })
 
             const totalCanceladasMesPassado = await Proposta.countDocuments({
-                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                dataImportacao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
                 status: 'Cancelada'
             })
 
@@ -1922,7 +1932,7 @@ module.exports = {
                     { status: 'Em andamento' },
                     { status: 'A iniciar' },
                     { status: 'Análise de Documentos' },
-                    { status: 'Sem documentos' }
+                    { status: 'Sem documentos' },
                 ]
             })
 
@@ -1944,7 +1954,7 @@ module.exports = {
         }
     },
 
-    
+
 }
 
 const feriados = [
