@@ -1883,12 +1883,58 @@ module.exports = {
         }
     },
 
-    producaoMensal: async (req, res) => {
+    analiticoMensal: async (req, res) => {
         try {
 
-            const { mes, analista } = req.params
+            const { mes } = req.params
 
-            return res.json({ msg: 'ok' })
+            const total = await Proposta.countDocuments({
+                dataImportacao: { $regex: mes }
+            })
+
+            const totalMesPassado = await Proposta.countDocuments({
+                dataImportacao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') }
+            })
+
+            const totalConcluidas = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                status: 'Concluída'
+            })
+
+            const totalConcluidasMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                status: 'Concluída'
+            })
+
+            const totalCanceladas = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                status: 'Cancelada'
+            })
+
+            const totalCanceladasMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                status: 'Cancelada'
+            })
+
+            const totalEmAnalise = await Proposta.countDocuments({
+                dataImportacao: { $regex: mes },
+                $or: [
+                    { status: 'Em andamento' },
+                    { status: 'A iniciar' },
+                    { status: 'Análise de Documentos' },
+                    { status: 'Sem documentos' }
+                ]
+            })
+
+            return res.json({
+                total,
+                totalMesPassado,
+                totalConcluidas,
+                totalConcluidasMesPassado,
+                totalCanceladas,
+                totalCanceladasMesPassado,
+                totalEmAnalise
+            })
 
         } catch (error) {
             console.log(error);
@@ -1896,7 +1942,9 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    
 }
 
 const feriados = [
