@@ -73,5 +73,8 @@ router.get('/dadosAnalaticoAnexos/:mes', auth, teleEntrevistaController.dadosAna
 router.get('/producaoIndividualTele/:mes/:analista', auth, teleEntrevistaController.producaoIndividualTele)
 router.get('/comparativoProducao/:mes/:analista', auth, teleEntrevistaController.comparativoProducao)
 router.get('/totalDivergencias/:mes/:analista', auth, teleEntrevistaController.quantidadeDivergenciaPorMes)
+router.post('/nextCloseSchedule', auth, horarioController.createNextCloseSchedule)
+router.get('/nextCloseSchedule', auth, horarioController.getCloseSchedule)
+router.delete('/nextCloseSchedule/:id', auth, horarioController.deleteNextCloseSchedule)
 
 module.exports = router

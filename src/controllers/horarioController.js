@@ -6,6 +6,7 @@ const moment = require('moment')
 const timzezone = require('moment-timezone')
 const { Axios, default: axios } = require('axios')
 const Log = require('../models/Logs/LogTele')
+const NextCloseSchedule = require('../models/TeleEntrevista/NextCloseSchedule')
 
 
 const HORARIOS = [
@@ -19,6 +20,10 @@ const criarHorario = async (item, data) => {
     const horarios = HORARIOS.filter(horario => {
         return entrada1 <= horario && ((saida1 > horario || entrada2 <= horario) && saida2 > horario);
     });
+    const agendaFechada = await CloseSchedule.findOne({ analista: item.name, data: moment(data).format('YYYY-MM-DD') });
+    if (agendaFechada) {
+        return;
+    }
     const horarioPromises = horarios.map(horario => Horario.create({
         enfermeiro: item.name,
         horario,
@@ -686,7 +691,45 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    createNextCloseSchedule: async (req, res) => {
+        try {
+            const { analista, data } = req.body
+            const result = await NextCloseSchedule.findOne({ analista, data })
+            if (result) {
+                return res.status(500).json({ msg: 'Data já cadastrada' })
+            }
+            await NextCloseSchedule.create({ analista, data })
+            return res.status(200).json({ msg: 'Data fechada com sucesso' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ msg: 'Internal Server Error', error })
+        }
+    },
+
+    deleteNextCloseSchedule: async (req, res) => {
+        try {
+            const { id } = req.params
+            await NextCloseSchedule.findByIdAndDelete(id)
+            return res.status(200).json({ msg: 'Data deletada com sucesso' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ msg: 'Internal Server Error', error })
+        }
+    },
+
+    getCloseSchedule: async (req, res) => {
+        try {
+            const result = await NextCloseSchedule.find({
+                data: { $gte: moment().subtract(1, 'days').format('YYYY-MM-DD') }
+            }).sort({ data: 1 })
+            return res.status(200).json(result)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ msg: 'Internal Server Error', error })
+        }
+    },
 }
 
 function ajustarData(data) {

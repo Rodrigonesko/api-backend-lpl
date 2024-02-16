@@ -40,14 +40,6 @@ const multerUploadImplantacao = multer({ storage }).single('file')
 module.exports = {
 
 
-    /**
-* Busca perguntas do formulário das teles.
-*
-* @route GET /entrevistas/perguntas
-* @returns {object} Perguntas do formulario.
-* @throws {error} Erro.
-*/
-
     mostrarPerguntas: async (req, res) => {
         try {
             const perguntas = await Pergunta.find()

@@ -1881,6 +1881,21 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    producaoMensal: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            return res.json({ msg: 'ok' })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 
