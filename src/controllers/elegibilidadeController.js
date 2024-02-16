@@ -1954,6 +1954,23 @@ module.exports = {
         }
     },
 
+    producaoIndividualElegi: async (req, res) => {
+        try {
+
+            const { analista, mes } = req.params
+
+            const minhasElegibilidades = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista: analista
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 
 }
 
