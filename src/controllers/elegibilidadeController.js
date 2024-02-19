@@ -1957,12 +1957,24 @@ module.exports = {
     producaoIndividualElegi: async (req, res) => {
         try {
 
-            const { analista, mes } = req.params
+            //Não precisa do analista aqui
+            //Faça um find com a data de importação (dataImportacao)
+            //faça um array, que cada posição seja um objeto com o nome do analista e a quantidade feita por ele no mês
 
-            const minhasElegibilidades = await Proposta.countDocuments({
-                dataConclusao: { $regex: mes },
-                analista: analista
-            })
+            // let arr = [
+            //     {
+            //         analista: "Rodrigo",
+            //         quantidade: 10
+            //     },
+            //     {
+            //         analista: "Leonardo",
+            //         quantidade: 5
+            //     }
+            //     etc
+            // ]
+
+            const { mes } = req.params
+
 
         } catch (error) {
             console.log(error)
