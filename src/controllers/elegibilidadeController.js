@@ -1972,6 +1972,7 @@ module.exports = {
                 contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
             })
 
+
             console.log(minhasElegibilidades);
             console.log(Object.entries(contagemAnalistas));
 
