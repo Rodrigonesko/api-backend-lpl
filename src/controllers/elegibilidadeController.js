@@ -1957,13 +1957,37 @@ module.exports = {
     producaoIndividualElegi: async (req, res) => {
         try {
 
-            const { analista, mes } = req.params
+            const { mes } = req.params
 
-            const minhasElegibilidades = await Proposta.countDocuments({
-                dataConclusao: { $regex: mes },
-                analista: analista
+            console.log(mes);
+
+            const minhasElegibilidades = await Proposta.find({
+                dataConclusao: { $regex: mes }
             })
 
+            const contagemAnalistas = {};
+
+            minhasElegibilidades.forEach(proposta => {
+                const { analista } = proposta
+                contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
+            })
+
+            console.log(minhasElegibilidades);
+            console.log(Object.entries(contagemAnalistas));
+
+            const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
+                .sort(([, aCount], [, bCount]) => bCount - aCount)
+                .reduce((acc, [analista, count]) => {
+                    acc[analista] = count;
+                    return acc;
+                }, {});
+
+            console.log(contagemAnalistasOrdenada);
+
+            return res.json({
+                minhasElegibilidades,
+                contagemAnalistasOrdenada
+            })
         } catch (error) {
             console.log(error)
             return res.status(500).json({
