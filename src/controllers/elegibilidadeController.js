@@ -1972,10 +1972,6 @@ module.exports = {
                 contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
             })
 
-
-            console.log(minhasElegibilidades);
-            console.log(Object.entries(contagemAnalistas));
-
             const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
                 .sort(([, aCount], [, bCount]) => bCount - aCount)
                 .reduce((acc, [analista, count]) => {
@@ -1983,7 +1979,6 @@ module.exports = {
                     return acc;
                 }, {});
 
-            console.log(contagemAnalistasOrdenada);
 
             return res.json({
                 minhasElegibilidades,
@@ -1996,7 +1991,6 @@ module.exports = {
             })
         }
     }
-
 }
 
 const feriados = [
