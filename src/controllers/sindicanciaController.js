@@ -1,24 +1,27 @@
 const sql = require('mssql')
 
-const server = process.env.MSSQL_SERVER
-const database = process.env.MSSQL_DATABASE
-const username = process.env.MSSQL_USER
-const password = process.env.MSSQL_PASSWORD
+const SERVER = process.env.MSSQL_SERVER
+const DATABASE = process.env.MSSQL_DATABASE
+const USERNAME = process.env.MSSQL_USER
+const PASSWORD = process.env.MSSQL_PASSWORD
 
 module.exports = {
-    produtividade: async (req, res) => {
+    getDemandas: async (req, res) => {
         try {
 
-            const connStr = `Server=${server};Database=${database};User Id=${username};Password=${password};TrustServerCertificate=true`
+            const { limit, page } = req.query
+
+            const connStr = `Server=${SERVER};Database=${DATABASE};User Id=${USERNAME};Password=${PASSWORD};TrustServerCertificate=true`
 
             await sql.connect(connStr)
 
-            const demandas = await sql.query("SELECT * FROM Demanda")
-            const usuarios = await sql.query("SELECT * FROM usuario")
+            const skip = (page - 1) * limit
 
-            demandas.recordset.forEach(demanda => {
-                console.log(demanda);
-            })
+            const demandas = await sql.query(`SELECT * FROM demanda ORDER BY id DESC OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY`)
+
+            await sql.close()
+
+            console.log(demandas);
 
             return res.json({
                 msg: 'ok'
