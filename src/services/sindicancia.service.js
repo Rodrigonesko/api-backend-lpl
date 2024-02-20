@@ -18,17 +18,12 @@ module.exports = {
 
     getAreaEmpresa: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaEmpresa]
             RIGHT JOIN [LPLSeguros].[dbo].[Empresa] ON AreaEmpresa.empresa_id = Empresa.id
             `)
-
             const areas = result.recordset
-
             return areas
-
         } catch (error) {
             return error
         }
@@ -36,15 +31,10 @@ module.exports = {
 
     getTipoServico: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[TipoServico]`)
-
             const tipos = result.recordset
-
             return tipos
-
         } catch (error) {
             return error
         }
@@ -52,16 +42,10 @@ module.exports = {
 
     getStatus: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Status]`)
-
             const status = result.recordset
-
-
             return status
-
         } catch (error) {
             return error
         }
@@ -69,15 +53,10 @@ module.exports = {
 
     getAreaTipoServico: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaTipoServico]`)
-
             const areasTipos = result.recordset
-
             return areasTipos
-
         } catch (error) {
             return error
         }
@@ -86,13 +65,9 @@ module.exports = {
     getAreaUsuario: async () => {
         try {
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaUsuario]`)
-
             const areasUsuarios = result.recordset
-
             return areasUsuarios
-
         } catch (error) {
             return error
         }
@@ -101,13 +76,9 @@ module.exports = {
     getEmpresa: async () => {
         try {
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Empresa]`)
-
             const empresas = result.recordset
-
             return empresas
-
         } catch (error) {
             return error
         }
@@ -115,15 +86,10 @@ module.exports = {
 
     getTipoInvestigado: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[TipoInvestigado]`)
-
             const tipos = result.recordset
-
             return tipos
-
         } catch (error) {
             return error
         }
@@ -131,15 +97,10 @@ module.exports = {
 
     getTipoReembolso: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[TipoReembolso]`)
-
             const tipos = result.recordset
-
             return tipos
-
         } catch (error) {
             return error
         }
@@ -147,15 +108,10 @@ module.exports = {
 
     getUsuario: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Usuario]`)
-
             const usuarios = result.recordset
-
             return usuarios
-
         } catch (error) {
             return error
         }
@@ -163,15 +119,10 @@ module.exports = {
 
     getUsuarioExecao: async () => {
         try {
-
             await ensureConnection()
-
             const result = await new sql.query(`select * from Usuario where id in (select usuario_id from UsuarioPermissao where permissao_id = 4) and ativo = 1`)
-
             const usuarios = result.recordset
-
             return usuarios
-
         } catch (error) {
             return error
         }

@@ -36,7 +36,7 @@ module.exports = {
     getDemandas: async (req, res) => {
         try {
 
-            let { limit, page, areaEmpresa, status, servico, analista, data } = req.query
+            let { limit, page, areaEmpresa, status, servico, analista, codigo, data } = req.query
 
             if (limit === undefined) limit = 10
             if (page === undefined) page = 1
@@ -51,6 +51,7 @@ module.exports = {
             if (servico) filter += ` AND Demanda.tipo_servico_id = ${servico}`;
             if (analista) filter += ` AND Demanda.usuario_criador_id = ${analista}`;
             if (data) filter += ` AND Demanda.data_demanda = '${data}'`;
+            if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             const result = await new sql.query(`
             SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome
