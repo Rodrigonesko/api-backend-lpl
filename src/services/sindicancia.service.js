@@ -126,5 +126,16 @@ module.exports = {
         } catch (error) {
             return error
         }
+    },
+
+    getDemandaById: async (id) => {
+        try {
+            await ensureConnection()
+            const result = await new sql.query(`SELECT * FROM Demanda WHERE id = ${id}`)
+            const demanda = result.recordset
+            return demanda
+        } catch (error) {
+            return error
+        }
     }
 }

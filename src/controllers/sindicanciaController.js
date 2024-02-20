@@ -1,6 +1,6 @@
 const sql = require('mssql')
 const Demanda = require('../models/Sindicancia/Demanda')
-const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao } = require('../services/sindicancia.service')
+const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao, getDemandaById } = require('../services/sindicancia.service')
 
 const SERVER = process.env.MSSQL_SERVER
 const DATABASE = process.env.MSSQL_DATABASE
@@ -242,4 +242,26 @@ module.exports = {
             })
         }
     },
+
+    getDemandaById: async (req, res) => {
+        try {
+            const { id } = req.params
+
+            const find = await Demanda.findById(id)
+
+            const demanda = await getDemandaById(id)
+
+            return res.json({
+                demanda,
+                dadosDemanda: find
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    }
+
 }
