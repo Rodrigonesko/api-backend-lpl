@@ -68,7 +68,7 @@ module.exports = {
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
             `)
 
-            await sql.close()
+            // await sql.close()
             return res.json(result.recordset)
 
         } catch (error) {
