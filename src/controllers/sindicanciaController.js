@@ -66,16 +66,8 @@ module.exports = {
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
             `)
 
-
-            result.recordset.forEach(demanda => {
-                console.log(demanda);
-            })
-
             await sql.close()
-
-            return res.json({
-                result: 'ok'
-            })
+            return res.json(result.recordset)
 
         } catch (error) {
             console.log(error);
