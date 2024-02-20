@@ -46,13 +46,23 @@ module.exports = {
             await sql.connect(connStr)
             const skip = (page - 1) * limit
 
+            console.log(
+                'limit:', limit,
+                'page:', page,
+                'areaEmpresa:', areaEmpresa,
+                'status:', status,
+                'servico:', servico,
+                'analista:', analista,
+                'codigo:', codigo,
+                'data:', data
+            );
+
             let filter = '';
             if (areaEmpresa) filter += ` AND Demanda.id_area_empresa = ${areaEmpresa}`;
             if (status) filter += ` AND Demanda.status_id = ${status}`;
             if (servico) filter += ` AND Demanda.tipo_servico_id = ${servico}`;
             if (analista) filter += ` AND Demanda.usuario_criador_id = ${analista}`;
-            if (data) filter += ` AND Demanda.data_demanda = '${data}'`;
-            if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
+            if (data) filter += ` AND CONVERT(date, Demanda.data_demanda) = '${data}'`; if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             const result = await new sql.query(`
             SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome
@@ -69,8 +79,17 @@ module.exports = {
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
             `)
 
+            const count = await new sql.query(`
+            SELECT COUNT(*) as count
+            FROM Demanda
+            WHERE 1=1 ${filter}
+            `)
+
             // await sql.close()
-            return res.json(result.recordset)
+            return res.json({
+                demandas: result.recordset,
+                count: count.recordset[0].count
+            })
 
         } catch (error) {
             console.log(error);
@@ -84,7 +103,6 @@ module.exports = {
     getAreaEmpresa: async (req, res) => {
         try {
             const areas = await getAreaEmpresa()
-            console.log(areas);
             return res.json(areas)
         } catch (error) {
             return res.json({
