@@ -36,7 +36,7 @@ module.exports = {
     getDemandas: async (req, res) => {
         try {
 
-            let { limit, page, servico, analista, data } = req.query
+            let { limit, page, areaEmpresa, status, servico, analista, data } = req.query
 
             if (limit === undefined) limit = 10
             if (page === undefined) page = 1
@@ -44,10 +44,24 @@ module.exports = {
             const connStr = `Server=${SERVER};Database=${DATABASE};User Id=${USERNAME};Password=${PASSWORD};TrustServerCertificate=true`
             await sql.connect(connStr)
             const skip = (page - 1) * limit
+
+            let filter = '';
+            if (areaEmpresa) filter += ` AND Demanda.id_area_empresa = ${areaEmpresa}`;
+            if (status) filter += ` AND Demanda.status_id = ${status}`;
+            if (servico) filter += ` AND Demanda.tipo_servico_id = ${servico}`;
+            if (analista) filter += ` AND Demanda.usuario_criador_id = ${analista}`;
+            if (data) filter += ` AND Demanda.data_demanda = '${data}'`;
+
             const result = await new sql.query(`
-            SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome
+            SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as staus_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome
             FROM Demanda
             RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
+            RIGHT JOIN Status ON Demanda.status_id = Status.id
+            RIGHT JOIN Empresa ON Demanda.empresa_id = Empresa.id
+            RIGHT JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+            RIGHT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            RIGHT JOIN [LPLSeguros].[Admin].[AreaEmpresa] ON Demanda.id_area_empresa = AreaEmpresa.id
+            WHERE 1=1 ${filter}
             ORDER BY id DESC
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
             `)
