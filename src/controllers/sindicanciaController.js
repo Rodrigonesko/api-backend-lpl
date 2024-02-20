@@ -1,5 +1,6 @@
 const sql = require('mssql')
-const { getAreaEmpresa, getTipoServico, getStatus, getAreaTipoServico, getAreaUsuario, getTipoInvestigado, getTipoReembolso, getUsuario, getUsuarioExecao } = require('../services/sindicancia.service')
+const Demanda = require('../models/Sindicancia/Demanda')
+const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao } = require('../services/sindicancia.service')
 
 const SERVER = process.env.MSSQL_SERVER
 const DATABASE = process.env.MSSQL_DATABASE
@@ -133,5 +134,112 @@ module.exports = {
                 error
             })
         }
-    }
+    },
+
+    createBeneficiario: async (req, res) => {
+        try {
+
+            const { nome, demanda } = req.body
+
+            const find = await Demanda.findOne({ demandaId: demanda.demandaId })
+
+            if (find) {
+                await Demanda.updateOne({ demandaId: demanda.demandaId }, demanda)
+                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
+                    $push: {
+                        beneficiarios: nome
+                    }
+                })
+            } else {
+                await Demanda.create(demanda)
+                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
+                    $push: {
+                        beneficiarios: nome
+                    }
+                })
+            }
+
+            return res.json({
+                msg: 'Beneficiário criado com sucesso'
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    createPrestador: async (req, res) => {
+        try {
+
+            const { nome, demanda } = req.body
+
+            const find = await Demanda.findOne({ demandaId: demanda.demandaId })
+
+            if (find) {
+                await Demanda.updateOne({ demandaId: demanda.demandaId }, demanda)
+                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
+                    $push: {
+                        prestadores: nome
+                    }
+                })
+            } else {
+                await Demanda.create(demanda)
+                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
+                    $push: {
+                        prestadores: nome
+                    }
+                })
+            }
+
+            return res.json({
+                msg: 'Prestador criado com sucesso'
+            })
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deleteBeneficiario: async (req, res) => {
+        try {
+            const { nome, demanda } = req.body
+            await Demanda.updateOne({ demandaId: demanda.demandaId }, {
+                $pull: {
+                    beneficiarios: nome
+                }
+            })
+            return res.json({
+                msg: 'Beneficiário deletado com sucesso'
+            })
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deletePrestador: async (req, res) => {
+        try {
+            const { nome, demanda } = req.body
+            await Demanda.updateOne({ demandaId: demanda.demandaId }, {
+                $pull: {
+                    prestadores: nome
+                }
+            })
+            return res.json({
+                msg: 'Prestador deletado com sucesso'
+            })
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
 }
