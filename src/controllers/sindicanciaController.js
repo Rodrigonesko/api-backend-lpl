@@ -1,5 +1,5 @@
 const sql = require('mssql')
-const { getAreaEmpresa, getTipoServico, getStatus, getAreaTipoServico, getAreaUsuario, getTipoInvestigado, getTipoReembolso, getUsuario } = require('../services/sindicancia.service')
+const { getAreaEmpresa, getTipoServico, getStatus, getAreaTipoServico, getAreaUsuario, getTipoInvestigado, getTipoReembolso, getUsuario, getUsuarioExecao } = require('../services/sindicancia.service')
 
 const SERVER = process.env.MSSQL_SERVER
 const DATABASE = process.env.MSSQL_DATABASE
@@ -65,6 +65,61 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getAreaEmpresa: async (req, res) => {
+        try {
+            const areas = await getAreaEmpresa()
+            console.log(areas);
+            return res.json(areas)
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+    getTipoServico: async (req, res) => {
+        try {
+            const tipos = await getTipoServico()
+            return res.json(tipos)
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getStatus: async (req, res) => {
+        try {
+            const status = await getStatus()
+            return res.json(status)
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getAnalistasExecucao: async (req, res) => {
+        try {
+            let analistas = await getUsuarioExecao()
+            analistas = analistas.map(analista => {
+                return {
+                    id: analista.id,
+                    nome: analista.nome,
+                    email: analista.email
+                }
+            })
+            return res.json(analistas)
+        } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
                 error

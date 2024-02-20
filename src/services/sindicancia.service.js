@@ -21,7 +21,9 @@ module.exports = {
 
             await ensureConnection()
 
-            const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[AreaEmpresa]`)
+            const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaEmpresa]
+            RIGHT JOIN [LPLSeguros].[dbo].[Empresa] ON AreaEmpresa.empresa_id = Empresa.id
+            `)
 
             const areas = result.recordset
 
@@ -149,6 +151,22 @@ module.exports = {
             await ensureConnection()
 
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Usuario]`)
+
+            const usuarios = result.recordset
+
+            return usuarios
+
+        } catch (error) {
+            return error
+        }
+    },
+
+    getUsuarioExecao: async () => {
+        try {
+
+            await ensureConnection()
+
+            const result = await new sql.query(`select * from Usuario where id in (select usuario_id from UsuarioPermissao where permissao_id = 4) and ativo = 1`)
 
             const usuarios = result.recordset
 
