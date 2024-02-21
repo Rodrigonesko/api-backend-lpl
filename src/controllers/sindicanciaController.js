@@ -7,6 +7,16 @@ const DATABASE = process.env.MSSQL_DATABASE
 const USERNAME = process.env.MSSQL_USER
 const PASSWORD = process.env.MSSQL_PASSWORD
 
+
+let connection;
+
+async function ensureConnection() {
+    if (!connection) {
+        const connStr = `Server=${SERVER};Database=${DATABASE};User Id=${USERNAME};Password=${PASSWORD};TrustServerCertificate=true`
+        connection = await sql.connect(connStr)
+    }
+}
+
 // const objDemanda = {
 //     id: 3202,
 //     codigo: '202400108',
@@ -42,8 +52,8 @@ module.exports = {
             if (limit === undefined) limit = 10
             if (page === undefined) page = 1
 
-            const connStr = `Server=${SERVER};Database=${DATABASE};User Id=${USERNAME};Password=${PASSWORD};TrustServerCertificate=true`
-            await sql.connect(connStr)
+            await ensureConnection()
+
             const skip = (page - 1) * limit
 
             console.log(
@@ -157,31 +167,23 @@ module.exports = {
     createBeneficiario: async (req, res) => {
         try {
 
-            const { nome, demanda } = req.body
+            const { id, beneficiario } = req.body
 
-            const find = await Demanda.findOne({ demandaId: demanda.demandaId })
+            await ensureConnection()
 
-            if (find) {
-                await Demanda.updateOne({ demandaId: demanda.demandaId }, demanda)
-                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
-                    $push: {
-                        beneficiarios: nome
-                    }
-                })
-            } else {
-                await Demanda.create(demanda)
-                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
-                    $push: {
-                        beneficiarios: nome
-                    }
-                })
-            }
+            const create = await sql.query(`INSERT INTO Beneficiario (id_demanda, nome) OUTPUT INSERTED.id VALUES (${id}, '${beneficiario}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar beneficiário' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
 
             return res.json({
-                msg: 'Beneficiário criado com sucesso'
+                msg: 'ok',
+                id: newId // Retornando o novo ID na resposta
             })
 
         } catch (error) {
+            console.log(error);
             return res.json({
                 msg: 'Internal Server Error',
                 error
@@ -192,29 +194,21 @@ module.exports = {
     createPrestador: async (req, res) => {
         try {
 
-            const { nome, demanda } = req.body
+            const { id, prestador } = req.body
 
-            const find = await Demanda.findOne({ demandaId: demanda.demandaId })
+            await ensureConnection()
 
-            if (find) {
-                await Demanda.updateOne({ demandaId: demanda.demandaId }, demanda)
-                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
-                    $push: {
-                        prestadores: nome
-                    }
-                })
-            } else {
-                await Demanda.create(demanda)
-                await Demanda.updateOne({ demandaId: demanda.demandaId }, {
-                    $push: {
-                        prestadores: nome
-                    }
-                })
-            }
+            const create = await sql.query(`INSERT INTO Prestador (id_demanda, nome) OUTPUT INSERTED.id VALUES (${id}, '${prestador}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar prestador' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
 
             return res.json({
-                msg: 'Prestador criado com sucesso'
+                msg: 'ok',
+                id: newId // Retornando o novo ID na resposta
             })
+
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -225,16 +219,21 @@ module.exports = {
 
     deleteBeneficiario: async (req, res) => {
         try {
-            const { nome, demanda } = req.body
-            await Demanda.updateOne({ demandaId: demanda.demandaId }, {
-                $pull: {
-                    beneficiarios: nome
-                }
-            })
+
+            const { id } = req.body
+
+            await ensureConnection()
+
+            const remove = await sql.query(`DELETE FROM Beneficiario WHERE id = ${id}`)
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar beneficiário' })
+
             return res.json({
-                msg: 'Beneficiário deletado com sucesso'
+                msg: 'ok'
             })
+
         } catch (error) {
+            console.log(error);
             return res.json({
                 msg: 'Internal Server Error',
                 error
@@ -244,16 +243,65 @@ module.exports = {
 
     deletePrestador: async (req, res) => {
         try {
-            const { nome, demanda } = req.body
-            await Demanda.updateOne({ demandaId: demanda.demandaId }, {
-                $pull: {
-                    prestadores: nome
-                }
-            })
+
+            const { id } = req.body
+
+            await ensureConnection()
+
+            console.log(id);
+
+            const remove = await sql.query(`DELETE FROM Prestador WHERE id = ${id} `)
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar prestador' })
+
             return res.json({
-                msg: 'Prestador deletado com sucesso'
+                msg: 'ok'
             })
+
         } catch (error) {
+            console.log(error);
+
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getBeneficiarios: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Beneficiario WHERE id_demanda = ${id}`)
+
+            return res.json(result.recordset)
+
+        } catch (error) {
+            console.log(error);
+
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getPrestadores: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Prestador WHERE id_demanda = ${id}`)
+
+            return res.json(result.recordset)
+
+        } catch (error) {
+            console.log(error);
             return res.json({
                 msg: 'Internal Server Error',
                 error
@@ -280,6 +328,177 @@ module.exports = {
                 error
             })
         }
-    }
+    },
+
+    relatorioDemanda: async (req, res) => {
+
+        const { dataInicio, dataFim } = req.body
+
+        await ensureConnection()
+
+        console.log(dataInicio, dataFim);
+
+        const result = await new sql.query(`
+        SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome,
+        (SELECT COUNT(*) FROM Beneficiario WHERE Beneficiario.id_demanda = demanda.id) as num_beneficiarios,
+        (SELECT COUNT(*) FROM Prestador WHERE Prestador.id_demanda = demanda.id) as num_prestadores
+        FROM Demanda
+        RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
+        RIGHT JOIN Status ON Demanda.status_id = Status.id
+        RIGHT JOIN Empresa ON Demanda.empresa_id = Empresa.id
+        RIGHT JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+        RIGHT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+        RIGHT JOIN [LPLSeguros].[Admin].[AreaEmpresa] ON Demanda.id_area_empresa = AreaEmpresa.id
+        RIGHT JOIN TipoInvestigado ON Demanda.tipo_investigado_id = TipoInvestigado.id
+        WHERE CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${dataFim}'
+        `)
+
+        return res.json(result.recordset)
+    },
+
+    createTipoIrregularidade: async (req, res) => {
+        try {
+
+            const { irregularidade } = req.body
+
+            await ensureConnection()
+
+            const create = await sql.query(`INSERT INTO TipoIrregularidade (nome) OUTPUT INSERTED.id VALUES ('${irregularidade}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar irregularidade' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            return res.json({
+                msg: 'ok',
+                id: newId // Retornando o novo ID na resposta
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getTipoIrregularidade: async (req, res) => {
+        try {
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM TipoIrregularidade`)
+
+            return res.json(result.recordset)
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deleteTipoIrregularidade: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const remove = await sql.query(`DELETE FROM TipoIrregularidade WHERE id = ${id}`)
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar irregularidade' })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    createIrregularidade: async (req, res) => {
+
+        try {
+            const { id_demanda, nome } = req.body
+
+            await ensureConnection()
+
+            const find = await new sql.query(`SELECT * FROM Irregularidade WHERE id_demanda = ${id_demanda} AND nome = '${nome}'`)
+
+            if (find.recordset.length !== 0) return res.json({ msg: 'Irregularidade ja existe dentro da demanda' })
+
+            const create = await sql.query(`INSERT INTO Irregularidade (id_demanda, nome) OUTPUT INSERTED.id VALUES (${id_demanda}, '${nome}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar irregularidade' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            console.log(create);
+
+            return res.json({
+                msg: 'ok',
+                id: newId // Retornando o novo ID na resposta
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getIrregularidade: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Irregularidade WHERE id_demanda = ${id}`)
+
+            return res.json(result.recordset)
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deleteIrregularidade: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            console.log(id);
+
+            await ensureConnection()
+
+            const remove = await sql.query(`DELETE FROM Irregularidade WHERE id = ${id}`)
+
+            console.log(remove);
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar irregularidade' })
+
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
 
 }
