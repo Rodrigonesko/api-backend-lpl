@@ -137,5 +137,16 @@ module.exports = {
         } catch (error) {
             return error
         }
+    },
+
+    getTipoIrregularidade: async () => {
+        try {
+            await ensureConnection()
+            const result = await new sql.query(`SELECT * FROM TipoIrregularidade`)
+            const irregularidades = result.recordset
+            return irregularidades
+        } catch (error) {
+            return error
+        }
     }
 }

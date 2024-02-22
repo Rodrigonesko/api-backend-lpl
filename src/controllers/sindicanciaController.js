@@ -1,6 +1,7 @@
 const sql = require('mssql')
 const Demanda = require('../models/Sindicancia/Demanda')
-const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao, getDemandaById } = require('../services/sindicancia.service')
+const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao, getDemandaById, getTipoIrregularidade } = require('../services/sindicancia.service')
+const moment = require('moment')
 
 const SERVER = process.env.MSSQL_SERVER
 const DATABASE = process.env.MSSQL_DATABASE
@@ -75,7 +76,7 @@ module.exports = {
             if (data) filter += ` AND CONVERT(date, Demanda.data_demanda) = '${data}'`; if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             const result = await new sql.query(`
-            SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome
+            SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao
             FROM Demanda
             RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
             RIGHT JOIN Status ON Demanda.status_id = Status.id
@@ -84,6 +85,7 @@ module.exports = {
             RIGHT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
             RIGHT JOIN [LPLSeguros].[Admin].[AreaEmpresa] ON Demanda.id_area_empresa = AreaEmpresa.id
             RIGHT JOIN TipoInvestigado ON Demanda.tipo_investigado_id = TipoInvestigado.id
+            LEFT JOIN Finalizacao ON Demanda.id = Finalizacao.id_demanda
             WHERE 1=1 ${filter}
             ORDER BY id DESC
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
@@ -336,10 +338,10 @@ module.exports = {
 
         await ensureConnection()
 
-        console.log(dataInicio, dataFim);
+        const irregularidades = await getTipoIrregularidade()
 
         const result = await new sql.query(`
-        SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome,
+        SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Valor.valor as valor, Valor.periodo as periodo,
         (SELECT COUNT(*) FROM Beneficiario WHERE Beneficiario.id_demanda = demanda.id) as num_beneficiarios,
         (SELECT COUNT(*) FROM Prestador WHERE Prestador.id_demanda = demanda.id) as num_prestadores
         FROM Demanda
@@ -350,6 +352,8 @@ module.exports = {
         RIGHT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
         RIGHT JOIN [LPLSeguros].[Admin].[AreaEmpresa] ON Demanda.id_area_empresa = AreaEmpresa.id
         RIGHT JOIN TipoInvestigado ON Demanda.tipo_investigado_id = TipoInvestigado.id
+        LEFT JOIN Finalizacao ON Demanda.id = Finalizacao.id_demanda
+        LEFT JOIN Valor ON Demanda.id = Valor.id_demanda
         WHERE CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${dataFim}'
         `)
 
@@ -387,9 +391,9 @@ module.exports = {
 
             await ensureConnection()
 
-            const result = await new sql.query(`SELECT * FROM TipoIrregularidade`)
+            const irregularidades = await getTipoIrregularidade()
 
-            return res.json(result.recordset)
+            return res.json(irregularidades)
 
         } catch (error) {
             return res.json({
@@ -500,5 +504,203 @@ module.exports = {
             })
         }
     },
+
+    createAgenda: async (req, res) => {
+
+        try {
+            const { id_demanda, observacao } = req.body
+
+            await ensureConnection()
+
+            console.log(id_demanda, observacao, req.user);
+
+            const create = await sql.query(`INSERT INTO Agenda (id_demanda, data, observacao, analista) OUTPUT INSERTED.id VALUES (${id_demanda}, '${moment().format('YYYY-MM-DD HH:mm:ss')}', '${observacao}', '${req.user}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar agenda' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            return res.json({
+                msg: 'ok',
+                result: {
+                    id: newId,
+                    data: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    observacao,
+                    analista: req.user,
+                    id_demanda
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getAgenda: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Agenda WHERE id_demanda = ${id}`)
+
+            return res.json(result.recordset)
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deleteAgenda: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const remove = await sql.query(`DELETE FROM Agenda WHERE id = ${id}`)
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar agenda' })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    createValor: async (req, res) => {
+
+        try {
+            const { id_demanda, valor, periodo } = req.body
+
+            await ensureConnection()
+
+            const find = await new sql.query(`SELECT * FROM Valor WHERE id_demanda = ${id_demanda}`)
+
+            if (find.recordset.length !== 0) {
+                const update = await sql.query(`UPDATE Valor SET valor = ${valor}, periodo = '${periodo}' WHERE id_demanda = ${id_demanda}`)
+                if (update.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao atualizar valor' })
+                return res.json({
+                    msg: 'ok',
+                    result: {
+                        id: find.recordset[0].id,
+                        valor,
+                        periodo,
+                        id_demanda
+                    }
+                })
+            }
+
+            const create = await sql.query(`INSERT INTO Valor (id_demanda, valor, periodo) OUTPUT INSERTED.id VALUES (${id_demanda}, ${valor}, '${periodo}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar valor' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            return res.json({
+                msg: 'ok',
+                result: {
+                    id: newId,
+                    valor,
+                    periodo,
+                    id_demanda
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getValor: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Valor WHERE id_demanda = ${id}`)
+
+            if (result.recordset.length === 0) return res.json({ msg: 'Nenhum valor encontrado' })
+
+            return res.json(result.recordset[0])
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deleteValor: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const remove = await sql.query(`DELETE FROM Valor WHERE id = ${id}`)
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar valor' })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    finalizarDemanda: async (req, res) => {
+        try {
+
+            const { id_demanda, justificativa } = req.body
+
+            await ensureConnection()
+
+            const create = await sql.query(`INSERT INTO Finalizacao (id_demanda, justificativa, data) OUTPUT INSERTED.id VALUES (${id_demanda}, '${justificativa}', '${moment().format('YYYY-MM-DD HH:mm:ss')}')`)
+
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar finalização' })
+
+            const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            return res.json({
+                msg: 'ok',
+                result: {
+                    id: newId,
+                    justificativa,
+                    id_demanda,
+                    data: moment().format('YYYY-MM-DD HH:mm:ss')
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    }
 
 }

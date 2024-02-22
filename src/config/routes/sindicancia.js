@@ -21,5 +21,12 @@ router.delete('/demanda/tipoIrregularidade/:id', auth, sindicanciaController.del
 router.post('/demanda/irregularidade', auth, sindicanciaController.createIrregularidade)
 router.get('/demanda/irregularidade/:id', auth, sindicanciaController.getIrregularidade)
 router.delete('/demanda/irregularidade/:id', auth, sindicanciaController.deleteIrregularidade)
+router.post('/demanda/agenda', auth, sindicanciaController.createAgenda)
+router.get('/demanda/agenda/:id', auth, sindicanciaController.getAgenda)
+router.delete('/demanda/agenda/:id', auth, sindicanciaController.deleteAgenda)
+router.post('/demanda/valor', auth, sindicanciaController.createValor)
+router.get('/demanda/valor/:id', auth, sindicanciaController.getValor)
+router.delete('/demanda/valor/:id', auth, sindicanciaController.deleteValor)
+router.post('/demanda/finalizar', auth, sindicanciaController.finalizarDemanda)
 
 module.exports = router
