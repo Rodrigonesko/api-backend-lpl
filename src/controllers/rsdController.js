@@ -2882,6 +2882,182 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    quantidadeProducaoRsd: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            // Suponha que 'mes' seja uma string no formato 'YYYY-MM'
+            const startDate = moment(mes, 'YYYY-MM').startOf('month').toDate();
+            const endDate = moment(mes, 'YYYY-MM').add(1, 'month').startOf('month').toDate();
+
+            const total = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                }
+            });
+
+            const totalMesPassado = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                }
+            })
+
+            const totalPedidosRsd = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                fila: 'RSD'
+            });
+
+            const totalPedidosMesPassadoRsd = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                },
+                fila: 'RSD'
+            })
+
+            const totalPedidosIndeferidos = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                $or: [
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
+                ]
+            });
+
+            const totalPedidosMesPassadoIndeferidos = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                },
+                $or: [
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
+                ]
+            })
+
+            const totalPedidosAltaFrequencia = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                fila: 'Alta Frequência Consulta'
+            });
+
+            const totalPedidosMesPassadoAltaFrequencia = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                },
+                fila: 'Alta Frequência Consulta'
+            })
+
+            const totalPedidosInativos = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                ativo: false
+            });
+
+            const totalPedidosMesPassadoInativos = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                },
+                statusProtocolo: 'Finalizado'
+            })
+
+            const totalPedidosConcluidos = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusProtocolo: 'Finalizado'
+            });
+
+            const totalPedidosMesPassadoConcluidos = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                },
+                statusProtocolo: 'Finalizado'
+            })
+
+            const totalPedidosAIniciar = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                status: 'A iniciar'
+            });
+
+            const totalPedidosAgendados = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                status: 'Em andamento'
+            });
+
+            const totalPedidosAguardandoContato = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                status: 'Aguardando Retorno Contato'
+            });
+
+            const totalPedidosAguardandoDocs = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                status: 'Aguardando Docs'
+            });
+
+            // const totalPedidosMesPassadoAIniciar = await Pedido.countDocuments({
+            //     createdAt: {
+            //         $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+            //         $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+            //     },
+            //     statusPadraoAmil: 'A iniciar'
+            // })
+
+            return res.status(200).json({
+                total,
+                totalMesPassado,
+                totalPedidosRsd,
+                totalPedidosMesPassadoRsd,
+                totalPedidosIndeferidos,
+                totalPedidosMesPassadoIndeferidos,
+                totalPedidosAltaFrequencia,
+                totalPedidosMesPassadoAltaFrequencia,
+                totalPedidosInativos,
+                totalPedidosMesPassadoInativos,
+                totalPedidosConcluidos,
+                totalPedidosMesPassadoConcluidos,
+                totalPedidosAIniciar,
+                totalPedidosAgendados,
+                totalPedidosAguardandoContato,
+                totalPedidosAguardandoDocs,
+                // totalPedidosMesPassadoAIniciar,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 

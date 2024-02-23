@@ -56,5 +56,6 @@ router.post('/finalizacao', auth, rsdController.adicionarStatusFinalizacao)
 router.delete('/finalizacao/:id', auth, rsdController.deleteStatusFinalizacao)
 router.get('/relatorioProducaoMensal/:mes', auth, rsdController.relatorioProducaoMensal)
 router.get('/producaoIndividualRsd/:mes', auth, rsdController.producaoIndividualRsd)
+router.get('/quantidadeProducaoRsd/:mes', auth, rsdController.quantidadeProducaoRsd)
 
 module.exports = router
