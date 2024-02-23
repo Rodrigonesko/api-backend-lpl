@@ -2844,6 +2844,44 @@ module.exports = {
                 msg: 'Internal Server Error'
             });
         }
+    },
+
+    producaoIndividualRsd: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            console.log(mes);
+
+            const meusRsds = await Pedido.find({
+                dataConclusao: { $regex: mes }
+            })
+
+            const contagemAnalistas = {};
+
+            meusRsds.forEach(proposta => {
+                const { analista } = proposta
+                contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
+            })
+
+            const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
+                .sort(([, aCount], [, bCount]) => bCount - aCount)
+                .reduce((acc, [analista, count]) => {
+                    acc[analista] = count;
+                    return acc;
+                }, {});
+
+
+            return res.json({
+                meusRsds,
+                contagemAnalistasOrdenada
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 
