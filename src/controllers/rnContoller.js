@@ -105,9 +105,31 @@ module.exports = {
     show: async (req, res) => {
 
         try {
+
             const rns = await Rn.find()
 
             return res.json(rns)
+        } catch (error) {
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    showByDate: async (req, res) => {
+        try {
+
+            const { dataInicio, dataFim } = req.params
+
+            const rns = await Rn.find({
+                createdAt: {
+                    $gte: moment(dataInicio),
+                    $lte: moment(dataFim)
+                }
+            })
+
+            return res.json(rns)
+
         } catch (error) {
             return res.status(500).json({
                 error: "Internal server error."
@@ -626,7 +648,7 @@ module.exports = {
                     dates.push(item.dataConclusao)
                 }
             }
-            
+
             dates = dates.sort()
 
             let series = [

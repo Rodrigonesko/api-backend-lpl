@@ -7,6 +7,7 @@ const auth = require('../../middlewares/auth')
 
 router.post('/upload', auth, rnContoller.upload)
 router.get('/rns', auth, rnContoller.show)
+router.get('/data/:dataInicio/:dataFim', auth, rnContoller.showByDate)
 router.get('/rns/:id', auth, rnContoller.search)
 router.get('/pedido/:proposta', auth, rnContoller.searchProposta)
 router.get('/report', auth, rnContoller.report)
