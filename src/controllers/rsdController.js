@@ -2858,10 +2858,15 @@ module.exports = {
             })
 
             const contagemAnalistas = {};
+            const pedidosIndeferidosIndividual = {};
 
             meusRsds.forEach(proposta => {
                 const { analista } = proposta
                 contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
+
+                if ((proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento') || (proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal')) {
+                    pedidosIndeferidosIndividual[analista] = (pedidosIndeferidosIndividual[analista] || 0) + 1;
+                }
             })
 
             const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
@@ -2874,7 +2879,8 @@ module.exports = {
 
             return res.json({
                 meusRsds,
-                contagemAnalistasOrdenada
+                contagemAnalistasOrdenada,
+                pedidosIndeferidosIndividual,
             })
         } catch (error) {
             console.log(error)
@@ -3055,6 +3061,341 @@ module.exports = {
         } catch (error) {
             console.log(error);
             return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    quantidadePagamentosRsd: async (req, res) => {
+        try {
+
+
+            const { mes } = req.params
+
+            const startDate = moment(mes, 'YYYY-MM').startOf('month').toDate();
+            const endDate = moment(mes, 'YYYY-MM').add(1, 'month').startOf('month').toDate();
+
+            const cartaoDeCredito = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Cartão de Crédito'
+            })
+
+            const cartaoDeDebito = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Cartão de Débito'
+            })
+
+            const transfDepósito = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Trans./Depósito'
+            })
+
+            const cheque = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Cheque'
+            })
+
+            const dinheiro = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Dinheiro'
+            })
+
+            const boleto = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Boleto'
+            })
+
+            const naoInformado = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Não Informado'
+            })
+
+            const pagamentoNaoRealizado = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Pagamento não realizado'
+            })
+
+            const fracionamentoDeNotaFiscal = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Fracionamento de Nota Fiscal'
+            })
+
+            const comprovanteComIndicioDeFraude = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                formaPagamento: 'Comprovante com Indicio de Fraude'
+            })
+
+            return res.status(200).json({
+                cartaoDeCredito,
+                cartaoDeDebito,
+                transfDepósito,
+                cheque,
+                dinheiro,
+                boleto,
+                naoInformado,
+                pagamentoNaoRealizado,
+                fracionamentoDeNotaFiscal,
+                comprovanteComIndicioDeFraude,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    quantidadeStatusGerenciais: async (req, res) => {
+        try {
+            const { mes } = req.params
+
+            const startDate = moment(mes, 'YYYY-MM').startOf('month').toDate();
+            const endDate = moment(mes, 'YYYY-MM').add(1, 'month').startOf('month').toDate();
+
+            const aguardandoComprovante = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Aguardando Comprovante'
+            })
+
+            const aguardandoRetornoContato = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Aguardando Retorno Contato'
+            })
+
+            const comprovanteCorreto = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Comprovante Correto'
+            })
+            const devolvidoAmil = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Devolvido Amil'
+            })
+            const pagamentoNaoRealizado = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Pagamento Não Realizado'
+            })
+            const pagoPelaAmilSemComprovante = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Pago pela Amil sem Comprovante'
+            })
+            const protocoloCancelado = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusGerencial: 'Protocolo Cancelado'
+            })
+
+            return res.status(200).json({
+                aguardandoComprovante,
+                aguardandoRetornoContato,
+                comprovanteCorreto,
+                devolvidoAmil,
+                pagamentoNaoRealizado,
+                pagoPelaAmilSemComprovante,
+                protocoloCancelado,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    quantidadeStatusAmil: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const startDate = moment(mes, 'YYYY-MM').startOf('month').toDate();
+            const endDate = moment(mes, 'YYYY-MM').add(1, 'month').startOf('month').toDate();
+
+            const aIniciar = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'A Iniciar'
+            })
+
+            const AGD1 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago em dinheiro, solicitando declaração de quitação'
+            })
+
+            const AGD2 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'AGD - Em ligação beneficiaria afirma ter pago, solicitando comprovante'
+            })
+
+            const cancelamento1 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'CANCELAMENTO - Comprovante não Recebido'
+            })
+
+            const cancelamento2 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'CANCELAMENTO - Não reconheçe Procedimento/Consulta'
+            })
+
+            const cancelamento3 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'CANCELAMENTO - Sem retorno pós 5 dias úteis'
+            })
+
+            const devolvidoAmil = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'Devolvido Amil'
+            })
+
+            const email = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'E-MAIL - Sem sucesso de contrato pós 3 tentativas, solicitado retorno'
+            })
+
+            const indeferir1 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento'
+            })
+
+            const indeferir2 = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal'
+            })
+
+            const pagamentoLiberado = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                statusPadraoAmil: 'PAGAMENTO LIBERADO'
+            })
+
+            return res.status(200).json({
+                aIniciar,
+                AGD1,
+                AGD2,
+                cancelamento1,
+                cancelamento2,
+                cancelamento3,
+                devolvidoAmil,
+                email,
+                indeferir1,
+                indeferir2,
+                pagamentoLiberado,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    quantidadePedidosIndeferidos: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const { analista } = req.user
+
+            const startDate = moment(mes, 'YYYY-MM').startOf('month').toDate();
+            const endDate = moment(mes, 'YYYY-MM').add(1, 'month').startOf('month').toDate();
+
+            const pedidosIndeferidosIndividual = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                },
+                $or: [
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
+                ],
+                analista: analista
+            });
+
+            return res.status(200).json({
+                pedidosIndeferidosIndividual,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(200).json({
                 msg: 'Internal Server Error'
             })
         }
