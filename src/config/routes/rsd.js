@@ -56,5 +56,10 @@ router.post('/finalizacao', auth, rsdController.adicionarStatusFinalizacao)
 router.delete('/finalizacao/:id', auth, rsdController.deleteStatusFinalizacao)
 router.get('/relatorioProducaoMensal/:mes', auth, rsdController.relatorioProducaoMensal)
 router.get('/producaoIndividualRsd/:mes', auth, rsdController.producaoIndividualRsd)
+router.get('/quantidadeProducaoRsd/:mes', auth, rsdController.quantidadeProducaoRsd)
+router.get('/quantidadePagamentosRsd/:mes', auth, rsdController.quantidadePagamentosRsd)
+router.get('/quantidadeStatusGerenciais/:mes', auth, rsdController.quantidadeStatusGerenciais)
+router.get('/quantidadeStatusAmil/:mes', auth, rsdController.quantidadeStatusAmil)
+router.get('/quantidadePedidosIndeferidos/:mes', auth, rsdController.quantidadePedidosIndeferidos)
 
 module.exports = router
