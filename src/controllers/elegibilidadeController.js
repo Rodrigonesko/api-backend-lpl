@@ -1954,7 +1954,7 @@ module.exports = {
         }
     },
 
-    producaoIndividualElegi: async (req, res) => {
+    producaoAnalistasMensal: async (req, res) => {
         try {
 
             const { mes } = req.params
@@ -1984,6 +1984,179 @@ module.exports = {
                 minhasElegibilidades,
                 contagemAnalistasOrdenada
             })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    chartData: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+
+
+            const propostasNoMes = await Proposta.find({
+                dataImportacao: { $regex: mes }
+            }, {
+                dataImportacao: 1
+            }).lean()
+
+            const propostasConcluidas = await Proposta.find({
+                dataConclusao: { $regex: mes },
+                $or: [
+                    { status: 'Concluída' },
+                    { status: 'Implantada' },
+                    { status: 'Devolvida' },
+                    { status: 'Enviada para Under' }
+                ]
+            }, {
+                dataConclusao: 1
+            }).lean()
+
+            const propostasCanceladas = await Proposta.find({
+                dataConclusao: { $regex: mes },
+                status: 'Cancelada'
+            }, {
+                dataConclusao: 1
+            }).lean()
+
+            let dates = []
+
+            for (const proposta of propostasNoMes) {
+                if (!dates.includes(proposta.dataImportacao)) {
+                    dates.push(proposta.dataImportacao)
+                }
+            }
+
+            let series = [
+                {
+                    name: 'Concluídas',
+                    data: [],
+                    color: 'green',
+                    type: 'area'
+                },
+                {
+                    name: 'Canceladas',
+                    data: [],
+                    color: '#FF0000',
+                    type: 'line'
+                },
+                {
+                    name: 'Total',
+                    data: [],
+                    color: '#0000FF',
+                    type: 'bar'
+                }
+            ]
+
+            for (const date of dates) {
+                const concluidas = propostasConcluidas.filter(proposta => proposta.dataConclusao === date).length
+                const canceladas = propostasCanceladas.filter(proposta => proposta.dataConclusao === date).length
+                const total = propostasNoMes.filter(proposta => proposta.dataImportacao === date).length
+                series[0].data.push({
+                    x: date,
+                    y: concluidas
+                })
+                series[1].data.push({
+                    x: date,
+                    y: canceladas
+                })
+                series[2].data.push({
+                    x: date,
+                    y: total
+                })
+            }
+
+            return res.json({
+                dates,
+                series
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    producaoIndividual: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const melhorAnalista = await Proposta.aggregate([
+                {
+                    $match: {
+                        dataConclusao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$analista",
+                        quantidade: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { quantidade: -1 }
+                }
+            ])
+
+            const totalAnalista = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista
+            })
+
+            const totalAnalistaMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                analista
+            })
+
+            const totalCancelados = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista,
+                status: 'Cancelada'
+            })
+
+            const totalLigacaoRealizada = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista,
+                ligacao: true
+            })
+
+            const totalCanceladosMelhorAnalista = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id,
+                status: 'Cancelada'
+            })
+
+            const totalLigacaoRealizadaMelhorAnalista = await Proposta.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id,
+                ligacao: true
+            })
+
+            console.log(
+                analista,
+            );
+
+            return (
+                res.json({
+                    totalAnalista,
+                    totalAnalistaMesPassado,
+                    totalCancelados,
+                    totalLigacaoRealizada,
+                    totalCanceladosMelhorAnalista,
+                    totalLigacaoRealizadaMelhorAnalista,
+                    melhorAnalista
+                })
+            )
+
         } catch (error) {
             console.log(error)
             return res.status(500).json({

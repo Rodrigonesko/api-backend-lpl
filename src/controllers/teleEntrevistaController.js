@@ -3036,7 +3036,8 @@ module.exports = {
                     $group: {
                         _id: '$responsavel',
                         total: { $sum: 1 },
-                        diasTrabalhados: { $addToSet: "$dataEntrevista" } // Adiciona a data (primeiros 10 caracteres de dataEntrevista) ao conjunto se ainda não estiver presente
+                        diasTrabalhados: { $addToSet: "$dataEntrevista" }, // Adiciona a data (primeiros 10 caracteres de dataEntrevista) ao conjunto se ainda não estiver presente
+                        houveDivergencia: { $sum: { $cond: [{ $eq: ["$houveDivergencia", "Sim"] }, 1, 0] } }
                     }
                 }
             ])
@@ -3046,8 +3047,8 @@ module.exports = {
                     analista: item._id,
                     total: item.total,
                     media: (item.total / diasUteis),
-                    diasTrabalhados: item.diasTrabalhados,
-                    mediaDiasTrabalhados: (item.total / item.diasTrabalhados.length)
+                    houveDivergencia: item.houveDivergencia,
+                    mediaDivergencia: (item.houveDivergencia / item.total) * 100,
                 })
             }).sort((a, b) => b.total - a.total)
 

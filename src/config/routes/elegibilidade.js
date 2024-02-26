@@ -52,7 +52,8 @@ router.get('/producaoMensal/:mes/:analista', auth, elegibilidadeController.produ
 router.put('/voltarProposta', auth, elegibilidadeController.voltarProposta)
 router.get('/relatorioProducaoMensal/:mes', auth, elegibilidadeController.relatorioProducaoMensal)
 router.get('/analitico/:mes', auth, elegibilidadeController.analiticoMensal)
-router.get('/producaoIndividualElegi/:mes', auth, elegibilidadeController.producaoIndividualElegi)
-
+router.get('/producaoIndividualElegi/:mes', auth, elegibilidadeController.producaoAnalistasMensal)
+router.get('/chartData/:mes', auth, elegibilidadeController.chartData)
+router.get('/producaoIndividual/:mes/:analista', auth, elegibilidadeController.producaoIndividual)
 
 module.exports = router
