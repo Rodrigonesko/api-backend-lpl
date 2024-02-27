@@ -2859,6 +2859,7 @@ module.exports = {
 
             const contagemAnalistas = {};
             const pedidosIndeferidosIndividual = {};
+            const pedidosCanceladosIndividual = {}
 
             meusRsds.forEach(proposta => {
                 const { analista } = proposta
@@ -2866,6 +2867,10 @@ module.exports = {
 
                 if ((proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento') || (proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal')) {
                     pedidosIndeferidosIndividual[analista] = (pedidosIndeferidosIndividual[analista] || 0) + 1;
+                }
+
+                if (proposta.statusGerencial === 'Protocolo Cancelado') {
+                    pedidosCanceladosIndividual[analista] = (pedidosCanceladosIndividual[analista] || 0) + 1
                 }
             })
 
@@ -2881,6 +2886,7 @@ module.exports = {
                 meusRsds,
                 contagemAnalistasOrdenada,
                 pedidosIndeferidosIndividual,
+                pedidosCanceladosIndividual,
             })
         } catch (error) {
             console.log(error)
@@ -3396,6 +3402,23 @@ module.exports = {
         } catch (error) {
             console.log(error);
             return res.status(200).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    producaoIndividual: async (req, res) => {
+        try {
+            const { mes, analista } = req.params
+
+            const meuRendimento = await Pedido.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                analista
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
                 msg: 'Internal Server Error'
             })
         }
