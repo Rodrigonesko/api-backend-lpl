@@ -16,5 +16,6 @@ router.post('/agenda', auth, elegibilidadePmeController.adicionarComentario)
 router.get('/producaoDiaria/:data', auth, elegibilidadePmeController.producaoDiaria)
 router.get('/producaoMensal/:mes/:analista', auth, elegibilidadePmeController.producaoMensal)
 router.get('/relatorioProducaoMensal/:mes', auth, elegibilidadePmeController.relatorioProducaoMensal)
+router.get('/analitico/:mes/:analista', auth, elegibilidadePmeController.analiticoMensal)
 
 module.exports = router

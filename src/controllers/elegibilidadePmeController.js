@@ -600,7 +600,161 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
 
+    analiticoMensal: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const mesAjustado = moment(mes).format('MM/YYYY')
+
+            let dates = await Proposta.find({
+                dataRecebimento: {
+                    $regex: mes
+                }
+            }, {
+                dataRecebimento: 1
+            }).distinct('dataRecebimento')
+
+            console.log(dates);
+
+            const totalPropostas = await Proposta.countDocuments({
+                dataRecebimento: { $regex: mes }
+            })
+
+            const totalPropostasMesPassado = await Proposta.countDocuments({
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') }
+            })
+
+            dates = dates.sort((a, b) => {
+                const dateA = new Date(a)
+                const dateB = new Date(b)
+                return dateA - dateB
+            }).filter((item, index, self) => self.indexOf(item) === index).map(e => moment(e).format('DD/MM/YYYY'))
+
+            const concluidas = await Proposta.countDocuments({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                status: 'Concluido'
+            })
+
+            const devolvidas = await Proposta.countDocuments({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                status: 'Devolvida'
+            })
+
+            const concluidasPorAnalista = await Proposta.countDocuments({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                analista,
+                status: 'Concluido'
+            })
+
+            const devolvidasPorAnalista = await Proposta.countDocuments({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                analista,
+                status: 'Devolvida'
+            })
+
+            const melhorAnalista = await Proposta.aggregate([
+                {
+                    $match: {
+                        dataConclusao: {
+                            $regex: new RegExp(`${mesAjustado}$`, 'i')
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$analista",
+                        total: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: {
+                        total: -1
+                    }
+                },
+                {
+                    $limit: 1
+                }
+            ])
+
+            const concluidasPorMelhorAnalista = await Proposta.countDocuments({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                analista: melhorAnalista[0]._id,
+                status: 'Concluido'
+            })
+
+            const devolvidasPorMelhorAnalista = await Proposta.countDocuments({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                analista: melhorAnalista[0]._id,
+                status: 'Devolvida'
+            })
+
+            let series = [
+                {
+                    name: 'Concluídas',
+                    data: [],
+                    type: 'bar'
+                },
+                {
+                    name: 'Devolvidas',
+                    data: [],
+                    type: 'bar'
+                }
+            ]
+
+            const propostasAnalista = await Proposta.find({
+                dataConclusao: {
+                    $regex: new RegExp(`${mesAjustado}$`, 'i')
+                },
+                analista
+            })
+
+            for (const date of dates) {
+                const concluidas = propostasAnalista.filter(e => e.dataConclusao === date && e.status === 'Concluido').length
+                const devolvidas = propostasAnalista.filter(e => e.dataConclusao === date && e.status === 'Devolvida').length
+                series[0].data.push({
+                    x: date,
+                    y: concluidas
+                })
+                series[1].data.push({
+                    x: date,
+                    y: devolvidas
+                })
+            }
+
+            return res.json({
+                totalPropostas,
+                totalPropostasMesPassado,
+                concluidas,
+                devolvidas,
+                concluidasPorAnalista,
+                devolvidasPorAnalista,
+                melhorAnalista: melhorAnalista[0]._id,
+                concluidasPorMelhorAnalista,
+                devolvidasPorMelhorAnalista,
+                series
+            })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 
