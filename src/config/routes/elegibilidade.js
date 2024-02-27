@@ -55,5 +55,6 @@ router.get('/analitico/:mes', auth, elegibilidadeController.analiticoMensal)
 router.get('/producaoIndividualElegi/:mes', auth, elegibilidadeController.producaoAnalistasMensal)
 router.get('/chartData/:mes', auth, elegibilidadeController.chartData)
 router.get('/producaoIndividual/:mes/:analista', auth, elegibilidadeController.producaoIndividual)
+router.get('/comparativoProducao/:mes/:analista', auth, elegibilidadeController.comparativoProducao)
 
 module.exports = router

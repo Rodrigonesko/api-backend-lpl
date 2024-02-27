@@ -2141,10 +2141,6 @@ module.exports = {
                 ligacao: true
             })
 
-            console.log(
-                analista,
-            );
-
             return (
                 res.json({
                     totalAnalista,
@@ -2156,6 +2152,82 @@ module.exports = {
                     melhorAnalista
                 })
             )
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    comparativoProducao: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const melhorAnalista = await Proposta.aggregate([
+                {
+                    $match: {
+                        dataConclusao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$analista",
+                        quantidade: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { quantidade: -1 }
+                }
+            ])
+
+            let dates = await Proposta.find({
+                dataConclusao: { $regex: mes },
+            }, {
+                dataConclusao: 1
+            }).lean()
+
+            dates = dates.map(e => e.dataConclusao).filter((item, index, self) => self.indexOf(item) === index).sort((a, b) => new Date(a) - new Date(b))
+
+            let series = [
+                {
+                    name: analista,
+                    data: [],
+                    type: 'bar'
+                },
+                {
+                    name: melhorAnalista[0]._id,
+                    data: [],
+                    type: 'bar'
+                }
+            ]
+
+            const propostasAnalista = await Proposta.find({
+                dataConclusao: { $regex: mes },
+                analista
+            })
+
+            const propostasMelhorAnalista = await Proposta.find({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id
+            })
+
+            for (const date of dates) {
+                const concluidasAnalista = propostasAnalista.filter(proposta => proposta.dataConclusao === date).length
+                const concluidasMelhorAnalista = propostasMelhorAnalista.filter(proposta => proposta.dataConclusao === date).length
+                series[0].data.push({
+                    x: moment(date).format('DD/MM/YYYY'),
+                    y: concluidasAnalista
+                })
+                series[1].data.push({
+                    x: moment(date).format('DD/MM/YYYY'),
+                    y: concluidasMelhorAnalista
+                })
+            }
+
+            return res.json(series)
 
         } catch (error) {
             console.log(error)
