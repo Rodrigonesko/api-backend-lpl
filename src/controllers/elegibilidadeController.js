@@ -1963,14 +1963,23 @@ module.exports = {
 
             const minhasElegibilidades = await Proposta.find({
                 dataConclusao: { $regex: mes }
-            })
+            }, {
+                analista: 1,
+                dataConclusao: 1,
+                status: 1,
+            }).lean()
 
             const contagemAnalistas = {};
 
-            minhasElegibilidades.forEach(proposta => {
+            // minhasElegibilidades.forEach(proposta => {
+            //     const { analista } = proposta
+            //     contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
+            // })
+
+            for (const proposta of minhasElegibilidades) {
                 const { analista } = proposta
                 contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
-            })
+            }
 
             const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
                 .sort(([, aCount], [, bCount]) => bCount - aCount)
