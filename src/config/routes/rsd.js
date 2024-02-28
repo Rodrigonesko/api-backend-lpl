@@ -61,5 +61,8 @@ router.get('/quantidadePagamentosRsd/:mes', auth, rsdController.quantidadePagame
 router.get('/quantidadeStatusGerenciais/:mes', auth, rsdController.quantidadeStatusGerenciais)
 router.get('/quantidadeStatusAmil/:mes', auth, rsdController.quantidadeStatusAmil)
 router.get('/quantidadePedidosIndeferidos/:mes', auth, rsdController.quantidadePedidosIndeferidos)
+router.get('/analitico/:mes', auth, rsdController.analiticoMensal)
+router.get('/producaoIndividual/:mes/:analista', auth, rsdController.producaoIndividual)
+router.get('/comparativoProducao/:mes/:analista', auth, rsdController.comparativoProducao)
 
 module.exports = router
