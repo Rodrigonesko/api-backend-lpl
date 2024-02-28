@@ -53,6 +53,9 @@ module.exports = {
             if (limit === undefined) limit = 10
             if (page === undefined) page = 1
 
+            const dataInicio = '2023-12-31'
+            if (!data) data = moment().format('YYYY-MM-DD')
+
             await ensureConnection()
 
             const skip = (page - 1) * limit
@@ -65,13 +68,14 @@ module.exports = {
             if (areaEmpresa) filter += ` AND Demanda.id_area_empresa = ${areaEmpresa}`;
             if (status) filter += ` AND Demanda.status_id = ${status}`;
             if (servico) filter += ` AND Demanda.tipo_servico_id = ${servico}`;
-            if (analista) filter += ` AND Demanda.usuario_criador_id = ${analista}`;
-            if (data) filter += ` AND CONVERT(date, Demanda.data_demanda) = '${data}'`; if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
+            if (analista) filter += ` AND usuario_distribuicao_id = ${analista}`;
+            if (data) filter += ` AND CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${data}'`;
+            if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             console.log(filter);
 
             const result = await new sql.query(`
-            SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome
+            SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, UsuarioExecutor.id as usuario_executor_id
             FROM Demanda
             RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
             RIGHT JOIN Status ON Demanda.status_id = Status.id
@@ -88,11 +92,19 @@ module.exports = {
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
             `)
 
-            console.log(result.recordset.length);
-
             const count = await new sql.query(`
             SELECT COUNT(*) as count
             FROM Demanda
+            RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
+            RIGHT JOIN Status ON Demanda.status_id = Status.id
+            RIGHT JOIN Empresa ON Demanda.empresa_id = Empresa.id
+            RIGHT JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            RIGHT JOIN [LPLSeguros].[Admin].[AreaEmpresa] ON Demanda.id_area_empresa = AreaEmpresa.id
+            RIGHT JOIN TipoInvestigado ON Demanda.tipo_investigado_id = TipoInvestigado.id
+            LEFT JOIN Finalizacao ON Demanda.id = Finalizacao.id_demanda
+            LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
+            LEFT JOIN Usuario UsuarioExecutor ON Pacote.usuario_id = UsuarioExecutor.id
             WHERE 1=1 ${filter}
             `)
 
@@ -340,6 +352,10 @@ module.exports = {
         const irregularidades = await new sql.query(`SELECT * FROM Irregularidade`)
         const tipoIrregularidade = await getTipoIrregularidade()
 
+        let filter = ''
+
+        if (dataInicio && dataFim) filter += ` AND CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${dataFim}'`
+
         const result = await new sql.query(`
         SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome as tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Valor.valor as valor, Valor.periodo as periodo, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome,
         (SELECT COUNT(*) FROM Beneficiario WHERE Beneficiario.id_demanda = demanda.id) as num_beneficiarios,
@@ -356,7 +372,7 @@ module.exports = {
         LEFT JOIN Valor ON Demanda.id = Valor.id_demanda
         LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
         LEFT JOIN Usuario UsuarioExecutor ON Pacote.usuario_id = UsuarioExecutor.id
-        WHERE CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${dataFim}'
+        WHERE 1=1 ${filter}
         `)
 
         const demandas = result.recordset.map(demanda => {
@@ -697,11 +713,11 @@ module.exports = {
     finalizarDemanda: async (req, res) => {
         try {
 
-            const { id_demanda, justificativa } = req.body
+            const { id_demanda, justificativa, data } = req.body
 
             await ensureConnection()
 
-            const create = await sql.query(`INSERT INTO Finalizacao (id_demanda, justificativa, data) OUTPUT INSERTED.id VALUES (${id_demanda}, '${justificativa}', '${moment().format('YYYY-MM-DD HH:mm:ss')}')`)
+            const create = await sql.query(`INSERT INTO Finalizacao (id_demanda, justificativa, data) OUTPUT INSERTED.id VALUES (${id_demanda}, '${justificativa}', '${data}')`)
 
             if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar finalização' })
 
