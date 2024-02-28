@@ -2898,6 +2898,7 @@ module.exports = {
                     return acc;
                 }, {});
 
+
             return res.json({
                 meusRsds,
                 contagemAnalistasOrdenada,
@@ -3423,25 +3424,231 @@ module.exports = {
         }
     },
 
-    producaoIndividual: async (req, res) => {
+    analiticoMensal: async (req, res) => {
         try {
-            const { mes, analista } = req.params
 
-            const meuRendimento = await Pedido.countDocuments({
-                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
-                analista
+            const { mes } = req.params
+
+            const startDate = moment(mes, 'YYYY-MM').startOf('month').toDate();
+            const endDate = moment(mes, 'YYYY-MM').add(1, 'month').startOf('month').toDate();
+
+            const total = await Pedido.countDocuments({
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                }
+            })
+
+            const totalMesPassado = await Pedido.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') }
+            })
+
+            const totalConcluidas = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                status: 'Finalizado',
+            })
+
+            const totalIndeferidas = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                $or: [
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
+                ],
+            })
+
+            const totalCanceladas = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                statusGerencial: 'Protocolo Cancelado'
+            })
+
+            return res.json({
+                total,
+                totalMesPassado,
+                totalConcluidas,
+                totalIndeferidas,
+                totalCanceladas,
             })
 
         } catch (error) {
             console.log(error);
-            res.status(500).json({
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    producaoIndividual: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const melhorAnalista = await Pedido.aggregate([
+                {
+                    $match: {
+                        dataConclusao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$analista",
+                        quantidade: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { quantidade: -1 }
+                }
+            ])
+
+            const totalAnalista = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista
+            })
+
+            const totalAnalistaMesPassado = await Pedido.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+                analista
+            })
+
+            const totalCancelados = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista,
+                statusGerencial: 'Protocolo Cancelado'
+            })
+
+            const totalConcluido = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista,
+                statusProtocolo: 'Finalizado'
+            })
+
+            const totalIndeferido = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista,
+                $or: [
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
+                ],
+            })
+
+            const totalIndeferidosMelhorAnalista = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id,
+                $or: [
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
+                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
+                ],
+            })
+
+            const totalCanceladosMelhorAnalista = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id,
+                statusGerencial: 'Protocolo Cancelado'
+            })
+
+            const totalConcluidoMelhorAnalista = await Pedido.countDocuments({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id,
+                statusProtocolo: 'Finalizado'
+            })
+
+            return (
+                res.json({
+                    totalAnalista,
+                    totalAnalistaMesPassado,
+                    totalCancelados,
+                    totalConcluido,
+                    totalIndeferido,
+                    totalIndeferidosMelhorAnalista,
+                    totalCanceladosMelhorAnalista,
+                    totalConcluidoMelhorAnalista,
+                    melhorAnalista
+                })
+            )
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    comparativoProducao: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const melhorAnalista = await Pedido.aggregate([
+                {
+                    $match: {
+                        dataConclusao: { $regex: mes }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$analista",
+                        quantidade: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { quantidade: -1 }
+                }
+            ])
+
+            let dates = await Pedido.find({
+                dataConclusao: { $regex: mes },
+            }, {
+                dataConclusao: 1
+            }).lean()
+
+            dates = dates.map(e => e.dataConclusao).filter((item, index, self) => self.indexOf(item) === index).sort((a, b) => new Date(a) - new Date(b))
+
+            let series = [
+                {
+                    name: analista,
+                    data: [],
+                    type: 'bar'
+                },
+                {
+                    name: melhorAnalista[0]._id,
+                    data: [],
+                    type: 'bar'
+                }
+            ]
+
+            const pedidosAnalista = await Pedido.find({
+                dataConclusao: { $regex: mes },
+                analista
+            })
+
+            const pedidosMelhorAnalista = await Pedido.find({
+                dataConclusao: { $regex: mes },
+                analista: melhorAnalista[0]._id
+            })
+
+            for (const date of dates) {
+                const concluidasAnalista = pedidosAnalista.filter(pedido => pedido.dataConclusao === date).length
+                const concluidasMelhorAnalista = pedidosMelhorAnalista.filter(pedido => pedido.dataConclusao === date).length
+                series[0].data.push({
+                    x: moment(date).format('DD/MM/YYYY'),
+                    y: concluidasAnalista
+                })
+                series[1].data.push({
+                    x: moment(date).format('DD/MM/YYYY'),
+                    y: concluidasMelhorAnalista
+                })
+            }
+
+            return res.json(series)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
                 msg: 'Internal Server Error'
             })
         }
     }
 }
-
-
 
 function ExcelDateToJSDate(serial) {
     var utc_days = Math.floor(serial - 25569);
