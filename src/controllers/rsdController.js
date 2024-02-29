@@ -3440,7 +3440,10 @@ module.exports = {
             })
 
             const totalMesPassado = await Pedido.countDocuments({
-                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') }
+                createdAt: {
+                    $gte: moment(mes, 'YYYY-MM').subtract(1, 'month').startOf('month').toDate(),
+                    $lt: moment(mes, 'YYYY-MM').startOf('month').toDate()
+                },
             })
 
             const totalConcluidas = await Pedido.countDocuments({
