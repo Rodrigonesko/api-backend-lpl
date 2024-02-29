@@ -158,7 +158,7 @@ module.exports = {
             }, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -394,7 +394,7 @@ module.exports = {
                 }, {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${req.cookies['token']}`
+                        Authorization: `Bearer ${req.token}`
                     }
                 })
 
@@ -605,7 +605,7 @@ module.exports = {
             const resp = await axios.get(`${process.env.API_TELE}/proposta/${id}`, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -641,7 +641,7 @@ module.exports = {
             }, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -684,7 +684,7 @@ module.exports = {
             }, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -1348,7 +1348,7 @@ module.exports = {
             const resp = await axios.get(`${process.env.API_TELE}/agendadas`, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -1438,7 +1438,7 @@ module.exports = {
             }, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -1863,7 +1863,7 @@ module.exports = {
             }, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -1963,7 +1963,7 @@ module.exports = {
                 headers: {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${req.cookies['token']}`
+                        Authorization: `Bearer ${req.token}`
                     }
                 }
             })
@@ -2292,7 +2292,7 @@ module.exports = {
             const result = await axios.get(`${process.env.API_TELE}/rendimentoMensal/${mes}/${analista}`, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -2470,7 +2470,7 @@ module.exports = {
             const result = await axios.get(`${process.env.API_TELE}/producaoMensal/${mes}`, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 
@@ -2815,7 +2815,7 @@ module.exports = {
             const result = await axios.get(`${process.env.API_TELE}/propostasPorMes/${mes}`, {
                 withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${req.cookies['token']}`
+                    Authorization: `Bearer ${req.token}`
                 }
             })
 

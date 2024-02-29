@@ -27,6 +27,7 @@ const auth = async (req, res, next) => {
         req.email = data.email
         req.userAcessLevel = data.accessLevel
         req.acessos = userData.acessos
+        req.token = token
 
         next()
     } catch (error) {
