@@ -373,11 +373,12 @@ module.exports = {
                             horario: e
                         }, {
                             nome: { $ne: 'Fechado' }
-                        }
+                        },
                     ]
                 }, {
                     agendado: 'Agendado',
-                    nome: 'Fechado'
+                    nome: 'Fechado',
+                    quemFechou: req.user
                 })
             }))
 
@@ -408,16 +409,28 @@ module.exports = {
                 return e != null
             })
 
+            for (const horario of horariosFiltrados) {
+                const result = await Horario.findOne({
+                    $and: [
+                        { dia: moment(data).format('YYYY-MM-DD') },
+                        { enfermeiro: responsavel },
+                        { horario: horario },
+                    ]
+                })
+
+                if (result.quemFechou != req.user && result.quemFechou != undefined) {
+                    return res.status(500).json({
+                        msg: `O horario ${horario} do dia ${moment(data).format('DD/MM/YYYY')} do analista ${responsavel} foi fechado por outro usuario. ${result.quemFechou}`
+                    })
+                }
+            }
+
             const result = await Promise.all(horariosFiltrados.map(async e => {
                 return await Horario.findOneAndUpdate({
                     $and: [
-                        {
-                            dia: moment(data).format('YYYY-MM-DD')
-                        }, {
-                            enfermeiro: responsavel
-                        }, {
-                            horario: e
-                        }
+                        { dia: moment(data).format('YYYY-MM-DD') },
+                        { enfermeiro: responsavel },
+                        { horario: e },
                     ]
                 }, {
                     agendado: 'Reaberto',
@@ -434,7 +447,7 @@ module.exports = {
 
 
             return res.status(200).json({
-                result
+                msg: 'ok'
             })
 
         } catch (error) {
