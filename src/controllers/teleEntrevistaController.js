@@ -98,6 +98,7 @@ module.exports = {
             } else {
                 divBanco = 'Não'
                 cids = []
+                codigosCids = ''
             }
 
             //respostasConc = Concatena respostas com simOuNao e subRespostas
@@ -353,9 +354,24 @@ module.exports = {
     salvarDadosEditados: async (req, res) => {
         try {
 
-            const { dados, id, houveDivergencia, dataNascimento, nome, cpf } = req.body
+            let { dados, id, houveDivergencia, dataNascimento, nome, cpf } = req.body
 
-            console.log(dados);
+            let codigosCids = ''
+        
+            for (const cid of dados.cids) {
+                const codigo = cid.substring(0, 4);
+                codigosCids += `${codigo} - `
+                console.log(codigosCids);
+            }
+
+            if (houveDivergencia === 'Sim') {
+                dados.codigosCids = codigosCids
+            } else {
+                dados.cids = []
+                codigosCids = ''
+            }
+
+            dados.cids = dados.cids.join(', ')
 
             const update = await Promise.all(Object.keys(dados).map(async key => {
                 return await DadosEntrevista.findOneAndUpdate({
@@ -370,11 +386,11 @@ module.exports = {
             }, {
                 houveDivergencia,
                 dataNascimento
-            })
+            }).lean()
 
             const nomeAntigo = atualizar.nome
 
-            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida' || req.user === 'Rodrigo' || req.user === 'Bruna Tomazoni' || req.user === 'Maria Tereza Santos') {
+            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida' || req.user === 'Rodrigo Onesko Dias' || req.user === 'Bruna Tomazoni' || req.user === 'Maria Tereza Santos') {
                 await DadosEntrevista.findByIdAndUpdate({
                     _id: id
                 }, {
@@ -403,7 +419,6 @@ module.exports = {
                     acao: `Dados da entrevista ${atualizar.proposta} alterados.`,
                     data: moment().format('DD/MM/YYYY HH:mm:ss')
                 })
-
             }
 
 
