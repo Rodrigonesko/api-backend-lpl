@@ -357,11 +357,10 @@ module.exports = {
             let { dados, id, houveDivergencia, dataNascimento, nome, cpf } = req.body
 
             let codigosCids = ''
-        
-            for (const cid of dados.cids) {
+
+            for (const cid of dados.cids || []) {
                 const codigo = cid.substring(0, 4);
                 codigosCids += `${codigo} - `
-                console.log(codigosCids);
             }
 
             if (houveDivergencia === 'Sim') {
@@ -371,7 +370,11 @@ module.exports = {
                 codigosCids = ''
             }
 
-            dados.cids = dados.cids.join(', ')
+            if (!dados.cids) {
+                dados.cids = undefined
+            } else {
+                dados.cids = dados.cids.join(', ')
+            }
 
             const update = await Promise.all(Object.keys(dados).map(async key => {
                 return await DadosEntrevista.findOneAndUpdate({
@@ -420,7 +423,6 @@ module.exports = {
                     data: moment().format('DD/MM/YYYY HH:mm:ss')
                 })
             }
-
 
             return res.status(200).json({
                 msg: 'ok'

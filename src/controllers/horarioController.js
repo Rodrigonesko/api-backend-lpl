@@ -270,7 +270,7 @@ module.exports = {
                 }, {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${req.cookies['token']}`
+                        Authorization: `Bearer ${req.token}`
                     }
                 })
 
