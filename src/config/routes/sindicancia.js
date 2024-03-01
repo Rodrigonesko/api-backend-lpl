@@ -28,5 +28,6 @@ router.post('/demanda/valor', auth, sindicanciaController.createValor)
 router.get('/demanda/valor/:id', auth, sindicanciaController.getValor)
 router.delete('/demanda/valor/:id', auth, sindicanciaController.deleteValor)
 router.post('/demanda/finalizar', auth, sindicanciaController.finalizarDemanda)
+router.get('/demanda/quantidadeDemandasResponsaveis', auth, sindicanciaController.quantidadeDemandasResponsaveis)
 
 module.exports = router

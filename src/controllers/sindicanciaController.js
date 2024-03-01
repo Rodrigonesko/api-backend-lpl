@@ -739,6 +739,54 @@ module.exports = {
                 error
             })
         }
+    },
+
+    quantidadeDemandasResponsaveis: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const dataInicio = moment(mes).startOf('month').toDate();
+            const dataFim = moment(mes).endOf('month').toDate();
+            // console.log(dataInicio, dataFim);
+
+            await ensureConnection()
+
+            let filter = ''
+
+            if (dataInicio && dataFim) filter += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+
+            const find = await sql.query(`
+            SELECT Demanda.*, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
+            FROM Demanda
+            JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+            JOIN Status ON Demanda.status_id = Status.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            WHERE ${filter}
+            `)
+
+            console.log(find);
+
+            // const quantidadeResponsavel = []
+
+            // find.recordset.find({
+            //     usuario: usuario_distribuicao_nome
+            // })
+
+            // console.log();
+
+            return res.json({
+                msg: 'ok',
+                find: find.recordset,
+                // quantidadeResponsavel,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
     }
 
 }
