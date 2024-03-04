@@ -762,18 +762,9 @@ module.exports = {
 
             console.log(find);
 
-            // const quantidadeResponsavel = []
-
-            // find.recordset.find({
-            //     usuario: usuario_distribuicao_nome
-            // })
-
-            // console.log();
-
             return res.json({
                 msg: 'ok',
                 find: find.recordset,
-                // quantidadeResponsavel,
             })
         } catch (error) {
             console.log(error);
