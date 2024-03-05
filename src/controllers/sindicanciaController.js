@@ -400,7 +400,7 @@ module.exports = {
                 observacoesAgrupadas[demanda.id] = [demanda.observacoes]
             }
         })
-        
+
         demandas = demandas.map(demanda => {
             return {
                 ...demanda,
@@ -790,12 +790,39 @@ module.exports = {
             LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
             WHERE ${filter}
             `)
+            // console.log(find);
 
-            console.log(find);
+            const findDistribuicao = await sql.query(`
+            SELECT Demanda.usuario_distribuicao_id as usuario_distribuicao_identificacao, UsuarioDistribuicao.nome as usuario_distribuicao_nome
+            FROM Demanda
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            WHERE ${filter}
+            `)
+            // console.log(findDistribuicao);
+
+            const findConcluidas = await sql.query(`
+            SELECT Demanda.status_id as status_id, Status.nome as status_nome, Demanda.usuario_distribuicao_id as usuario_distribuicao_identificacao
+            FROM Demanda
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            JOIN Status ON Demanda.status_id = 6
+            WHERE ${filter}
+            `)
+            // console.log(findConcluidas);
+
+            const findAbertas = await sql.query(`
+            SELECT Demanda.status_id as status_identificacao, Status.nome as status_nome
+            FROM Demanda
+            JOIN Status ON Demanda.status_id = Status.id
+            `)
+            console.log(findAbertas);
+
 
             return res.json({
                 msg: 'ok',
                 find: find.recordset,
+                findDistribuicao: findDistribuicao.recordset,
+                findConcluidas: findConcluidas.recordset,
+                findAbertas: findAbertas.recordset,
             })
         } catch (error) {
             console.log(error);
