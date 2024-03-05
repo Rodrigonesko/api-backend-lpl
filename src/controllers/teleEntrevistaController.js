@@ -3694,6 +3694,39 @@ module.exports = {
                 error
             })
         }
+    },
+
+    alterarDivergenciaAnexo: async (req, res) => {
+        try {
+
+            const { id, divergenciaAnexo, proposta, nome } = req.body
+
+            console.log(id, divergenciaAnexo, proposta, nome);
+
+            if(id){
+
+                const result = await DadosEntrevista.findByIdAndUpdate(id, {
+                    divergenciaAnexo
+                })
+    
+                return res.json(result)
+            }
+
+            const result = await DadosEntrevista.findOneAndUpdate({
+                proposta,
+                nome
+            }, {
+                divergenciaAnexo
+            })
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
     }
 }
 
