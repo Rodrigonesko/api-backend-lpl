@@ -385,16 +385,18 @@ module.exports = {
             ]
             console.log(_id);
 
-            const result = await User.findOneAndUpdate(
-                {
-                    _id: _id
-                },
-                {
-                    demissao
-                }
-            )
-
             const find = await User.findOne({ _id })
+
+            if (!find.demissao) {
+                const result = await User.findOneAndUpdate(
+                    {
+                        _id: _id
+                    },
+                    {
+                        demissao
+                    }
+                )
+            }
 
             return res.status(200).json(find)
 
@@ -445,8 +447,7 @@ module.exports = {
             }
             const find = await User.findOne({ _id: req.body._id })
 
-            return res.status(200).
-                json(find)
+            return res.status(200).json(find)
         } catch (error) {
             console.log(error);
             return res.status(500).json({

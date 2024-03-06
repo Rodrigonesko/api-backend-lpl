@@ -400,7 +400,7 @@ module.exports = {
                 observacoesAgrupadas[demanda.id] = [demanda.observacoes]
             }
         })
-        
+
         demandas = demandas.map(demanda => {
             return {
                 ...demanda,
@@ -774,13 +774,20 @@ module.exports = {
 
             const dataInicio = moment(mes).startOf('month').toDate();
             const dataFim = moment(mes).endOf('month').toDate();
-            // console.log(dataInicio, dataFim);
+
+            const dataInicioMesPassado = moment(mes).subtract(1, 'months').startOf('month').toDate();
+            const dataFimMesPassado = moment(mes).subtract(1, 'months').endOf('month').toDate();
+
 
             await ensureConnection()
 
             let filter = ''
 
             if (dataInicio && dataFim) filter += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+
+            let filterMesPassado = ''
+
+            if (dataInicioMesPassado && dataFimMesPassado) filterMesPassado += `Demanda.data_demanda BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
 
             const find = await sql.query(`
             SELECT Demanda.*, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
@@ -790,21 +797,122 @@ module.exports = {
             LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
             WHERE ${filter}
             `)
+            const arrayFind = Array.isArray(find.recordset) ? find.recordset : []
+            const countArrayFind = arrayFind.length
+            console.log(countArrayFind);
 
-            console.log(find);
+            const findMesPassado = await sql.query(`
+            SELECT Demanda.*, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
+            FROM Demanda
+            JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+            JOIN Status ON Demanda.status_id = Status.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            WHERE ${filterMesPassado}
+            `)
+            const arrayFindMesPassado = Array.isArray(findMesPassado.recordset) ? findMesPassado.recordset : []
+            const countArrayFindMesPassado = arrayFindMesPassado.length
+            console.log(countArrayFindMesPassado);
 
-            // const quantidadeResponsavel = []
+            const findConcluidas = await sql.query(`
+            SELECT Demanda.status_id as status_id, Status.nome as status_nome, Demanda.usuario_distribuicao_id as usuario_distribuicao_identificacao
+            FROM Demanda
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            JOIN Status ON Demanda.status_id = 6
+            WHERE ${filter}
+            `)
+            const arrayFindConcluidas = Array.isArray(findConcluidas.recordset) ? findConcluidas.recordset : []
+            const countArrayFindConcluidas = arrayFindConcluidas.length
+            console.log(countArrayFindConcluidas);
 
-            // find.recordset.find({
-            //     usuario: usuario_distribuicao_nome
-            // })
-
-            // console.log();
+            const findConcluidasMesPassado = await sql.query(`
+            SELECT Demanda.status_id as status_id, Status.nome as status_nome, Demanda.usuario_distribuicao_id as usuario_distribuicao_identificacao
+            FROM Demanda
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            JOIN Status ON Demanda.status_id = 6
+            WHERE ${filterMesPassado}
+            `)
+            const arrayFindConcluidasMesPassado = Array.isArray(findConcluidasMesPassado.recordset) ? findConcluidasMesPassado.recordset : []
+            const countArrayFindConcluidasMesPassado = arrayFindConcluidasMesPassado.length
+            console.log(countArrayFindConcluidasMesPassado);
 
             return res.json({
                 msg: 'ok',
-                find: find.recordset,
-                // quantidadeResponsavel,
+                find: countArrayFind,
+                findMesPassado: countArrayFindMesPassado,
+                findConcluidas: countArrayFindConcluidas,
+                findConcluidasMesPassado: countArrayFindConcluidasMesPassado,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    quantidadeIndividualSindicancia: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const dataInicio = moment(mes).startOf('month').toDate();
+            const dataFim = moment(mes).endOf('month').toDate();
+
+            const dataInicioMesPassado = moment(mes).subtract(1, 'months').startOf('month').toDate();
+            const dataFimMesPassado = moment(mes).subtract(1, 'months').endOf('month').toDate();
+
+            await ensureConnection()
+
+            let filter = ''
+
+            if (dataInicio && dataFim) filter += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+
+            let filterMesPassado = ''
+
+            if (dataInicioMesPassado && dataFimMesPassado) filterMesPassado += `Demanda.data_demanda BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
+
+            const findDistribuicao = await sql.query(`
+            SELECT Demanda.usuario_distribuicao_id as usuario_distribuicao_identificacao, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
+            FROM Demanda
+            JOIN Status ON Demanda.status_id = Status.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            WHERE ${filter}
+            `)
+            // console.log(findDistribuicao);
+
+            const findDistribuicaoMesPassado = await sql.query(`
+            SELECT Demanda.usuario_distribuicao_id as usuario_distribuicao_identificacao, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
+            FROM Demanda
+            JOIN Status ON Demanda.status_id = Status.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            WHERE ${filterMesPassado}
+            `)
+            console.log(findDistribuicaoMesPassado);
+
+            const findAbertas = await sql.query(`
+            SELECT Demanda.status_id as status_identificacao, Status.nome as status_nome
+            FROM Demanda
+            JOIN Status ON Demanda.status_id = Status.id
+            WHERE ${filter} AND Demanda.status_id NOT IN (6, 7)
+            `)
+            // console.log(findAbertas);
+
+            const findAbertasMesPassado = await sql.query(`
+            SELECT Demanda.status_id as status_identificacao, Status.nome as status_nome
+            FROM Demanda
+            JOIN Status ON Demanda.status_id = Status.id
+            WHERE ${filterMesPassado} AND Demanda.status_id NOT IN (6, 7)
+            `)
+            // console.log(findAbertasMesPassado);
+
+            return res.json({
+                msg: 'ok',
+                findDistribuicao: findDistribuicao.recordset,
+                findDistribuicaoMesPassado: findDistribuicaoMesPassado.recordset,
+                findAbertas: findAbertas.recordset,
+                findAbertasMesPassado: findAbertasMesPassado.recordset,
+
             })
         } catch (error) {
             console.log(error);
