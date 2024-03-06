@@ -65,7 +65,7 @@ module.exports = {
             if (status) filter += ` AND Demanda.status_id = ${status}`;
             if (servico) filter += ` AND Demanda.tipo_servico_id = ${servico}`;
             if (analista) filter += ` AND usuario_distribuicao_id = ${analista}`;
-            if (data) filter += ` AND CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${data}'`;
+            if (data) filter += ` AND (CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${data}' OR CONVERT(date, Pacote.data_finalizacao) BETWEEN '${dataInicio}' AND '${data}')`;
             if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             const result = await new sql.query(`

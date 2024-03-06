@@ -42,7 +42,8 @@ const pedidoScheema = new mongoose.Schema({
     statusProtocolo: String,
     motivoInativo: String,
     quemAnexou: String,
-    fila: String
+    fila: String,
+    dataAgendamento: String
 }, {
     timestamps: true
 })

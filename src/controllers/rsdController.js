@@ -1134,7 +1134,7 @@ module.exports = {
     atualizarPedido: async (req, res) => {
         try {
 
-            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo } = req.body
+            const { pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo, dataAgendamento } = req.body
 
             console.log(pacote, sucesso, motivoContato, confirmacaoServico, finalizacao, justificativa, dataSelo);
 
@@ -1171,9 +1171,9 @@ module.exports = {
                     analista: req.user,
                     contato: sucesso
                 })
-
             }
 
+    
             if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {        //1° Tentativa de contato
 
                 await Agenda.create({
@@ -1189,7 +1189,6 @@ module.exports = {
                     analista: req.user,
                     contato: sucesso
                 })
-
             }
 
             if (pacoteBanco.statusPacote === '2° Tentativa' && sucesso === 'Não') {     //2° Tentativa de contato
@@ -1296,6 +1295,17 @@ module.exports = {
                     contato: sucesso
                 })
 
+            }
+
+            console.log(`Data Agendamento: ${dataAgendamento}`);
+
+            if(sucesso === 'Necessário Agendar Horario') {
+                await Pedido.updateMany({
+                    pacote: pacote
+                }, {
+                    dataAgendamento,
+                    contato: sucesso
+                })
             }
 
             if (sucesso === 'Não foi entrado em contato') {     //Caso não entre em contato e coloca a justificativa
@@ -1635,27 +1645,34 @@ module.exports = {
     filtroPedidosNaoFinalizados: async (req, res) => {
         try {
 
-            const { pesquisa } = req.params
+            const { pesquisa, analista } = req.query
+
+            console.log(pesquisa, analista);
+
+            let filter = {}
+
+            if (analista !== '') {
+                filter = {
+                    analista: {$regex: analista},
+                }
+            }
 
             const pessoa = await Pessoa.findOne({
                 cpf: pesquisa
             })
 
-            if (pessoa) {
+            if (pessoa && pesquisa !== '' && analista === '') {
                 const pedidos = await Pedido.find({
                     mo: pessoa.mo,
                     status: {
                         $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
-                    }
-
+                    },
+                    ...filter
                 })
-
                 return res.status(200).json({
                     pedidos
                 })
-
             }
-
 
             const pedidos = await Pedido.find({
                 $or: [
@@ -1683,7 +1700,8 @@ module.exports = {
                             $in: ['A iniciar', 'Em andamento', 'Aguardando Retorno Contato', 'Aguardando Docs']
                         }
                     }
-                ]
+                ],
+                ...filter
             })
 
             return res.status(200).json({
