@@ -31,6 +31,7 @@ router.post('/demanda/finalizar', auth, sindicanciaController.finalizarDemanda)
 router.get('/demanda/quantidadeDemandasResponsaveis/:mes', auth, sindicanciaController.quantidadeDemandasResponsaveis)
 router.get('/demanda/quantidadeDemandasSindicancia/:mes', auth, sindicanciaController.quantidadeDemandasSindicancia)
 router.get('/demanda/quantidadeIndividualSindicancia/:mes', auth, sindicanciaController.quantidadeIndividualSindicancia)
+router.get('/demanda/quantidadeDemandasMensal/:mes', auth, sindicanciaController.quantidadeDemandasMensal)
 router.post('/demanda/complementacao', auth, sindicanciaController.createComplementacao)
 
 module.exports = router
