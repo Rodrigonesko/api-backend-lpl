@@ -383,11 +383,10 @@ module.exports = {
                     id: mongoose.Types.ObjectId()
                 }
             ]
-            console.log(_id);
 
             const find = await User.findOne({ _id })
 
-            if (!find.demissao) {
+            if (find.demissao.length === 0) {
                 const result = await User.findOneAndUpdate(
                     {
                         _id: _id

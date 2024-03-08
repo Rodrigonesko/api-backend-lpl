@@ -68,7 +68,7 @@ module.exports = {
             if (data) filter += ` AND (CONVERT(date, Demanda.data_demanda) BETWEEN '${dataInicio}' AND '${data}' OR CONVERT(date, Pacote.data_finalizacao) BETWEEN '${dataInicio}' AND '${data}')`;
             if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
-            const result = await new sql.query(`
+            let result = await new sql.query(`
             SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, UsuarioExecutor.id as usuario_executor_id, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao
             FROM Demanda
             RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
@@ -86,6 +86,17 @@ module.exports = {
             ORDER BY id DESC
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
             `)
+
+            let idsUnicos = []
+
+            result = result.recordset.filter(demanda => {
+                if (idsUnicos.includes(demanda.id)) {
+                    return false
+                } else {
+                    idsUnicos.push(demanda.id)
+                    return true
+                }
+            })
 
             const count = await new sql.query(`
             SELECT COUNT(*) as count
@@ -105,7 +116,7 @@ module.exports = {
 
             // await sql.close()
             return res.json({
-                demandas: result.recordset,
+                demandas: result,
                 count: count.recordset[0].count
             })
 
@@ -346,6 +357,10 @@ module.exports = {
 
         const irregularidades = await new sql.query(`SELECT * FROM Irregularidade`)
         const tipoIrregularidade = await getTipoIrregularidade()
+
+        tipoIrregularidade.sort((a, b) => a.nome.localeCompare(b.nome));
+
+        tipoIrregularidade.unshift({ nome: 'Irregularidade', id: 0 })
 
         let filter = ''
 

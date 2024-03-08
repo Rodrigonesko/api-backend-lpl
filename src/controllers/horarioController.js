@@ -1,5 +1,6 @@
 const Horario = require('../models/TeleEntrevista/Horario')
 const User = require('../models/User/User')
+const LogTele = require('../models/Logs/LogTele')
 const Rn = require('../models/TeleEntrevista/Rn')
 const CloseSchedule = require('../models/TeleEntrevista/CloseSchedule')
 const moment = require('moment')
@@ -277,6 +278,12 @@ module.exports = {
             } else {
                 console.log('tem rn');
             }
+
+            await Log.create({
+                nome: req.user,
+                acao: `Agendou o paciente ${id} para o dia ${data} as ${horario} com o analista ${responsavel}`,
+                data: moment().format('DD/MM/YYYY HH:mm:ss')
+            })
 
             return res.status(200).json({
                 msg: 'ok'
