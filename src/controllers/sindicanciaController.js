@@ -782,6 +782,31 @@ module.exports = {
         }
     },
 
+    deleteFinalizacao: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            if (!id) return res.json({ msg: 'Erro ao deletar finalização' })
+
+            const remove = await sql.query(`DELETE FROM Finalizacao WHERE id = ${id}`)
+
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar finalização' })
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
     quantidadeDemandasResponsaveis: async (req, res) => {
         try {
 
