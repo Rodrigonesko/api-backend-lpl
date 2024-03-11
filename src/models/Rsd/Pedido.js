@@ -43,7 +43,9 @@ const pedidoScheema = new mongoose.Schema({
     motivoInativo: String,
     quemAnexou: String,
     fila: String,
-    dataAgendamento: String
+    dataAgendamento: String,
+    whatsapp: String,
+    mensagens: Array
 }, {
     timestamps: true
 })
