@@ -974,59 +974,117 @@ module.exports = {
             const dataInicioMesPassado = moment(mes).subtract(1, 'months').startOf('month').toDate();
             const dataFimMesPassado = moment(mes).subtract(1, 'months').endOf('month').toDate();
 
-
             await ensureConnection()
 
-            let filter = ''
+            let filterPacotes = ''
+            if (dataInicio && dataFim) filterPacotes += ` Pacote.data_criacao BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
 
-            if (dataInicio && dataFim) filter += ` Pacote.data_criacao BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+            let filterPacotesMesPassado = ''
+            if (dataInicioMesPassado && dataFimMesPassado) filterPacotesMesPassado += ` Pacote.data_criacao BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
 
-            let filterMesPassado = ''
-
-            if (dataInicioMesPassado && dataFimMesPassado) filterMesPassado += `Pacote.data_criacao BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
+            let filterDemandas = ''
+            if (dataInicio && dataFim) filterDemandas += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
 
             const findPacotes = await sql.query(`
-            SELECT Pacote.*, Usuario.nome as usuario_criador_nome, Status.nome as status_nome
+            SELECT Pacote.*, Usuario.nome as usuario_criador_nome
             FROM Pacote
-            JOIN Demanda ON Pacote.demanda_id = Demanda.id
             JOIN Usuario ON Pacote.usuario_id = Usuario.id
-            JOIN Status ON Demanda.status_id = Status.id -- Mantém a condição aqui
-            LEFT JOIN Usuario UsuarioCriador ON Pacote.usuario_id = Usuario.id
-            WHERE ${filter}
-                `)
-            const arrayFind = Array.isArray(findPacotes.recordset) ? findPacotes.recordset : []
-            const countArrayFind = arrayFind.length
-            console.log(countArrayFind);
-            const countByUsuarioCriadorNome = arrayFind.reduce((acc, curr) => {
+            WHERE ${filterPacotes}
+            `)
+            const arrayFindPacote = Array.isArray(findPacotes.recordset) ? findPacotes.recordset : []
+            const countByUsuarioCriadorNome = arrayFindPacote.reduce((acc, curr) => {
                 const usuarioCriadorNome = curr.usuario_criador_nome;
                 acc[usuarioCriadorNome] = (acc[usuarioCriadorNome] || 0) + 1;
                 return acc;
             }, {});
-            console.log(countByUsuarioCriadorNome);
+            // console.log(countByUsuarioCriadorNome);
 
             const findPacotesMesPassado = await sql.query(`
-            SELECT Pacote.*, Usuario.nome as usuario_criador_nome, Status.nome as status_nome
+            SELECT Pacote.*, Usuario.nome as usuario_criador_nome
             FROM Pacote
-            JOIN Demanda ON Pacote.demanda_id = Demanda.id
             JOIN Usuario ON Pacote.usuario_id = Usuario.id
-            JOIN Status ON Demanda.status_id = Status.id -- Mantém a condição aqui
-            LEFT JOIN Usuario UsuarioCriador ON Pacote.usuario_id = Usuario.id
-            WHERE ${filterMesPassado}
-                `)
+            WHERE ${filterPacotesMesPassado}
+            `)
             const arrayFindMesPassado = Array.isArray(findPacotesMesPassado.recordset) ? findPacotesMesPassado.recordset : []
-            const countArrayFindMesPassado = arrayFindMesPassado.length
-            console.log(countArrayFindMesPassado);
             const countByUsuarioCriadorNomeMesPassado = arrayFindMesPassado.reduce((acc, curr) => {
                 const usuarioCriadorNome = curr.usuario_criador_nome;
                 acc[usuarioCriadorNome] = (acc[usuarioCriadorNome] || 0) + 1;
                 return acc;
             }, {});
-            console.log(countByUsuarioCriadorNomeMesPassado);
+            // console.log(countByUsuarioCriadorNomeMesPassado);
+
+            const findDemandaIndividual = await sql.query(`
+            SELECT Demanda.*, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
+            FROM Demanda
+            JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+            JOIN Status ON Demanda.status_id = Status.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            WHERE ${filterDemandas}
+            `)
+            const arrayFind = Array.isArray(findDemandaIndividual.recordset) ? findDemandaIndividual.recordset : []
+            const countByUsuarioDemandas = arrayFind.reduce((acc, curr) => {
+                const usuarioDistribuicaoNome = curr.usuario_distribuicao_nome;
+                acc[usuarioDistribuicaoNome] = (acc[usuarioDistribuicaoNome] || 0) + 1;
+                return acc;
+            }, {});
+            console.log(countByUsuarioDemandas);
 
             return res.json({
                 msg: 'ok',
-                find: countByUsuarioCriadorNome,
-                findMesPassado: countByUsuarioCriadorNomeMesPassado,
+                findDemandaIndividual: countByUsuarioDemandas,
+                findPacote: countByUsuarioCriadorNome,
+                findPacoteMesPassado: countByUsuarioCriadorNomeMesPassado,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    quantidadeDemandasMensal: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const dataInicio = moment(mes).startOf('month').toDate();
+            const dataFim = moment(mes).endOf('month').toDate();
+
+            const dataInicioMesPassado = moment(mes).subtract(1, 'months').startOf('month').toDate();
+            const dataFimMesPassado = moment(mes).subtract(1, 'months').endOf('month').toDate();
+
+            await ensureConnection()
+
+            let filterDemandas = ''
+            if (dataInicio && dataFim) filterDemandas += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+
+            let filterDemandasMesPassado = ''
+            if (dataInicioMesPassado && dataFimMesPassado) filterDemandasMesPassado += ` Demanda.data_demanda BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
+
+            const findDemanda = await sql.query(`
+            SELECT CONVERT(date, data_demanda) as x, COUNT(*) as y
+            FROM Demanda
+            JOIN Usuario ON Demanda.usuario_distribuicao_id = Usuario.id
+            WHERE ${filterDemandas}
+            GROUP BY CONVERT(date, data_demanda)
+            `)
+            console.log(findDemanda.recordset);
+
+            const findDemandaMesPassado = await sql.query(`
+            SELECT CONVERT(date, data_demanda) as x, COUNT(*) as y
+            FROM Demanda
+            JOIN Usuario ON Demanda.usuario_distribuicao_id = Usuario.id
+            WHERE ${filterDemandasMesPassado}
+            GROUP BY CONVERT(date, data_demanda)
+            `)
+            console.log(findDemandaMesPassado.recordset);
+
+            return res.json({
+                msg: 'ok',
+                findDemanda: findDemanda.recordset,
+                findDemandaMesPassado: findDemandaMesPassado.recordset,
             })
         } catch (error) {
             console.log(error);
