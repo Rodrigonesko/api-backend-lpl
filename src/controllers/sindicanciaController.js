@@ -69,7 +69,7 @@ module.exports = {
             if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             let result = await new sql.query(`
-            SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, UsuarioExecutor.id as usuario_executor_id, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao
+            SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, UsuarioExecutor.id as usuario_executor_id, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao, Pacote.data_criacao as data_criacao_pacote
             FROM Demanda
             RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
             RIGHT JOIN Status ON Demanda.status_id = Status.id
@@ -758,6 +758,8 @@ module.exports = {
 
             await ensureConnection()
 
+            console.log(id_demanda, justificativa, data);
+
             const create = await sql.query(`INSERT INTO Finalizacao (id_demanda, justificativa, data) OUTPUT INSERTED.id VALUES (${id_demanda}, '${justificativa}', '${data}')`)
 
             if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar finalização' })
@@ -789,9 +791,11 @@ module.exports = {
 
             await ensureConnection()
 
+            console.log(id);
+
             if (!id) return res.json({ msg: 'Erro ao deletar finalização' })
 
-            const remove = await sql.query(`DELETE FROM Finalizacao WHERE id = ${id}`)
+            const remove = await sql.query(`DELETE FROM Finalizacao WHERE id_demanda = ${id}`)
 
             if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar finalização' })
 
