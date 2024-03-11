@@ -32,6 +32,7 @@ router.delete('/demanda/finalizacao/:id', auth, sindicanciaController.deleteFina
 router.get('/demanda/quantidadeDemandasResponsaveis/:mes', auth, sindicanciaController.quantidadeDemandasResponsaveis)
 router.get('/demanda/quantidadeDemandasSindicancia/:mes', auth, sindicanciaController.quantidadeDemandasSindicancia)
 router.get('/demanda/quantidadeIndividualSindicancia/:mes', auth, sindicanciaController.quantidadeIndividualSindicancia)
+router.get('/demanda/producaoIndividualSindi/:mes/:analista', auth, sindicanciaController.producaoIndividualSindi)
 router.get('/demanda/quantidadeDemandasMensal/:mes', auth, sindicanciaController.quantidadeDemandasMensal)
 router.post('/demanda/complementacao', auth, sindicanciaController.createComplementacao)
 
