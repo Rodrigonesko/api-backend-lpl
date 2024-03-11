@@ -903,7 +903,7 @@ module.exports = {
             LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
             WHERE ${filterMesPassado}
             `)
-            console.log(findDistribuicaoMesPassado);
+            // console.log(findDistribuicaoMesPassado);
 
             const findAbertas = await sql.query(`
             SELECT Demanda.status_id as status_identificacao, Status.nome as status_nome
@@ -1002,7 +1002,7 @@ module.exports = {
                 acc[usuarioDistribuicaoNome] = (acc[usuarioDistribuicaoNome] || 0) + 1;
                 return acc;
             }, {});
-            console.log(countByUsuarioDemandas);
+            // console.log(countByUsuarioDemandas);
 
             return res.json({
                 msg: 'ok',
@@ -1045,7 +1045,7 @@ module.exports = {
             WHERE ${filterDemandas}
             GROUP BY CONVERT(date, data_demanda)
             `)
-            console.log(findDemanda.recordset);
+            // console.log(findDemanda.recordset);
 
             const findDemandaMesPassado = await sql.query(`
             SELECT CONVERT(date, data_demanda) as x, COUNT(*) as y
@@ -1054,12 +1054,94 @@ module.exports = {
             WHERE ${filterDemandasMesPassado}
             GROUP BY CONVERT(date, data_demanda)
             `)
-            console.log(findDemandaMesPassado.recordset);
+            // console.log(findDemandaMesPassado.recordset);
 
             return res.json({
                 msg: 'ok',
                 findDemanda: findDemanda.recordset,
                 findDemandaMesPassado: findDemandaMesPassado.recordset,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    producaoIndividualSindi: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const dataInicio = moment(mes).startOf('month').toDate();
+            const dataFim = moment(mes).endOf('month').toDate();
+
+            const dataInicioMesPassado = moment(mes).subtract(1, 'months').startOf('month').toDate();
+            const dataFimMesPassado = moment(mes).subtract(1, 'months').endOf('month').toDate();
+
+            let filter = ''
+            if (dataInicio && dataFim) filter += ` Pacote.data_finalizacao BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+
+            let filterMesPassado = ''
+            if (dataInicioMesPassado && dataFimMesPassado) filterMesPassado += ` Pacote.data_finalizacao BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
+            
+            let filterDemanda = ''
+            if (dataInicio && dataFim) filterDemanda += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+            
+            let filterDemandaMesPassado = ''
+            if (dataInicioMesPassado && dataFimMesPassado) filterDemandaMesPassado += ` Demanda.data_demanda BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
+            await ensureConnection()
+
+            const totalPacotesIndividual = await sql.query(`
+            SELECT COUNT(*) as quantidade_pacote, Usuario.nome as nome_usuario
+            FROM Pacote
+            JOIN Usuario ON Pacote.usuario_id = Usuario.id
+            WHERE ${filter} AND Usuario.nome = '${analista}'
+            GROUP BY Usuario.nome
+            `)
+            // console.log(totalPacotesIndividual.recordset);
+
+            const totalPacotesIndividualMesPassado = await sql.query(`
+            SELECT COUNT(*) as quantidade_pacote, Usuario.nome as nome_usuario
+            FROM Pacote
+            JOIN Usuario ON Pacote.usuario_id = Usuario.id
+            WHERE ${filterMesPassado} AND Usuario.nome = '${analista}'
+            GROUP BY Usuario.nome
+            `)
+            // console.log(totalPacotesIndividualMesPassado.recordset);
+
+            const totalPacotesMelhorAnalista = await sql.query(`
+            SELECT TOP 1 Usuario.nome as nome_usuario, COUNT(*) as quantidade_pacote 
+            FROM Pacote
+            JOIN Usuario ON Pacote.usuario_id = Usuario.id
+            WHERE ${filter}
+            GROUP BY Usuario.nome
+            ORDER BY COUNT(*) DESC
+            `)
+            console.log(totalPacotesMelhorAnalista.recordset);
+
+            const totalDemandasGeral = await sql.query(`
+            SELECT COUNT(*) as quantidade_demanda
+            FROM Demanda
+            WHERE ${filterDemanda}
+            `)
+            console.log(totalDemandasGeral.recordset);
+
+            const totalDemandasGeralMesPassado = await sql.query(`
+            SELECT COUNT(*) as quantidade_demanda
+            FROM Demanda
+            WHERE ${filterDemandaMesPassado}
+            `)
+            console.log(totalDemandasGeralMesPassado.recordset);
+
+            return res.status(200).json({
+                totalPacotesIndividual: totalPacotesIndividual.recordset,
+                totalPacotesIndividualMesPassado: totalPacotesIndividualMesPassado.recordset,
+                totalPacotesMelhorAnalista: totalPacotesMelhorAnalista.recordset,
+                totalDemandasGeral: totalDemandasGeral.recordset,
+                totalDemandasGeralMesPassado: totalDemandasGeralMesPassado.recordset,
             })
         } catch (error) {
             console.log(error);
@@ -1122,5 +1204,5 @@ module.exports = {
                 error
             })
         }
-    }
+    },
 }
