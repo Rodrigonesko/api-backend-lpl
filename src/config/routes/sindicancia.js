@@ -33,6 +33,7 @@ router.get('/demanda/quantidadeDemandasResponsaveis/:mes', auth, sindicanciaCont
 router.get('/demanda/quantidadeDemandasSindicancia/:mes', auth, sindicanciaController.quantidadeDemandasSindicancia)
 router.get('/demanda/quantidadeIndividualSindicancia/:mes', auth, sindicanciaController.quantidadeIndividualSindicancia)
 router.get('/demanda/producaoIndividualSindi/:mes/:analista', auth, sindicanciaController.producaoIndividualSindi)
+router.get('/demanda/comparativoProducaoSindi/:mes/:analista', auth, sindicanciaController.comparativoProducaoSindi)
 router.get('/demanda/quantidadeDemandasMensal/:mes', auth, sindicanciaController.quantidadeDemandasMensal)
 router.post('/demanda/complementacao', auth, sindicanciaController.createComplementacao)
 
