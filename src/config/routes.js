@@ -22,6 +22,7 @@ const toDoRoutes = require('./routes/toDo')
 const contingenciasRoutes = require('./routes/contingencias')
 const admissaoDemissaoRoutes = require('./routes/admissaoDemissao')
 const celulaRoutes = require('./routes/celula')
+const agendaRoutes = require('./routes/agenda')
 
 const taskRequestRoutes = require('./routes/taskRequest')
 const sindicanciaRoutes = require('./routes/sindicancia')
@@ -82,6 +83,7 @@ router.use('/mural', muralRoutes)
 router.use('/contingencias', contingenciasRoutes)
 router.use('/admissaoDemissao', admissaoDemissaoRoutes)
 router.use('/celulas', celulaRoutes)
+router.use('/agenda', agendaRoutes)
 
 
 module.exports = router
