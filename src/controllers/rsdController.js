@@ -118,13 +118,21 @@ module.exports = {
 
             uploadRsd(req, res, async (err) => {
 
-                const pedidosBanco = await Pedido.find()
+                console.log('upload ok');
+
+                const pedidosBanco = await Pedido.find({
+                    // createdAt: {
+                    //     $gte: new Date(moment('2023-01-16').format('YYYY-MM-DD')),
+                    // }
+                }, {
+                    numero: 1,
+                    protocolo: 1,
+                    valorApresentado: 1,
+                }).lean()
 
                 console.log('pedidos banco ok');
 
                 let pedidos = []
-
-                console.log(req.file.originalname);
 
                 const valorCorte = req.body.corte
 
@@ -213,10 +221,6 @@ module.exports = {
 
                     console.log(`Numero de pedidos filtrado sem repetir e apenas com status que tratamos: ${arrPedidos.length}`);
 
-                    //console.log(mapCpfs);
-
-                    //Filtra os pedidos pelo valor de corte
-
                     for (const val of arrPedidos) {
                         for (const [cpf, value] of mapCpfs) {
                             if (value >= valorCorte) {
@@ -232,7 +236,6 @@ module.exports = {
 
                     console.log(arr.length);
 
-
                     for (const e of arr) {
 
                         const existeNaLpl = pedidosBanco.some(item => e[0] === item.numero);
@@ -241,23 +244,6 @@ module.exports = {
                         }
 
                     }
-
-                    // arr.forEach(e => { //Verifica se existe na lpl
-                    //     let flag = 0
-                    //     pedidosBanco.forEach(item => {
-                    //         if (e[0] == item.numero) {
-                    //             flag++
-                    //             return
-                    //         }
-                    //     })
-
-                    //     if (flag == 0) {
-                    //         pedidos.push(e)
-                    //     }
-
-                    // })
-
-                    console.log(pedidos.length);
 
                 } else {
                     console.log('fila pj');
@@ -1173,7 +1159,7 @@ module.exports = {
                 })
             }
 
-    
+
             if (pacoteBanco.statusPacote === 'A iniciar' && sucesso === 'Não') {        //1° Tentativa de contato
 
                 await Agenda.create({
@@ -1299,7 +1285,7 @@ module.exports = {
 
             console.log(`Data Agendamento: ${dataAgendamento}`);
 
-            if(sucesso === 'Necessário Agendar Horario') {
+            if (sucesso === 'Necessário Agendar Horario') {
                 await Pedido.updateMany({
                     pacote: pacote
                 }, {
@@ -1653,7 +1639,7 @@ module.exports = {
 
             if (analista !== '') {
                 filter = {
-                    analista: {$regex: analista},
+                    analista: { $regex: analista },
                 }
             }
 

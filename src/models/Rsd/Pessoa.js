@@ -12,7 +12,11 @@ const pessoaScheema = new mongoose.Schema({
     plano: String,
     atualizarDados: Boolean,
     contratoEmpresa: String,
-    mo: String
+    mo: String,
+    mensagens: Array,
+    horarioUltimaMensagem: String,
+    quantidadeMensagens: Number,
+    whatsapp: String
 }, {
     timestamps: true
 })
