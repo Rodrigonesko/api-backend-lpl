@@ -1001,6 +1001,12 @@ module.exports = {
                 acc[usuarioCriadorNome] = (acc[usuarioCriadorNome] || 0) + 1;
                 return acc;
             }, {});
+            const sortedCount = Object.entries(countByUsuarioCriadorNome)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .reduce((acc, [key, value]) => {
+                    acc[key] = value;
+                    return acc;
+                }, {});
             // console.log(countByUsuarioCriadorNome);
 
             const findPacotesMesPassado = await sql.query(`
@@ -1036,7 +1042,7 @@ module.exports = {
             return res.json({
                 msg: 'ok',
                 findDemandaIndividual: countByUsuarioDemandas,
-                findPacote: countByUsuarioCriadorNome,
+                findPacote: sortedCount,
                 findPacoteMesPassado: countByUsuarioCriadorNomeMesPassado,
             })
         } catch (error) {
@@ -1075,6 +1081,7 @@ module.exports = {
             GROUP BY CONVERT(date, data_demanda)
             `)
             // console.log(findDemanda.recordset);
+
 
             const findDemandaMesPassado = await sql.query(`
             SELECT CONVERT(date, data_demanda) as x, COUNT(*) as y
@@ -1127,7 +1134,7 @@ module.exports = {
             SELECT COUNT(*) as quantidade_pacote, Usuario.nome as nome_usuario
             FROM Pacote
             JOIN Usuario ON Pacote.usuario_id = Usuario.id
-            WHERE ${filter} AND Usuario.nome = '${analista}'
+            WHERE ${filter} AND Usuario.nome = '${analista}' AND Pacote.finalizado = 1
             GROUP BY Usuario.nome
             `)
             // console.log(totalPacotesIndividual.recordset);
@@ -1136,7 +1143,7 @@ module.exports = {
             SELECT COUNT(*) as quantidade_pacote, Usuario.nome as nome_usuario
             FROM Pacote
             JOIN Usuario ON Pacote.usuario_id = Usuario.id
-            WHERE ${filterMesPassado} AND Usuario.nome = '${analista}'
+            WHERE ${filterMesPassado} AND Usuario.nome = '${analista}' AND Pacote.finalizado = 1
             GROUP BY Usuario.nome
             `)
             // console.log(totalPacotesIndividualMesPassado.recordset);
@@ -1145,25 +1152,25 @@ module.exports = {
             SELECT TOP 1 Usuario.nome as nome_usuario, COUNT(*) as quantidade_pacote 
             FROM Pacote
             JOIN Usuario ON Pacote.usuario_id = Usuario.id
-            WHERE ${filter}
+            WHERE ${filter} AND Pacote.finalizado = 1
             GROUP BY Usuario.nome
             ORDER BY COUNT(*) DESC
             `)
-            console.log(totalPacotesMelhorAnalista.recordset);
+            // console.log(totalPacotesMelhorAnalista.recordset);
 
             const totalDemandasGeral = await sql.query(`
             SELECT COUNT(*) as quantidade_demanda
             FROM Demanda
             WHERE ${filterDemanda}
             `)
-            console.log(totalDemandasGeral.recordset);
+            // console.log(totalDemandasGeral.recordset);
 
             const totalDemandasGeralMesPassado = await sql.query(`
             SELECT COUNT(*) as quantidade_demanda
             FROM Demanda
             WHERE ${filterDemandaMesPassado}
             `)
-            console.log(totalDemandasGeralMesPassado.recordset);
+            // console.log(totalDemandasGeralMesPassado.recordset);
 
             return res.status(200).json({
                 totalPacotesIndividual: totalPacotesIndividual.recordset,
@@ -1175,6 +1182,61 @@ module.exports = {
         } catch (error) {
             console.log(error);
             return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    comparativoProducaoSindi: async (req, res) => {
+        try {
+
+            const { mes, analista } = req.params
+
+            const dataInicio = moment(mes).startOf('month').toDate();
+            const dataFim = moment(mes).endOf('month').toDate();
+
+            let filter = ''
+            if (dataInicio && dataFim) filter += ` Pacote.data_criacao BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
+
+            const verificarPorDia = await sql.query(`
+            SELECT CONVERT(date, data_criacao) as x, COUNT(*) as y, Usuario.nome as usuario
+            FROM Pacote
+            JOIN Usuario ON Pacote.usuario_id = Usuario.id
+            WHERE ${filter} AND Usuario.nome = '${analista}'
+            GROUP BY CONVERT(date, data_criacao), Usuario.nome
+            `);
+            // console.log(verificarPorDia.recordset);
+            const dadosPorAnalista = verificarPorDia.recordset.map(item => ({
+                x: item.x,
+                y: item.y
+            }));
+            // console.log(dadosPorAnalista);
+
+            const todasAsDatas = [...new Set([...dadosPorAnalista.map(item => item.x)])];
+
+            let series = [
+                {
+                    name: analista,
+                    data: [],
+                    type: 'bar'
+                }
+            ]
+            for (const date of todasAsDatas) {
+                const dadoPorAnalista = dadosPorAnalista.find(item => item.x === date);
+
+                console.log(dadoPorAnalista);
+                series[0].data.push({
+                    x: moment(date).format('DD/MM/YYYY'),
+                    y: dadoPorAnalista ? dadoPorAnalista.y : 0
+                })
+            }
+            // console.log(series[0].data);
+
+            return res.status(200).json({ series })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
                 msg: 'Internal Server Error',
                 error
             })
@@ -1222,9 +1284,7 @@ module.exports = {
                         complementacao: find.recordset[0].complementacao + 1
                     }
                 })
-
             }
-
 
         } catch (error) {
             console.log(error);
