@@ -12,6 +12,7 @@ const Scheema = new mongoose.Schema({
     anual: Boolean,
     dataInicio: String,
     descricao: String,
+    proximasDatas: [],
 }, {
     timestamps: true
 })
