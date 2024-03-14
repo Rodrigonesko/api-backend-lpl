@@ -360,7 +360,7 @@ module.exports = {
 
         tipoIrregularidade.sort((a, b) => a.nome.localeCompare(b.nome));
 
-        tipoIrregularidade.unshift({ nome: 'Irregularidade', id: 0 })
+        tipoIrregularidade.unshift({ nome: 'Sem Irregularidade', id: 0 })
 
         let filter = ''
 
@@ -1115,10 +1115,10 @@ module.exports = {
 
             let filterMesPassado = ''
             if (dataInicioMesPassado && dataFimMesPassado) filterMesPassado += ` Pacote.data_finalizacao BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
-            
+
             let filterDemanda = ''
             if (dataInicio && dataFim) filterDemanda += ` Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'`
-            
+
             let filterDemandaMesPassado = ''
             if (dataInicioMesPassado && dataFimMesPassado) filterDemandaMesPassado += ` Demanda.data_demanda BETWEEN '${dataInicioMesPassado.toISOString()}' AND '${dataFimMesPassado.toISOString()}'`
             await ensureConnection()
@@ -1233,5 +1233,5 @@ module.exports = {
                 error
             })
         }
-    },
+    }
 }
