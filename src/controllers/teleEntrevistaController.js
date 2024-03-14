@@ -3703,12 +3703,12 @@ module.exports = {
 
             console.log(id, divergenciaAnexo, proposta, nome);
 
-            if(id){
+            if (id) {
 
                 const result = await DadosEntrevista.findByIdAndUpdate(id, {
                     divergenciaAnexo
                 })
-    
+
                 return res.json(result)
             }
 
@@ -3717,6 +3717,37 @@ module.exports = {
                 nome
             }, {
                 divergenciaAnexo
+            })
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal Server Error"
+            })
+        }
+    },
+
+    alterarRetrabalhoEntrevista: async (req, res) => {
+        try {
+
+            const { id, retrabalho, proposta, nome } = req.body
+
+            if (id) {
+
+                const result = await DadosEntrevista.findByIdAndUpdate(id, {
+                    retrabalho
+                })
+
+                return res.json(result)
+            }
+
+            const result = await DadosEntrevista.findOneAndUpdate({
+                proposta,
+                nome
+            }, {
+                retrabalho
             })
 
             return res.json(result)
