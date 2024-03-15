@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Agenda = require("../models/Agenda/Agenda")
 const User = require("../models/User/User")
 const moment = require('moment');
@@ -47,6 +48,7 @@ module.exports = {
 
             for (let index = 0; index < 100; index++) {
                 agendas.push({
+                    _id: mongoose.Types.ObjectId(),
                     data: moment(dataInicio).add(condicao.dias * index, condicao.unidade).format('YYYY-MM-DD'),
                     concluido: false
                 })
@@ -95,10 +97,12 @@ module.exports = {
             for (const notes of agenda) {
                 for (const itens of notes.proximasDatas) {
                     // console.log(notes.nome);
-                    if ((notes.nome === req.user) && (itens.data === moment().format('YYYY-MM-DD')) && (itens.concluido === false)) {
+                    if ((notes.nome === req.user) && (itens.data <= moment().format('YYYY-MM-DD')) && (itens.concluido === false)) {
                         find.push({
+                            _id: itens._id,
                             nome: notes.nome,
                             descricao: notes.descricao,
+                            data: itens.data,
                             concluido: false,
                         })
                     }
@@ -142,20 +146,22 @@ module.exports = {
 
     updateAgendaCheck: async (req, res) => {
         try {
-            const { _id, data } = req.body
+            const { _id } = req.body
 
             console.log(req.body)
 
             const result = await Agenda.updateOne({
-                _id: _id,
-                "proximasDatas.$.data": data
+                'proximasDatas._id': mongoose.Types.ObjectId(_id),
             }, {
-                $set: {
-                    'proximasDatas.$.concluido': true,
-                }
+                $set: { 'proximasDatas.$.concluido': true, }
             })
 
-            return res.status(200).json(result)
+            console.log(mongoose.Types.ObjectId(_id));
+            console.log(result);
+
+            return res.status(200).json({
+                msg: 'ok'
+            })
         } catch (error) {
             console.log(error);
             return res.status(500).json({
