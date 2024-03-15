@@ -77,5 +77,6 @@ router.post('/nextCloseSchedule', auth, horarioController.createNextCloseSchedul
 router.get('/nextCloseSchedule', auth, horarioController.getCloseSchedule)
 router.delete('/nextCloseSchedule/:id', auth, horarioController.deleteNextCloseSchedule)
 router.put('/divergenciaAnexo', auth, teleEntrevistaController.alterarDivergenciaAnexo)
+router.put('/retrabalho', auth, teleEntrevistaController.alterarRetrabalhoEntrevista)
 
 module.exports = router

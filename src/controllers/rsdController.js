@@ -629,7 +629,7 @@ module.exports = {
     atualizarInformacoes: async (req, res) => {
         try {
 
-            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo, cpf } = req.body
+            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo, cpf, whatsapp } = req.body
 
             const pessoa = await Pessoa.findOneAndUpdate({
                 mo: mo
@@ -640,7 +640,8 @@ module.exports = {
                 fone2,
                 fone3,
                 contratoEmpresa,
-                cpf
+                cpf,
+                whatsapp
             })
 
             const pedido = await Pedido.updateMany({

@@ -81,7 +81,8 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     tea: String,
     administradora: String,
     situacaoAmil: String,
-    divergenciaAnexo: Boolean
+    divergenciaAnexo: Boolean,
+    retrabalho: Boolean
 }, {
     timestamps: true
 })

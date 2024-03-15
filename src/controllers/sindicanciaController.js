@@ -360,7 +360,7 @@ module.exports = {
 
         tipoIrregularidade.sort((a, b) => a.nome.localeCompare(b.nome));
 
-        tipoIrregularidade.unshift({ nome: 'Irregularidade', id: 0 })
+        tipoIrregularidade.unshift({ nome: 'Sem Irregularidade', id: 0 })
 
         let filter = ''
 
@@ -1293,5 +1293,5 @@ module.exports = {
                 error
             })
         }
-    },
+    }
 }
