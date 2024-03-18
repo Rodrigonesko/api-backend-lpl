@@ -47,9 +47,13 @@ module.exports = {
             }
 
             for (let index = 0; index < 100; index++) {
+                const nextDate = moment(dataInicio).add(condicao.dias * index, condicao.unidade);
+                if ((quantidadeRepeticao === 'diario') && (!nextDate.day() || nextDate.day() === 6)) { // Ignora dias de fim de semana (domingo ou sábado)
+                    continue;
+                }
                 agendas.push({
                     _id: mongoose.Types.ObjectId(),
-                    data: moment(dataInicio).add(condicao.dias * index, condicao.unidade).format('YYYY-MM-DD'),
+                    data: nextDate.format('YYYY-MM-DD'),
                     concluido: false
                 })
             }
@@ -167,6 +171,29 @@ module.exports = {
             return res.status(500).json({
                 msg: 'Internal Server Error',
                 error
+            })
+        }
+    },
+
+    setData: async (req, res) => {
+        try {
+
+            const findOne = await Agenda.findOne({ _id: req.body._id })
+
+            console.log(findOne);
+
+            if (findOne) {
+                await Agenda.updateOne({ _id: req.body._id }, { [`${req.body.proximasDatas}.$.data`]: req.body.data })
+            } else {
+                await Agenda.updateOne({ _id: req.body._id }, { [`${req.body.proximasDatas}.$.data`]: req.body.data })
+            }
+            const find = await User.findOne({ _id: req.body._id })
+
+            return res.status(200).json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
             })
         }
     },
