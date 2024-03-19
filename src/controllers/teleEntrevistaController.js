@@ -14,6 +14,7 @@ const xlsx = require('xlsx')
 const Horario = require('../models/TeleEntrevista/Horario')
 const { default: axios } = require('axios')
 const Log = require('../models/Logs/LogTele')
+const mega = require('megajs')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
