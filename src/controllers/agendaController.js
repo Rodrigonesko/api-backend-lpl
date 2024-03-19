@@ -178,18 +178,18 @@ module.exports = {
     setData: async (req, res) => {
         try {
 
-            const findOne = await Agenda.findOne({ _id: req.body._id })
+            const { data, _id } = req.body
 
-            console.log(findOne);
+            console.log(req.body);
 
-            if (findOne) {
-                await Agenda.updateOne({ _id: req.body._id }, { [`${req.body.proximasDatas}.$.data`]: req.body.data })
-            } else {
-                await Agenda.updateOne({ _id: req.body._id }, { [`${req.body.proximasDatas}.$.data`]: req.body.data })
-            }
-            const find = await User.findOne({ _id: req.body._id })
+            const update = await Agenda.updateOne({
+                'proximasDatas._id': mongoose.Types.ObjectId(_id)
+            }, {
+                $set: { 'proximasDatas.$.data': data, }
+            })
+            console.log(update);
 
-            return res.status(200).json(find)
+            return res.status(200).json(update)
         } catch (error) {
             console.log(error);
             return res.status(500).json({
