@@ -36,5 +36,8 @@ router.get('/demanda/producaoIndividualSindi/:mes/:analista', auth, sindicanciaC
 router.get('/demanda/comparativoProducaoSindi/:mes/:analista', auth, sindicanciaController.comparativoProducaoSindi)
 router.get('/demanda/quantidadeDemandasMensal/:mes', auth, sindicanciaController.quantidadeDemandasMensal)
 router.post('/demanda/complementacao', auth, sindicanciaController.createComplementacao)
+router.post('/itemChecklist', auth, sindicanciaController.createItemChecklist)
+router.get('/itemChecklist', auth, sindicanciaController.getItemChecklist)
+router.delete('/itemChecklist/:id', auth, sindicanciaController.deleteItemChecklist)
 
 module.exports = router
