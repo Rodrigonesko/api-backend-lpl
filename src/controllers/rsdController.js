@@ -3655,6 +3655,34 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
+    },
+
+    findPessoas: async (req, res) => {
+        try {
+            const { pesquisa } = req.params
+
+            console.log(req.params);
+
+            const encontrar = await Pessoa.find({
+                $or: [
+                    {
+                        nome: { $regex: pesquisa }
+                    }, {
+                        mo: { $regex: pesquisa }
+                    }, {
+                        cpf: { $regex: pesquisa }
+                    },
+                ]
+            })
+            console.log(encontrar);
+
+            return res.status(200).json(encontrar)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
     }
 }
 
