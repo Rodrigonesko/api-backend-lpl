@@ -728,17 +728,24 @@ module.exports = {
     finalizarDemanda: async (req, res) => {
         try {
 
-            const { id_demanda, justificativa, data } = req.body
+            const { id_demanda, justificativa, data, checklist } = req.body
 
             await ensureConnection()
 
-            console.log(id_demanda, justificativa, data);
+            // console.log(id_demanda, justificativa, data, checklist);
 
             const create = await sql.query(`INSERT INTO Finalizacao (id_demanda, justificativa, data) OUTPUT INSERTED.id VALUES (${id_demanda}, '${justificativa}', '${data}')`)
 
             if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar finalização' })
 
             const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            console.log(checklist);
+
+            for (const item of checklist) {
+                const createChecklist = await sql.query(`INSERT INTO Checklist (id_demanda, item, resposta, justificativa, observacao) VALUES (${id_demanda}, '${item.item}', '${item.resposta}', '${item.justificativa}', '${item.observacao}')`)
+                if (createChecklist.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar checklist' })
+            }
 
             return res.json({
                 msg: 'ok',
@@ -770,6 +777,7 @@ module.exports = {
             if (!id) return res.json({ msg: 'Erro ao deletar finalização' })
 
             const remove = await sql.query(`DELETE FROM Finalizacao WHERE id_demanda = ${id}`)
+            await sql.query(`DELETE FROM Checklist WHERE id_demanda = ${id}`)
 
             if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar finalização' })
 
@@ -777,6 +785,24 @@ module.exports = {
                 msg: 'ok'
             })
 
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getChecklist: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Checklist WHERE id_demanda = ${id}`)
+
+            return res.json(result.recordset)
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -1315,4 +1341,6 @@ module.exports = {
             })
         }
     }
+
+
 }
