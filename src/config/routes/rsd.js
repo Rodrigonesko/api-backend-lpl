@@ -64,5 +64,6 @@ router.get('/quantidadePedidosIndeferidos/:mes', auth, rsdController.quantidadeP
 router.get('/analitico/:mes', auth, rsdController.analiticoMensal)
 router.get('/producaoIndividual/:mes/:analista', auth, rsdController.producaoIndividual)
 router.get('/comparativoProducao/:mes/:analista', auth, rsdController.comparativoProducao)
+router.get('/findPessoas/:pesquisa', auth, rsdController.findPessoas)
 
 module.exports = router
