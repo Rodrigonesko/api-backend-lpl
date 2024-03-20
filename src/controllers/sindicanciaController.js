@@ -18,32 +18,6 @@ async function ensureConnection() {
     }
 }
 
-// const objDemanda = {
-//     id: 3202,
-//     codigo: '202400108',
-//     nome: 'LEONARDO COHEN ZAIDE SCHLANGER - ANALISE PF',
-//     cpf_cnpj: '161.014.857-65',
-//     cep: '22421000',
-//     uf: 'RJ',
-//     cidade: 'Rio de Janeiro',
-//     bairro: 'Ipanema',
-//     logradouro: 'Rua Barão de Jaguaripe',
-//     numero: '29 - COMPL 101',
-//     telefone: '(21) 97698-9004',
-//     especialidade: 'DIVERSAS',
-//     tipo_servico_id: 23, // tabela TipoServico
-//     observacao: 'Análise de beneficiário devido ao alto grau de custo médico',
-//     status_id: 2, // tabela Status
-//     data_atualizacao: 2024-02-16T16:50:42.337Z,
-//     empresa_id: 3, // tabela Empresa
-//     tipo_investigado_id: 7, // tabela TipoInvestigado
-//     data_demanda: 2024-02-16T16:50:35.253Z,
-//     escolha_anexo: null,
-//     usuario_criador_id: 68, // tabela Usuario
-//     usuario_distribuicao_id: null, // tabela Usuario
-//     id_area_empresa: 1 // tabela AreaEmpresa
-//   }
-
 module.exports = {
     getDemandas: async (req, res) => {
         try {
@@ -754,17 +728,24 @@ module.exports = {
     finalizarDemanda: async (req, res) => {
         try {
 
-            const { id_demanda, justificativa, data } = req.body
+            const { id_demanda, justificativa, data, checklist } = req.body
 
             await ensureConnection()
 
-            console.log(id_demanda, justificativa, data);
+            // console.log(id_demanda, justificativa, data, checklist);
 
             const create = await sql.query(`INSERT INTO Finalizacao (id_demanda, justificativa, data) OUTPUT INSERTED.id VALUES (${id_demanda}, '${justificativa}', '${data}')`)
 
             if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar finalização' })
 
             const newId = create.recordset[0].id; // Aqui está o novo ID
+
+            console.log(checklist);
+
+            for (const item of checklist) {
+                const createChecklist = await sql.query(`INSERT INTO Checklist (id_demanda, item, resposta, justificativa, observacao) VALUES (${id_demanda}, '${item.item}', '${item.resposta}', '${item.justificativa}', '${item.observacao}')`)
+                if (createChecklist.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar checklist' })
+            }
 
             return res.json({
                 msg: 'ok',
@@ -796,6 +777,7 @@ module.exports = {
             if (!id) return res.json({ msg: 'Erro ao deletar finalização' })
 
             const remove = await sql.query(`DELETE FROM Finalizacao WHERE id_demanda = ${id}`)
+            await sql.query(`DELETE FROM Checklist WHERE id_demanda = ${id}`)
 
             if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar finalização' })
 
@@ -803,6 +785,24 @@ module.exports = {
                 msg: 'ok'
             })
 
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getChecklist: async (req, res) => {
+        try {
+
+            const { id } = req.params
+
+            await ensureConnection()
+
+            const result = await new sql.query(`SELECT * FROM Checklist WHERE id_demanda = ${id}`)
+
+            return res.json(result.recordset)
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -1293,5 +1293,54 @@ module.exports = {
                 error
             })
         }
+    },
+
+    createItemChecklist: async (req, res) => {
+        try {
+            const { item, descricao } = req.body
+            await ensureConnection()
+            const create = await sql.query(`INSERT INTO ItensChecklist (item, descricao) OUTPUT INSERTED.id VALUES ('${item}', '${descricao}')`)
+            if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar item de checklist' })
+            const newId = create.recordset[0].id; // Aqui está o novo ID
+            return res.json({
+                msg: 'ok',
+                id: newId
+            })
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    getItemChecklist: async (req, res) => {
+        try {
+            await ensureConnection()
+            const result = await new sql.query(`SELECT * FROM ItensChecklist`)
+            return res.json(result.recordset)
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    deleteItemChecklist: async (req, res) => {
+        try {
+            const { id } = req.params
+            await ensureConnection()
+            const remove = await sql.query(`DELETE FROM ItensChecklist WHERE id = ${id}`)
+            if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar item de checklist' })
+            return res.json({ msg: 'ok' })
+        } catch (error) {
+            return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
     }
+
+
 }
