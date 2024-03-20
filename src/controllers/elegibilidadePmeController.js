@@ -60,6 +60,7 @@ module.exports = {
                     const vidas = item.Vidas
                     const colaborador = item.Colaborador
                     const situacao = item['Situação']
+                    const prioridade = item.Prioridade
                     let dataProtocolo = ExcelDateToJSDate(item['Data Protocolo'])
                     dataProtocolo.setDate(dataProtocolo.getDate() + 1)
                     dataProtocolo = moment(dataProtocolo).format('YYYY-MM-DD')
@@ -92,7 +93,8 @@ module.exports = {
                         gestor,
                         analista,
                         dataRecebimento,
-                        status
+                        status,
+                        prioridade
                     }
 
                     const existeProposta = await Proposta.findOne({
@@ -101,7 +103,6 @@ module.exports = {
 
                     await Proposta.create(obj)
                     qtd++
-
                 }
 
                 return res.status(200).json({
@@ -141,7 +142,7 @@ module.exports = {
 
             const result = await Proposta.find({
                 status
-            })
+            }).sort({prioridade: -1}).lean()
 
             return res.json(result)
 
@@ -161,7 +162,7 @@ module.exports = {
             const result = await Proposta.find({
                 status,
                 analista
-            })
+            }).sort({prioridade: -1}).lean()
 
             return res.json(result)
 
@@ -189,7 +190,7 @@ module.exports = {
             const result = await Proposta.find({
                 status,
                 proposta: { $regex: proposta }
-            })
+            }).sort({prioridade: -1}).lean()
 
             return res.json(result)
 
