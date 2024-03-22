@@ -755,7 +755,149 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    analiticoPme: async (req, res) => {
+        try {
+            const { mes } = req.params
+
+            const mesAjustado = moment(mes).format('MM/YYYY')
+
+            const total = await Proposta.countDocuments({
+                dataRecebimento: { $regex: mes },
+            })
+            // console.log(total);
+
+            const totalMesPassado = await Proposta.countDocuments({
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+            })
+            // console.log(totalMesPassado);
+
+            const concluidas = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
+                status: 'Concluido'
+            })
+            console.log(concluidas);
+
+            const concluidasMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
+                status: 'Concluido'
+            })
+            console.log(concluidasMesPassado);
+
+            const devolvidas = await Proposta.countDocuments({
+                dataConclusao: { $regex: new RegExp(`${mesAjustado}$`, 'i') },
+                status: 'Devolvida'
+            })
+            console.log(devolvidas);
+
+            const devolvidasMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
+                status: 'Devolvida'
+            })
+            console.log(devolvidasMesPassado);
+
+            return res.status(200).json({
+                total,
+                totalMesPassado,
+                concluidas,
+                concluidasMesPassado,
+                devolvidas,
+                devolvidasMesPassado,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    chartDataPme: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const propostasNoMes = await Proposta.find({
+                dataRecebimento: { $regex: mes }
+            }, {
+                dataRecebimento: 1
+            }).lean()
+
+            const propostasConcluidas = await Proposta.find({
+                dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
+                status: 'Concluída',
+            }, {
+                dataConclusao: 1
+            }).lean()
+
+            const propostasDevolvidas = await Proposta.find({
+                dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
+                status: 'Devolvida'
+            }, {
+                dataConclusao: 1
+            }).lean()
+
+            let dates = []
+
+            for (const proposta of propostasNoMes) {
+                if (!dates.includes(proposta.dataRecebimento)) {
+                    dates.push(proposta.dataRecebimento)
+                }
+            }
+
+            let series = [
+                {
+                    name: 'Concluídas',
+                    data: [],
+                    color: 'green',
+                    type: 'area'
+                },
+                {
+                    name: 'Devolvidas',
+                    data: [],
+                    color: '#FF0000',
+                    type: 'line'
+                },
+                {
+                    name: 'Total',
+                    data: [],
+                    color: '#0000FF',
+                    type: 'bar'
+                }
+            ]
+
+            for (const date of dates) {
+                const concluidas = propostasConcluidas.filter(proposta => proposta.dataConclusao === date).length
+                const devolvidas = propostasDevolvidas.filter(proposta => proposta.dataConclusao === date).length
+                const total = propostasNoMes.filter(proposta => proposta.dataRecebimento === date).length
+                series[0].data.push({
+                    x: date,
+                    y: concluidas
+                })
+                series[1].data.push({
+                    x: date,
+                    y: devolvidas
+                })
+                series[2].data.push({
+                    x: date,
+                    y: total
+                })
+            }
+
+            return res.json({
+                dates,
+                series
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
 }
 
 function ExcelDateToJSDate(serial) {
