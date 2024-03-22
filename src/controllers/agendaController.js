@@ -197,4 +197,31 @@ module.exports = {
             })
         }
     },
+
+    filterAgenda: async (req, res) => {
+        try {
+            const { pesquisa } = req.params
+
+            console.log(req.params)
+
+            const filter = await Agenda.find({
+                $or: [
+                    {
+                        nome: { $regex: new RegExp(pesquisa, 'i') }
+                    }, {
+                        descricao: { $regex: pesquisa }
+                    }
+                ]
+            })
+
+            console.log(filter)
+
+            return res.status(200).json(filter)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    }
 }
