@@ -18,7 +18,8 @@ const propostaScheema = new mongoose.Schema({
     dataRecebimento: String,
     dataConclusao: String,
     status: String,
-    motivo: String
+    motivo: String,
+    prioridade: String,
 }, {
     timestamps: true
 })

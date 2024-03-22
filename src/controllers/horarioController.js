@@ -1,6 +1,5 @@
 const Horario = require('../models/TeleEntrevista/Horario')
 const User = require('../models/User/User')
-const LogTele = require('../models/Logs/LogTele')
 const Rn = require('../models/TeleEntrevista/Rn')
 const CloseSchedule = require('../models/TeleEntrevista/CloseSchedule')
 const moment = require('moment')
@@ -425,7 +424,7 @@ module.exports = {
                     ]
                 })
 
-                if (result.quemFechou != req.user && result.quemFechou != undefined) {
+                if ((result.quemFechou != req.user && result.quemFechou != undefined) && !req?.acessos?.administrador) {
                     return res.status(500).json({
                         msg: `O horario ${horario} do dia ${moment(data).format('DD/MM/YYYY')} do analista ${responsavel} foi fechado por outro usuario. ${result.quemFechou}`
                     })

@@ -8,7 +8,6 @@ const DATABASE = process.env.MSSQL_DATABASE
 const USERNAME = process.env.MSSQL_USER
 const PASSWORD = process.env.MSSQL_PASSWORD
 
-
 let connection;
 
 async function ensureConnection() {
