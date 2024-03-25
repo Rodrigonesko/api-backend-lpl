@@ -142,7 +142,7 @@ module.exports = {
 
             const result = await Proposta.find({
                 status
-            }).sort({prioridade: -1}).lean()
+            }).sort({ prioridade: -1 }).lean()
 
             return res.json(result)
 
@@ -162,7 +162,7 @@ module.exports = {
             const result = await Proposta.find({
                 status,
                 analista
-            }).sort({prioridade: -1}).lean()
+            }).sort({ prioridade: -1 }).lean()
 
             return res.json(result)
 
@@ -190,7 +190,7 @@ module.exports = {
             const result = await Proposta.find({
                 status,
                 proposta: { $regex: proposta }
-            }).sort({prioridade: -1}).lean()
+            }).sort({ prioridade: -1 }).lean()
 
             return res.json(result)
 
@@ -778,25 +778,25 @@ module.exports = {
                 dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
                 status: 'Concluido'
             })
-            console.log(concluidas);
+            // console.log(concluidas);
 
             const concluidasMesPassado = await Proposta.countDocuments({
                 dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
                 status: 'Concluido'
             })
-            console.log(concluidasMesPassado);
+            // console.log(concluidasMesPassado);
 
             const devolvidas = await Proposta.countDocuments({
                 dataConclusao: { $regex: new RegExp(`${mesAjustado}$`, 'i') },
                 status: 'Devolvida'
             })
-            console.log(devolvidas);
+            // console.log(devolvidas);
 
             const devolvidasMesPassado = await Proposta.countDocuments({
                 dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
                 status: 'Devolvida'
             })
-            console.log(devolvidasMesPassado);
+            // console.log(devolvidasMesPassado);
 
             return res.status(200).json({
                 total,
@@ -824,13 +824,15 @@ module.exports = {
             }, {
                 dataRecebimento: 1
             }).lean()
+            // console.log(propostasNoMes);
 
             const propostasConcluidas = await Proposta.find({
                 dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
-                status: 'Concluída',
+                status: 'Concluido',
             }, {
                 dataConclusao: 1
             }).lean()
+            // console.log(propostasConcluidas);
 
             const propostasDevolvidas = await Proposta.find({
                 dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
@@ -838,12 +840,23 @@ module.exports = {
             }, {
                 dataConclusao: 1
             }).lean()
+            // console.log(propostasDevolvidas);
 
             let dates = []
 
             for (const proposta of propostasNoMes) {
-                if (!dates.includes(proposta.dataRecebimento)) {
-                    dates.push(proposta.dataRecebimento)
+                if (!dates.includes(moment(proposta.dataRecebimento).format('DD/MM/YYYY'))) {
+                    dates.push(moment(proposta.dataRecebimento).format('DD/MM/YYYY'))
+                }
+            }
+            for (const propostaConc of propostasConcluidas) {
+                if (!dates.includes(propostaConc.dataConclusao)) {
+                    dates.push(propostaConc.dataConclusao)
+                }
+            }
+            for (const propostaDevol of propostasDevolvidas) {
+                if (!dates.includes(propostaDevol.dataConclusao)) {
+                    dates.push(propostaDevol.dataConclusao)
                 }
             }
 
@@ -869,9 +882,9 @@ module.exports = {
             ]
 
             for (const date of dates) {
-                const concluidas = propostasConcluidas.filter(proposta => proposta.dataConclusao === date).length
-                const devolvidas = propostasDevolvidas.filter(proposta => proposta.dataConclusao === date).length
-                const total = propostasNoMes.filter(proposta => proposta.dataRecebimento === date).length
+                const concluidas = propostasConcluidas.filter(propostaConc => propostaConc.dataConclusao === date).length
+                const devolvidas = propostasDevolvidas.filter(propostaDevol => propostaDevol.dataConclusao === date).length
+                const total = propostasNoMes.filter(proposta => moment(proposta.dataRecebimento).format('DD/MM/YYYY') === date).length
                 series[0].data.push({
                     x: date,
                     y: concluidas
@@ -885,6 +898,9 @@ module.exports = {
                     y: total
                 })
             }
+
+            // console.log(dates);
+            // console.log(series);
 
             return res.json({
                 dates,

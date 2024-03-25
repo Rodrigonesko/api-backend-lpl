@@ -2006,8 +2006,6 @@ module.exports = {
 
             const { mes } = req.params
 
-
-
             const propostasNoMes = await Proposta.find({
                 dataImportacao: { $regex: mes }
             }, {
@@ -2032,12 +2030,23 @@ module.exports = {
             }, {
                 dataConclusao: 1
             }).lean()
+            console.log(propostasCanceladas);
 
             let dates = []
 
             for (const proposta of propostasNoMes) {
                 if (!dates.includes(proposta.dataImportacao)) {
                     dates.push(proposta.dataImportacao)
+                }
+            }
+            for (const propostaConc of propostasConcluidas) {
+                if (!dates.includes(propostaConc.dataConclusao)) {
+                    dates.push(propostaConc.dataConclusao)
+                }
+            }
+            for (const propostasCanc of propostasCanceladas) {
+                if (!dates.includes(propostasCanc.dataConclusao)) {
+                    dates.push(propostasCanc.dataConclusao)
                 }
             }
 
@@ -2063,8 +2072,8 @@ module.exports = {
             ]
 
             for (const date of dates) {
-                const concluidas = propostasConcluidas.filter(proposta => proposta.dataConclusao === date).length
-                const canceladas = propostasCanceladas.filter(proposta => proposta.dataConclusao === date).length
+                const concluidas = propostasConcluidas.filter(propostaConc => propostaConc.dataConclusao === date).length
+                const canceladas = propostasCanceladas.filter(propostasCanc => propostasCanc.dataConclusao === date).length
                 const total = propostasNoMes.filter(proposta => proposta.dataImportacao === date).length
                 series[0].data.push({
                     x: date,
@@ -2079,6 +2088,8 @@ module.exports = {
                     y: total
                 })
             }
+
+            console.log(dates);
 
             return res.json({
                 dates,
