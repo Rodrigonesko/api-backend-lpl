@@ -142,7 +142,7 @@ module.exports = {
 
             const result = await Proposta.find({
                 status
-            }).sort({prioridade: -1}).lean()
+            }).sort({ prioridade: -1 }).lean()
 
             return res.json(result)
 
@@ -162,7 +162,7 @@ module.exports = {
             const result = await Proposta.find({
                 status,
                 analista
-            }).sort({prioridade: -1}).lean()
+            }).sort({ prioridade: -1 }).lean()
 
             return res.json(result)
 
@@ -190,7 +190,7 @@ module.exports = {
             const result = await Proposta.find({
                 status,
                 proposta: { $regex: proposta }
-            }).sort({prioridade: -1}).lean()
+            }).sort({ prioridade: -1 }).lean()
 
             return res.json(result)
 
@@ -756,7 +756,165 @@ module.exports = {
                 msg: 'Internal Server Error'
             })
         }
-    }
+    },
+
+    analiticoPme: async (req, res) => {
+        try {
+            const { mes } = req.params
+
+            const mesAjustado = moment(mes).format('MM/YYYY')
+
+            const total = await Proposta.countDocuments({
+                dataRecebimento: { $regex: mes },
+            })
+            // console.log(total);
+
+            const totalMesPassado = await Proposta.countDocuments({
+                dataRecebimento: { $regex: moment(mes).subtract(1, 'months').format('YYYY-MM') },
+            })
+            // console.log(totalMesPassado);
+
+            const concluidas = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
+                status: 'Concluido'
+            })
+            // console.log(concluidas);
+
+            const concluidasMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
+                status: 'Concluido'
+            })
+            // console.log(concluidasMesPassado);
+
+            const devolvidas = await Proposta.countDocuments({
+                dataConclusao: { $regex: new RegExp(`${mesAjustado}$`, 'i') },
+                status: 'Devolvida'
+            })
+            // console.log(devolvidas);
+
+            const devolvidasMesPassado = await Proposta.countDocuments({
+                dataConclusao: { $regex: moment(mes).subtract(1, 'months').format('MM/YYYY') },
+                status: 'Devolvida'
+            })
+            // console.log(devolvidasMesPassado);
+
+            return res.status(200).json({
+                total,
+                totalMesPassado,
+                concluidas,
+                concluidasMesPassado,
+                devolvidas,
+                devolvidasMesPassado,
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    chartDataPme: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const propostasNoMes = await Proposta.find({
+                dataRecebimento: { $regex: mes }
+            }, {
+                dataRecebimento: 1
+            }).lean()
+            // console.log(propostasNoMes);
+
+            const propostasConcluidas = await Proposta.find({
+                dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
+                status: 'Concluido',
+            }, {
+                dataConclusao: 1
+            }).lean()
+            // console.log(propostasConcluidas);
+
+            const propostasDevolvidas = await Proposta.find({
+                dataConclusao: { $regex: moment(mes).format('MM/YYYY') },
+                status: 'Devolvida'
+            }, {
+                dataConclusao: 1
+            }).lean()
+            // console.log(propostasDevolvidas);
+
+            let dates = []
+
+            for (const proposta of propostasNoMes) {
+                if (!dates.includes(moment(proposta.dataRecebimento).format('DD/MM/YYYY'))) {
+                    dates.push(moment(proposta.dataRecebimento).format('DD/MM/YYYY'))
+                }
+            }
+            for (const propostaConc of propostasConcluidas) {
+                if (!dates.includes(propostaConc.dataConclusao)) {
+                    dates.push(propostaConc.dataConclusao)
+                }
+            }
+            for (const propostaDevol of propostasDevolvidas) {
+                if (!dates.includes(propostaDevol.dataConclusao)) {
+                    dates.push(propostaDevol.dataConclusao)
+                }
+            }
+
+            let series = [
+                {
+                    name: 'Concluídas',
+                    data: [],
+                    color: 'green',
+                    type: 'area'
+                },
+                {
+                    name: 'Devolvidas',
+                    data: [],
+                    color: '#FF0000',
+                    type: 'line'
+                },
+                {
+                    name: 'Total',
+                    data: [],
+                    color: '#0000FF',
+                    type: 'bar'
+                }
+            ]
+
+            for (const date of dates) {
+                const concluidas = propostasConcluidas.filter(propostaConc => propostaConc.dataConclusao === date).length
+                const devolvidas = propostasDevolvidas.filter(propostaDevol => propostaDevol.dataConclusao === date).length
+                const total = propostasNoMes.filter(proposta => moment(proposta.dataRecebimento).format('DD/MM/YYYY') === date).length
+                series[0].data.push({
+                    x: date,
+                    y: concluidas
+                })
+                series[1].data.push({
+                    x: date,
+                    y: devolvidas
+                })
+                series[2].data.push({
+                    x: date,
+                    y: total
+                })
+            }
+
+            // console.log(dates);
+            // console.log(series);
+
+            return res.json({
+                dates,
+                series
+            })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
 }
 
 function ExcelDateToJSDate(serial) {

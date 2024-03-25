@@ -17,5 +17,7 @@ router.get('/producaoDiaria/:data', auth, elegibilidadePmeController.producaoDia
 router.get('/producaoMensal/:mes/:analista', auth, elegibilidadePmeController.producaoMensal)
 router.get('/relatorioProducaoMensal/:mes', auth, elegibilidadePmeController.relatorioProducaoMensal)
 router.get('/analitico/:mes/:analista', auth, elegibilidadePmeController.analiticoMensal)
+router.get('/analiticoPme/:mes', auth, elegibilidadePmeController.analiticoPme)
+router.get('/chartDataPme/:mes', auth, elegibilidadePmeController.chartDataPme)
 
 module.exports = router
