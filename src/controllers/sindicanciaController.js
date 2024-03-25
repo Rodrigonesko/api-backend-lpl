@@ -842,7 +842,6 @@ module.exports = {
             `)
             const arrayFind = Array.isArray(find.recordset) ? find.recordset : []
             const countArrayFind = arrayFind.length
-            console.log(countArrayFind);
 
             const findMesPassado = await sql.query(`
             SELECT Demanda.*, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, Status.nome as status_nome
@@ -876,7 +875,6 @@ module.exports = {
             `)
             const arrayFindConcluidasMesPassado = Array.isArray(findConcluidasMesPassado.recordset) ? findConcluidasMesPassado.recordset : []
             const countArrayFindConcluidasMesPassado = arrayFindConcluidasMesPassado.length
-            console.log(countArrayFindConcluidasMesPassado);
 
             return res.json({
                 msg: 'ok',
@@ -1007,6 +1005,7 @@ module.exports = {
                     return acc;
                 }, {});
             // console.log(countByUsuarioCriadorNome);
+            console.log(sortedCount);
 
             const findPacotesMesPassado = await sql.query(`
             SELECT Pacote.*, Usuario.nome as usuario_criador_nome
@@ -1047,6 +1046,53 @@ module.exports = {
         } catch (error) {
             console.log(error);
             return res.json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    produtividadeAnalistas: async (req, res) => {
+        try {
+
+            const { mes } = req.params
+
+            const dataInicio = moment(mes).startOf('month').toDate();
+            const dataFim = moment(mes).endOf('month').toDate()
+
+            await ensureConnection();
+
+            const find = await sql.query(`
+            SELECT Demanda.*, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, UsuarioExecutor.nome as usuario_executor_nome, RelatorioDemanda.fraude as fraude,
+            (SELECT COUNT(*) FROM Beneficiario WHERE Beneficiario.id_demanda = Demanda.id) as num_beneficiarios,
+            (SELECT COUNT(*) FROM Prestador WHERE Prestador.id_demanda = Demanda.id) as num_prestadores
+            FROM Demanda
+            JOIN Usuario ON Demanda.usuario_criador_id = Usuario.id
+            LEFT JOIN Usuario UsuarioDistribuicao ON Demanda.usuario_distribuicao_id = UsuarioDistribuicao.id
+            LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
+            LEFT JOIN Usuario UsuarioExecutor ON Pacote.usuario_id = UsuarioExecutor.id
+            LEFT JOIN RelatorioDemanda ON Demanda.id = RelatorioDemanda.demanda_id
+            WHERE Demanda.data_demanda BETWEEN '${dataInicio.toISOString()}' AND '${dataFim.toISOString()}'
+            `)
+
+            let producao = []
+
+            let producaoMesPassado = [{
+                nome: 'João',
+                quantidadeDemandasCriadas: 0,
+                quantidadeDemandasDistribuidas: 0,
+                quantidadeDemandasConcluidas: 0,
+                quantidadeBeneficiarios: 0,
+                quantidadePrestadores: 0,
+                quantidadeFraude: 0
+            }]
+
+            return res.json({
+                msg: 'ok'
+            })
+
+        } catch (error) {
+            return res.status(500).json({
                 msg: 'Internal Server Error',
                 error
             })
