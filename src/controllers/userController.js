@@ -513,6 +513,9 @@ module.exports = {
             const aniversarios = []
 
             for (const user of result) {
+                if (user.inativo) { // Verifique se o usuario está ativo
+                    continue
+                }
                 if (user.dataAniversario) { // Verifique se o usuário possui uma data de aniversário definida
                     aniversarios.push({
                         nome: user.name,
