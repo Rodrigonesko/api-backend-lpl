@@ -58,13 +58,7 @@ module.exports = {
             const saltRounds = 10; // Aumente o número de rodadas de hashing
             const plainPassword = '123';
 
-            let encryptedPassword = '';
-
-            bcrypt.genSalt(saltRounds, function (err, salt) {
-                bcrypt.hash(plainPassword, salt, function (err, hash) {
-                    encryptedPassword = hash;
-                });
-            });
+            let encryptedPassword = await bcrypt.hash(plainPassword, saltRounds);
 
             let acessos = {
                 agendamento: false,
@@ -184,7 +178,9 @@ module.exports = {
                 return res.status(401).json({ message: `As senhas não conferem` })
             }
 
-            const encryptedPassword = await bcrypt.hash(password, 8)
+            const saltRounds = 10
+
+            const encryptedPassword = await bcrypt.hash(password, saltRounds)
 
             const updatePass = await User.findOneAndUpdate({
                 email: req.email
@@ -299,7 +295,9 @@ module.exports = {
 
             const { email } = req.body
 
-            const encryptedPassword = await bcrypt.hash('123', 8)
+            const saltRounds = 10
+
+            const encryptedPassword = await bcrypt.hash('123', saltRounds)
 
             const update = await User.updateOne({
                 email
