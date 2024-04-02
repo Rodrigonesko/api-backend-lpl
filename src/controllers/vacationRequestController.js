@@ -7,8 +7,13 @@ module.exports = {
 
     findAll: async (req, res) => {
         try {
-            const encontrarTodos = await VacationRequest.find({
-            }).sort({ dataInicio: -1 })
+            const activeUsers = await User.find({ inativo: { $ne: true } })
+            const activeUserNames = activeUsers.map(user => user.nomeCompleto || user.name)
+
+            console.log(activeUserNames);
+
+            const encontrarTodos = await VacationRequest.find({ colaborador: { $in: activeUserNames } }).sort({ dataInicio: -1 })
+
             return res.status(200).json({
                 encontrarTodos
             })
