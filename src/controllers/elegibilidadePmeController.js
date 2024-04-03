@@ -122,11 +122,9 @@ module.exports = {
 
     show: async (req, res) => {
         try {
-
             const result = await Proposta.find()
 
             return res.status(200).json(result)
-
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -137,15 +135,28 @@ module.exports = {
 
     propostasPorStatus: async (req, res) => {
         try {
-
             const { status } = req.params
+
+            let { limit, page } = req.query
+
+            console.log(req.query);
+
+            console.log('Chegou  aqui');
+            if (limit === undefined) limit = 10
+            if (page === undefined) page = 1
+            let skip = (page - 1) * limit
 
             const result = await Proposta.find({
                 status
-            }).sort({ prioridade: -1 }).lean()
+            }).skip(skip).limit(limit).sort({ prioridade: -1 }).lean()
 
-            return res.json(result)
+            const total = await Proposta.countDocuments({
+                status
+            })
 
+            console.log(result.length);
+
+            return res.status(200).json({ result, total })
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -157,15 +168,39 @@ module.exports = {
     propostasPorStatusEAnalista: async (req, res) => {
         try {
 
-            const { status, analista } = req.params
+            let { status, analista, vidas, limit, page } = req.query
+
+            if (limit === undefined) limit = 10
+            if (page === undefined) page = 1
+            let skip = (page - 1) * limit
+
+
+            if (analista === 'Todos') {
+                const total = await Proposta.countDocuments({
+                    status,
+                    vidas: vidas === '' ? { $exists: true } : vidas
+                })
+                const result = await Proposta.find({
+                    status,
+                    vidas: vidas === '' ? { $exists: true } : vidas
+                }).limit(limit).skip(skip).sort({ prioridade: -1 }).lean()
+
+                return res.status(200).json({ result, total })
+            }
+
+            const total = await Proposta.countDocuments({
+                status,
+                analista,
+                vidas: vidas === '' ? { $exists: true } : vidas
+            })
 
             const result = await Proposta.find({
                 status,
-                analista
-            }).sort({ prioridade: -1 }).lean()
+                analista,
+                vidas: vidas === '' ? { $exists: true } : vidas
+            }).limit(limit).skip(skip).sort({ prioridade: -1 }).lean()
 
-            return res.json(result)
-
+            return res.status(200).json({ result, total })
         } catch (error) {
             console.log(error);
             return res.status(500).json({
