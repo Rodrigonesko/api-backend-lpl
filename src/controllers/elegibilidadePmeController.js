@@ -141,9 +141,9 @@ module.exports = {
 
             console.log(req.query);
 
-            console.log('Chegou  aqui');
-            if (limit === undefined) limit = 10
-            if (page === undefined) page = 1
+            console.log('Chegou  aqui!');
+            if (limit === 'undefined') limit = 10
+            if (page === 'undefined') page = 1
             let skip = (page - 1) * limit
 
             const result = await Proposta.find({
@@ -170,34 +170,34 @@ module.exports = {
 
             let { status, analista, vidas, limit, page } = req.query
 
-            if (limit === undefined) limit = 10
-            if (page === undefined) page = 1
+            if (limit === 'undefined') limit = 10
+            if (page === 'undefined') page = 1
             let skip = (page - 1) * limit
 
+            console.log(req.query);
 
-            if (analista === 'Todos') {
+            if (analista === 'Todos' || analista === '') {
                 const total = await Proposta.countDocuments({
                     status,
                     vidas: vidas === '' ? { $exists: true } : vidas
                 })
                 const result = await Proposta.find({
                     status,
-                    vidas: vidas === '' ? { $exists: true } : vidas
+                    vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
                 }).limit(limit).skip(skip).sort({ prioridade: -1 }).lean()
-
                 return res.status(200).json({ result, total })
             }
 
             const total = await Proposta.countDocuments({
                 status,
                 analista,
-                vidas: vidas === '' ? { $exists: true } : vidas
+                vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
             })
 
             const result = await Proposta.find({
                 status,
                 analista,
-                vidas: vidas === '' ? { $exists: true } : vidas
+                vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
             }).limit(limit).skip(skip).sort({ prioridade: -1 }).lean()
 
             return res.status(200).json({ result, total })
