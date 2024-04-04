@@ -2,6 +2,7 @@ const sql = require('mssql')
 const Demanda = require('../models/Sindicancia/Demanda')
 const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao, getDemandaById, getTipoIrregularidade } = require('../services/sindicancia.service')
 const moment = require('moment')
+require('moment-business-days')
 
 const SERVER = process.env.MSSQL_SERVER
 const DATABASE = process.env.MSSQL_DATABASE
@@ -42,7 +43,7 @@ module.exports = {
             if (codigo) filter += ` AND Demanda.codigo LIKE '%${codigo}%'`;
 
             let result = await new sql.query(`
-            SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, UsuarioExecutor.id as usuario_executor_id, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao, Pacote.data_criacao as data_criacao_pacote
+            SELECT Demanda.*, TipoServico.nome AS tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, UsuarioExecutor.id as usuario_executor_id, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao, Pacote.data_criacao as data_criacao_pacote, DatasBradesco.data_previa as data_previa, DatasBradesco.data_final_entrega as data_final_entrega
             FROM Demanda
             RIGHT JOIN TipoServico ON Demanda.tipo_servico_id = TipoServico.id
             RIGHT JOIN Status ON Demanda.status_id = Status.id
@@ -55,6 +56,7 @@ module.exports = {
             LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
             LEFT JOIN Usuario UsuarioExecutor ON Pacote.usuario_id = UsuarioExecutor.id
             LEFT JOIN Complementacao ON Demanda.id = Complementacao.id_demanda
+            LEFT JOIN DatasBradesco ON Demanda.id = DatasBradesco.demanda_id
             WHERE 1=1 ${filter}
             ORDER BY id DESC
             OFFSET ${skip} ROWS FETCH NEXT ${limit} ROWS ONLY
@@ -1380,7 +1382,54 @@ module.exports = {
             if (remove.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao deletar item de checklist' })
             return res.json({ msg: 'ok' })
         } catch (error) {
-            return res.json({
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    },
+
+    gerarDatasBradesco: async (req, res) => {
+        try {
+
+            const { id } = req.body
+            console.log(id);
+            await ensureConnection()
+            const find = await new sql.query(`SELECT * FROM Demanda WHERE id = ${id}`)
+            if (find.recordset.length === 0) return res.status(401).json({ msg: 'Demanda não encontrada' })
+            const demanda = find.recordset[0]
+            const dataPrevia = moment(demanda.data_demanda).businessAdd(5, 'days').format('YYYY-MM-DD')
+            const prazoFinalizacao = moment(demanda.data_demanda).businessAdd(10, 'days').format('YYYY-MM-DD')
+            console.log(dataPrevia, prazoFinalizacao);
+            const findDatas = await new sql.query(`SELECT * FROM DatasBradesco WHERE demanda_id = ${id}`)
+            if (findDatas.recordset.length !== 0) {
+                const update = await sql.query(`UPDATE DatasBradesco SET data_previa = '${dataPrevia}', data_final_entrega = '${prazoFinalizacao}' WHERE demanda_id = ${id}`)
+                if (update.rowsAffected[0] === 0) return res.status(401).json({ msg: 'Erro ao atualizar datas' })
+                return res.json({
+                    msg: 'ok',
+                    result: {
+                        id,
+                        data_previa: dataPrevia,
+                        data_final_entrega: prazoFinalizacao
+                    }
+                })
+            }
+
+            const update = await sql.query(`INSERT INTO DatasBradesco (demanda_id, data_previa, data_final_entrega) VALUES (${id}, '${dataPrevia}', '${prazoFinalizacao}')`)
+
+            if (update.rowsAffected[0] === 0) return res.status(400).json({ msg: 'Erro ao criar datas' })
+
+            return res.status(200).json({
+                msg: 'ok',
+                result: {
+                    id,
+                    data_previa: dataPrevia,
+                    data_final_entrega: prazoFinalizacao
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
                 msg: 'Internal Server Error',
                 error
             })
