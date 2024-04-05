@@ -41,5 +41,6 @@ router.get('/itemChecklist', auth, sindicanciaController.getItemChecklist)
 router.delete('/itemChecklist/:id', auth, sindicanciaController.deleteItemChecklist)
 router.get('/demanda/checklist/:id', auth, sindicanciaController.getChecklist)
 router.get('/demanda/produtividadeAnalistas/:mes', sindicanciaController.produtividadeAnalistas)
+router.post('/demanda/gerarDatas', auth, sindicanciaController.gerarDatasBradesco)
 
 module.exports = router

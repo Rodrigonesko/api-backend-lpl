@@ -3,7 +3,9 @@ const User = require('../models/User/User')
 
 async function verificarFerias() {
 
-    const users = await User.find()
+    const users = await User.find({
+        inativo: { $ne: true }
+    })
 
     const anoAtual = moment().year(); // Obtém o ano atual
 
@@ -38,7 +40,6 @@ async function verificarFerias() {
                 dataDesejada2: '',
                 anoVencimento
             }
-            console.log(`entrou`, obj);
             await User.updateOne({
                 _id: user._id
             }, {
