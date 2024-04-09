@@ -416,17 +416,11 @@ module.exports = {
 
     createTipoIrregularidade: async (req, res) => {
         try {
-
             const { irregularidade } = req.body
-
             await ensureConnection()
-
             const create = await sql.query(`INSERT INTO TipoIrregularidade (nome) OUTPUT INSERTED.id VALUES ('${irregularidade}')`)
-
             if (create.rowsAffected[0] === 0) return res.json({ msg: 'Erro ao criar irregularidade' })
-
             const newId = create.recordset[0].id; // Aqui está o novo ID
-
             return res.json({
                 msg: 'ok',
                 id: newId // Retornando o novo ID na resposta
@@ -442,13 +436,9 @@ module.exports = {
 
     getTipoIrregularidade: async (req, res) => {
         try {
-
             await ensureConnection()
-
             const irregularidades = await getTipoIrregularidade()
-
             return res.json(irregularidades)
-
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
