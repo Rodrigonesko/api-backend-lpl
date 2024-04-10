@@ -139,20 +139,22 @@ module.exports = {
 
             let { limit, page } = req.query
 
-            console.log(req.query);
+            console.log(req.query, status);
 
             console.log('Chegou  aqui!');
             if (limit === 'undefined') limit = 10
             if (page === 'undefined') page = 1
             let skip = (page - 1) * limit
 
-            const result = await Proposta.find({
-                status
-            }).skip(skip).limit(limit).sort({ prioridade: -1 }).lean()
+            let query = Proposta.find({ status }).sort({ prioridade: -1 }).lean();
 
-            const total = await Proposta.countDocuments({
-                status
-            })
+            if (limit !== 'ilimitado') {
+                query = query.skip(skip).limit(limit);
+            }
+
+            const result = await query;
+            
+            const total = await Proposta.countDocuments({ status })
 
             console.log(result.length);
 
@@ -167,38 +169,34 @@ module.exports = {
 
     propostasPorStatusEAnalista: async (req, res) => {
         try {
-
             let { status, analista, vidas, limit, page } = req.query
 
-            if (limit === 'undefined') limit = 10
-            if (page === 'undefined') page = 1
-            let skip = (page - 1) * limit
+            let skip = 0;
+            if (limit !== 'ilimitado') {
+                if (page === 'undefined') page = 1
+                skip = (page - 1) * limit
+            }
 
             console.log(req.query);
 
-            if (analista === 'Todos' || analista === '') {
-                const total = await Proposta.countDocuments({
-                    status,
-                    vidas: vidas === '' ? { $exists: true } : vidas
-                })
-                const result = await Proposta.find({
-                    status,
-                    vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
-                }).limit(limit).skip(skip).sort({ prioridade: -1 }).lean()
-                return res.status(200).json({ result, total })
+            let query = {
+                status,
+                vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
+            };
+
+            if (analista !== 'Todos' && analista !== '') {
+                query.analista = analista;
             }
 
-            const total = await Proposta.countDocuments({
-                status,
-                analista,
-                vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
-            })
+            const total = await Proposta.countDocuments(query)
 
-            const result = await Proposta.find({
-                status,
-                analista,
-                vidas: (vidas === '' || vidas === 'undefined') ? { $exists: true } : vidas
-            }).limit(limit).skip(skip).sort({ prioridade: -1 }).lean()
+            let resultQuery = Proposta.find(query).sort({ prioridade: -1 }).lean();
+
+            if (limit !== 'ilimitado') {
+                resultQuery = resultQuery.limit(limit).skip(skip);
+            }
+
+            const result = await resultQuery;
 
             return res.status(200).json({ result, total })
         } catch (error) {

@@ -5,6 +5,7 @@ const DadosEntrevista = require('../models/TeleEntrevista/DadosEntrevista')
 const Rn = require('../models/TeleEntrevista/Rn')
 const User = require('../models/User/User')
 const UrgenciasEmergencia = require('../models/UrgenciasEmergencias/UrgenciasEmergencia')
+const TeleEntrevisaService = require('../services/teleEntrevista.service')
 
 const moment = require('moment')
 const fs = require('fs')
@@ -3038,49 +3039,7 @@ module.exports = {
 
     quantidadeAnalistasPorMes: async (req, res) => {
         try {
-
-            const { mes } = req.params
-
-            const diasUteis = countWeekdaysInMonth(mes.split('-')[0], mes.split('-')[1] - 1, holidays)
-
-            let result = await DadosEntrevista.aggregate([
-                {
-                    $match: {
-                        dataEntrevista: { $regex: mes },
-                        responsavel: { $nin: ['Sem Sucesso de Contato!', 'Beneficiario Solicitou o Cancelamento'] },
-                    }
-                },
-                {
-                    $group: {
-                        _id: '$responsavel',
-                        total: { $sum: 1 },
-                        diasTrabalhados: { $addToSet: "$dataEntrevista" }, // Adiciona a data (primeiros 10 caracteres de dataEntrevista) ao conjunto se ainda não estiver presente
-                        houveDivergencia: { $sum: { $cond: [{ $eq: ["$houveDivergencia", "Sim"] }, 1, 0] } }
-                    }
-                }
-            ])
-
-            result = result.map(item => {
-                return ({
-                    analista: item._id,
-                    total: item.total,
-                    media: (item.total / diasUteis),
-                    houveDivergencia: item.houveDivergencia,
-                    mediaDivergencia: (item.houveDivergencia / item.total) * 100,
-                })
-            }).sort((a, b) => b.total - a.total)
-
-            const media = result.reduce((acc, item) => acc + item.media, 0) / result.length
-            const mediaDiasTrabalhados = result.reduce((acc, item) => acc + item.mediaDiasTrabalhados, 0) / result.length
-            const mediaTotal = result.reduce((acc, item) => acc + item.total, 0) / result.length
-
-            return res.json({
-                result,
-                mediaTotal,
-                mediaDiasTrabalhados,
-                media
-            })
-
+            return res.json(await TeleEntrevisaService.quantidadeAnalistasPorMes())
         } catch (error) {
             console.log(error);
             return res.status(500).json({

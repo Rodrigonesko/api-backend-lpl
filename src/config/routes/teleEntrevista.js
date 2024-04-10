@@ -3,6 +3,7 @@ const router = express.Router()
 const teleEntrevistaController = require('../../controllers/teleEntrevistaController')
 const horarioController = require('../../controllers/horarioController')
 const auth = require('../../middlewares/auth')
+const teleEntrevistaService = require('../../services/teleEntrevista.service')
 
 //Tele Entrevistas
 
