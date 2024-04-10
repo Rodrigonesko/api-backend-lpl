@@ -64,7 +64,7 @@ router.get('/relatorioRnUePorMes/:mes', auth, teleEntrevistaController.relatorio
 router.get('/agendasFechadas', auth, horarioController.getAgendasFechadas)
 router.get('/relatorioProdutividadeAnexosMensal/:mes', auth, teleEntrevistaController.relatorioProdutividadeAnexosMensal)
 router.post('/criarHorarios', horarioController.gerarHorarioIndividual)
-router.get('/quantidadeAnalistasPorMes/:mes', auth, teleEntrevistaController.quantidadeAnalistasPorMes)
+router.get('/quantidadeAnalistasPorMes', auth, teleEntrevistaController.quantidadeAnalistasPorMes)
 router.post('/filterEntrevistasRealizdas', auth, teleEntrevistaController.filterEntrevistasRealizadas)
 router.post('/filterQueryDadosEntrevistas', auth, teleEntrevistaController.filterQueryDadosEntrevistas)
 router.get('/filterProducao', auth, teleEntrevistaController.filterProducao)

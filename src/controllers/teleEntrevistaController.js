@@ -3037,9 +3037,9 @@ module.exports = {
         }
     },
 
-    quantidadeAnalistasPorMes: async (req, res) => {
+    quantidadeAnalistasPorMes: async ({ query } = req, res) => {
         try {
-            return res.json(await TeleEntrevisaService.quantidadeAnalistasPorMes())
+            return res.json(await TeleEntrevisaService.quantidadeAnalistasPorMes(query.dataInicio, query.dataFim))
         } catch (error) {
             console.log(error);
             return res.status(500).json({

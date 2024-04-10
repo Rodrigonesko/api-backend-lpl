@@ -2,7 +2,6 @@ const VacationRequest = require('../models/Ferias/VacationRequest');
 const moment = require('moment')
 
 module.exports = {
-
     async vacationDays(colaborador) {
         const vacationRequest = await VacationRequest.find({
             colaborador: colaborador,
@@ -23,5 +22,4 @@ module.exports = {
 
         return vacationDates;
     }
-
 }

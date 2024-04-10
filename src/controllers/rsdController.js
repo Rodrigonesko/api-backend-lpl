@@ -106,6 +106,7 @@ const storageAgd = multer.diskStorage({
 })
 
 const xlsx = require('xlsx')
+const rsdService = require('../services/rsd.service')
 
 const uploadRsd = multer({ storage: storageRSd }).single('file')
 const uploadPedidosAntigos = multer({ dest: os.tmpdir() }).single('file')
@@ -2853,63 +2854,7 @@ module.exports = {
 
     producaoIndividualRsd: async (req, res) => {
         try {
-
-            const { mes } = req.params
-
-            console.log(mes);
-
-            const meusRsds = await Pedido.find({
-                dataConclusao: { $regex: mes }
-            }, {
-                analista: 1,
-                statusPadraoAmil: 1,
-                statusGerencial: 1
-            }).lean()
-
-            const contagemAnalistas = {};
-            const pedidosIndeferidosIndividual = {};
-            const pedidosCanceladosIndividual = {}
-
-            // meusRsds.forEach(proposta => {
-            //     const { analista } = proposta
-            //     contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
-
-            //     if ((proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento') || (proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal')) {
-            //         pedidosIndeferidosIndividual[analista] = (pedidosIndeferidosIndividual[analista] || 0) + 1;
-            //     }
-
-            //     if (proposta.statusGerencial === 'Protocolo Cancelado') {
-            //         pedidosCanceladosIndividual[analista] = (pedidosCanceladosIndividual[analista] || 0) + 1
-            //     }
-            // })
-
-            for (const proposta of meusRsds) {
-                const { analista } = proposta;
-                contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1;
-
-                if ((proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento') || (proposta.statusPadraoAmil === 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal')) {
-                    pedidosIndeferidosIndividual[analista] = (pedidosIndeferidosIndividual[analista] || 0) + 1;
-                }
-
-                if (proposta.statusGerencial === 'Protocolo Cancelado') {
-                    pedidosCanceladosIndividual[analista] = (pedidosCanceladosIndividual[analista] || 0) + 1;
-                }
-            }
-
-            const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
-                .sort(([, aCount], [, bCount]) => bCount - aCount)
-                .reduce((acc, [analista, count]) => {
-                    acc[analista] = count;
-                    return acc;
-                }, {});
-
-
-            return res.json({
-                meusRsds,
-                contagemAnalistasOrdenada,
-                pedidosIndeferidosIndividual,
-                pedidosCanceladosIndividual,
-            })
+            return res.status(200).json(await rsdService.producaoIndividualRsd(req.query.dataInicio, req.query.dataFim))
         } catch (error) {
             console.log(error)
             return res.status(500).json({

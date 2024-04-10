@@ -1,9 +1,9 @@
 const sql = require('mssql')
-
 const SERVER = process.env.MSSQL_SERVER
 const DATABASE = process.env.MSSQL_DATABASE
 const USERNAME = process.env.MSSQL_USER
 const PASSWORD = process.env.MSSQL_PASSWORD
+const moment = require('moment')
 
 let connection;
 
@@ -147,6 +147,104 @@ module.exports = {
             return irregularidades
         } catch (error) {
             return error
+        }
+    },
+
+    producaoAnalistasByDate: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) => {
+        try {
+            await ensureConnection()
+            const result = await new sql.Request()
+                .input('dataInicio', sql.Date, dataInicio)
+                .input('dataFim', sql.Date, dataFim)
+                .query(`
+                SELECT Demanda.*, Pacote.data_finalizacao as data_finalizacao_pacote, RelatorioDemanda.fraude as fraude_relatorio, Pacote.usuario_id as usuario_pacote_id, Usuario.nome as nome_usuario,
+                (SELECT COUNT (*) FROM PRESTADOR WHERE PRESTADOR.id_demanda = DEMANDA.ID) as quantidade_prestadores,
+                (SELECT COUNT (*) FROM BENEFICIARIO WHERE BENEFICIARIO.id_demanda = DEMANDA.ID) as quantidade_beneficiarios
+                from Demanda
+                LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
+                LEFT JOIN RelatorioDemanda ON Demanda.id = RelatorioDemanda.demanda_id
+                LEFT JOIN Usuario ON pacote.usuario_id = Usuario.id
+                WHERE Pacote.data_finalizacao BETWEEN @dataInicio AND @dataFim
+            `)
+
+            const demandas = result.recordset.filter((demanda, index, self) =>
+                index === self.findIndex((d) => (
+                    d.id === demanda.id
+                ))
+            );
+
+            let groupedDemandas = []
+
+            demandas.forEach(demanda => {
+                let index = groupedDemandas.findIndex(group => group.nome === demanda.nome_usuario)
+                if (index === -1) {
+                    groupedDemandas.push({
+                        nome: demanda.nome_usuario,
+                        beneficiarios: demanda.quantidade_beneficiarios,
+                        prestadores: demanda.quantidade_prestadores,
+                        fraudes: demanda.fraude_relatorio ? 1 : 0,
+                        demandas: demandas.filter(d => d.nome_usuario === demanda.nome_usuario)
+                    })
+                } else {
+                    groupedDemandas[index].beneficiarios += demanda.quantidade_beneficiarios
+                    groupedDemandas[index].prestadores += demanda.quantidade_prestadores
+                    groupedDemandas[index].fraudes += demanda.fraude_relatorio ? 1 : 0
+                    groupedDemandas[index].demandas.push(demanda)
+                }
+            })
+
+            return groupedDemandas.map(group => {
+                return {
+                    nome: group.nome,
+                    demandas: group.demandas.length,
+                    beneficiarios: group.beneficiarios,
+                    prestadores: group.prestadores,
+                    soma: group.beneficiarios + group.prestadores,
+                    fraudes: group.fraudes
+                }
+            }).sort((a, b) => b.soma - a.soma)
+        } catch (error) {
+            throw error
+        }
+    },
+
+    gerarDatasBradesco: async (id) => {
+        try {
+            await ensureConnection()
+            const find = await new sql.query(`SELECT * FROM Demanda WHERE id = ${id}`)
+            if (find.recordset.length === 0) return res.status(401).json({ msg: 'Demanda não encontrada' })
+            const demanda = find.recordset[0]
+            const dataPrevia = moment(demanda.data_demanda).businessAdd(5, 'days').format('YYYY-MM-DD')
+            const prazoFinalizacao = moment(demanda.data_demanda).businessAdd(10, 'days').format('YYYY-MM-DD')
+            console.log(dataPrevia, prazoFinalizacao);
+            const findDatas = await new sql.query(`SELECT * FROM DatasBradesco WHERE demanda_id = ${id}`)
+            if (findDatas.recordset.length !== 0) {
+                const update = await sql.query(`UPDATE DatasBradesco SET data_previa = '${dataPrevia}', data_final_entrega = '${prazoFinalizacao}' WHERE demanda_id = ${id}`)
+                if (update.rowsAffected[0] === 0) return res.status(401).json({ msg: 'Erro ao atualizar datas' })
+                return res.json({
+                    msg: 'ok',
+                    result: {
+                        id,
+                        data_previa: dataPrevia,
+                        data_final_entrega: prazoFinalizacao
+                    }
+                })
+            }
+
+            const update = await sql.query(`INSERT INTO DatasBradesco (demanda_id, data_previa, data_final_entrega) VALUES (${id}, '${dataPrevia}', '${prazoFinalizacao}')`)
+
+            if (update.rowsAffected[0] === 0) return res.status(400).json({ msg: 'Erro ao criar datas' })
+
+            return {
+                msg: 'ok',
+                result: {
+                    id,
+                    data_previa: dataPrevia,
+                    data_final_entrega: prazoFinalizacao
+                }
+            }
+        } catch (error) {
+            throw error
         }
     }
 }
