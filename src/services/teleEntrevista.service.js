@@ -13,9 +13,6 @@ module.exports = {
     },
 
     async quantidadeAnalistasPorMes(dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) {
-
-
-        console.log(dataInicio, dataFim);
         let result = await DadosEntrevista.aggregate([
             {
                 $match: {
@@ -32,18 +29,13 @@ module.exports = {
                 }
             }
         ])
-
         result = await Promise.all(result.map(async item => {
-
             const user = await User.findOne({ name: item._id }, {
                 name: 1,
                 nomeCompleto: 1
             }).lean()
-
             const diasDeFerias = await vacationRequestService.vacationDays(user.nomeCompleto)
-
             const diasUteis = functions.diasUteisEntreDuasDatas(dataInicio, dataFim, functions.holidays, diasDeFerias)
-
             return ({
                 analista: user.nomeCompleto,
                 total: item.total,
@@ -52,12 +44,10 @@ module.exports = {
                 mediaDivergencia: (item.houveDivergencia / item.total) * 100,
             })
         }))
-
         result = result.sort((a, b) => b.total - a.total)
         const media = result.reduce((acc, item) => acc + item.media, 0) / result.length
         const mediaDiasTrabalhados = result.reduce((acc, item) => acc + item.mediaDiasTrabalhados, 0) / result.length
         const mediaTotal = result.reduce((acc, item) => acc + item.total, 0) / result.length
-
         return {
             result,
             media,

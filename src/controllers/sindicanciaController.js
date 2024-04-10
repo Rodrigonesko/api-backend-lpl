@@ -1,6 +1,7 @@
 const sql = require('mssql')
 const Demanda = require('../models/Sindicancia/Demanda')
 const { getAreaEmpresa, getTipoServico, getStatus, getUsuarioExecao, getDemandaById, getTipoIrregularidade } = require('../services/sindicancia.service')
+const sindicanciaService = require('../services/sindicancia.service')
 const moment = require('moment')
 require('moment-business-days')
 
@@ -106,8 +107,7 @@ module.exports = {
 
     getAreaEmpresa: async (req, res) => {
         try {
-            const areas = await getAreaEmpresa()
-            return res.json(areas)
+            return res.json(await getAreaEmpresa())
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -117,8 +117,7 @@ module.exports = {
     },
     getTipoServico: async (req, res) => {
         try {
-            const tipos = await getTipoServico()
-            return res.json(tipos)
+            return res.json(await getTipoServico())
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -129,8 +128,7 @@ module.exports = {
 
     getStatus: async (req, res) => {
         try {
-            const status = await getStatus()
-            return res.json(status)
+            return res.json(await getStatus())
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -305,17 +303,7 @@ module.exports = {
 
     getDemandaById: async (req, res) => {
         try {
-            const { id } = req.params
-
-            const find = await Demanda.findById(id)
-
-            const demanda = await getDemandaById(id)
-
-            return res.json({
-                demanda,
-                dadosDemanda: find
-            })
-
+            return res.json(await getDemandaById(req.params.id))
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -436,9 +424,7 @@ module.exports = {
 
     getTipoIrregularidade: async (req, res) => {
         try {
-            await ensureConnection()
-            const irregularidades = await getTipoIrregularidade()
-            return res.json(irregularidades)
+            return res.json(await getTipoIrregularidade())
         } catch (error) {
             return res.json({
                 msg: 'Internal Server Error',
@@ -1381,42 +1367,7 @@ module.exports = {
 
     gerarDatasBradesco: async (req, res) => {
         try {
-
-            const { id } = req.body
-            console.log(id);
-            await ensureConnection()
-            const find = await new sql.query(`SELECT * FROM Demanda WHERE id = ${id}`)
-            if (find.recordset.length === 0) return res.status(401).json({ msg: 'Demanda não encontrada' })
-            const demanda = find.recordset[0]
-            const dataPrevia = moment(demanda.data_demanda).businessAdd(5, 'days').format('YYYY-MM-DD')
-            const prazoFinalizacao = moment(demanda.data_demanda).businessAdd(10, 'days').format('YYYY-MM-DD')
-            console.log(dataPrevia, prazoFinalizacao);
-            const findDatas = await new sql.query(`SELECT * FROM DatasBradesco WHERE demanda_id = ${id}`)
-            if (findDatas.recordset.length !== 0) {
-                const update = await sql.query(`UPDATE DatasBradesco SET data_previa = '${dataPrevia}', data_final_entrega = '${prazoFinalizacao}' WHERE demanda_id = ${id}`)
-                if (update.rowsAffected[0] === 0) return res.status(401).json({ msg: 'Erro ao atualizar datas' })
-                return res.json({
-                    msg: 'ok',
-                    result: {
-                        id,
-                        data_previa: dataPrevia,
-                        data_final_entrega: prazoFinalizacao
-                    }
-                })
-            }
-
-            const update = await sql.query(`INSERT INTO DatasBradesco (demanda_id, data_previa, data_final_entrega) VALUES (${id}, '${dataPrevia}', '${prazoFinalizacao}')`)
-
-            if (update.rowsAffected[0] === 0) return res.status(400).json({ msg: 'Erro ao criar datas' })
-
-            return res.status(200).json({
-                msg: 'ok',
-                result: {
-                    id,
-                    data_previa: dataPrevia,
-                    data_final_entrega: prazoFinalizacao
-                }
-            })
+            return res.json(await sindicanciaService.gerarDatasBradesco(req.body.id))
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -1424,7 +1375,16 @@ module.exports = {
                 error
             })
         }
+    },
+
+    producaoAnalistaByDate: async (req, res) => {
+        try {
+            return res.json(await sindicanciaService.producaoAnalistasByDate(req.query.dataInicio, req.query.dataFim))
+        } catch (error) {
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
     }
-
-
 }
