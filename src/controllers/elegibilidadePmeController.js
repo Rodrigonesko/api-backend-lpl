@@ -1,5 +1,6 @@
 const Proposta = require('../models/ElegibilidadePme/PropostaElegibilidadePme')
 const Agenda = require('../models/ElegibilidadePme/AgendaElegibilidadePme')
+const elegibilidadePmeService = require('../services/elegibilidadePme.service')
 
 const moment = require('moment')
 const fs = require('fs')
@@ -153,7 +154,7 @@ module.exports = {
             }
 
             const result = await query;
-            
+
             const total = await Proposta.countDocuments({ status })
 
             console.log(result.length);
@@ -948,6 +949,18 @@ module.exports = {
             })
         }
     },
+
+    producaoIndividualElegibilidadePme: async (req, res) => {
+        try {
+            return res.status(200).json(await elegibilidadePmeService.producaoIndividualElegibilidadePme(req.query.dataInicio, req.query.dataFim))
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    }
 }
 
 function ExcelDateToJSDate(serial) {

@@ -21,12 +21,7 @@ module.exports = {
                 statusGerencial: 1
             }).lean()
 
-            let producao = [{
-                analista: '',
-                total: 0,
-                indeferidos: 0,
-                cancelados: 0
-            }]
+            let producao = []
 
             for (const pedido of pedidos) {
                 const index = producao.findIndex(p => p.analista === pedido.analista)
