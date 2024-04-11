@@ -26,11 +26,15 @@ module.exports = {
                         total: 1,
                         concluidas: propostaPme.status === 'Concluido' ? 1 : 0,
                         devolvidas: propostaPme.status === 'Devolvida' ? 1 : 0,
+                        redistribuidas: propostaPme.status === 'Redistribuído' ? 1 : 0,
+                        aIniciar: propostaPme.status === 'A iniciar' ? 1 : 0,
                     })
                 } else {
                     producaoPme[index].total += 1
                     producaoPme[index].concluidas += propostaPme.status === 'Concluido' ? 1 : 0
                     producaoPme[index].devolvidas += propostaPme.status === 'Devolvida' ? 1 : 0
+                    producaoPme[index].redistribuidas += propostaPme.status === 'Redistribuído' ? 1 : 0
+                    producaoPme[index].aIniciar += propostaPme.status === 'A iniciar' ? 1 : 0
                 }
             }
 

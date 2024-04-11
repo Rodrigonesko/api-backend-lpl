@@ -7,6 +7,7 @@ const corsOptions = {
     credentials: true
 }
 
+const rendimentoTodasCelulas = require("../src/services/avaliacaoPerformanceIndividual.service")
 //Tasks
 
 const verificarFerias = require('./tasks/verificarFerias')
