@@ -12,6 +12,7 @@ const moment = require('moment')
 const fs = require('fs')
 const multer = require('multer')
 const xlsx = require('xlsx')
+const elegibilidadeService = require('../services/elegibilidade.service')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -1956,43 +1957,7 @@ module.exports = {
 
     producaoAnalistasMensal: async (req, res) => {
         try {
-
-            const { mes } = req.params
-
-            console.log(mes);
-
-            const minhasElegibilidades = await Proposta.find({
-                dataConclusao: { $regex: mes }
-            }, {
-                analista: 1,
-                dataConclusao: 1,
-                status: 1,
-            }).lean()
-
-            const contagemAnalistas = {};
-
-            // minhasElegibilidades.forEach(proposta => {
-            //     const { analista } = proposta
-            //     contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
-            // })
-
-            for (const proposta of minhasElegibilidades) {
-                const { analista } = proposta
-                contagemAnalistas[analista] = (contagemAnalistas[analista] || 0) + 1
-            }
-
-            const contagemAnalistasOrdenada = Object.entries(contagemAnalistas)
-                .sort(([, aCount], [, bCount]) => bCount - aCount)
-                .reduce((acc, [analista, count]) => {
-                    acc[analista] = count;
-                    return acc;
-                }, {});
-
-
-            return res.json({
-                minhasElegibilidades,
-                contagemAnalistasOrdenada
-            })
+            return res.status(200).json(await elegibilidadeService.producaoIndividualElegibilidade(req.query.dataInicio, req.query.dataFim))
         } catch (error) {
             console.log(error)
             return res.status(500).json({
