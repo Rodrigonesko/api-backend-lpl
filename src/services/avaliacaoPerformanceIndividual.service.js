@@ -16,11 +16,11 @@ const rendimentoTodasCelulas = async (dataInicio = moment().format('YYYY-MM-DD')
     const producaoElegibilidade = await elegibilidadeService.producaoIndividualElegibilidade(dataInicio, dataFim)
     console.log(producaoElegibilidade);
     const producaoRsd = await rsdService.producaoIndividualRsd(dataInicio, dataFim)
-    console.log(producaoElegibilidade);
+    console.log(producaoRsd);
     const producaoTeleEntrevista = await teleEntrevistaService.quantidadeAnalistasPorMes(dataInicio, dataFim)
-    console.log(producaoElegibilidade);
+    console.log(producaoTeleEntrevista);
     const producaoSindicancia = await sindicanciaService.producaoAnalistasByDate(dataInicio, dataFim)
-    console.log(producaoElegibilidade);
+    console.log(producaoSindicancia);
 }
 
 rendimentoTodasCelulas()
