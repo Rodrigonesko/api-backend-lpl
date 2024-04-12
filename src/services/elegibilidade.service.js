@@ -24,13 +24,13 @@ module.exports = {
                     producao.push({
                         analista: proposta.analista,
                         total: 1,
-                        implantadas: proposta.status === 'Implantada',
+                        implantadas: proposta.status === 'Implantada' || proposta.status === 'Enviada para Under',
                         canceladas: proposta.status === 'Cancelada',
                         devolvidas: proposta.status === 'Devolvida',
                     })
                 } else {
                     producao[index].total += 1
-                    producao[index].implantadas += proposta.status === 'Implantada'
+                    producao[index].implantadas += proposta.status === 'Implantada' || proposta.status === 'Enviada para Under'
                     producao[index].canceladas += proposta.status === 'Cancelada'
                     producao[index].devolvidas += proposta.status === 'Devolvida'
                 }
