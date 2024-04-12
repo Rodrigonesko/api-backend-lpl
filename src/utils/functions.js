@@ -57,7 +57,6 @@ module.exports = {
     diasUteisEntreDuasDatas(dataInicio, dataFim, holidays = [], ferias = []) {
         let count = 0;
         if (dataInicio === dataFim) {
-            console.log(1);
             return 1;
         }
         let date = new Date(dataInicio);
@@ -80,7 +79,6 @@ module.exports = {
             }
             date.setDate(date.getDate() + 1);
         }
-        console.log(count);
         return count;
     }
 }
