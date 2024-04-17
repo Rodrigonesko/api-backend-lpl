@@ -508,12 +508,12 @@ module.exports = {
 
             for (const user of users) {
                 if (user.admissao) {
-                    const passouTrintaDias = moment(user.dataAdmissao).add(29, 'days').isBefore(moment()) && !user.prorrogacao;
+                    const passouQuarentaECincoDias = moment(user.dataAdmissao).add(44, 'days').isBefore(moment()) && !user.prorrogacao;
 
-                    if (req.user === 'Samantha Maciel Giazzon' && passouTrintaDias) {
+                    if (req.user === 'Samantha Maciel Giazzon' && passouQuarentaECincoDias) {
                         itens.push({
                             nome: user.name,
-                            acao: `É necessário assinar o Contrato de Prorrogação para o Colaborador ${user.name} no dia ${moment(user.dataAdmissao).add(30, 'days').format('DD/MM/YYYY')}`,
+                            acao: `É necessário assinar o Contrato de Prorrogação para o Colaborador ${user.name} no dia ${moment(user.dataAdmissao).add(45, 'days').format('DD/MM/YYYY')}`,
                             negrito: true,
                         });
                     }
