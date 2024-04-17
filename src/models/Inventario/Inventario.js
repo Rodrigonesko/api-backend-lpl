@@ -1,5 +1,12 @@
 const mongoose = require('mongoose')
 
+/*To do
+ Ajustar a model
+ colocar enums
+ retirar o que não é necessário
+ deixar campos obigatórios
+ */
+
 const Scheema = new mongoose.Schema({
     nome: String,
     etiqueta: String,

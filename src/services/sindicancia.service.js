@@ -14,9 +14,20 @@ async function ensureConnection() {
     }
 }
 
-module.exports = {
+class SindicanciaService {
 
-    getAreaEmpresa: async () => {
+    constructor() {
+        this.connection = null
+    }
+
+    async ensureConnection() {
+        if (!this.connection) {
+            const connStr = `Server=${SERVER};Database=${DATABASE};User Id=${USERNAME};Password=${PASSWORD};TrustServerCertificate=true`
+            this.connection = await sql.connect(connStr)
+        }
+    }
+
+    async getAreaEmpresa() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaEmpresa]
@@ -27,9 +38,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getTipoServico: async () => {
+    async getTipoServico() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[TipoServico]`)
@@ -38,9 +49,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getStatus: async () => {
+    async getStatus() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Status]`)
@@ -49,9 +60,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getAreaTipoServico: async () => {
+    async getAreaTipoServico() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaTipoServico]`)
@@ -60,9 +71,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getAreaUsuario: async () => {
+    async getAreaUsuario() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[Admin].[AreaUsuario]`)
@@ -71,9 +82,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getEmpresa: async () => {
+    async getEmpresa() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Empresa]`)
@@ -82,9 +93,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getTipoInvestigado: async () => {
+    async getTipoInvestigado() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[TipoInvestigado]`)
@@ -93,9 +104,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getTipoReembolso: async () => {
+    async getTipoReembolso() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[TipoReembolso]`)
@@ -104,9 +115,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getUsuario: async () => {
+    async getUsuario() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM [LPLSeguros].[dbo].[Usuario]`)
@@ -115,9 +126,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getUsuarioExecao: async () => {
+    async getUsuarioExecao() {
         try {
             await ensureConnection()
             const result = await new sql.query(`select * from Usuario where id in (select usuario_id from UsuarioPermissao where permissao_id = 4) and ativo = 1`)
@@ -126,9 +137,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getDemandaById: async (id) => {
+    async getDemandaById(id) {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM Demanda WHERE id = ${id}`)
@@ -137,9 +148,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    getTipoIrregularidade: async () => {
+    async getTipoIrregularidade() {
         try {
             await ensureConnection()
             const result = await new sql.query(`SELECT * FROM TipoIrregularidade`)
@@ -148,9 +159,9 @@ module.exports = {
         } catch (error) {
             return error
         }
-    },
+    }
 
-    producaoAnalistasByDate: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) => {
+    async producaoAnalistasByDate(dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) {
         try {
             await ensureConnection()
             const result = await new sql.Request()
@@ -206,9 +217,9 @@ module.exports = {
         } catch (error) {
             throw error
         }
-    },
+    }
 
-    gerarDatasBradesco: async (id) => {
+    async gerarDatasBradesco(id) {
         try {
             await ensureConnection()
             const find = await new sql.query(`SELECT * FROM Demanda WHERE id = ${id}`)
@@ -240,11 +251,32 @@ module.exports = {
                 result: {
                     id,
                     data_previa: dataPrevia,
-                    data_final_entrega: prazoFinalizacao
+                    data_final_entrega: prazoFinalizacao,
                 }
             }
         } catch (error) {
             throw error
         }
     }
+
+    async conferirDatasBradesco() {
+        try {
+            await ensureConnection()
+            const find = await new sql.query(`
+                SELECT Demanda.*, DatasBradesco.data_previa, DatasBradesco.data_final_entrega
+                FROM Demanda
+                LEFT JOIN DatasBradesco ON Demanda.id = DatasBradesco.demanda_id
+                WHERE Demanda.id_area_empresa = 15 AND DatasBradesco.data_previa IS NULL AND DatasBradesco.data_final_entrega IS NULL
+            `)
+            const demandas = find.recordset
+            return await Promise.all(demandas.map(async demanda => {
+                return await this.gerarDatasBradesco(demanda.id)
+            }))
+
+        } catch (error) {
+            throw error
+        }
+    }
 }
+
+module.exports = new SindicanciaService()
