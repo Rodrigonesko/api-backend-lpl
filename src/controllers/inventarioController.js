@@ -1,16 +1,12 @@
 const Inventario = require('../models/Inventario/Inventario')
+const moment = require('moment');
 
 module.exports = {
 
     findAll: async (req, res) => {
         try {
             const { page = 1, limit = 25 } = req.query
-
-            console.log(req.query);
-
             let skip = (page - 1) * limit
-
-            console.log(req.query);
 
             const total = await Inventario.find().countDocuments()
             const result = await Inventario.find().skip(skip).limit(limit)
@@ -48,6 +44,8 @@ module.exports = {
 
             const body = req.body
 
+            console.log(body);
+
             const result = await Inventario.findOne({
                 etiqueta: body.etiqueta,
             })
@@ -58,14 +56,17 @@ module.exports = {
                 })
             }
 
-            const criarRequisicao = await Inventario.create({
-                nome: body.nome,
-                quantidade: body.quantidade,
-                etiqueta: body.etiqueta,
-                ondeEsta: body.ondeEsta,
-                descricao: body.descricao,
-                status: body.status
-            })
+            if (body.tempoGarantia) {
+                const criarRequisicao = await Inventario.create({
+                    nome: body.nome,
+                    etiqueta: body.etiqueta,
+                    ondeEsta: body.ondeEsta,
+                    descricao: body.descricao,
+                    status: body.status,
+                    dataDeCompra: body.dataDeCompra,
+                    dataGarantia: moment(body.dataDeCompra).add(body.tempoGarantia, 'month').format('YYYY-MM-DD')
+                })
+            }
 
             return res.json({
                 msg: 'OK'
@@ -77,7 +78,6 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-
     },
 
     getInventarioByFilter: async (req, res) => {
@@ -123,7 +123,9 @@ module.exports = {
                 nome: req.body.nome,
                 etiqueta: req.body.etiqueta,
                 ondeEsta: req.body.ondeEsta,
-                descricao: req.body.descricao
+                descricao: req.body.descricao,
+                dataDeCompra: req.body.dataCompra,
+                dataGarantia: req.body.dataGarantia,
             })
             return res.json(criarRequisicao)
         } catch (error) {
