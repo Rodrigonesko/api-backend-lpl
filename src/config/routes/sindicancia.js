@@ -42,6 +42,8 @@ router.delete('/itemChecklist/:id', auth, sindicanciaController.deleteItemCheckl
 router.get('/demanda/checklist/:id', auth, sindicanciaController.getChecklist)
 router.get('/demanda/produtividadeAnalistas/:mes', sindicanciaController.produtividadeAnalistas)
 router.post('/demanda/gerarDatas', auth, sindicanciaController.gerarDatasBradesco)
-router.get('/producaoAnalistaByDate', sindicanciaController.producaoAnalistaByDate)
+router.get('/producaoAnalistaByDate', auth, sindicanciaController.producaoAnalistaByDate)
+router.put('/demanda/alterarEnvioDePreviaBradesco', auth, sindicanciaController.alterarEnvioDePreviaBradesco)
+router.post('/demanda/solicitante', auth, sindicanciaController.createSolicitante)
 
 module.exports = router
