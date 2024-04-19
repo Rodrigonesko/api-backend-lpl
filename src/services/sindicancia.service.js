@@ -161,6 +161,16 @@ class SindicanciaService {
         }
     }
 
+    async alterarEnvioDePreviaBradesco(id, previaEnviada) {
+        try {
+            await ensureConnection()
+            console.log(id, previaEnviada);
+            return await new sql.query(`UPDATE DatasBradesco SET previa_enviada = '${previaEnviada}' WHERE demanda_id = '${id}'`)
+        } catch (error) {
+            throw error
+        }
+    }
+
     async producaoAnalistasByDate(dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) {
         try {
             await ensureConnection()
@@ -273,6 +283,28 @@ class SindicanciaService {
                 return await this.gerarDatasBradesco(demanda.id)
             }))
 
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async createSolicitante(solicitante, id) {
+        try {
+            await ensureConnection()
+            const find = await new sql.query(`SELECT * FROM Solicitante WHERE demanda_id = ${id}`)
+            if (find.recordset.length !== 0) {
+                return await this.updateSolicitante(solicitante, id)
+            }
+            return await new sql.query(`INSERT INTO Solicitante (analista_solicitante, demanda_id) VALUES ('${solicitante}', ${id})`)
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async updateSolicitante(solicitante, id) {
+        try {
+            await ensureConnection()
+            return await new sql.query(`UPDATE Solicitante SET analista_solicitante = '${solicitante}' WHERE demanda_id = ${id}`)
         } catch (error) {
             throw error
         }
