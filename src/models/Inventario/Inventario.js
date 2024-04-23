@@ -15,6 +15,7 @@ const Scheema = new mongoose.Schema({
     tempoGarantia: String,
     dataGarantia: String,
     nf: String,
+    anexado: Boolean,
 
 }, {
     timestamps: true
