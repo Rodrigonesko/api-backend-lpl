@@ -99,6 +99,12 @@ module.exports = {
                         <th>Total</th>
                         <th>Cancelados</th>
                         <th>Indeferidos</th>
+                        <th>Aguardando Comprovante</th>
+                        <th>Aguardando Retorno Contato</th>
+                        <th>Comprovante Correto</th>
+                        <th>Devolvido Amil</th>
+                        <th>Pago pela Amil sem Comprovante</th>
+                        <th>A iniciar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -111,6 +117,11 @@ module.exports = {
                     <td>${item.total}</td>
                     <td>${item.cancelados}</td>
                     <td>${item.indeferidos}</td>
+                    <td>${item.aguardandoComprovante}</td>
+                    <td>${item.aguardandoRetornoContato}</td>
+                    <td>${item.comprovanteCorreto}</td>
+                    <td>${item.devolvidoAmil}</td>
+                    <td>${item.aIniciar}</td>
                 </tr>
             `
             })
