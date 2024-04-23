@@ -1,23 +1,21 @@
 const mongoose = require('mongoose')
 
-/*To do
- Ajustar a model
- colocar enums
- retirar o que não é necessário
- deixar campos obigatórios
- */
-
 const Scheema = new mongoose.Schema({
     nome: String,
     etiqueta: String,
     ondeEsta: String,
     descricao: String,
-    emUso: Boolean,
-    emEstoque: Boolean,
-    descontinuado: Boolean,
-    status: String,
-    page: String,
-    limit: String,
+    status: {
+        type: String,
+        enum: ['emUso', 'emEstoque', 'descontinuado'],
+        default: 'emEstoque',
+    },
+    serial: String,
+    dataDeCompra: String,
+    tempoGarantia: String,
+    dataGarantia: String,
+    nf: String,
+    anexado: Boolean,
 
 }, {
     timestamps: true

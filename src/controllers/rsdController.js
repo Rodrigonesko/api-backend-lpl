@@ -2907,10 +2907,7 @@ module.exports = {
                     $gte: startDate,
                     $lt: endDate
                 },
-                $or: [
-                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
-                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
-                ]
+                statusGerencial: 'Pagamento Não Realizado'
             });
 
             const totalPedidosMesPassadoIndeferidos = await Pedido.countDocuments({
@@ -3356,10 +3353,7 @@ module.exports = {
                     $gte: startDate,
                     $lt: endDate
                 },
-                $or: [
-                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
-                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
-                ],
+                statusGerencial: 'Pagamento Não Realizado',
                 analista: analista
             });
 
@@ -3477,10 +3471,7 @@ module.exports = {
             const totalIndeferido = await Pedido.countDocuments({
                 dataConclusao: { $regex: mes },
                 analista,
-                $or: [
-                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário confirma que não realizou pagamento' },
-                    { statusPadraoAmil: 'INDEFERIR - Em contato beneficiário foi confirmado fracionamento de Nota Fiscal' }
-                ],
+                statusGerencial: 'Pagamento Não Realizado',
             })
 
             const totalIndeferidosMelhorAnalista = await Pedido.countDocuments({

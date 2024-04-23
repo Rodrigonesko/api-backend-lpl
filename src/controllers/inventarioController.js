@@ -1,16 +1,45 @@
 const Inventario = require('../models/Inventario/Inventario')
+const moment = require('moment');
+
+const fs = require('fs')
+const multer = require('multer');
+const upload = (versao) => multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            const dir = `./uploads/notasFiscais/`
+            if (!fs.existsSync(dir)) {
+                fs.mkdir(dir, (err) => {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log('diretório criado com sucesso');
+                });
+            }
+            cb(null, dir);
+        },
+        filename: async (req, file, cb) => {
+            const find = await Inventario.findOne({
+                _id: req.params._id
+            })
+            console.log(find);
+            const usuario = find.ondeEsta;
+            const { _id } = req.params
+
+            console.log(usuario, req.params);
+
+            const fileName = `${usuario}-${_id}.pdf`;
+            cb(null, fileName);
+        }
+    })
+}).single('file');
 
 module.exports = {
 
     findAll: async (req, res) => {
         try {
             const { page = 1, limit = 25 } = req.query
-
-            console.log(req.query);
-
             let skip = (page - 1) * limit
-
-            console.log(req.query);
 
             const total = await Inventario.find().countDocuments()
             const result = await Inventario.find().skip(skip).limit(limit)
@@ -43,10 +72,10 @@ module.exports = {
 
     createInventario: async (req, res) => {
         try {
-
             //Crie uma solicitação
-
             const body = req.body
+
+            // console.log(body);
 
             const result = await Inventario.findOne({
                 etiqueta: body.etiqueta,
@@ -58,14 +87,16 @@ module.exports = {
                 })
             }
 
-            const criarRequisicao = await Inventario.create({
-                nome: body.nome,
-                quantidade: body.quantidade,
-                etiqueta: body.etiqueta,
-                ondeEsta: body.ondeEsta,
-                descricao: body.descricao,
-                status: body.status
-            })
+            if (body.tempoGarantia) {
+                const criarRequisicao = await Inventario.create({
+                    nome: body.nome,
+                    etiqueta: body.etiqueta,
+                    ondeEsta: body.ondeEsta,
+                    descricao: body.descricao,
+                    dataDeCompra: body.dataDeCompra,
+                    dataGarantia: moment(body.dataDeCompra).add(body.tempoGarantia, 'month').format('YYYY-MM-DD')
+                })
+            }
 
             return res.json({
                 msg: 'OK'
@@ -77,7 +108,6 @@ module.exports = {
                 error: "Internal server error."
             })
         }
-
     },
 
     getInventarioByFilter: async (req, res) => {
@@ -85,7 +115,7 @@ module.exports = {
 
             const { nomeItem, ondeEsta, etiqueta, status } = req.query
 
-            console.log(req.query);
+            // console.log(req.query);
 
             const { page = 1, limit = 25 } = req.query
             let skip = (page - 1) * limit
@@ -104,7 +134,7 @@ module.exports = {
                 status: { $regex: status }
             }).countDocuments()
 
-            console.log(result);
+            // console.log(result);
 
             return res.json({ result, total })
 
@@ -123,7 +153,10 @@ module.exports = {
                 nome: req.body.nome,
                 etiqueta: req.body.etiqueta,
                 ondeEsta: req.body.ondeEsta,
-                descricao: req.body.descricao
+                descricao: req.body.descricao,
+                dataDeCompra: req.body.dataCompra,
+                dataGarantia: req.body.dataGarantia,
+                serial: req.body.serial,
             })
             return res.json(criarRequisicao)
         } catch (error) {
@@ -133,4 +166,35 @@ module.exports = {
             })
         }
     },
+
+    updateNotaFiscal: async (req, res) => {
+        try {
+            const { _id } = req.params
+
+            upload()(req, res, async (err) => {
+                if (err) {
+                    console.log(err);
+                    return
+                }
+
+                const result = await Inventario.updateOne({
+                    _id: _id,
+                }, {
+                    $set: {
+                        anexado: true,
+                    }
+                })
+                console.log(result);
+            })
+
+            return res.json({
+                msg: 'ok'
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: 'Internal Server Error'
+            })
+        }
+    }
 }
