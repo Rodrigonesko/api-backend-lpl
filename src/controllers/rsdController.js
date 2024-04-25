@@ -2396,7 +2396,7 @@ module.exports = {
                             _id: e.ID
                         }, {
                             statusPadraoAmil: 'PAGAMENTO LIBERADO',
-                            statusGerencial: 'Comprovante correto',
+                            statusGerencial: 'Comprovante Correto',
                             fase: 'Finalizado',
                             dataConclusao: moment().format('YYYY-MM-DD'),
                             status: 'Finalizado'
