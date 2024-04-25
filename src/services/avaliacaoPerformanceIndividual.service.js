@@ -121,7 +121,6 @@ module.exports = {
                     <td>${item.aguardandoRetornoContato}</td>
                     <td>${item.comprovanteCorreto}</td>
                     <td>${item.devolvidoAmil}</td>
-                    <td>${item.aIniciar}</td>
                 </tr>
             `
             })
