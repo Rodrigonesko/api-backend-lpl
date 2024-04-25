@@ -14,6 +14,18 @@ async function ensureConnection() {
     }
 }
 
+const analistas = [
+    'Jessica Wachesk Carradore',
+    'Hevellin Fatima dos Santos',
+    'Djeinny Santos Carradore',
+    'Beatriz Serena de Carvalho',
+    'Kamila Regina Baiak Oliveira Torres',
+    'Fernanda Aparecida Ribeiro',
+    'Bárbara Cristina Nunes',
+    'Camila Cristine Remus',
+    'Cecilia Belli'
+]
+
 class SindicanciaService {
 
     constructor() {
@@ -178,19 +190,23 @@ class SindicanciaService {
                 .input('dataInicio', sql.Date, dataInicio)
                 .input('dataFim', sql.Date, dataFim)
                 .query(`
-                SELECT Demanda.*, Pacote.data_finalizacao as data_finalizacao_pacote, RelatorioDemanda.fraude as fraude_relatorio, Pacote.usuario_id as usuario_pacote_id, Usuario.nome as nome_usuario,
+                SELECT Demanda.*, Pacote.data_finalizacao as data_finalizacao_pacote, RelatorioDemanda.fraude as fraude_relatorio, Pacote.usuario_id as usuario_pacote_id, Pacote.data_criacao as data_criacao_pacote, Usuario.nome as nome_usuario,
                 (SELECT COUNT (*) FROM PRESTADOR WHERE PRESTADOR.id_demanda = DEMANDA.ID) as quantidade_prestadores,
                 (SELECT COUNT (*) FROM BENEFICIARIO WHERE BENEFICIARIO.id_demanda = DEMANDA.ID) as quantidade_beneficiarios
                 from Demanda
                 LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
                 LEFT JOIN RelatorioDemanda ON Demanda.id = RelatorioDemanda.demanda_id
                 LEFT JOIN Usuario ON pacote.usuario_id = Usuario.id
-                WHERE Pacote.data_finalizacao BETWEEN @dataInicio AND @dataFim
+                WHERE Pacote.data_finalizacao BETWEEN @dataInicio AND @dataFim AND (status_id = 5 OR status_id = 6)
             `)
+
+            result.recordset.forEach((demanda) => {
+                console.log(demanda.id, demanda.nome_usuario, demanda.data_criacao_pacote);
+            })
 
             const demandas = result.recordset.filter((demanda, index, self) =>
                 index === self.findIndex((d) => (
-                    d.id === demanda.id
+                    d.id === demanda.id && analistas.includes(demanda.nome_usuario)
                 ))
             );
 

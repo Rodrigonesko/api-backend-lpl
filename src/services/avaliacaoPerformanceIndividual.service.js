@@ -212,7 +212,7 @@ module.exports = {
 
             return await transporter.sendMail({
                 from: `Leonardo Lonque <${process.env.EMAIL}>`,
-                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br, administrador@lplseguros.com.br, claudia.rieth@lplseguros.com.br, luciana@lplseguros.com.br, cecilia.belli@lplseguros.com.br, sgiazzon@lplseguros.com.br",
+                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br",
                 subject: "Rendimento de todas as células",
                 text: "Rendimento de todas as células",
                 html
