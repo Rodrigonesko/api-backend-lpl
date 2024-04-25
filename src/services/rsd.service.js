@@ -17,18 +17,21 @@ module.exports = {
 
             let producao = []
 
-            let status = [
-                'Pagamento Não Realizado',
-                'Protocolo Cancelado',
-                'Aguardando Comprovante',
-                'Aguardando Retorno Contato',
-                'Comprovante Correto',
-                'Devolvido Amil',
-                'Pago pela Amil sem Comprovante',
-                'A iniciar'
-            ]
+            // let status = [
+            //     'Pagamento Não Realizado',
+            //     'Protocolo Cancelado',
+            //     'Aguardando Comprovante',
+            //     'Aguardando Retorno Contato',
+            //     'Comprovante Correto',
+            //     'Devolvido Amil',
+            //     'Pago pela Amil sem Comprovante',
+            //     'A iniciar'
+            // ]
 
             for (const pedido of pedidos) {
+                if (!pedido.analista) {
+                    continue
+                }
                 const index = producao.findIndex(p => p.analista === pedido.analista)
                 // if (pedido.analista === 'Camila Cristine Remus') {
                 //     if (!status.includes(pedido.statusGerencial)) {
@@ -47,7 +50,7 @@ module.exports = {
                         comprovanteCorreto: pedido.statusGerencial === 'Comprovante Correto' ? 1 : 0,
                         devolvidoAmil: pedido.statusGerencial === 'Devolvido Amil' ? 1 : 0,
                         pagoPelaAmilSemComprovante: pedido.statusGerencial === 'Pago pela Amil sem Comprovante' ? 1 : 0,
-                        aIniciar: pedido.statusGerencial === 'A iniciar' ? 1 : 0,
+                        // aIniciar: pedido.statusGerencial === 'A iniciar' ? 1 : 0,
                     })
                 } else {
                     producao[index].total += 1
@@ -58,7 +61,7 @@ module.exports = {
                     producao[index].comprovanteCorreto += pedido.statusGerencial === 'Comprovante Correto' ? 1 : 0
                     producao[index].devolvidoAmil += pedido.statusGerencial === 'Devolvido Amil' ? 1 : 0
                     producao[index].pagoPelaAmilSemComprovante += pedido.statusGerencial === 'Pago pela Amil sem Comprovante' ? 1 : 0
-                    producao[index].aIniciar += pedido.statusGerencial === 'A iniciar' ? 1 : 0
+                    // producao[index].aIniciar += pedido.statusGerencial === 'A iniciar' ? 1 : 0
                 }
             }
 
