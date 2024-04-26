@@ -5,6 +5,8 @@ const moment = require('moment')
 const multer = require('multer')
 const fs = require('fs')
 const Treinamentos = require('../models/Treinamentos/Treinamento')
+const { default: mongoose } = require('mongoose')
+const { excelDateToJSDate } = require('../utils/functions')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -461,6 +463,95 @@ module.exports = {
 
             return res.json(dados)
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    updateAusencias: async (req, res) => {
+        try {
+
+            const { dados } = req.body
+
+            for (const item of dados) {
+
+                if (!item.NOME) {
+                    continue
+                }
+
+                const dataCerta = excelDateToJSDate(item.DATA)
+
+                // console.log(dataCerta);
+
+                const find = await User.findOne({
+                    nomeCompleto: item.NOME,
+                    ausencias: { $elemMatch: { data: moment(dataCerta).isValid() ? moment(dataCerta).format('DD/MM/YYYY') : item.DATA } }
+                })
+
+                if (find) {
+                    continue
+                }
+
+                // console.log(find);
+
+                await User.updateOne({
+                    nomeCompleto: item.NOME
+                }, {
+                    $push: {
+                        ausencias: {
+                            _id: mongoose.Types.ObjectId(),
+                            data: moment(dataCerta).isValid() ? moment(dataCerta).format('DD/MM/YYYY') : item.DATA,
+                            entrada1: item['ENT. 1'],
+                            saida1: item['SAÍ. 1'],
+                            entrada2: item['ENT. 2'],
+                            saida2: item['SAÍ. 2'],
+                        },
+                    },
+                    dataAusencia: moment().format('YYYY-MM-DD')
+                })
+            }
+
+            return res.json(dados)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Internal server error."
+            })
+        }
+    },
+
+    getFaltas: async (req, res) => {
+        try {
+
+            const findFaltas = await User.find({
+
+            }, {
+                ausencias: 1,
+                nomeCompleto: 1,
+                dataAusencia: 1,
+                inativo: 1,
+            })
+
+            let faltas = []
+
+            for (const find of findFaltas) {
+                // console.log(find);
+                if (find.nomeCompleto && !find.inativo && find.ausencias) {
+                    for (const ausencia of find.ausencias) {
+                        faltas.push({
+                            nome: find.nomeCompleto,
+                            data: ausencia.data,
+                            tipoAusencia: ausencia.entrada1,
+                        })
+
+                    }
+                }
+            }
+            console.log(faltas);
+            return res.json(faltas.sort((a, b) => a.nomeCompleto - b.nomeCompleto))
         } catch (error) {
             console.log(error);
             return res.status(500).json({
