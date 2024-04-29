@@ -80,5 +80,31 @@ module.exports = {
             date.setDate(date.getDate() + 1);
         }
         return count;
+    },
+
+    excelDateToJSDate(serial) {
+        var utc_days = Math.floor(serial - 25569);
+        var utc_value = utc_days * 86400;
+        var date_info = new Date(utc_value * 1000);
+        var fractional_day = serial - Math.floor(serial) + 0.0000001;
+        var total_seconds = Math.floor(86400 * fractional_day);
+        var seconds = total_seconds % 60;
+        total_seconds -= seconds;
+        var hours = Math.floor(total_seconds / (60 * 60));
+        var minutes = Math.floor(total_seconds / 60) % 60;
+
+        // Get timezone offset in minutes and convert it to milliseconds
+        var timezoneOffset = date_info.getTimezoneOffset() * 60 * 1000;
+
+        // Adjust the date_info by the timezone offset
+        date_info = new Date(date_info.getTime() + timezoneOffset);
+
+        const dataCerta = new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+
+        if (dataCerta == 'Invalid Date') {
+            return serial
+        }
+
+        return dataCerta
     }
 }
