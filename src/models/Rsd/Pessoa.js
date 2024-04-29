@@ -16,7 +16,10 @@ const pessoaScheema = new mongoose.Schema({
     mensagens: Array,
     horarioUltimaMensagem: String,
     quantidadeMensagens: Number,
-    whatsapp: String
+    whatsapp: String,
+    plano: String,
+    dataVigencia: String,
+    codigoPlano: String,
 }, {
     timestamps: true
 })

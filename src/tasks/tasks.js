@@ -3,12 +3,6 @@ const moment = require('moment');
 const avaliacoesService = require('../services/avaliacaoPerformanceIndividual.service');
 const sindicanciaService = require('../services/sindicancia.service');
 
-sindicanciaService.producaoAnalistasByDate('2024-04-01', '2024-04-24').then(res => {
-    console.log(res);
-}).catch(err => {
-    console.log(err);
-})
-
 cron.schedule('0 8 * * 1', async () => {
 
     const dataInicio = moment().subtract(1, 'weeks').startOf('isoWeek').format('YYYY-MM-DD');
