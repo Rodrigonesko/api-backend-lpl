@@ -2,12 +2,19 @@ const cron = require('node-cron');
 const moment = require('moment');
 const avaliacoesService = require('../services/avaliacaoPerformanceIndividual.service');
 const sindicanciaService = require('../services/sindicancia.service');
+const rsdService = require('../services/rsd.service');
 
-sindicanciaService.producaoAnalistasByDate('2024-04-01', '2024-04-24').then(res => {
-    console.log(res);
-}).catch(err => {
-    console.log(err);
-})
+// sindicanciaService.producaoAnalistasByDate('2024-04-01', '2024-04-24').then(res => {
+//     console.log(res);
+// }).catch(err => {
+//     console.log(err);
+// })
+
+// rsdService.producaoIndividualRsd('2024-04-22', '2024-04-24').then(res => {
+//     // console.log(res);
+// }).catch(err => {
+//     console.log(err);
+// })
 
 cron.schedule('0 8 * * 1', async () => {
 

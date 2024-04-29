@@ -1,5 +1,6 @@
 const Pedido = require('../models/Rsd/Pedido');
 const moment = require('moment');
+const User = require('../models/User/User');
 
 module.exports = {
     producaoIndividualRsd: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format("YYYY-MM-DD")) => {
@@ -15,6 +16,32 @@ module.exports = {
                 statusGerencial: 1
             }).lean()
 
+            const users = await User.aggregate([
+                {
+                    $unwind: "$ausencias"
+                },
+                {
+                    $match: {
+                        "ausencias.data": {
+                            $gte: dataInicio,
+                            $lte: dataFim
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        ausencias: 1,
+                        name: 1
+                    }
+                }
+            ]);
+
+
+            // users.forEach((user) => {
+            //     console.log(user.ausencias, user.name);
+            // })
+            // console.log(users);
+
             let producao = []
 
             // let status = [
@@ -29,6 +56,7 @@ module.exports = {
             // ]
 
             for (const pedido of pedidos) {
+
                 if (!pedido.analista) {
                     continue
                 }
@@ -40,6 +68,10 @@ module.exports = {
                 // }
 
                 if (index === -1) {
+
+                    const ausenciasUsuario = users.filter(usuario => usuario.name === pedido.analista);
+                    const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario[0].ausencias.length : 0;
+
                     producao.push({
                         analista: pedido.analista,
                         total: 1,
@@ -51,6 +83,7 @@ module.exports = {
                         devolvidoAmil: pedido.statusGerencial === 'Devolvido Amil' ? 1 : 0,
                         pagoPelaAmilSemComprovante: pedido.statusGerencial === 'Pago pela Amil sem Comprovante' ? 1 : 0,
                         // aIniciar: pedido.statusGerencial === 'A iniciar' ? 1 : 0,
+                        faltas: totalFaltas,
                     })
                 } else {
                     producao[index].total += 1
@@ -61,11 +94,11 @@ module.exports = {
                     producao[index].comprovanteCorreto += pedido.statusGerencial === 'Comprovante Correto' ? 1 : 0
                     producao[index].devolvidoAmil += pedido.statusGerencial === 'Devolvido Amil' ? 1 : 0
                     producao[index].pagoPelaAmilSemComprovante += pedido.statusGerencial === 'Pago pela Amil sem Comprovante' ? 1 : 0
-                    // producao[index].aIniciar += pedido.statusGerencial === 'A iniciar' ? 1 : 0
+                    // producao[index].aIniciar += pedido.statusGerencial === 'A iniciar' ? 1 : 0,
                 }
             }
 
-            // console.log(producao.sort((a, b) => b.total - a.total));
+            console.log(producao.sort((a, b) => b.total - a.total));
 
             return producao.sort((a, b) => b.total - a.total)
 
