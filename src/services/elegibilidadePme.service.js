@@ -1,5 +1,6 @@
 const PropostaElegibilidadePme = require("../models/ElegibilidadePme/PropostaElegibilidadePme")
-const moment = require("moment")
+const moment = require("moment");
+const User = require("../models/User/User");
 
 module.exports = {
     producaoIndividualElegibilidadePme: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) => {
@@ -15,12 +16,35 @@ module.exports = {
                 status: 1,
             }).lean()
 
+            const users = await User.aggregate([
+                {
+                    $unwind: "$ausencias"
+                },
+                {
+                    $match: {
+                        "ausencias.data": {
+                            $gte: dataInicio,
+                            $lte: dataFim
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        ausencias: 1,
+                        name: 1
+                    }
+                }
+            ]);
+
             let producaoPme = []
 
             for (const propostaPme of PropostasPme) {
                 const index = producaoPme.findIndex(p => p.analista === propostaPme.analista)
 
                 if (index === -1) {
+                    const ausenciasUsuario = users.filter(usuario => usuario.name === propostaPme.analista);
+                    const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
+
                     producaoPme.push({
                         analista: propostaPme.analista,
                         total: 1,
@@ -28,6 +52,7 @@ module.exports = {
                         devolvidas: propostaPme.status === 'Devolvida' ? 1 : 0,
                         redistribuidas: propostaPme.status === 'Redistribuído' ? 1 : 0,
                         aIniciar: propostaPme.status === 'A iniciar' ? 1 : 0,
+                        faltas: totalFaltas
                     })
                 } else {
                     producaoPme[index].total += 1
@@ -37,6 +62,7 @@ module.exports = {
                     producaoPme[index].aIniciar += propostaPme.status === 'A iniciar' ? 1 : 0
                 }
             }
+            console.log(producaoPme.sort((a, b) => b.total - a.total));
 
             return producaoPme.sort((a, b) => b.total - a.total)
 

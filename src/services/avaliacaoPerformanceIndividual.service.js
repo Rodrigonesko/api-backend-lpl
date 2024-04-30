@@ -105,6 +105,7 @@ module.exports = {
                         <th>Devolvido Amil</th>
                         <th>Pago pela Amil sem Comprovante</th>
                         <th>A iniciar</th>
+                        <th>Faltas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,6 +122,7 @@ module.exports = {
                     <td>${item.aguardandoRetornoContato}</td>
                     <td>${item.comprovanteCorreto}</td>
                     <td>${item.devolvidoAmil}</td>
+                    <td>${item.faltas}</td>
                 </tr>
             `
             })

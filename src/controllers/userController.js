@@ -6,7 +6,7 @@ const multer = require('multer')
 const fs = require('fs')
 const Treinamentos = require('../models/Treinamentos/Treinamento')
 const { default: mongoose } = require('mongoose')
-const { excelDateToJSDate } = require('../utils/functions')
+const { excelDateToJSDate, InvertDate } = require('../utils/functions')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -485,10 +485,11 @@ module.exports = {
                 const dataCerta = excelDateToJSDate(item.DATA)
 
                 // console.log(dataCerta);
+                // console.log(dataCerta);
 
                 const find = await User.findOne({
                     nomeCompleto: item.NOME,
-                    ausencias: { $elemMatch: { data: moment(dataCerta).isValid() ? moment(dataCerta).format('DD/MM/YYYY') : item.DATA } }
+                    ausencias: { $elemMatch: { data: moment(dataCerta, 'DD/MM/YYYY').isValid() ? moment(dataCerta, 'DD/MM/YYYY').format('YYYY-MM-DD') : InvertDate(item.DATA) } }
                 })
 
                 if (find) {
@@ -503,7 +504,7 @@ module.exports = {
                     $push: {
                         ausencias: {
                             _id: mongoose.Types.ObjectId(),
-                            data: moment(dataCerta).isValid() ? moment(dataCerta).format('DD/MM/YYYY') : item.DATA,
+                            data: moment(dataCerta, 'DD/MM/YYYY').isValid() ? moment(dataCerta, 'DD/MM/YYYY').format('YYYY-MM-DD') : InvertDate(item.DATA),
                             entrada1: item['ENT. 1'],
                             saida1: item['SAÍ. 1'],
                             entrada2: item['ENT. 2'],
@@ -513,6 +514,8 @@ module.exports = {
                     dataAusencia: moment().format('YYYY-MM-DD')
                 })
             }
+
+            // console.log(dados);
 
             return res.json(dados)
         } catch (error) {
@@ -533,6 +536,7 @@ module.exports = {
                 nomeCompleto: 1,
                 dataAusencia: 1,
                 inativo: 1,
+                atividadePrincipal: 1,
             })
 
             let faltas = []
@@ -545,12 +549,13 @@ module.exports = {
                             nome: find.nomeCompleto,
                             data: ausencia.data,
                             tipoAusencia: ausencia.entrada1,
+                            setor: find.atividadePrincipal,
                         })
 
                     }
                 }
             }
-            console.log(faltas);
+            // console.log(faltas);
             return res.json(faltas.sort((a, b) => a.nomeCompleto - b.nomeCompleto))
         } catch (error) {
             console.log(error);

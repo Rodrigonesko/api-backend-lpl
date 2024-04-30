@@ -29,11 +29,35 @@ module.exports = {
                 }
             }
         ])
+
+        let users = await User.aggregate([
+            {
+                $unwind: "$ausencias"
+            }, {
+                $match: {
+                    "ausencias.data": {
+                        $gte: dataInicio,
+                        $lte: dataFim
+                    }
+                }
+            }, {
+                $project: {
+                    ausencias: 1,
+                    name: 1,
+                    nomeCompleto: 1,
+                }
+            }
+        ]);
+
         result = await Promise.all(result.map(async item => {
             const user = await User.findOne({ name: item._id }, {
                 name: 1,
                 nomeCompleto: 1
             }).lean()
+
+            const ausenciasUsuario = users.filter(usuario => usuario.nomeCompleto === user.nomeCompleto);
+            const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
+
             const diasDeFerias = await vacationRequestService.vacationDays(user.nomeCompleto)
             const diasUteis = functions.diasUteisEntreDuasDatas(dataInicio, dataFim, functions.holidays, diasDeFerias)
             return ({
@@ -42,17 +66,21 @@ module.exports = {
                 media: (item.total / diasUteis),
                 houveDivergencia: item.houveDivergencia,
                 mediaDivergencia: (item.houveDivergencia / item.total) * 100,
+                faltas: totalFaltas,
             })
         }))
         result = result.sort((a, b) => b.total - a.total)
+        // console.log(result);
         const media = result.reduce((acc, item) => acc + item.media, 0) / result.length
         const mediaDiasTrabalhados = result.reduce((acc, item) => acc + item.mediaDiasTrabalhados, 0) / result.length
         const mediaTotal = result.reduce((acc, item) => acc + item.total, 0) / result.length
+        const faltas = result.reduce((acc, item) => acc + item.faltas, 0) / result.length
         return {
             result,
             media,
             mediaDiasTrabalhados,
-            mediaTotal
+            mediaTotal,
+            faltas
         }
     }
 }

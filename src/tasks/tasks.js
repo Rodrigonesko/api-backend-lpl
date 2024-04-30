@@ -2,6 +2,9 @@ const cron = require('node-cron');
 const moment = require('moment');
 const avaliacoesService = require('../services/avaliacaoPerformanceIndividual.service');
 const sindicanciaService = require('../services/sindicancia.service');
+const rsdService = require('../services/rsd.service');
+const teleEntrevistaService = require('../services/teleEntrevista.service');
+const elegibilidadePmeService = require('../services/elegibilidadePme.service');
 
 cron.schedule('0 8 * * 1', async () => {
 

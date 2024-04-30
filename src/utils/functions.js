@@ -106,5 +106,10 @@ module.exports = {
         }
 
         return dataCerta
+    },
+
+    InvertDate(date) {
+        return date.split('/').reverse().join('-');
     }
+    
 }
