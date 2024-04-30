@@ -1,6 +1,7 @@
 const PropostaElegibilidadePme = require("../models/ElegibilidadePme/PropostaElegibilidadePme")
 const moment = require("moment");
 const User = require("../models/User/User");
+const userService = require("./user.service");
 
 module.exports = {
     producaoIndividualElegibilidadePme: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) => {
@@ -16,25 +17,7 @@ module.exports = {
                 status: 1,
             }).lean()
 
-            const users = await User.aggregate([
-                {
-                    $unwind: "$ausencias"
-                },
-                {
-                    $match: {
-                        "ausencias.data": {
-                            $gte: dataInicio,
-                            $lte: dataFim
-                        }
-                    }
-                },
-                {
-                    $project: {
-                        ausencias: 1,
-                        name: 1
-                    }
-                }
-            ]);
+            const users = await userService.getUsersFaltasByDate(dataInicio, dataFim)
 
             let producaoPme = []
 

@@ -2,7 +2,8 @@ const DadosEntrevista = require('../models/TeleEntrevista/DadosEntrevista');
 const vacationRequestService = require('./vacationRequest.service');
 const User = require('../models/User/User');
 const functions = require('../utils/functions');
-const moment = require('moment')
+const moment = require('moment');
+const userService = require('./user.service');
 require('moment-business-days')
 
 module.exports = {
@@ -24,24 +25,7 @@ module.exports = {
             }
         ])
 
-        let users = await User.aggregate([
-            {
-                $unwind: "$ausencias"
-            }, {
-                $match: {
-                    "ausencias.data": {
-                        $gte: dataInicio,
-                        $lte: dataFim
-                    }
-                }
-            }, {
-                $project: {
-                    ausencias: 1,
-                    name: 1,
-                    nomeCompleto: 1,
-                }
-            }
-        ]);
+        let users = await userService.getUsersFaltasByDate(dataInicio, dataFim)
 
         result = await Promise.all(result.map(async item => {
             const user = await User.findOne({ name: item._id }, {
