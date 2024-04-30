@@ -6,12 +6,6 @@ const moment = require('moment')
 require('moment-business-days')
 
 module.exports = {
-    async getTeleEntrevista(req) {
-        console.log(req);
-        console.log('getTeleEntrevista');
-        return 'xx'
-    },
-
     async quantidadeAnalistasPorMes(dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) {
         let result = await DadosEntrevista.aggregate([
             {

@@ -5,6 +5,7 @@ const USERNAME = process.env.MSSQL_USER
 const PASSWORD = process.env.MSSQL_PASSWORD
 const moment = require('moment')
 const User = require('../models/User/User')
+const userService = require('./user.service')
 
 let connection;
 
@@ -211,26 +212,7 @@ class SindicanciaService {
                 ))
             );
 
-            const users = await User.aggregate([
-                {
-                    $unwind: "$ausencias"
-                },
-                {
-                    $match: {
-                        "ausencias.data": {
-                            $gte: dataInicio,
-                            $lte: dataFim
-                        }
-                    }
-                },
-                {
-                    $project: {
-                        ausencias: 1,
-                        name: 1,
-                        nomeCompleto: 1,
-                    }
-                }
-            ]);
+            const users = await userService.getUsersFaltasByDate(dataInicio, dataFim)
 
             let groupedDemandas = []
 
