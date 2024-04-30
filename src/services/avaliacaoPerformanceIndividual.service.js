@@ -31,6 +31,7 @@ module.exports = {
                         <th>Devolvidas</th>
                         <th>Redistribuidas</th>
                         <th>A iniciar</th>
+                        <th>Faltas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,6 +46,7 @@ module.exports = {
                     <td>${item.devolvidas}</td>
                     <td>${item.redistribuidas}</td>
                     <td>${item.aIniciar}</td>
+                    <td>${item.faltas}</td>
                 </tr>
             `
             })
@@ -104,7 +106,6 @@ module.exports = {
                         <th>Comprovante Correto</th>
                         <th>Devolvido Amil</th>
                         <th>Pago pela Amil sem Comprovante</th>
-                        <th>A iniciar</th>
                         <th>Faltas</th>
                     </tr>
                 </thead>
@@ -122,6 +123,7 @@ module.exports = {
                     <td>${item.aguardandoRetornoContato}</td>
                     <td>${item.comprovanteCorreto}</td>
                     <td>${item.devolvidoAmil}</td>
+                    <td>${item.pagoPelaAmilSemComprovante}</td>
                     <td>${item.faltas}</td>
                 </tr>
             `
@@ -144,6 +146,7 @@ module.exports = {
                         <th>Média</th>
                         <th>Houve divergência</th>
                         <th>Média divergência</th>
+                        <th>Faltas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -156,6 +159,7 @@ module.exports = {
                     <td>${item.media.toFixed(2)}</td>
                     <td>${item.houveDivergencia}</td>
                     <td>${item.mediaDivergencia.toFixed(2)}%</td>
+                    <td>${item.faltas}</td>
                 </tr>
             `
             })
@@ -178,6 +182,7 @@ module.exports = {
                         <th>Prestadores</th>
                         <th>Benef + Prest</th>
                         <th>Fraudes</th>
+                        <th>Faltas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -191,6 +196,7 @@ module.exports = {
                     <td>${item.prestadores}</td>
                     <td>${item.soma}</td>
                     <td>${item.fraudes}</td>
+                    <td>${item.faltas}</td>
                 </tr>
             `
             })
