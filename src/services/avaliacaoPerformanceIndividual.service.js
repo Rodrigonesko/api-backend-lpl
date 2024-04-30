@@ -238,7 +238,7 @@ module.exports = {
             })
             await transporter.sendMail({
                 from: `Leonardo Lonque <${process.env.EMAIL}>`,
-                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br",
+                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br, claudia.rieth@lplseguros.com.br, administrador@lplseguros.com.br, luciana@lplseguros.com.br, cecilia.belli@lplseguros.com.br, sgiazzon@lplseguros.com.br",
                 subject: "Erro ao gerar relatório de rendimento de todas as células",
                 text: "Erro ao gerar relatório de rendimento de todas as células",
             })
