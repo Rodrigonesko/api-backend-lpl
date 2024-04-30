@@ -66,11 +66,10 @@ module.exports = {
                 //         console.log(pedido);
                 //     }
                 // }
-
                 if (index === -1) {
 
                     const ausenciasUsuario = users.filter(usuario => usuario.name === pedido.analista);
-                    const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario[0].ausencias.length : 0;
+                    const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
 
                     producao.push({
                         analista: pedido.analista,

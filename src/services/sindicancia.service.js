@@ -4,6 +4,7 @@ const DATABASE = process.env.MSSQL_DATABASE
 const USERNAME = process.env.MSSQL_USER
 const PASSWORD = process.env.MSSQL_PASSWORD
 const moment = require('moment')
+const User = require('../models/User/User')
 
 let connection;
 
@@ -200,9 +201,9 @@ class SindicanciaService {
                 WHERE Pacote.data_finalizacao BETWEEN @dataInicio AND @dataFim AND (status_id = 5 OR status_id = 6)
             `)
 
-            result.recordset.forEach((demanda) => {
-                console.log(demanda.id, demanda.nome_usuario, demanda.data_criacao_pacote);
-            })
+            // result.recordset.forEach((demanda) => {
+            //     console.log(demanda.id, demanda.nome_usuario, demanda.data_criacao_pacote);
+            // })
 
             const demandas = result.recordset.filter((demanda, index, self) =>
                 index === self.findIndex((d) => (
@@ -210,17 +211,42 @@ class SindicanciaService {
                 ))
             );
 
+            const users = await User.aggregate([
+                {
+                    $unwind: "$ausencias"
+                },
+                {
+                    $match: {
+                        "ausencias.data": {
+                            $gte: dataInicio,
+                            $lte: dataFim
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        ausencias: 1,
+                        name: 1,
+                        nomeCompleto: 1,
+                    }
+                }
+            ]);
+
             let groupedDemandas = []
 
             demandas.forEach(demanda => {
                 let index = groupedDemandas.findIndex(group => group.nome === demanda.nome_usuario)
                 if (index === -1) {
+                    const ausenciasUsuario = users.filter(usuario => usuario.nomeCompleto === demanda.nome_usuario);
+                    const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
+
                     groupedDemandas.push({
                         nome: demanda.nome_usuario,
                         beneficiarios: demanda.quantidade_beneficiarios,
                         prestadores: demanda.quantidade_prestadores,
                         fraudes: demanda.fraude_relatorio ? 1 : 0,
-                        demandas: demandas.filter(d => d.nome_usuario === demanda.nome_usuario)
+                        demandas: demandas.filter(d => d.nome_usuario === demanda.nome_usuario),
+                        faltas: totalFaltas
                     })
                 } else {
                     groupedDemandas[index].beneficiarios += demanda.quantidade_beneficiarios
@@ -237,7 +263,8 @@ class SindicanciaService {
                     beneficiarios: group.beneficiarios,
                     prestadores: group.prestadores,
                     soma: group.beneficiarios + group.prestadores,
-                    fraudes: group.fraudes
+                    fraudes: group.fraudes,
+                    faltas: group.faltas
                 }
             }).sort((a, b) => b.soma - a.soma)
         } catch (error) {

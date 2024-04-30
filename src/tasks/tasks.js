@@ -3,6 +3,8 @@ const moment = require('moment');
 const avaliacoesService = require('../services/avaliacaoPerformanceIndividual.service');
 const sindicanciaService = require('../services/sindicancia.service');
 const rsdService = require('../services/rsd.service');
+const teleEntrevistaService = require('../services/teleEntrevista.service');
+const elegibilidadePmeService = require('../services/elegibilidadePme.service');
 
 // sindicanciaService.producaoAnalistasByDate('2024-04-01', '2024-04-24').then(res => {
 //     console.log(res);
@@ -10,7 +12,19 @@ const rsdService = require('../services/rsd.service');
 //     console.log(err);
 // })
 
-// rsdService.producaoIndividualRsd('2024-04-22', '2024-04-24').then(res => {
+// rsdService.producaoIndividualRsd('2024-04-01', '2024-04-24').then(res => {
+//     // console.log(res);
+// }).catch(err => {
+//     console.log(err);
+// })
+
+// teleEntrevistaService.quantidadeAnalistasPorMes('2024-04-01', '2024-04-24').then(res => {
+//     // console.log(res);
+// }).catch(err => {
+//     console.log(err);
+// })
+
+// elegibilidadePmeService.producaoIndividualElegibilidadePme('2024-04-01', '2024-04-24').then(res => {
 //     // console.log(res);
 // }).catch(err => {
 //     console.log(err);
