@@ -107,6 +107,7 @@ const storageAgd = multer.diskStorage({
 
 const xlsx = require('xlsx')
 const rsdService = require('../services/rsd.service')
+const planoPfService = require('../services/planoPf.service')
 
 const uploadRsd = multer({ storage: storageRSd }).single('file')
 const uploadPedidosAntigos = multer({ dest: os.tmpdir() }).single('file')
@@ -630,7 +631,9 @@ module.exports = {
     atualizarInformacoes: async (req, res) => {
         try {
 
-            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo, cpf, whatsapp } = req.body
+            const { dataNascimento, email, fone1, fone2, fone3, contratoEmpresa, mo, cpf, whatsapp, plano, dataVigencia, codigoPlano } = req.body
+
+            console.log(req.body);
 
             const pessoa = await Pessoa.findOneAndUpdate({
                 mo: mo
@@ -642,8 +645,15 @@ module.exports = {
                 fone3,
                 contratoEmpresa,
                 cpf,
-                whatsapp
+                whatsapp,
+                plano,
+                dataVigencia,
+                codigoPlano
+            }, {
+                new: true
             })
+
+            console.log(pessoa);
 
             const pedido = await Pedido.updateMany({
                 mo: mo
@@ -3613,6 +3623,17 @@ module.exports = {
             console.log(encontrar);
 
             return res.status(200).json(encontrar)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    findPlanoPf: async (req, res) => {
+        try {
+            return res.status(200).json(await planoPfService.getPlanoByData(req.body))
         } catch (error) {
             console.log(error);
             return res.status(500).json({
