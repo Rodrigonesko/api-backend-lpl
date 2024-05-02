@@ -361,7 +361,7 @@ module.exports = {
     fecharHorarios: async (req, res) => {
         try {
 
-            const { responsavel, data, horarios } = req.body
+            const { responsavel, data, horarios, justificativa } = req.body
 
 
             let horariosFiltrados = horarios.filter(e => {
@@ -384,7 +384,8 @@ module.exports = {
                 }, {
                     agendado: 'Agendado',
                     nome: 'Fechado',
-                    quemFechou: req.user
+                    quemFechou: req.user,
+                    justificativa
                 })
             }))
 
@@ -481,7 +482,12 @@ module.exports = {
             const horariosObj = result.filter(e => {
                 return e.agendado == 'Agendado'
             })
-            const horarios = horariosObj.map(e => e.horario)
+            const horarios = horariosObj.map(e => {
+                return {
+                    horario: e.horario,
+                    justificativa: e.justificativa
+                }
+            }).sort((a, b) => a.horario.localeCompare(b.horario))
 
             return res.status(200).json({
                 horarios
