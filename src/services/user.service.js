@@ -25,6 +25,13 @@ class UserService {
             }
         ]);
     }
+
+    async getUsersAtivosByAtividadePrincipal(atividadePrincipal) {
+        return await User.find({
+            atividadePrincipal: atividadePrincipal,
+            inativo: { $ne: true }
+        });
+    }
 }
 
 module.exports = new UserService();

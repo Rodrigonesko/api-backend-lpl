@@ -16,6 +16,7 @@ const Horario = require('../models/TeleEntrevista/Horario')
 const { default: axios } = require('axios')
 const Log = require('../models/Logs/LogTele')
 const mega = require('megajs')
+const userService = require('../services/user.service')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -1578,17 +1579,9 @@ module.exports = {
 
             const { data } = req.params
 
-            const entrevistas = await DadosEntrevista.find({
-                dataEntrevista: data
-            })
+            let analistas = await userService.getUsersAtivosByAtividadePrincipal('Tele Entrevista')
 
-            let analistas = []
-
-            entrevistas.forEach(e => {
-                if (!analistas.includes(e.responsavel)) {
-                    analistas.push(e.responsavel)
-                }
-            })
+            analistas = analistas.map(e => e.name)
 
             let producao = []
 
