@@ -91,8 +91,8 @@ module.exports = {
                         const pedido = item.PEDIDO
 
                         const nomePrestador = item.PRESTADOR
-                        const cidPrin = item.CID
-                        const relatorioMedico = item.PATOLOGIA
+                        const cidPrin = item.CID ?? item['CID P/ IMPUTAR']
+                        const relatorioMedico = item.PATOLOGIA ?? item['ARGUMENTOS/PATOLOGIA INF EM RELATORIO MEDICO']
                         let dataAtendimento = ExcelDateToJSDate(item['DT ATENDIMENTO'])
                         dataAtendimento.setDate(dataAtendimento.getDate() + 1)
                         dataAtendimento = moment(dataAtendimento).format('YYYY-MM-DD')

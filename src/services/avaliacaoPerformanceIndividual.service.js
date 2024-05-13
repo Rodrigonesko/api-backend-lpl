@@ -98,7 +98,8 @@ module.exports = {
                 <thead>
                     <tr>
                         <th>Analista</th>
-                        <th>Total</th>
+                        <th>Pedidos</th>
+                        <th>Pacotes</th>
                         <th>Cancelados</th>
                         <th>Indeferidos</th>
                         <th>Aguardando Comprovante</th>
@@ -117,6 +118,7 @@ module.exports = {
                 <tr>
                     <td>${item.analista}</td>
                     <td>${item.total}</td>
+                    <td>${item.pacotes}</td>
                     <td>${item.cancelados}</td>
                     <td>${item.indeferidos}</td>
                     <td>${item.aguardandoComprovante}</td>

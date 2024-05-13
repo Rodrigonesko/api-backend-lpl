@@ -14,29 +14,29 @@ module.exports = {
                 }
             }, {
                 analista: 1,
-                statusGerencial: 1
+                statusGerencial: 1,
+                pacote: 1
             }).lean()
 
+            const qtdPacoteAnalista = pedidos.reduce((acc, pedido) => {
+                if (!pedido.analista) {
+                    return acc
+                }
+                if (!acc[pedido.analista]) {
+                    acc[pedido.analista] = {
+                        pacotes: {},
+                        count: 0
+                    }
+                }
+                if (!acc[pedido.analista].pacotes[pedido.pacote]) {
+                    acc[pedido.analista].pacotes[pedido.pacote] = true
+                    acc[pedido.analista].count += 1
+                }
+                return acc
+            }, {})
+
             const users = await userService.getUsersFaltasByDate(dataInicio, dataFim)
-
-
-            // users.forEach((user) => {
-            //     console.log(user.ausencias, user.name);
-            // })
-            // console.log(users);
-
             let producao = []
-
-            // let status = [
-            //     'Pagamento Não Realizado',
-            //     'Protocolo Cancelado',
-            //     'Aguardando Comprovante',
-            //     'Aguardando Retorno Contato',
-            //     'Comprovante Correto',
-            //     'Devolvido Amil',
-            //     'Pago pela Amil sem Comprovante',
-            //     'A iniciar'
-            // ]
 
             for (const pedido of pedidos) {
 
@@ -44,11 +44,6 @@ module.exports = {
                     continue
                 }
                 const index = producao.findIndex(p => p.analista === pedido.analista)
-                // if (pedido.analista === 'Camila Cristine Remus') {
-                //     if (!status.includes(pedido.statusGerencial)) {
-                //         console.log(pedido);
-                //     }
-                // }
                 if (index === -1) {
 
                     const ausenciasUsuario = users.filter(usuario => usuario.name === pedido.analista);
@@ -64,8 +59,8 @@ module.exports = {
                         comprovanteCorreto: pedido.statusGerencial === 'Comprovante Correto' ? 1 : 0,
                         devolvidoAmil: pedido.statusGerencial === 'Devolvido Amil' ? 1 : 0,
                         pagoPelaAmilSemComprovante: pedido.statusGerencial === 'Pago pela Amil sem Comprovante' ? 1 : 0,
-                        // aIniciar: pedido.statusGerencial === 'A iniciar' ? 1 : 0,
                         faltas: totalFaltas,
+                        pacotes: qtdPacoteAnalista[pedido.analista].count
                     })
                 } else {
                     producao[index].total += 1
@@ -76,14 +71,9 @@ module.exports = {
                     producao[index].comprovanteCorreto += pedido.statusGerencial === 'Comprovante Correto' ? 1 : 0
                     producao[index].devolvidoAmil += pedido.statusGerencial === 'Devolvido Amil' ? 1 : 0
                     producao[index].pagoPelaAmilSemComprovante += pedido.statusGerencial === 'Pago pela Amil sem Comprovante' ? 1 : 0
-                    // producao[index].aIniciar += pedido.statusGerencial === 'A iniciar' ? 1 : 0,
                 }
             }
-
-            console.log(producao.sort((a, b) => b.total - a.total));
-
             return producao.sort((a, b) => b.total - a.total)
-
         } catch (error) {
             throw error
         }
