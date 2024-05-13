@@ -691,7 +691,7 @@ module.exports = {
                 ]
             }).countDocuments()
 
-            console.log(filter, total);
+            // console.log(filter, total);
             return res.status(200).json({ filter, total })
         } catch (error) {
             console.log(error);
