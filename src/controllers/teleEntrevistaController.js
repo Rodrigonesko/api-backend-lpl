@@ -590,19 +590,111 @@ module.exports = {
 
     naoImplantadas: async (req, res) => {
         try {
+            const { page, limit } = req.query
+
+            if (page === undefined) page = 1
+            if (limit === undefined) limit = 10
+
+            let skip = (page - 1) * limit;
 
             const result = await DadosEntrevista.find({
                 implantado: { $ne: 'Sim' },
-                implantacao: 'Sim'
-            })
+                implantacao: 'Sim',
+            }).skip(skip).limit(limit)
 
-            return res.status(200).json(result)
+            const total = await DadosEntrevista.find({
+                implantado: { $ne: 'Sim' },
+                implantacao: 'Sim'
+            }).countDocuments()
+
+            return res.status(200).json({
+                result, total
+            })
 
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
             })
+        }
+    },
+
+    situacoesAmil: async (req, res) => {
+        try {
+            const result = await DadosEntrevista.find({
+                implantado: { $ne: 'Sim' },
+                implantacao: 'Sim'
+            }, {
+                situacaoAmil: 1,
+            })
+
+            const situacoes = result.map((item) => (
+                item.situacaoAmil
+            )).filter((value, index, self) => self.indexOf(value) === index)
+
+            return res.status(200).json(situacoes)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    tiposContrato: async (req, res) => {
+        try {
+            const result = await DadosEntrevista.find({
+                implantado: { $ne: 'Sim' },
+                implantacao: 'Sim'
+            }, {
+                tipoContrato: 1,
+            })
+
+            const tipos = result.map((item) => (
+                item.tipoContrato
+            )).filter((value, index, self) => self.indexOf(value) === index)
+
+            return res.status(200).json(tipos)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
+    filtrarImplantadas: async (req, res) => {
+        try {
+            const { page, limit, situacaoAmil, tipoContrato } = req.query
+            console.log(req.query);
+
+            if (page === undefined) page = 1
+            if (limit === undefined) limit = 10
+
+            let skip = (page - 1) * limit;
+
+            const filter = await DadosEntrevista.find({
+                implantado: { $ne: 'Sim' },
+                implantacao: 'Sim',
+                $or: [
+                    { situacaoAmil: situacaoAmil },
+                    { tipoContrato: tipoContrato },
+                ]
+            }).skip(skip).limit(limit)
+
+            const total = await DadosEntrevista.find({
+                implantado: { $ne: 'Sim' },
+                implantacao: 'Sim',
+                $or: [
+                    { situacaoAmil: situacaoAmil },
+                    { tipoContrato: tipoContrato },
+                ]
+            }).countDocuments()
+
+            // console.log(filter, total);
+            return res.status(200).json({ filter, total })
+        } catch (error) {
+            console.log(error);
         }
     },
 
