@@ -28,7 +28,8 @@ const userScheema = new mongoose.Schema({
     dataAniversario: String,
     acessos: {
         administrador: Boolean,
-        agendamento: Boolean
+        agendamento: Boolean,
+        sulAmerica: Boolean
     },
     horarioSaida: String,
     online: Boolean,

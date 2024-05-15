@@ -14,6 +14,7 @@ class PlanoPfService {
     }
 
     async getPlanoByData(data) {
+        if (Object.keys(data).length === 0) return false
         return await PlanosPF.findOne(data);
     }
 

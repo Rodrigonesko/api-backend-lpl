@@ -224,17 +224,13 @@ module.exports = {
 
     update: async (req, res) => {
         try {
-
             const { data } = req.body
-
+            console.log(data);
             await User.updateOne({ _id: data._id }, data)
-
             return res.status(200).json({
                 msg: 'ok'
             })
-
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
             })

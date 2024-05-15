@@ -32,6 +32,10 @@ class UserService {
             inativo: { $ne: true }
         });
     }
+
+    async update(id, data) {
+        return await User.findByIdAndUpdate(id, data);
+    }
 }
 
 module.exports = new UserService();
