@@ -4,6 +4,7 @@ const moment = require('moment')
 
 const fs = require('fs')
 const multer = require('multer');
+const { default: mongoose } = require('mongoose');
 const upload = (versao) => multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
@@ -54,7 +55,10 @@ module.exports = {
                     msg: 'Alguma informação está em branco'
                 })
             }
-            const users = await User.find()
+            const users = await User.find({
+                inativo: { $ne: true }
+            });
+            // console.log(users);
             const realizados = users.map(user => {
                 return {
                     nome: user.name,
@@ -316,6 +320,40 @@ module.exports = {
                 msg: 'Internal Server Error',
                 error
             })
+        }
+    },
+
+    deleteColaboradores: async (req, res) => {
+        try {
+            const { idTreinamento, _id } = req.params;
+
+            console.log('Id Treinamento:', idTreinamento);
+            console.log('Id User:', _id);
+
+            if (!idTreinamento || !_id) {
+                return res.status(400).json({
+                    msg: 'ID obrigatório'
+                });
+            }
+
+            const deletar = await Treinamento.updateOne(
+                { _id: idTreinamento },
+                { $pull: { realizados: { id: mongoose.Types.ObjectId(_id) } } },
+            );
+
+            console.log(deletar);
+
+            if (deletar.modifiedCount === 0) {
+                return res.status(404).json({ msg: 'Item não encontrado' });
+            }
+
+            return res.json({ msg: 'ok' });
+        } catch (error) {
+            console.log('error', error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            });
         }
     },
 
