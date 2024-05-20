@@ -13,5 +13,6 @@ router.get('/verificar/treinamento', auth, treinamentoController.verificarTreina
 router.put('/naoPrecisaTreinamento', auth, treinamentoController.naoPrecisaTreinamento)
 router.post('/adicionarUsuarioTreinamento', treinamentoController.adicionarUsuarioNoTreinamento)
 router.post('/:_id', auth, treinamentoController.updateCertificado)
+router.patch('/deleteColaboradores/:idTreinamento/:_id', auth, treinamentoController.deleteColaboradores)
 
 module.exports = router
