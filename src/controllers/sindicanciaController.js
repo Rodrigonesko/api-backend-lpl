@@ -333,7 +333,7 @@ module.exports = {
         if (areaEmpresa) filter += ` AND Demanda.id_area_empresa = '${areaEmpresa}'`
 
         const result = await new sql.query(`
-        SELECT demanda.id, demanda.codigo, demanda.nome, demanda.cpf_cnpj, demanda.cep, demanda.uf, demanda.cidade, demanda.bairro, demanda.logradouro, demanda.numero, demanda.telefone, demanda.especialidade, demanda.tipo_servico_id, demanda.observacao, demanda.status_id, demanda.data_atualizacao, demanda.empresa_id, demanda.tipo_investigado_id, demanda.data_demanda, demanda.escolha_anexo, demanda.usuario_criador_id, demanda.usuario_distribuicao_id, demanda.id_area_empresa, TipoServico.nome as tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Valor.valor as valor, Valor.periodo as periodo, Pacote.data_finalizacao as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao, Agenda.observacao as observacoes, Pacote.data_criacao as data_criacao_pacote, DatasBradesco.data_previa as data_previa, DatasBradesco.data_final_entrega as data_final_entrega, DatasBradesco.previa_enviada as previa_enviada, Solicitante.analista_solicitante as analista_solicitante,
+        SELECT Demanda.*, TipoServico.nome as tipo_servico_nome, Status.nome as status_nome, Empresa.razao_social as empresa_nome, Usuario.nome as usuario_criador_nome, UsuarioDistribuicao.nome as usuario_distribuicao_nome, AreaEmpresa.nome as area_empresa_nome, TipoInvestigado.nome as tipo_investigado_nome, Finalizacao.data as data_finalizacao, Finalizacao.justificativa as justificativa_finalizacao, Valor.valor as valor, Valor.periodo as periodo, LogDemanda.data_hora as data_finalizacao_sistema, UsuarioExecutor.nome as usuario_executor_nome, Complementacao.motivo as motivo, Complementacao.data as data_complementacao, Complementacao.complementacao as complementacao, Agenda.observacao as observacoes, Pacote.data_criacao as data_criacao_pacote, DatasBradesco.data_previa as data_previa, DatasBradesco.data_final_entrega as data_final_entrega, DatasBradesco.previa_enviada as previa_enviada, Solicitante.analista_solicitante as analista_solicitante,
         (SELECT COUNT(*) FROM Beneficiario WHERE Beneficiario.id_demanda = demanda.id) as num_beneficiarios,
         (SELECT COUNT(*) FROM Prestador WHERE Prestador.id_demanda = demanda.id) as num_prestadores
         FROM Demanda
@@ -352,6 +352,7 @@ module.exports = {
         LEFT JOIN Agenda ON Demanda.id = Agenda.id_demanda
         LEFT JOIN DatasBradesco ON Demanda.id = DatasBradesco.demanda_id
         LEFT JOIN Solicitante ON Demanda.id = Solicitante.demanda_id
+        LEFT JOIN LogDemanda ON Demanda.id = LogDemanda.demanda_id
         WHERE 1=1 ${filter}
         `)
 

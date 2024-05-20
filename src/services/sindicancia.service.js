@@ -192,63 +192,47 @@ class SindicanciaService {
                 .input('dataInicio', sql.Date, dataInicio)
                 .input('dataFim', sql.Date, dataFim)
                 .query(`
-                SELECT Demanda.*, Pacote.data_finalizacao as data_finalizacao_pacote, RelatorioDemanda.fraude as fraude_relatorio, Pacote.usuario_id as usuario_pacote_id, Pacote.data_criacao as data_criacao_pacote, Usuario.nome as nome_usuario,
-                (SELECT COUNT (*) FROM PRESTADOR WHERE PRESTADOR.id_demanda = DEMANDA.ID) as quantidade_prestadores,
-                (SELECT COUNT (*) FROM BENEFICIARIO WHERE BENEFICIARIO.id_demanda = DEMANDA.ID) as quantidade_beneficiarios
-                from Demanda
-                LEFT JOIN Pacote ON Demanda.id = Pacote.demanda_id
-                LEFT JOIN RelatorioDemanda ON Demanda.id = RelatorioDemanda.demanda_id
-                LEFT JOIN Usuario ON pacote.usuario_id = Usuario.id
-                WHERE Pacote.data_finalizacao BETWEEN @dataInicio AND @dataFim AND (status_id = 5 OR status_id = 6)
-            `)
+        SELECT LogDemanda.*, Usuario.nome as nome_usuario,
+        (SELECT COUNT(*) FROM Prestador WHERE id_demanda = LogDemanda.demanda_id) as prestadores,
+        (SELECT COUNT(*) FROM Beneficiario WHERE id_demanda = LogDemanda.demanda_id) as beneficiarios,
+        (SELECT fraude FROM RelatorioDemanda WHERE demanda_id = LogDemanda.demanda_id) as fraude
+        FROM LogDemanda
+        LEFT JOIN Usuario ON LogDemanda.usuario_id = Usuario.id
+        WHERE LogDemanda.data_hora >= @dataInicio AND LogDemanda.data_hora <= @dataFim AND LogDemanda.descricao = 'Relatório final cadastrado.'
+    `)
 
-            // result.recordset.forEach((demanda) => {
-            //     console.log(demanda.id, demanda.nome_usuario, demanda.data_criacao_pacote);
-            // })
-
-            const demandas = result.recordset.filter((demanda, index, self) =>
-                index === self.findIndex((d) => (
-                    d.id === demanda.id && analistas.includes(demanda.nome_usuario)
-                ))
-            );
-
+            let demandas = []
             const users = await userService.getUsersFaltasByDate(dataInicio, dataFim)
 
-            let groupedDemandas = []
-
-            demandas.forEach(demanda => {
-                let index = groupedDemandas.findIndex(group => group.nome === demanda.nome_usuario)
+            for (const iterator of result.recordset) {
+                const index = demandas.findIndex(demanda => demanda.nome_usuario === iterator.nome_usuario)
                 if (index === -1) {
-                    const ausenciasUsuario = users.filter(usuario => usuario.nomeCompleto === demanda.nome_usuario);
+                    const ausenciasUsuario = users.filter(usuario => usuario.nomeCompleto === iterator.nome_usuario);
                     const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
 
-                    groupedDemandas.push({
-                        nome: demanda.nome_usuario,
-                        beneficiarios: demanda.quantidade_beneficiarios,
-                        prestadores: demanda.quantidade_prestadores,
-                        fraudes: demanda.fraude_relatorio ? 1 : 0,
-                        demandas: demandas.filter(d => d.nome_usuario === demanda.nome_usuario),
+                    demandas.push({
+                        nome_usuario: iterator.nome_usuario,
+                        demandas: 1,
+                        beneficiarios: iterator.beneficiarios,
+                        prestadores: iterator.prestadores,
+                        fraudes: iterator.fraude ? 1 : 0,
                         faltas: totalFaltas
                     })
                 } else {
-                    groupedDemandas[index].beneficiarios += demanda.quantidade_beneficiarios
-                    groupedDemandas[index].prestadores += demanda.quantidade_prestadores
-                    groupedDemandas[index].fraudes += demanda.fraude_relatorio ? 1 : 0
-                    groupedDemandas[index].demandas.push(demanda)
+                    demandas[index].demandas += 1
+                    demandas[index].beneficiarios += iterator.beneficiarios
+                    demandas[index].prestadores += iterator.prestadores
+                    demandas[index].fraudes += iterator.fraude ? 1 : 0
+                }
+            }
+
+            demandas = demandas.map(demanda => {
+                return {
+                    ...demanda,
+                    soma: demanda.beneficiarios + demanda.prestadores
                 }
             })
-
-            return groupedDemandas.map(group => {
-                return {
-                    nome: group.nome,
-                    demandas: group.demandas.length,
-                    beneficiarios: group.beneficiarios,
-                    prestadores: group.prestadores,
-                    soma: group.beneficiarios + group.prestadores,
-                    fraudes: group.fraudes,
-                    faltas: group.faltas
-                }
-            }).sort((a, b) => b.soma - a.soma)
+            return demandas
         } catch (error) {
             throw error
         }

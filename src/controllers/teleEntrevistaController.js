@@ -396,7 +396,7 @@ module.exports = {
 
             const nomeAntigo = atualizar.nome
 
-            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Fernanda Ribeiro' || req.user === 'Gislaine Alberton Almeida' || req.user === 'Rodrigo Onesko Dias' || req.user === 'Bruna Tomazoni' || req.user === 'Maria Tereza Santos') {
+            if (req.user === 'Claudia Rieth' || req.user === 'Administrador' || req.user === 'Gislaine Alberton Almeida' || req.user === 'Rodrigo Onesko Dias' || req.user === 'Bruna Tomazoni' || req.user === 'Daniele Rui' || req.user === 'Solaine Teixeira') {
                 await DadosEntrevista.findByIdAndUpdate({
                     _id: id
                 }, {
