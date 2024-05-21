@@ -92,7 +92,7 @@ module.exports = {
                     realizado: false,
                     id: newUser._id,
                     data: null,
-                    ativo: true
+                    ativo: false
                 }
 
                 await Treinamentos.updateOne({
