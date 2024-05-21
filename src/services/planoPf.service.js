@@ -15,17 +15,27 @@ class PlanoPfService {
 
     async getPlanoByData(data) {
         if (Object.keys(data).length === 0) return false
-        return await PlanosPF.findOne(data);
+        console.log(data);
+        const plano = await PlanosPF.findOne({
+            nome: data.nome,
+            codigo: data.codigo
+        }).lean();
+        if (!plano) return false
+        if (plano.prazo === '90 dias') {
+            return plano
+        }
+
+        return await PlanosPF.findOne(data).lean();
     }
 
     // async uploadingPlanosPf() {
 
-    //     const file = fs.readFileSync('./src/services/planos_pf.csv', 'utf8');
+    //     const file = fs.readFileSync('./src/services/prazo_90.csv', 'utf8');
 
     //     const lines = file.split('\n');
     //     for (const line of lines) {
     //         const [nome, dataVigencia, ano, codigo] = line.split(';');
-    //         await PlanosPF.create({ nome, dataVigencia, codigo });
+    //         await PlanosPF.create({ nome, dataVigencia, codigo, prazo: '90 dias'});
     //         console.log(nome, dataVigencia, codigo);
     //     }
 

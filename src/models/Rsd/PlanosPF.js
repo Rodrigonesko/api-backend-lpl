@@ -4,6 +4,8 @@ const PlanoPfSchema = new mongoose.Schema({
     nome: String,
     dataVigencia: String,
     codigo: String,
+    prazo: String
+
 }, {
     timestamps: true
 })

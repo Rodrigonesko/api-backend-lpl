@@ -6,6 +6,7 @@ const rsdService = require('../services/rsd.service');
 const teleEntrevistaService = require('../services/teleEntrevista.service');
 const elegibilidadePmeService = require('../services/elegibilidadePme.service');
 
+
 cron.schedule('0 8 * * 1', async () => {
 
     const dataInicio = moment().subtract(1, 'weeks').startOf('isoWeek').format('YYYY-MM-DD');
