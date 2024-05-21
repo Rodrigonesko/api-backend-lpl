@@ -36,25 +36,6 @@ const upload = (versao) => multer({
 
 module.exports = {
 
-    findAll: async (req, res) => {
-        try {
-            const { page = 1, limit = 25 } = req.query
-            let skip = (page - 1) * limit
-
-            const total = await Inventario.find().countDocuments()
-            const result = await Inventario.find().skip(skip).limit(limit)
-
-            return res.status(200).json({
-                result, total
-            })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                error: "Internal server error."
-            })
-        }
-    },
-
     setStatus: async (req, res) => {
         try {
             const result = await Inventario.updateOne({ _id: req.body._id }, { status: req.body.status })
@@ -113,12 +94,13 @@ module.exports = {
     getInventarioByFilter: async (req, res) => {
         try {
 
-            const { nomeItem, ondeEsta, etiqueta, status } = req.query
-
+            const { nomeItem, ondeEsta, etiqueta, status, page, limit } = req.query
             // console.log(req.query);
 
-            const { page = 1, limit = 25 } = req.query
-            let skip = (page - 1) * limit
+            if (limit === undefined) limit = 10
+            if (page === undefined) page = 1
+
+            let skip = (page - 1) * limit;
 
             const result = await Inventario.find({
                 nome: { $regex: new RegExp(nomeItem, 'i') },
@@ -134,9 +116,10 @@ module.exports = {
                 status: { $regex: status }
             }).countDocuments()
 
-            // console.log(result);
+            const resultOrdenado = result.sort((a, b) => parseInt(a.etiqueta) - parseInt(b.etiqueta));
+            // console.log(resultOrdenado);
 
-            return res.json({ result, total })
+            return res.json({ resultOrdenado, total })
 
         } catch (error) {
             console.log(error);
