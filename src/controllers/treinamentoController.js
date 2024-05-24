@@ -390,4 +390,45 @@ module.exports = {
             })
         }
     },
+
+    addColaboradoresManual: async (req, res) => {
+        try {
+            const { nome, _id } = req.body
+            const { id } = req.params
+            console.log(req.body);
+            console.log(req.params);
+
+            const novoUsuario = {
+                nome: nome,
+                realizado: false,
+                id: mongoose.Types.ObjectId(_id),
+                data: null,
+                ativo: false
+            }
+
+            const upd = await Treinamento.updateOne({
+                _id: id,
+            }, {
+                $push: {
+                    realizados: novoUsuario,
+                }
+            })
+
+            console.log(upd);
+
+            if (upd.modifiedCount === 0) {
+                return res.status(404).json({ msg: 'Item não encontrado' });
+            }
+
+            return res.status(200).json({
+                msg: 'ok'
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error',
+                error
+            })
+        }
+    }
 }
