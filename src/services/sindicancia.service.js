@@ -195,7 +195,7 @@ class SindicanciaService {
         SELECT LogDemanda.*, Usuario.nome as nome_usuario,
         (SELECT COUNT(*) FROM Prestador WHERE id_demanda = LogDemanda.demanda_id) as prestadores,
         (SELECT COUNT(*) FROM Beneficiario WHERE id_demanda = LogDemanda.demanda_id) as beneficiarios,
-        (SELECT fraude FROM RelatorioDemanda WHERE demanda_id = LogDemanda.demanda_id) as fraude
+        (SELECT TOP 1 fraude FROM RelatorioDemanda WHERE demanda_id = LogDemanda.demanda_id) as fraude
         FROM LogDemanda
         LEFT JOIN Usuario ON LogDemanda.usuario_id = Usuario.id
         WHERE LogDemanda.data_hora >= @dataInicio AND LogDemanda.data_hora <= @dataFim AND LogDemanda.descricao = 'Relatório final cadastrado.'
