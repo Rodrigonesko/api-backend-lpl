@@ -5,6 +5,7 @@ const rsdService = require("../services/rsd.service")
 const teleEntrevistaService = require("../services/teleEntrevista.service")
 const sindicanciaService = require("../services/sindicancia.service")
 const nodemailer = require('nodemailer')
+const sulAmericaService = require("./sulAmerica.service")
 
 module.exports = {
     rendimentoTodasCelulas: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format("YYYY-MM-DD")) => {
@@ -15,6 +16,7 @@ module.exports = {
             const producaoRsd = await rsdService.producaoIndividualRsd(dataInicio, dataFim)
             const { result } = await teleEntrevistaService.quantidadeAnalistasPorMes(dataInicio, dataFim)
             const producaoSindicancia = await sindicanciaService.producaoAnalistasByDate(dataInicio, dataFim)
+            const producaoSulAmerica = await sulAmericaService.producaoIndividualSulAmerica(dataInicio, dataFim)
 
             let html = `
         <div style="font-family: Arial, sans-serif;">
@@ -172,42 +174,75 @@ module.exports = {
         `
 
             html += `
-            <h2>Sindicância</h2>
-            <table
-                border='1'
-            >
-                <thead>
-                    <tr>
-                        <th>Analista</th>
-                        <th>Demandas</th>
-                        <th>Beneficiários</th>
-                        <th>Prestadores</th>
-                        <th>Benef + Prest</th>
-                        <th>Fraudes</th>
-                        <th>Faltas</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `
+        <h2>Sindicância</h2>
+        <table
+            border='1'
+        >
+            <thead>
+                <tr>
+                    <th>Analista</th>
+                    <th>Demandas</th>
+                    <th>Beneficiários</th>
+                    <th>Prestadores</th>
+                    <th>Benef + Prest</th>
+                    <th>Fraudes</th>
+                    <th>Faltas</th>
+                </tr>
+            </thead>
+            <tbody>
+    `
             producaoSindicancia.forEach(item => {
                 html += `
-                <tr>
-                    <td>${item.nome_usuario}</td>
-                    <td>${item.demandas}</td>
-                    <td>${item.beneficiarios}</td>
-                    <td>${item.prestadores}</td>
-                    <td>${item.soma}</td>
-                    <td>${item.fraudes}</td>
-                    <td>${item.faltas}</td>
-                </tr>
-            `
+            <tr>
+                <td>${item.nome_usuario}</td>
+                <td>${item.demandas}</td>
+                <td>${item.beneficiarios}</td>
+                <td>${item.prestadores}</td>
+                <td>${item.soma}</td>
+                <td>${item.fraudes}</td>
+                <td>${item.faltas}</td>
+            </tr>
+        `
             })
 
             html += `
-                </tbody>
-            </table>
-            </div>
+            </tbody>
+        </table>
+        </div>
+    `
+            html += `
+        <h2>Sul América</h2>
+        <table
+            border='1'
+        >
+            <thead>
+                <tr>
+                    <th>Analista</th>
+                    <th>Total</th>
+                    <th>Insucesso Contato</th>
+                    <th>Sucesso Contato</th>
+                    <th>Tentativas</th>
+                </tr>
+            </thead>
+            <tbody>
+    `
+            producaoSulAmerica.forEach(item => {
+                html += `
+            <tr>
+                <td>${item.responsavel}</td>
+                <td>${item.total}</td>
+                <td>${item.insucessoContato}</td>
+                <td>${item.sucessoContato}</td>
+                <td>${item.tentativas}</td>
+            </tr>
         `
+            })
+
+            html += `
+            </tbody>
+        </table>
+        </div>
+    `
 
             const transporter = nodemailer.createTransport({
                 host: 'email-ssl.com.br',
@@ -240,7 +275,8 @@ module.exports = {
             })
             await transporter.sendMail({
                 from: `Leonardo Lonque <${process.env.EMAIL}>`,
-                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br, claudia.rieth@lplseguros.com.br, administrador@lplseguros.com.br, luciana@lplseguros.com.br, cecilia.belli@lplseguros.com.br, sgiazzon@lplseguros.com.br",
+                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br",
+                //  claudia.rieth@lplseguros.com.br, administrador@lplseguros.com.br, luciana@lplseguros.com.br, cecilia.belli@lplseguros.com.br, sgiazzon@lplseguros.com.br",
                 subject: "Erro ao gerar relatório de rendimento de todas as células",
                 text: "Erro ao gerar relatório de rendimento de todas as células",
             })
