@@ -49,6 +49,7 @@ const userScheema = new mongoose.Schema({
     deFerias: Boolean,
     ausencias: [],
     dataAusencia: String,
+    dataDemissao: String,
 },
     {
         versionKey: false
