@@ -12,7 +12,7 @@ module.exports = {
             const response = await axios.get(`${SULAMERICA}/pedido/pedidosConcluidosPorResponsavel?dataInicio=${dataInicio}&dataFim=${dataFim}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            console.log(response.data)
+            // console.log(response.data)
             return response.data
         } catch (error) {
             throw error
