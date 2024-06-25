@@ -174,8 +174,10 @@ module.exports = {
     firstAccess: async (req, res) => {
         try {
 
-            const { password, confirmPassword } = req.body
+            const { password, confirmPassword, dataAtualizacaoPassword } = req.body
 
+            console.log(req.body);
+            
             if (password !== confirmPassword) {
                 return res.status(401).json({ message: `As senhas não conferem` })
             }
@@ -188,7 +190,9 @@ module.exports = {
                 email: req.email
             }, {
                 password: encryptedPassword,
-                firstAccess: 'Não'
+                firstAccess: 'Não',
+                dataAtualizacaoPassword: dataAtualizacaoPassword
+
             })
 
             return res.status(200).json({
@@ -666,6 +670,10 @@ module.exports = {
                 error: error.message // Melhor captura do erro, pegando a mensagem de erro
             });
         }
+    },
+
+    verificarDataAtualizacao: async (req, res) => {
+
     }
 }
 

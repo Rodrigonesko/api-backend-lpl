@@ -50,6 +50,7 @@ const userScheema = new mongoose.Schema({
     ausencias: [],
     dataAusencia: String,
     dataDemissao: String,
+    dataAtualizacaoPassword: String
 },
     {
         versionKey: false

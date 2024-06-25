@@ -14,6 +14,8 @@ module.exports = {
     login: async (req, res) => {
         const { email, password } = req.body
 
+        console.log(req.body);
+
         if (!email || !password) return res.status(400).json({ message: "Necessário preencher todos os campos" })
 
         try {
@@ -29,7 +31,7 @@ module.exports = {
 
 
             //Criando token de autenticação
-            const token = jwt.sign({ username: user.name, email: email, accessLevel: user.accessLevel }, secret)
+            const token = jwt.sign({ username: user.name, email: email, accessLevel: user.accessLevel }, secret, { expiresIn: '12h' })
 
             //Setando o token para o cookie
             return res.status(200).json({ msg: "Logado com sucesso", token: token, user: user.name })
@@ -37,6 +39,7 @@ module.exports = {
             return res.json(error)
         }
     },
+
     logout: async (req, res) => {
 
         try {
