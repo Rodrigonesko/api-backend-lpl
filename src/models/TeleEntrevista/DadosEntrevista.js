@@ -60,6 +60,14 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     divergencia: String,
     cids: String,
     codigosCids: String,
+    cidsAjustados: {
+        codigo: String,
+        descricao: String
+    },
+    cidsCpt: {
+        codigo: String,
+        descricao: String
+    },
     cancelado: Boolean,
     nf: String,
     dataFaturamento: Date,

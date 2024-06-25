@@ -2855,6 +2855,29 @@ module.exports = {
         }
     },
 
+    buscarEntrevistasEntreDatasAdesao: async (req, res) => {
+        try {
+
+            const { startDate, endDate } = req.query
+
+            const result = await DadosEntrevista.find({
+                dataEntrevista: {
+                    $gte: startDate || '2022-09-01',
+                    $lte: endDate || moment().format('YYYY-MM-DD')
+                },
+                tipoContrato: 'ADESÃO'
+            })
+
+            return res.json(result)
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: 'Internal Server Error'
+            })
+        }
+    },
+
     uploadImplantacao: async (req, res) => {
         try {
 
