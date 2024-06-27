@@ -6,6 +6,7 @@ const teleEntrevistaService = require("../services/teleEntrevista.service")
 const sindicanciaService = require("../services/sindicancia.service")
 const nodemailer = require('nodemailer')
 const sulAmericaService = require("./sulAmerica.service")
+const rsdBradescoService = require("./rsdBradesco.service")
 
 module.exports = {
     rendimentoTodasCelulas: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format("YYYY-MM-DD")) => {
@@ -17,6 +18,7 @@ module.exports = {
             const { result } = await teleEntrevistaService.quantidadeAnalistasPorMes(dataInicio, dataFim)
             const producaoSindicancia = await sindicanciaService.producaoAnalistasByDate(dataInicio, dataFim)
             const producaoSulAmerica = await sulAmericaService.producaoIndividualSulAmerica(dataInicio, dataFim)
+            const producaoRsdBradesco = await rsdBradescoService.producaoIndividualSulAmerica(dataInicio, dataFim)
 
             let html = `
         <div style="font-family: Arial, sans-serif;">
@@ -243,6 +245,41 @@ module.exports = {
         </table>
         </div>
     `
+            html += `
+        <h2>RSD Bradesco</h2>
+        <table
+            border='1'
+        >
+            <thead>
+                <tr>
+                    <th>Analista</th>
+                    <th>Total</th>
+                    <th>Finalizado</th>
+                    <th>Sucesso</th>
+                    <th>Insucesso</th>
+                    <th>Tentativas</th>
+                </tr>
+            </thead>
+            <tbody>
+    `
+            producaoRsdBradesco.forEach(item => {
+                html += `
+            <tr>
+                <td>${item.responsavel}</td>
+                <td>${item.total}</td>
+                <td>${item.finalizado}</td>
+                <td>${item.sucesso}</td>
+                <td>${item.insucesso}</td>
+                <td>${item.tentativas}</td>
+            </tr>
+        `
+            })
+
+            html += `
+            </tbody>
+        </table>
+        </div>
+    `
 
             const transporter = nodemailer.createTransport({
                 host: 'email-ssl.com.br',
@@ -256,7 +293,7 @@ module.exports = {
 
             return await transporter.sendMail({
                 from: `Leonardo Lonque <${process.env.EMAIL}>`,
-                to: "rodrigo.dias@lplseguros.com.br, leonardo.lonque@lplseguros.com.br, claudia.rieth@lplseguros.com.br, administrador@lplseguros.com.br, luciana@lplseguros.com.br, cecilia.belli@lplseguros.com.br, sgiazzon@lplseguros.com.br",
+                to: "leonardo.lonque@lplseguros.com.br, rodrigo.dias@lplseguros.com.br, claudia.rieth@lplseguros.com.br, administrador@lplseguros.com.br, luciana@lplseguros.com.br, cecilia.belli@lplseguros.com.br, sgiazzon@lplseguros.com.br",
                 subject: "Rendimento de todas as células",
                 text: "Rendimento de todas as células",
                 html
