@@ -82,5 +82,6 @@ router.put('/retrabalho', auth, teleEntrevistaController.alterarRetrabalhoEntrev
 router.get('/situacoesAmil', auth, teleEntrevistaController.situacoesAmil)
 router.get('/tiposContrato', auth, teleEntrevistaController.tiposContrato)
 router.get('/filtrarImplantadas', auth, teleEntrevistaController.filtrarImplantadas)
+router.get('/entrevistasEntreDatasAdesao', auth, teleEntrevistaController.buscarEntrevistasEntreDatasAdesao)
 
 module.exports = router
