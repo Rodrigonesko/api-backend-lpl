@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+
 const dadosEntrevistaScheema = new mongoose.Schema({
     nome: String,
     cpf: String,
@@ -58,16 +59,19 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     sexo: String,
     houveDivergencia: String,
     divergencia: String,
+    motivoBeneficiario: String,
     cids: String,
     codigosCids: String,
-    cidsAjustados: {
+    cidsAjustados: [{
         codigo: String,
-        descricao: String
-    },
-    cidsCpt: {
+        descricao: String,
+        ano: String
+    }],
+    cidsDs: [{
         codigo: String,
-        descricao: String
-    },
+        descricao: String,
+        ano: String
+    }],
     cancelado: Boolean,
     nf: String,
     dataFaturamento: Date,
@@ -85,7 +89,10 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     dataRecebimento: String,
     entrevistaQualidade: Boolean,
     filial: String,
-    idProposta: String,
+    idProposta: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PropostaEntrevista'
+    },
     tea: String,
     administradora: String,
     situacaoAmil: String,
