@@ -1,11 +1,14 @@
 const mongoose = require('mongoose')
-
+const moment = require('moment')
 
 const dadosEntrevistaScheema = new mongoose.Schema({
     nome: String,
     cpf: String,
     dataNascimento: String,
-    dataEntrevista: String,
+    dataEntrevista: {
+        type: String,
+        default: moment().format('YYYY-MM-DD HH:mm:ss')
+    },
     proposta: String,
     tipoFormulario: String,
     profissao: String,
@@ -72,13 +75,19 @@ const dadosEntrevistaScheema = new mongoose.Schema({
         descricao: String,
         ano: String
     }],
-    cancelado: Boolean,
+    cancelado: {
+        type: Boolean,
+        default: false
+    },
     nf: String,
     dataFaturamento: Date,
     idade: Number,
     quemAnexou: String,
     dataAnexado: String,
-    anexadoSisAmil: String,
+    anexadoSisAmil: {
+        type: String,
+        default: 'Anexar'
+    },
     vigencia: String,
     implantacao: String,
     implantado: String,

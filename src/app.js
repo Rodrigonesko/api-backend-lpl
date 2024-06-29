@@ -50,5 +50,6 @@ app.use(function (req, res, next) {
 app.use('/', routes)
 app.use('/media', express.static('uploads'))
 app.use('/newTeleEntrevista', require('./controllers/newTeleEntrevista.controller'))
+app.use('/newPropostaEntrevista', require('./controllers/newPropostaEntrevista.controller'))
 
 module.exports = app

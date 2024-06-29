@@ -5,7 +5,10 @@ const propostaScheema = new mongoose.Schema({
     proposta: String,
     administradora: String,
     divergencia: String,
-    status: String,
+    status: {
+        type: String,
+        enum: ['Concluído', 'Cancelado']
+    },
     newStatus: String,
     situacao: String,
     horario: String,
@@ -27,6 +30,7 @@ const propostaScheema = new mongoose.Schema({
     d9: String,
     observacao: String,
     agendado: String,
+    statusAgendado: String,
     cid: String,
     filial: String,
     riscoBeneficiario: String,
@@ -94,9 +98,17 @@ const propostaScheema = new mongoose.Schema({
     diasEnviados: [''],
     diaEscolhido: String,
     horariosEnviados: [''],
-    horarioEscolhido: String
+    horarioEscolhido: String,
+    quemAjustou: String,
+    dadosEntrevista: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DadosEntrevista'
+    },
+    responsavel: String
 }, {
     timestamps: true
 })
+
+propostaScheema.index({ agendado: 1, status: 1 })
 
 module.exports = mongoose.model('PropostaEntrevista', propostaScheema)

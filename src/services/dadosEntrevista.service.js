@@ -6,7 +6,18 @@ const moment = require('moment');
 const userService = require('./user.service');
 require('moment-business-days')
 
-module.exports = {
+class TeleEntrevistaService {
+
+    constructor() { }
+
+    async findById(id) {
+        return await DadosEntrevista.findById(id).populate('idProposta').lean();
+    }
+
+    async findByPropostaId(id) {
+        return await DadosEntrevista.findOne({ idProposta: id }).populate('idProposta').lean();
+    }
+
     async quantidadeAnalistasPorMes(dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) {
         let result = await DadosEntrevista.aggregate([
             {
@@ -62,3 +73,5 @@ module.exports = {
         }
     }
 }
+
+module.exports = new TeleEntrevistaService();

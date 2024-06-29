@@ -5,7 +5,7 @@ const DadosEntrevista = require('../models/TeleEntrevista/DadosEntrevista')
 const Rn = require('../models/TeleEntrevista/Rn')
 const User = require('../models/User/User')
 const UrgenciasEmergencia = require('../models/UrgenciasEmergencias/UrgenciasEmergencia')
-const TeleEntrevisaService = require('../services/teleEntrevista.service')
+const TeleEntrevisaService = require('../services/dadosEntrevista.service')
 
 const moment = require('moment')
 const fs = require('fs')
