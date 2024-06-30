@@ -106,7 +106,8 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     administradora: String,
     situacaoAmil: String,
     divergenciaAnexo: Boolean,
-    retrabalho: Boolean
+    retrabalho: Boolean,
+    retrocedido: Boolean,
 }, {
     timestamps: true
 })

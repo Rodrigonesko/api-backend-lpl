@@ -1,5 +1,6 @@
 const DadosEntrevista = require('../models/TeleEntrevista/DadosEntrevista');
 const vacationRequestService = require('./vacationRequest.service');
+const PropostaEntrevista = require('../models/TeleEntrevista/PropostaEntrevista');
 const User = require('../models/User/User');
 const functions = require('../utils/functions');
 const moment = require('moment');
@@ -16,6 +17,26 @@ class TeleEntrevistaService {
 
     async findByPropostaId(id) {
         return await DadosEntrevista.findOne({ idProposta: id }).populate('idProposta').lean();
+    }
+
+    async findByDetails(details) {
+        try {
+            const ids = await PropostaEntrevista.find({
+                $or: [
+                    { nome: { $regex: details, $options: 'i' } },
+                    { cpf: { $regex: details, $options: 'i' } },
+                    { proposta: { $regex: details, $options: 'i' } },
+                ]
+            }).distinct('_id');
+            return await DadosEntrevista.find({ idProposta: { $in: ids } }).populate('idProposta').limit(50).lean();
+        } catch (error) {
+            console.log(error)
+            throw new Error('Erro ao buscar propostas', error);
+        }
+    }
+
+    async update(id, data) {
+        return await DadosEntrevista.findByIdAndUpdate(id, data, { new: true }).populate('idProposta').lean();
     }
 
     async quantidadeAnalistasPorMes(dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) {

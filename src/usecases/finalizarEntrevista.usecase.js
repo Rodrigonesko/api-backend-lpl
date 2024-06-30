@@ -27,7 +27,8 @@ class FinalizarEntrevistaUsecase {
             //Migrar patologias para motivo beneficiario
 
             const find = await DadosEntrevista.findOne({
-                idProposta: id
+                idProposta: id,
+                cancelado: false
             }).lean()
 
             if (!find) {
@@ -39,9 +40,12 @@ class FinalizarEntrevistaUsecase {
                     houveDivergencia: divergencia,
                     divergencia: qualDivergencia,
                     motivoBeneficiario,
-                    tea
+                    patologias: motivoBeneficiario,
+                    tea,
+                    responsavel,
+                    dataEntrevista: moment().format('YYYY-MM-DD HH:mm:ss')
                 })
-                await PropostaEntrevista.updateOne({
+                const proposta = await PropostaEntrevista.findOneAndUpdate({
                     _id: id
                 }, {
                     status: 'Concluído',
@@ -49,6 +53,22 @@ class FinalizarEntrevistaUsecase {
                     enfermeiro: responsavel,
                     newStatus: 'Concluído',
                     dadosEntrevista: create._id
+                })
+                await DadosEntrevista.updateOne({
+                    _id: create._id
+                }, {
+                    tipoFormulario: proposta.formulario,
+                    cpf: proposta.cpf,
+                    nome: proposta.nome,
+                    proposta: proposta.proposta,
+                    dataNascimento: proposta.dataNascimento,
+                    tipoContrato: proposta.tipoContrato,
+                    sexo: proposta.sexo,
+                    idade: proposta.idade,
+                    vigencia: proposta.vigencia,
+                    dataRecebimento: proposta.dataRecebimento,
+                    filial: proposta.filial,
+                    administradora: proposta.administradora,
                 })
                 return create;
             } else {
@@ -61,7 +81,10 @@ class FinalizarEntrevistaUsecase {
                     houveDivergencia: divergencia,
                     divergencia: qualDivergencia,
                     motivoBeneficiario,
+                    patologias: motivoBeneficiario,
+                    responsavel,
                     tea,
+                    dataEntrevista: moment().format('YYYY-MM-DD HH:mm:ss')
                 }, {
                     new: true
                 })
@@ -73,6 +96,23 @@ class FinalizarEntrevistaUsecase {
                     enfermeiro: responsavel,
                     newStatus: 'Concluído',
                     dadosEntrevista: update._id
+                })
+
+                await DadosEntrevista.updateOne({
+                    _id: update._id
+                }, {
+                    tipoFormulario: proposta.formulario,
+                    cpf: proposta.cpf,
+                    nome: proposta.nome,
+                    proposta: proposta.proposta,
+                    dataNascimento: proposta.dataNascimento,
+                    tipoContrato: proposta.tipoContrato,
+                    sexo: proposta.sexo,
+                    idade: proposta.idade,
+                    vigencia: proposta.vigencia,
+                    dataRecebimento: proposta.dataRecebimento,
+                    filial: proposta.filial,
+                    administradora: proposta.administradora,
                 })
                 return update;
             }

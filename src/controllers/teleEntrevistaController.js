@@ -3172,7 +3172,7 @@ module.exports = {
                         { cpf: { $regex: pesquisa, $options: 'i' } },
                     ],
                     entrevistaQualidade: true
-                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 })
+                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 }).populate('idProposta')
 
                 const total = await DadosEntrevista.countDocuments({
                     $or: [
@@ -3195,7 +3195,7 @@ module.exports = {
                         { nome: { $regex: pesquisa, $options: 'i' } },
                         { cpf: { $regex: pesquisa, $options: 'i' } },
                     ]
-                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 })
+                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 }).populate('idProposta')
 
                 const total = await DadosEntrevista.countDocuments({
                     $or: [
@@ -3228,7 +3228,7 @@ module.exports = {
 
             console.log(query, page, limit);
 
-            let resultQuery = DadosEntrevista.find(query).lean().sort({ dataEntrevista: -1 })
+            let resultQuery = DadosEntrevista.find(query).lean().sort({ dataEntrevista: -1 }).populate('idEntrevista')
 
             if (page && limit) {
                 const skip = (page - 1) * limit

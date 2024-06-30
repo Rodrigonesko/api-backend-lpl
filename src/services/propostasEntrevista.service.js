@@ -13,7 +13,7 @@ class PropostaEntrevistaService {
         }).populate('dadosEntrevista');
     }
 
-    async getPropostasByAgendamento(agendado, sort, pesquisa, responsavel, limit, page) {
+    async getPropostasByAgendamento(agendado, sort, pesquisa, responsavel, tipoContrato, limit, page) {
 
         try {
             const skip = limit * (page - 1);
@@ -35,22 +35,25 @@ class PropostaEntrevistaService {
             ]
 
             if (responsavel) query.enfermeiro = responsavel;
+            if (tipoContrato) query.tipoContrato = tipoContrato;
 
-            const [total, propostas] = await Promise.all([
+            const [total, propostas, tiposContrato] = await Promise.all([
                 PropostaEntrevista.countDocuments(query),
-                PropostaEntrevista.find(query).populate('dadosEntrevista').sort({ [sort]: 1 }).limit(limit).skip(skip)
+                PropostaEntrevista.find(query).populate('dadosEntrevista').sort({ [sort]: 1 }).limit(limit).skip(skip),
+                PropostaEntrevista.distinct('tipoContrato', {
+                    status: { $nin: ['Cancelado', 'Concluído'] }
+                })
             ]);
 
             return {
                 total,
-                propostas
+                propostas,
+                tiposContrato
             };
         } catch (error) {
             console.log(error)
             throw new Error('Erro ao buscar propostas', error);
         }
-
-
     }
 
     async getPropostasByEnfermeiro(enfermeiro) {
