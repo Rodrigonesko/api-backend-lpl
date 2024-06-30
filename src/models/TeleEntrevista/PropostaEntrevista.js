@@ -104,7 +104,8 @@ const propostaScheema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'DadosEntrevista'
     },
-    responsavel: String
+    responsavel: String,
+    dataVigenciaAmil: String,
 }, {
     timestamps: true
 })
