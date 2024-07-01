@@ -1,10 +1,14 @@
 const mongoose = require('mongoose')
+const moment = require('moment')
 
 const dadosEntrevistaScheema = new mongoose.Schema({
     nome: String,
     cpf: String,
     dataNascimento: String,
-    dataEntrevista: String,
+    dataEntrevista: {
+        type: String,
+        default: moment().format('YYYY-MM-DD HH:mm:ss')
+    },
     proposta: String,
     tipoFormulario: String,
     profissao: String,
@@ -58,23 +62,32 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     sexo: String,
     houveDivergencia: String,
     divergencia: String,
+    motivoBeneficiario: String,
     cids: String,
     codigosCids: String,
-    cidsAjustados: {
+    cidsAjustados: [{
         codigo: String,
-        descricao: String
-    },
-    cidsCpt: {
+        descricao: String,
+        ano: String
+    }],
+    cidsDs: [{
         codigo: String,
-        descricao: String
+        descricao: String,
+        ano: String
+    }],
+    cancelado: {
+        type: Boolean,
+        default: false
     },
-    cancelado: Boolean,
     nf: String,
     dataFaturamento: Date,
     idade: Number,
     quemAnexou: String,
     dataAnexado: String,
-    anexadoSisAmil: String,
+    anexadoSisAmil: {
+        type: String,
+        default: 'Anexar'
+    },
     vigencia: String,
     implantacao: String,
     implantado: String,
@@ -85,12 +98,16 @@ const dadosEntrevistaScheema = new mongoose.Schema({
     dataRecebimento: String,
     entrevistaQualidade: Boolean,
     filial: String,
-    idProposta: String,
+    idProposta: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PropostaEntrevista'
+    },
     tea: String,
     administradora: String,
     situacaoAmil: String,
     divergenciaAnexo: Boolean,
-    retrabalho: Boolean
+    retrabalho: Boolean,
+    retrocedido: Boolean,
 }, {
     timestamps: true
 })

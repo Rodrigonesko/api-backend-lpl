@@ -21,7 +21,7 @@ const secret = process.env.JWT_SECRET
 //Mongo 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB_URL + '/lpl', {
-    authSource: 'admin',
+    // authSource: 'admin',
     //authMechanism: 'SCRAM-SHA-256',
     // useNewUrlParser: true,
     // useUnifiedTopology: true
@@ -49,5 +49,7 @@ app.use(function (req, res, next) {
 
 app.use('/', routes)
 app.use('/media', express.static('uploads'))
+app.use('/newTeleEntrevista', require('./controllers/newTeleEntrevista.controller'))
+app.use('/newPropostaEntrevista', require('./controllers/newPropostaEntrevista.controller'))
 
 module.exports = app

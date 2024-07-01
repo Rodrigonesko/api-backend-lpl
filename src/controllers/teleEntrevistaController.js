@@ -5,7 +5,7 @@ const DadosEntrevista = require('../models/TeleEntrevista/DadosEntrevista')
 const Rn = require('../models/TeleEntrevista/Rn')
 const User = require('../models/User/User')
 const UrgenciasEmergencia = require('../models/UrgenciasEmergencias/UrgenciasEmergencia')
-const TeleEntrevisaService = require('../services/teleEntrevista.service')
+const TeleEntrevisaService = require('../services/dadosEntrevista.service')
 
 const moment = require('moment')
 const fs = require('fs')
@@ -68,146 +68,148 @@ module.exports = {
     enviarDadosFormulario: async (req, res) => {
         try {
 
-            let { respostas, subRespostas, pessoa, simOuNao, cids, divergencia, entrevistaQualidade } = req.body
+            let { respostas, subRespostas, pessoa, simOuNao, cids, cidsDs, qualDivergencia, motivoBeneficiario, divergencia, entrevistaQualidade } = req.body
 
-            let codigosCids = ''
-            let cidsAjustados = ''
+            console.log(cids, cidsDs, motivoBeneficiario, qualDivergencia, divergencia);
 
-            for (const cid of cids) {
-                const codigo = cid.substring(0, 4);
-                codigosCids += `${codigo} - `
-                cidsAjustados += `${cid}, `
-            }
+            // let codigosCids = ''
+            // let cidsAjustados = ''
 
-            console.log(cidsAjustados);
+            // for (const cid of cids) {
+            //     const codigo = cid.substring(0, 4);
+            //     codigosCids += `${codigo} - `
+            //     cidsAjustados += `${cid}, `
+            // }
 
-
-
-            /*
-                respostas = array das respostas refenente as perguntas principais
-                subRespostas = array de respostas referente a subPerguntas
-                pessoa = 
-                simOuNao = Se sim ou não para a resposta
-                cids = array com os cids referente a aquele formulario
-                divergencia = Se existe ou nao divergencia
-            */
-
-            let divBanco
-
-            //Caso exista divergencia, divBanco recebe sim para inputar no banco
-
-            if (divergencia === true) {
-                divBanco = 'Sim'
-            } else {
-                divBanco = 'Não'
-                cids = []
-                codigosCids = ''
-            }
-
-            //respostasConc = Concatena respostas com simOuNao e subRespostas
-
-            let respostasConc = {
-
-            }
-
-            //Percorre o objeto SimOuNao e concatena ou cria no objeto respostasConc os valores do objeto simOuNao
-
-            Object.keys(simOuNao).forEach(key => {
-                respostasConc[`${key}`] += `${simOuNao[key]} \n `
-            })
-
-            //Percorre o objeto subRespostas e concatena ou cria no objeto respostasConc os valores do objeto subRespostas
+            // console.log(cidsAjustados);
 
 
-            Object.keys(subRespostas).forEach(key => {
-                let split = key.split('-')
 
-                respostasConc[`${split[0]}`] += `${split[1]} ${subRespostas[key]} \n `
+            // /*
+            //     respostas = array das respostas refenente as perguntas principais
+            //     subRespostas = array de respostas referente a subPerguntas
+            //     pessoa = 
+            //     simOuNao = Se sim ou não para a resposta
+            //     cids = array com os cids referente a aquele formulario
+            //     divergencia = Se existe ou nao divergencia
+            // */
 
-            })
+            // let divBanco
+
+            // //Caso exista divergencia, divBanco recebe sim para inputar no banco
+
+            // if (divergencia === true) {
+            //     divBanco = 'Sim'
+            // } else {
+            //     divBanco = 'Não'
+            //     cids = []
+            //     codigosCids = ''
+            // }
+
+            // //respostasConc = Concatena respostas com simOuNao e subRespostas
+
+            // let respostasConc = {
+
+            // }
+
+            // //Percorre o objeto SimOuNao e concatena ou cria no objeto respostasConc os valores do objeto simOuNao
+
+            // Object.keys(simOuNao).forEach(key => {
+            //     respostasConc[`${key}`] += `${simOuNao[key]} \n `
+            // })
+
+            // //Percorre o objeto subRespostas e concatena ou cria no objeto respostasConc os valores do objeto subRespostas
 
 
-            //Percorre o objeto respostas e concatena ou cria no objeto respostasConc os valores do objeto respostas
+            // Object.keys(subRespostas).forEach(key => {
+            //     let split = key.split('-')
 
-            Object.keys(respostas).forEach(key => {
-                respostasConc[`${key}`] += `${respostas[key]} \n `
-            })
+            //     respostasConc[`${split[0]}`] += `${split[1]} ${subRespostas[key]} \n `
 
-            //Percorre o objeto respostasConc e insere caso nao exista no banco ou atualiza as respostas dos formulário
+            // })
 
-            for (const key of Object.keys(respostasConc)) {
-                await DadosEntrevista.findOneAndUpdate({
-                    $and: [
-                        {
-                            nome: pessoa.nome
-                        }, {
-                            proposta: pessoa.proposta
-                        }
-                    ]
-                }, {
-                    [key]: respostasConc[key].replace('undefined', '') //Este replace é pq algumas respostas vem do formulario como undefined mesmo respondidas, e foi a unica forma que pensei para resolver o problema
-                }, {
-                    upsert: true
-                })
-            }
 
-            //Manda para a API das propostas da tele e conclui a tele por lá
+            // //Percorre o objeto respostas e concatena ou cria no objeto respostasConc os valores do objeto respostas
 
-            const resp = await axios.put(`${process.env.API_TELE}/concluir`, {
-                id: pessoa._id,
-                houveDivergencia: divBanco,
-                cids: cidsAjustados,
-                divergencia: respostasConc['divergencia'],
-                responsavel: req.user
-            }, {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${req.token}`
-                }
-            })
+            // Object.keys(respostas).forEach(key => {
+            //     respostasConc[`${key}`] += `${respostas[key]} \n `
+            // })
 
-            const updateProposta = resp.data    //Pega os dados referentes aquela proposta por meio dos dados da resposta da API
+            // //Percorre o objeto respostasConc e insere caso nao exista no banco ou atualiza as respostas dos formulário
 
-            const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({      //Atualiza alguns dados necessários no formulário que dependem dos dados da proposta
-                $and: [
-                    {
-                        nome: pessoa.nome
-                    }, {
-                        proposta: pessoa.proposta
-                    }
-                ]
-            }, {
-                tipoFormulario: pessoa.formulario,
-                cpf: pessoa.cpf,
-                dataNascimento: pessoa.dataNascimento,
-                responsavel: req.user,
-                tipoContrato: pessoa.tipoContrato,
-                sexo: pessoa.sexo,
-                idade: pessoa.idade,
-                faturado: 'Não faturado',
-                cids: cidsAjustados,
-                codigosCids: codigosCids,
-                dataEntrevista: moment(new Date).format('YYYY-MM-DD'),
-                houveDivergencia: divBanco,
-                anexadoSisAmil: 'Anexar',
-                vigencia: updateProposta.vigencia,
-                dataRecebimento: updateProposta.dataRecebimento,
-                cancelado: false,
-                entrevistaQualidade,
-                filial: updateProposta.filial,
-                idProposta: updateProposta._id,
-                tea: subRespostas['espectro-Diagnostico:'],
-                administradora: updateProposta.administradora
-            }, {
-                upsert: true
-            })
+            // for (const key of Object.keys(respostasConc)) {
+            //     await DadosEntrevista.findOneAndUpdate({
+            //         $and: [
+            //             {
+            //                 nome: pessoa.nome
+            //             }, {
+            //                 proposta: pessoa.proposta
+            //             }
+            //         ]
+            //     }, {
+            //         [key]: respostasConc[key].replace('undefined', '') //Este replace é pq algumas respostas vem do formulario como undefined mesmo respondidas, e foi a unica forma que pensei para resolver o problema
+            //     }, {
+            //         upsert: true
+            //     })
+            // }
 
-            //Cria um log com os dados da proposta e do formulario
-            await Log.create({
-                nome: req.user,
-                acao: `Formulário ${pessoa.formulario} preenchido`,
-                data: moment().format('DD/MM/YYYY HH:mm:ss')
-            })
+            // //Manda para a API das propostas da tele e conclui a tele por lá
+
+            // const resp = await axios.put(`${process.env.API_TELE}/concluir`, {
+            //     id: pessoa._id,
+            //     houveDivergencia: divBanco,
+            //     cids: cidsAjustados,
+            //     divergencia: respostasConc['divergencia'],
+            //     responsavel: req.user
+            // }, {
+            //     withCredentials: true,
+            //     headers: {
+            //         Authorization: `Bearer ${req.token}`
+            //     }
+            // })
+
+            // const updateProposta = resp.data    //Pega os dados referentes aquela proposta por meio dos dados da resposta da API
+
+            // const updateDadosEntrevista = await DadosEntrevista.findOneAndUpdate({      //Atualiza alguns dados necessários no formulário que dependem dos dados da proposta
+            //     $and: [
+            //         {
+            //             nome: pessoa.nome
+            //         }, {
+            //             proposta: pessoa.proposta
+            //         }
+            //     ]
+            // }, {
+            //     tipoFormulario: pessoa.formulario,
+            //     cpf: pessoa.cpf,
+            //     dataNascimento: pessoa.dataNascimento,
+            //     responsavel: req.user,
+            //     tipoContrato: pessoa.tipoContrato,
+            //     sexo: pessoa.sexo,
+            //     idade: pessoa.idade,
+            //     faturado: 'Não faturado',
+            //     cids: cidsAjustados,
+            //     codigosCids: codigosCids,
+            //     dataEntrevista: moment(new Date).format('YYYY-MM-DD'),
+            //     houveDivergencia: divBanco,
+            //     anexadoSisAmil: 'Anexar',
+            //     vigencia: updateProposta.vigencia,
+            //     dataRecebimento: updateProposta.dataRecebimento,
+            //     cancelado: false,
+            //     entrevistaQualidade,
+            //     filial: updateProposta.filial,
+            //     idProposta: updateProposta._id,
+            //     tea: subRespostas['espectro-Diagnostico:'],
+            //     administradora: updateProposta.administradora
+            // }, {
+            //     upsert: true
+            // })
+
+            // //Cria um log com os dados da proposta e do formulario
+            // await Log.create({
+            //     nome: req.user,
+            //     acao: `Formulário ${pessoa.formulario} preenchido`,
+            //     data: moment().format('DD/MM/YYYY HH:mm:ss')
+            // })
 
             return res.status(200).json({
                 msg: 'ok'
@@ -244,11 +246,9 @@ module.exports = {
                     },
 
                 ]
-            })
+            }).limit(30)
 
-            return res.status(200).json({
-                cids
-            })
+            return res.status(200).json(cids)
 
         } catch (error) {
             console.log(error);
@@ -3172,7 +3172,7 @@ module.exports = {
                         { cpf: { $regex: pesquisa, $options: 'i' } },
                     ],
                     entrevistaQualidade: true
-                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 })
+                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 }).populate('idProposta')
 
                 const total = await DadosEntrevista.countDocuments({
                     $or: [
@@ -3195,7 +3195,7 @@ module.exports = {
                         { nome: { $regex: pesquisa, $options: 'i' } },
                         { cpf: { $regex: pesquisa, $options: 'i' } },
                     ]
-                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 })
+                }).lean().limit(limit).skip(skip).sort({ dataEntrevista: -1 }).populate('idProposta')
 
                 const total = await DadosEntrevista.countDocuments({
                     $or: [
@@ -3228,7 +3228,7 @@ module.exports = {
 
             console.log(query, page, limit);
 
-            let resultQuery = DadosEntrevista.find(query).lean().sort({ dataEntrevista: -1 })
+            let resultQuery = DadosEntrevista.find(query).lean().sort({ dataEntrevista: -1 }).populate('idEntrevista')
 
             if (page && limit) {
                 const skip = (page - 1) * limit
