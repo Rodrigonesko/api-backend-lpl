@@ -179,5 +179,19 @@ module.exports = {
                 error: 'Internal Server Error'
             })
         }
+    },
+
+    findAll: async (req, res) => {
+        try {
+            
+            const find = await Inventario.find()
+
+            return res.status(200).json(find)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: 'Internal Server Error'
+            })
+        }
     }
 }

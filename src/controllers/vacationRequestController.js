@@ -10,8 +10,6 @@ module.exports = {
             const activeUsers = await User.find({ inativo: { $ne: true } })
             const activeUserNames = activeUsers.map(user => user.nomeCompleto || user.name)
 
-            console.log(activeUserNames);
-
             const encontrarTodos = await VacationRequest.find({ colaborador: { $in: activeUserNames } }).sort({ dataInicio: -1 })
 
             return res.status(200).json({
@@ -148,16 +146,12 @@ module.exports = {
         try {
             const { colaborador, mes, vencimento, setor } = req.query;
 
-            console.log(req.query);
-
             const result = await VacationRequest.find({
                 colaborador: { $regex: new RegExp(colaborador, 'i') },
                 dataInicio: { $regex: mes },
                 vencimento: { $regex: vencimento },
                 setor: { $regex: new RegExp(setor, 'i') }
             }).sort({ dataInicio: -1 });
-
-            console.log(result);
 
             return res.json(result);
         } catch (error) {
@@ -173,8 +167,9 @@ module.exports = {
             const find = await VacationRequest.findOne({ _id: req.body._id })
             const quatidadeDias = find.totalDias
             const data = moment(req.body.data).add(quatidadeDias.split(' ')[0], 'day').format('DD/MM/YYYY')
-            console.log(quatidadeDias)
+
             const criarRequisicao = await VacationRequest.updateOne({ _id: req.body._id }, { dataInicio: req.body.data, dataRetorno: data })
+
             return res.json(criarRequisicao)
         } catch (error) {
             console.log(error);
@@ -192,8 +187,6 @@ module.exports = {
             const find = await VacationRequest.updateOne({ _id: req.body._id }, {
                 gestorAprovou: gestorAprovou,
             })
-
-            console.log(find);
 
             return res.json(find);
         } catch (error) {
@@ -220,8 +213,6 @@ module.exports = {
                 setor: find.atividadePrincipal,
                 dataInicio: { $regex: moment(dataInicio).format('YYYY-MM') }
             });
-
-            console.log(colleaguesOnVacation)
 
             return res.json(colleaguesOnVacation);
         } catch (error) {
