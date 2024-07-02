@@ -21,14 +21,20 @@ class TeleEntrevistaService {
 
     async findByDetails(details) {
         try {
-            const ids = await PropostaEntrevista.find({
+            // const ids = await PropostaEntrevista.find({
+            //     $or: [
+            //         { nome: { $regex: details, $options: 'i' } },
+            //         { cpf: { $regex: details, $options: 'i' } },
+            //         { proposta: { $regex: details, $options: 'i' } },
+            //     ]
+            // }).distinct('_id');
+            return await DadosEntrevista.find({ 
                 $or: [
                     { nome: { $regex: details, $options: 'i' } },
                     { cpf: { $regex: details, $options: 'i' } },
                     { proposta: { $regex: details, $options: 'i' } },
                 ]
-            }).distinct('_id');
-            return await DadosEntrevista.find({ idProposta: { $in: ids } }).populate('idProposta').limit(50).lean();
+             }).populate('idProposta').limit(50).lean();
         } catch (error) {
             console.log(error)
             throw new Error('Erro ao buscar propostas', error);

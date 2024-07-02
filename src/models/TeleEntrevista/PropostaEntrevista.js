@@ -69,6 +69,11 @@ const propostaScheema = new mongoose.Schema({
     contato3: String,
     responsavelContato3: String,
     tipoContrato3: String,
+    tentativasDeContato: [{
+        data: String,
+        responsavel: String,
+        tipoContato: { type: String, enum: ['TELEFONE', 'WHATSAPP', '0800'] }
+    }],
     cpfTitular: String,
     ddd: String,
     celular: String,
