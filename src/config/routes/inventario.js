@@ -10,5 +10,6 @@ router.put('/status', inventarioController.setStatus)
 router.get('/filter', inventarioController.getInventarioByFilter)
 router.put('/update', inventarioController.updateInventarioTable)
 router.post('/:_id', auth, inventarioController.updateNotaFiscal)
+router.get('/findAll', auth, inventarioController.findAll)
 
 module.exports = router
