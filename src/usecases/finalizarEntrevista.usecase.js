@@ -24,7 +24,7 @@ class FinalizarEntrevistaUsecase {
                 }
             }, {});
 
-            //Migrar patologias para motivo beneficiario
+
 
             const find = await DadosEntrevista.findOne({
                 idProposta: id,
@@ -88,7 +88,7 @@ class FinalizarEntrevistaUsecase {
                 }, {
                     new: true
                 })
-                await PropostaEntrevista.updateOne({
+                const proposta = await PropostaEntrevista.updateOne({
                     _id: id
                 }, {
                     status: 'Concluído',

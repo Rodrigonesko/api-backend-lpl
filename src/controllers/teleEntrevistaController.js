@@ -1576,54 +1576,53 @@ module.exports = {
 
     producaoDiaria: async (req, res) => {
         try {
+            const { data } = req.params;
 
-            const { data } = req.params
-
-            let analistas = await userService.getUsersAtivosByAtividadePrincipal('Tele Entrevista')
-
-            analistas = analistas.map(e => e.name)
-
-            let producao = []
-
-            for (const item of analistas) {
-                const count = await DadosEntrevista.find({
-                    responsavel: item,
-                    dataEntrevista: data
-                }).count()
-
-                const countRn = await Rn.find({
-                    responsavel: item,
-                    dataConclusao: data
-                }).count()
-
-                producao.push({
-                    analista: item,
-                    quantidade: count + countRn,
-                    quantidadeRn: countRn
+            const [tele, rn, ue] = await Promise.all([
+                DadosEntrevista.find({
+                    dataEntrevista: { $regex: data },
+                    cancelado: { $ne: true }
+                }, {
+                    responsavel: 1
+                }),
+                Rn.find({
+                    dataConclusao: { $regex: data }
+                }, {
+                    responsavel: 1
+                }),
+                UrgenciasEmergencia.find({
+                    dataConclusao: { $regex: data }
+                }, {
+                    analista: 1
                 })
-            }
+            ])
 
-            const total = await DadosEntrevista.find({
-                dataEntrevista: data
-            }).count()
+            let analistas = await userService.getUsersAtivosByAtividadePrincipal('Tele Entrevista');
+            analistas = analistas.map(e => e.name);
 
-            const totalRn = await Rn.find({
-                dataConclusao: data
-            }).count()
+            let arr = []
 
-            console.log(producao);
+            analistas.forEach(e => {
+                let teleQtd = tele.filter(t => t.responsavel === e).length
+                let rnQtd = rn.filter(t => t.responsavel === e).length
+                let ueQtd = ue.filter(t => t.analista === e).length
+
+                arr.push({
+                    analista: e,
+                    quantidade: teleQtd + rnQtd + ueQtd
+                })
+            })
 
             return res.status(200).json({
-                producao,
-                total: total + totalRn,
-                totalRn
+                producao: arr,
+                total: arr.reduce((acc, curr) => acc + curr.quantidade, 0)
             })
 
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 msg: 'Internal Server Error'
-            })
+            });
         }
     },
 
