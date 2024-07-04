@@ -93,41 +93,36 @@ module.exports = {
 
     getInventarioByFilter: async (req, res) => {
         try {
-
-            const { nomeItem, ondeEsta, etiqueta, status, page, limit } = req.query
-            // console.log(req.query);
-
-            if (limit === undefined) limit = 10
-            if (page === undefined) page = 1
-
+            let { nomeItem, ondeEsta, etiqueta, status, page, limit } = req.query;
+    
+            if (limit === undefined) limit = 10;
+            if (page === undefined) page = 1;
+    
             let skip = (page - 1) * limit;
-
-            const result = await Inventario.find({
+    
+            const query = {
                 nome: { $regex: new RegExp(nomeItem, 'i') },
                 ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
                 etiqueta: { $regex: etiqueta },
                 status: { $regex: status }
-            }).skip(skip).limit(limit)
-
-            const total = await Inventario.find({
-                nome: { $regex: new RegExp(nomeItem, 'i') },
-                ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
-                etiqueta: { $regex: etiqueta },
-                status: { $regex: status }
-            }).countDocuments()
-
-            const resultOrdenado = result.sort((a, b) => parseInt(a.etiqueta) - parseInt(b.etiqueta));
-            // console.log(resultOrdenado);
-
-            return res.json({ resultOrdenado, total })
-
+            };
+            
+            const result = await Inventario.find(query)
+                .sort({ etiqueta: 1 }) // Ordenação pelo campo etiqueta em ordem crescente
+                .skip(skip)
+                .limit(limit);
+    
+            const total = await Inventario.find(query).countDocuments();
+    
+            return res.json({ result, total });
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
-            })
+            });
         }
     },
+    
 
     updateInventarioTable: async (req, res) => {
         try {
