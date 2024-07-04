@@ -13,10 +13,12 @@ class PropostaEntrevistaService {
         }).populate('dadosEntrevista');
     }
 
-    async getPropostasByAgendamento(agendado, sort, pesquisa, responsavel, tipoContrato, limit, page) {
+    async getPropostasByAgendamento(agendado, sort = 'createdAt', pesquisa, responsavel, tipoContrato, limit, page) {
 
         try {
             const skip = limit * (page - 1);
+
+            console.log(skip, sort);
 
             const query = {}
 
@@ -39,7 +41,7 @@ class PropostaEntrevistaService {
 
             const [total, propostas, tiposContrato] = await Promise.all([
                 PropostaEntrevista.countDocuments(query),
-                PropostaEntrevista.find(query).populate('dadosEntrevista').sort({ [sort]: 1 }).limit(limit).skip(skip),
+                PropostaEntrevista.find(query).populate('dadosEntrevista').sort({ createdAt: 1 }).limit(limit).skip(skip),
                 PropostaEntrevista.distinct('tipoContrato', {
                     status: { $nin: ['Cancelado', 'Concluído'] }
                 })

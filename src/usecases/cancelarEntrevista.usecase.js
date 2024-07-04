@@ -14,7 +14,7 @@ class CancelarEntrevistaUsecase {
 
             console.log(id);
 
-           const proposta = await PropostaEntrevista.findOneAndUpdate({
+            const proposta = await PropostaEntrevista.findOneAndUpdate({
                 _id: id
             }, {
                 status: 'Cancelado',
@@ -22,6 +22,22 @@ class CancelarEntrevistaUsecase {
                 enfermeiro: responsavel,
                 newStatus: 'Cancelado',
                 dadosEntrevista: dadosEntrevista._id
+            })
+
+            await DadosEntrevista.updateOne({
+                _id: dadosEntrevista._id
+            }, {
+                tipoFormulario: proposta.formulario,
+                proposta: proposta.proposta,
+                nome: proposta.nome,
+                dataNascimento: proposta.dataNascimento,
+                tipoContrato: proposta.tipoContrato,
+                sexo: proposta.sexo,
+                idade: proposta.idade,
+                vigencia: proposta.vigencia,
+                dataRecebimento: proposta.dataRecebimento,
+                filial: proposta.filial,
+                administradora: proposta.administradora,
             })
 
             console.log('Entrevista cancelada com sucesso:', proposta);
