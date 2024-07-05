@@ -666,36 +666,54 @@ module.exports = {
 
     filtrarImplantadas: async (req, res) => {
         try {
-            const { page, limit, situacaoAmil, tipoContrato } = req.query
-            console.log(req.query);
+            let { page, limit, situacaoAmil, tipoContrato } = req.query;
 
-            if (page === undefined) page = 1
-            if (limit === undefined) limit = 10
+            if (page === undefined) page = 1;
+            if (limit === undefined) limit = 10;
 
             let skip = (page - 1) * limit;
 
-            const filter = await DadosEntrevista.find({
+            let query = {
                 implantado: { $ne: 'Sim' },
-                implantacao: 'Sim',
-                $or: [
-                    { situacaoAmil: situacaoAmil },
-                    { tipoContrato: tipoContrato },
-                ]
-            }).skip(skip).limit(limit)
+                implantacao: 'Sim'
+            };
 
-            const total = await DadosEntrevista.find({
-                implantado: { $ne: 'Sim' },
-                implantacao: 'Sim',
-                $or: [
-                    { situacaoAmil: situacaoAmil },
-                    { tipoContrato: tipoContrato },
-                ]
-            }).countDocuments()
+            if (situacaoAmil !== 'Todos') {
+                query.situacaoAmil = situacaoAmil
+            }
 
-            // console.log(filter, total);
-            return res.status(200).json({ filter, total })
+            if (tipoContrato !== 'Todos') {
+                query.tipoContrato = tipoContrato
+            }
+
+            // if (situacaoAmil || tipoContrato) {
+            //     query = {
+            //         ...query,
+            //         $or: [
+            //             { situacaoAmil: situacaoAmil },
+            //             { tipoContrato: tipoContrato }
+            //         ]
+            //     };
+            // }
+            // if (situacaoAmil && tipoContrato) {
+            //     query = {
+            //         ...query,
+            //         $and: [
+            //             { situacaoAmil: situacaoAmil },
+            //             { tipoContrato: tipoContrato }
+            //         ]
+            //     };
+            // }
+
+            const filter = await DadosEntrevista.find(query).skip(skip).limit(limit);
+            const total = await DadosEntrevista.find(query).countDocuments();
+
+            console.log(filter, total);
+
+            return res.status(200).json({ filter, total });
         } catch (error) {
             console.log(error);
+            return res.status(500).json({ message: 'Erro ao filtrar dados' });
         }
     },
 
