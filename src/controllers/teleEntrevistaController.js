@@ -686,25 +686,6 @@ module.exports = {
                 query.tipoContrato = tipoContrato
             }
 
-            // if (situacaoAmil || tipoContrato) {
-            //     query = {
-            //         ...query,
-            //         $or: [
-            //             { situacaoAmil: situacaoAmil },
-            //             { tipoContrato: tipoContrato }
-            //         ]
-            //     };
-            // }
-            // if (situacaoAmil && tipoContrato) {
-            //     query = {
-            //         ...query,
-            //         $and: [
-            //             { situacaoAmil: situacaoAmil },
-            //             { tipoContrato: tipoContrato }
-            //         ]
-            //     };
-            // }
-
             const filter = await DadosEntrevista.find(query).skip(skip).limit(limit);
             const total = await DadosEntrevista.find(query).countDocuments();
 
