@@ -28,13 +28,13 @@ class TeleEntrevistaService {
             //         { proposta: { $regex: details, $options: 'i' } },
             //     ]
             // }).distinct('_id');
-            return await DadosEntrevista.find({ 
+            return await DadosEntrevista.find({
                 $or: [
                     { nome: { $regex: details, $options: 'i' } },
                     { cpf: { $regex: details, $options: 'i' } },
                     { proposta: { $regex: details, $options: 'i' } },
                 ]
-             }).populate('idProposta').limit(50).lean();
+            }).populate('idProposta').limit(50).lean();
         } catch (error) {
             console.log(error)
             throw new Error('Erro ao buscar propostas', error);
@@ -50,7 +50,7 @@ class TeleEntrevistaService {
             {
                 $match: {
                     dataEntrevista: { $gte: dataInicio, $lte: dataFim },
-                    responsavel: { $nin: ['Sem Sucesso de Contato!', 'Beneficiario Solicitou o Cancelamento'] },
+                    cancelado: false,
                 }
             },
             {
@@ -74,6 +74,7 @@ class TeleEntrevistaService {
             const ausenciasUsuario = users.filter(usuario => usuario.nomeCompleto === user.nomeCompleto);
             const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
 
+            console.log(user);
             const diasDeFerias = await vacationRequestService.vacationDays(user.nomeCompleto)
             const diasUteis = functions.diasUteisEntreDuasDatas(dataInicio, dataFim, functions.holidays, diasDeFerias)
             return ({

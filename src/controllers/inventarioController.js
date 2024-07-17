@@ -68,16 +68,15 @@ module.exports = {
                 })
             }
 
-            if (body.tempoGarantia) {
-                const criarRequisicao = await Inventario.create({
-                    nome: body.nome,
-                    etiqueta: body.etiqueta,
-                    ondeEsta: body.ondeEsta,
-                    descricao: body.descricao,
-                    dataDeCompra: body.dataDeCompra,
-                    dataGarantia: moment(body.dataDeCompra).add(body.tempoGarantia, 'month').format('YYYY-MM-DD')
-                })
-            }
+            const criarRequisicao = await Inventario.create({
+                nome: body.nome,
+                etiqueta: body.etiqueta,
+                ondeEsta: body.ondeEsta,
+                descricao: body.descricao,
+                dataDeCompra: body.dataDeCompra,
+                dataGarantia: moment(body.dataDeCompra).add(body.tempoGarantia, 'month').format('YYYY-MM-DD')
+            })
+            console.log(criarRequisicao);
 
             return res.json({
                 msg: 'OK'
@@ -93,41 +92,36 @@ module.exports = {
 
     getInventarioByFilter: async (req, res) => {
         try {
+            let { nomeItem, ondeEsta, etiqueta, status, page, limit } = req.query;
 
-            const { nomeItem, ondeEsta, etiqueta, status, page, limit } = req.query
-            // console.log(req.query);
-
-            if (limit === undefined) limit = 10
-            if (page === undefined) page = 1
+            if (limit === undefined) limit = 10;
+            if (page === undefined) page = 1;
 
             let skip = (page - 1) * limit;
 
-            const result = await Inventario.find({
+            const query = {
                 nome: { $regex: new RegExp(nomeItem, 'i') },
                 ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
                 etiqueta: { $regex: etiqueta },
                 status: { $regex: status }
-            }).skip(skip).limit(limit)
+            };
 
-            const total = await Inventario.find({
-                nome: { $regex: new RegExp(nomeItem, 'i') },
-                ondeEsta: { $regex: new RegExp(ondeEsta, 'i') },
-                etiqueta: { $regex: etiqueta },
-                status: { $regex: status }
-            }).countDocuments()
+            const result = await Inventario.find(query)
+                .sort({ etiqueta: 1 }) // Ordenação pelo campo etiqueta em ordem crescente
+                .skip(skip)
+                .limit(limit);
 
-            const resultOrdenado = result.sort((a, b) => parseInt(a.etiqueta) - parseInt(b.etiqueta));
-            // console.log(resultOrdenado);
+            const total = await Inventario.find(query).countDocuments();
 
-            return res.json({ resultOrdenado, total })
-
+            return res.json({ result, total });
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 error: "Internal server error."
-            })
+            });
         }
     },
+
 
     updateInventarioTable: async (req, res) => {
         try {
@@ -183,7 +177,7 @@ module.exports = {
 
     findAll: async (req, res) => {
         try {
-            
+
             const find = await Inventario.find()
 
             return res.status(200).json(find)
