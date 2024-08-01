@@ -24,18 +24,17 @@ class PlanoPfService {
         if (plano.prazo === '90 dias') {
             return plano
         }
-
         return await PlanosPF.findOne(data).lean();
     }
 
     // async uploadingPlanosPf() {
 
-    //     const file = fs.readFileSync('./src/services/prazo_90.csv', 'utf8');
+    //     const file = fs.readFileSync('./src/services/planos.csv', 'utf8');
 
     //     const lines = file.split('\n');
     //     for (const line of lines) {
-    //         const [nome, dataVigencia, ano, codigo] = line.split(';');
-    //         await PlanosPF.create({ nome, dataVigencia, codigo, prazo: '90 dias'});
+    //         const [nome, porte, dataVigencia, ano, codigo] = line.split(';');
+    //         await PlanosPF.create({ nome, dataVigencia, codigo, prazo: '30 dias'});
     //         console.log(nome, dataVigencia, codigo);
     //     }
 

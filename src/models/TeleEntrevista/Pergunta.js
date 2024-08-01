@@ -10,7 +10,6 @@ const perguntasScheema = new mongoose.Schema({
     subPerguntasNao: [],
     name: String,
     sexo: String
-
 })
 
 module.exports = mongoose.model('Pergunta', perguntasScheema)

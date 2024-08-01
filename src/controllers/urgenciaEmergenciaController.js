@@ -275,7 +275,7 @@ module.exports = {
     mostrarDadosProposta: async (req, res) => {
         try {
 
-            const { id, } = req.params
+            const { id } = req.params
 
             const proposta = await UrgenciasEmergencia.findById({
                 _id: id
@@ -696,7 +696,7 @@ module.exports = {
             })
         }
     }
-}
+} 
 
 function ExcelDateToJSDate(serial) {
     var utc_days = Math.floor(serial - 25569);
