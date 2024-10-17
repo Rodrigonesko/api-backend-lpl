@@ -217,7 +217,8 @@ module.exports = {
             })
 
             if (result?.agendado == 'Agendado') {
-                return res.status(500).json({
+                console.log('agendado');
+                return res.status(400).json({
                     msg: 'Horario já agendado'
                 })
             }
@@ -451,7 +452,6 @@ module.exports = {
                 acao: `Reabriu os horarios ${horarios} do dia ${data} do analista ${responsavel}`,
                 data: moment().format('DD/MM/YYYY HH:mm:ss')
             })
-
 
             return res.status(200).json({
                 msg: 'ok'

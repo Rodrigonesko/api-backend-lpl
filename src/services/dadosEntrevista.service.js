@@ -71,14 +71,14 @@ class TeleEntrevistaService {
                 nomeCompleto: 1
             }).lean()
 
-            const ausenciasUsuario = users.filter(usuario => usuario.nomeCompleto === user.nomeCompleto);
+            const ausenciasUsuario = users.filter(usuario => usuario?.nomeCompleto === user?.nomeCompleto);
             const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
 
             console.log(user);
-            const diasDeFerias = await vacationRequestService.vacationDays(user.nomeCompleto)
+            const diasDeFerias = await vacationRequestService.vacationDays(user?.nomeCompleto)
             const diasUteis = functions.diasUteisEntreDuasDatas(dataInicio, dataFim, functions.holidays, diasDeFerias)
             return ({
-                analista: user.nomeCompleto,
+                analista: user?.nomeCompleto,
                 total: item.total,
                 media: (item.total / diasUteis),
                 houveDivergencia: item.houveDivergencia,
