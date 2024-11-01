@@ -3,7 +3,7 @@ const moment = require('moment');
 const avaliacoesService = require('../services/avaliacaoPerformanceIndividual.service');
 const sindicanciaService = require('../services/sindicancia.service');
 
-avaliacoesService.rendimentoTodasCelulas('2024-01-01', '2024-10-17');
+// avaliacoesService.rendimentoTodasCelulas('2024-01-01', '2024-10-17');
 
 // const rsdService = require('../services/rsd.service');
 // const teleEntrevistaService = require('../services/teleEntrevista.service');

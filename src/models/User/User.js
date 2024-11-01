@@ -27,7 +27,8 @@ const userScheema = new mongoose.Schema({
     acessos: {
         administrador: Boolean,
         agendamento: Boolean,
-        sulAmerica: Boolean
+        sulAmerica: Boolean,
+        ssi: Boolean,
     },
     horarioSaida: String,
     online: Boolean,
