@@ -1282,28 +1282,14 @@ module.exports = {
 
             const entrevistas = await DadosEntrevista.find({
                 dataEntrevista: { $regex: dataCorrigida }
+            }, {
+                responsavel: 1,
+                dataEntrevista: 1,
+                divergencia: 1,
+                cancelado: 1
             }).lean()
 
             arrQuantidadeTotalMes = []
-
-            /*
-                Produção por mês
-                monta um array de objetos, e cada objeto é um mês.
-                arrQuantidadeTotalMes = [
-                    {
-                        data: 'xx/xx/xxxx',
-                        quantidade: x,
-                        quantidadeAnalistaMes: [{
-                            analista: x,
-                            quantidade: x,
-                            quantidadeAnalistaDia: [{
-                                data: 'xx/xx/xxxx',
-                                quantidade: x
-                            }]
-                        }]
-                    }
-                ]
-            */
 
             for (let e of entrevistas) {
 
@@ -1329,12 +1315,14 @@ module.exports = {
                 monthEntry.quantidade++;
 
                 // Procura uma entrada para o analista responsável pela entrevista no mês atual
-                let analistaEntry = monthEntry.quantidadeAnalistaMes.find(val => val.analista == e.responsavel);
+                let analistaEntry = monthEntry.quantidadeAnalistaMes.find(val => {
+                    return e.cancelado ? val.analista == e.divergencia : val.analista == e.responsavel
+                });
 
                 // Se não encontrar uma entrada para o analista, cria uma nova
                 if (!analistaEntry) {
                     analistaEntry = {
-                        analista: e.responsavel,
+                        analista: e.cancelado ? e.divergencia : e.responsavel,
                         quantidade: 0,
                         quantidadeAnalistaDia: []
                     };

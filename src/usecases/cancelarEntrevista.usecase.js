@@ -4,16 +4,12 @@ const PropostaEntrevista = require('../models/TeleEntrevista/PropostaEntrevista'
 class CancelarEntrevistaUsecase {
     async execute(id, motivo, responsavel) {
         try {
-
             const dadosEntrevista = await DadosEntrevista.create({
                 idProposta: id,
                 cancelado: true,
                 divergencia: motivo,
                 houveDivergencia: 'Não'
             })
-
-            console.log(id);
-
             const proposta = await PropostaEntrevista.findOneAndUpdate({
                 _id: id
             }, {
@@ -38,9 +34,8 @@ class CancelarEntrevistaUsecase {
                 dataRecebimento: proposta.dataRecebimento,
                 filial: proposta.filial,
                 administradora: proposta.administradora,
+                cpf: proposta.cpf,
             })
-
-            console.log('Entrevista cancelada com sucesso:', proposta);
 
             return dadosEntrevista
         } catch (error) {

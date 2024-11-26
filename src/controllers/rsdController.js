@@ -167,12 +167,10 @@ module.exports = {
                     console.log(`pós filtro: ${result.length}`);
 
                     for (const e of result) {
-                        if (e[1] == 'Aguardando documentação' ||
+                        if (
                             e[1] == 'Documento recebido na Amil' ||
                             e[1] == 'Em processamento' ||
-                            e[1] == 'Pedido Cadastrado' ||
-                            e[1] == 'Aguardando documento original' ||
-                            e[1] == 'Em Análise Técnica'
+                            e[1] == 'Pedido Cadastrado'
                         ) {
 
                             let rep = e[13].replace(' - ', '-')
@@ -2215,14 +2213,11 @@ module.exports = {
 
             let { aPartir, ate } = req.params
 
-            console.log(aPartir, ate);
-
-            const result = await Pedido.find()
-
-            let pedidos
-
-            pedidos = result.filter(e => {
-                return moment(e.createdAt).format('YYYY-MM-DD') >= aPartir && moment(e.createdAt).format('YYYY-MM-DD') <= ate
+            const pedidos = await Pedido.find({
+                createdAt: {
+                    $gte: moment(aPartir).startOf('day').toDate(),
+                    $lte: moment(ate).endOf('day').toDate()
+                }
             })
 
             return res.status(200).json({

@@ -1,7 +1,6 @@
 const { default: mongoose } = require('mongoose');
 const User = require('../models/User/User')
 const moment = require('moment');
-const { response } = require('express');
 
 module.exports = {
 
@@ -193,7 +192,7 @@ module.exports = {
             ]
             console.log(_id);
 
-            const result = await User.findOneAndUpdate(
+            await User.findOneAndUpdate(
                 {
                     _id: _id
                 },
@@ -554,8 +553,6 @@ module.exports = {
 
             const { status, responsavel, acao } = req.body
 
-            console.log(req.body);
-
             if (Object.values(responsavel).every(e => e === false) && Object.values(status).every(e => e === false)) {
                 if (acao.length !== 0) {
                     const result = await User.find().lean()
@@ -592,8 +589,6 @@ module.exports = {
             }
 
             if (status.pendente) {
-                // filterConditions.push({ 'admissao.status': 'pendente' })
-                // filterConditions.push({ 'admissao.status': '' })
                 filterConditions.push({
                     '$or': [
                         { 'admissao.status': 'pendente' },
@@ -824,8 +819,6 @@ module.exports = {
                 return [item.acao]
             })
 
-            console.log(acoes);
-
             return res.status(200).json({ acoes })
         } catch (error) {
             console.log(error);
@@ -840,8 +833,6 @@ module.exports = {
             let acoes = result.demissao.map(item => {
                 return [item.acao]
             })
-
-            console.log(acoes);
 
             return res.status(200).json({ acoes })
         } catch (error) {

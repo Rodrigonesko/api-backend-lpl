@@ -41,7 +41,7 @@ class PropostaEntrevistaService {
 
             const [total, propostas, tiposContrato] = await Promise.all([
                 PropostaEntrevista.countDocuments(query),
-                PropostaEntrevista.find(query).populate('dadosEntrevista').sort({ createdAt: 1 }).limit(limit).skip(skip),
+                PropostaEntrevista.find(query).sort({ [sort]: 1 }).populate('dadosEntrevista').limit(limit).skip(skip),
                 PropostaEntrevista.distinct('tipoContrato', {
                     status: { $nin: ['Cancelado', 'Concluído'] }
                 })
