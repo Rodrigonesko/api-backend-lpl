@@ -9,7 +9,7 @@ module.exports = {
     producaoIndividualBradesco: async (dataInicio = moment().format('YYYY-MM-DD'), dataFim = moment().format('YYYY-MM-DD')) => {
         try {
             const token = jwt.sign({ username: 'admin' }, secret)
-            const response = await axios.get(`http://localhost:5002/pacote/analiticoRsdBradesco?dataInicio=${dataInicio}&dataFim=${dataFim}`, {
+            const response = await axios.get(`${RSDBRADESCO}/pacote/analiticoRsdBradesco?dataInicio=${dataInicio}&dataFim=${dataFim}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             console.log(response.data)
