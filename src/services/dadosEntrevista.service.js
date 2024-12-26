@@ -74,7 +74,7 @@ class TeleEntrevistaService {
             const ausenciasUsuario = users.filter(usuario => usuario?.nomeCompleto === user?.nomeCompleto);
             const totalFaltas = ausenciasUsuario.length > 0 ? ausenciasUsuario.length : 0;
 
-            console.log(user);
+            // console.log(user);
             const diasDeFerias = await vacationRequestService.vacationDays(user?.nomeCompleto)
             const diasUteis = functions.diasUteisEntreDuasDatas(dataInicio, dataFim, functions.holidays, diasDeFerias)
             return ({

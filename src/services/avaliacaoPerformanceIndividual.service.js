@@ -18,7 +18,7 @@ module.exports = {
             const { result } = await teleEntrevistaService.quantidadeAnalistasPorMes(dataInicio, dataFim)
             const producaoSindicancia = await sindicanciaService.producaoAnalistasByDate(dataInicio, dataFim)
             const producaoSulAmerica = await sulAmericaService.producaoIndividualSulAmerica(dataInicio, dataFim)
-            const producaoRsdBradesco = await rsdBradescoService.producaoIndividualSulAmerica(dataInicio, dataFim)
+            const producaoRsdBradesco = await rsdBradescoService.producaoIndividualBradesco(dataInicio, dataFim)
 
             let html = `
         <div style="font-family: Arial, sans-serif;">

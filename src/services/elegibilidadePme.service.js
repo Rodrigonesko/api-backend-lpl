@@ -45,7 +45,7 @@ module.exports = {
                     producaoPme[index].aIniciar += propostaPme.status === 'A iniciar' ? 1 : 0
                 }
             }
-            console.log(producaoPme.sort((a, b) => b.total - a.total));
+            // console.log(producaoPme.sort((a, b) => b.total - a.total));
 
             return producaoPme.sort((a, b) => b.total - a.total)
 

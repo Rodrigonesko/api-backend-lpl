@@ -27,6 +27,16 @@ cron.schedule('0 8 1 * *', async () => {
     timezone: 'America/Sao_Paulo'
 });
 
+// Para executar 2° dia do ano às 8h
+
+cron.schedule('0 8 2 1 *', async () => {
+    const dataInicio = moment().subtract(1, 'year').startOf('month').format('YYYY-MM-DD');
+    const dataFim = moment().subtract(1, 'months').endOf('month').format('YYYY-MM-DD');
+    await avaliacoesService.rendimentoTodasCelulas(dataInicio, dataFim);
+}, {
+    timezone: 'America/Sao_Paulo'
+});
+
 
 cron.schedule('0 0 * * *', async () => {
     await sindicanciaService.conferirDatasBradesco();

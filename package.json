@@ -41,6 +41,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
     "os": "^0.1.2",
+    "punycode": "^2.3.1",
     "tedious": "^16.4.1",
     "twilio": "^3.84.0",
     "xlsx": "^0.18.5"
